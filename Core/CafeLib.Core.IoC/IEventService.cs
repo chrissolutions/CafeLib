@@ -28,25 +28,12 @@ namespace CafeLib.Core.IoC
         void Publish<T>(T message) where T : IEventMessage;
 
         /// <summary>
-        /// Publish the specified message.
-        /// </summary>
-        /// <param name='message'>
-        /// Message.
-        /// </param>
-        /// <typeparam name='T'>
-        /// Event message type parameter.
-        /// </typeparam>
-        void PublishAsync<T>(T message) where T : IEventMessage;
-
-
-        /// <summary>
         /// Unsubscribe all specified handlers of type T.
         /// </summary>
         /// <typeparam name='T'>
         /// Event message type parameter.
         /// </typeparam>
         void Unsubscribe<T>() where T : IEventMessage;
-
 
         /// <summary>
         /// Unsubscribe the specified handler of type T and Guid identifier.

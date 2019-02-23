@@ -57,27 +57,6 @@ namespace CafeLib.Core.IoC
         }
 
         /// <summary>
-        /// Publish the specified message asynchronously.
-        /// </summary>
-        /// <param name='message'>
-        /// Message.
-        /// </param>
-        /// <typeparam name='T'>
-        /// Type of IEventMessage.
-        /// </typeparam>
-        public void PublishAsync<T>(T message) where T : IEventMessage
-        {
-            if (_magazine.ContainsKey(typeof(T)))
-            {
-                var subscribers = _magazine[typeof(T)];
-                foreach (var subscriber in subscribers)
-                {
-                    Task.Run(() => ((Action<T>)subscriber.Value)?.Invoke(message));
-                }
-            }
-        }
-
-        /// <summary>
         /// Unsubscribe all specified handlers of type T.
         /// </summary>
         /// <typeparam name='T'>
