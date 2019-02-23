@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Copyright></Copyright>
+    <Description>Provides the ability to bind methods on a class for external use.</Description>
+    <PackageProjectUrl />
+    <PackageIconUrl></PackageIconUrl>
+    <PackageReleaseNotes>Support for method binding.</PackageReleaseNotes>
+    <Version>0.5.6</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyVersion>0.5.6.0</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />
+  </ItemGroup>
+
+</Project>
