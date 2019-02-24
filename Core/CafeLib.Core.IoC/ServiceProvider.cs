@@ -33,9 +33,10 @@ namespace CafeLib.Core.IoC
         /// </summary>
         /// <param name="initFunc"></param>
         /// <returns></returns>
-        public static Task InitAsync(Func<Task> initFunc)
+        public static async Task InitAsync(Func<Task> initFunc)
         {
-            return initFunc?.Invoke();
+            initFunc?.Invoke();
+            await Task.CompletedTask;
         }
 
         /// <summary>
@@ -52,15 +53,15 @@ namespace CafeLib.Core.IoC
         /// Resolve the specified service type.
         /// </summary>
         /// <typeparam name="T">service type</typeparam>
-        /// <param name="p">factory parameters</param>
-        /// <returns></returns>
+        /// <param name="p">service factory parameters</param>
+        /// <returns>the service object</returns>
         public static T Resolve<T>(params object[] p) where T : IServiceProvider
         {
             return Instance._serviceRegistry.Resolve<T>(p);
         }
 
         /// <summary>
-        /// Shuts down.
+        /// Shuts down the all services.
         /// </summary>
         public static void ShutDown()
         {
