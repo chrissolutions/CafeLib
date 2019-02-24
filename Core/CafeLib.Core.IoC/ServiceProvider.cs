@@ -39,20 +39,11 @@ namespace CafeLib.Core.IoC
         }
 
         /// <summary>
-        /// Register the specified service creator.
-        /// </summary>
-        /// <typeparam name="T">service type</typeparam>
-        public static void Register<T>() where T : IPropertyService
-        {
-            Instance._serviceRegistry.Register<T>(p => new PropertyService());
-        }
-
-        /// <summary>
         /// Register the specified service facory.
         /// </summary>
         /// <typeparam name="T">service type</typeparam>
         /// <param name="factory">service factory</param>
-        public static void Register<T>(ServiceFactory factory)
+        public static void Register<T>(ServiceFactory factory) where T : IServiceProvider
         {
             Instance._serviceRegistry.Register<T>(factory);
         }
@@ -63,7 +54,7 @@ namespace CafeLib.Core.IoC
         /// <typeparam name="T">service type</typeparam>
         /// <param name="p">factory parameters</param>
         /// <returns></returns>
-        public static T Resolve<T>(params object[] p)
+        public static T Resolve<T>(params object[] p) where T : IServiceProvider
         {
             return Instance._serviceRegistry.Resolve<T>(p);
         }

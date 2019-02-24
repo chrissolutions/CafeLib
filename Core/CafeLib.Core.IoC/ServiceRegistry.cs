@@ -39,15 +39,15 @@ namespace CafeLib.Core.IoC
         /// <typeparam name='T'>
         /// The 1st type parameter.
         /// </typeparam>
-        public T Create<T>(params object[] p)
+        public T Create<T>(params object[] p) where T : IServiceProvider
         {
             return (T)_factories[typeof(T)](p);
         }
 
         /// <summary>
-        /// 
+        /// Returns the service.
         /// </summary>
-        /// <param name="serviceType"></param>
+        /// <param name="serviceType">the service type</param>
         /// <returns></returns>
         public override object GetService(Type serviceType)
         {
@@ -73,7 +73,7 @@ namespace CafeLib.Core.IoC
         /// <typeparam name='T'>
         /// The 1st type parameter.
         /// </typeparam>
-        public T Resolve<T>(params object[] p)
+        public T Resolve<T>(params object[] p) where T : IServiceProvider
         {
             return (T)_services.GetOrAdd(typeof(T), Create<T>(p));
         }
