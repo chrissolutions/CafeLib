@@ -96,6 +96,16 @@ namespace CafeLib.Core.Mobile.Services
             return ResolvePage(viewModel.GetType());
         }
 
+        /// <summary>
+        /// Resolves viewmodel to its associated view.
+        /// </summary>
+        /// <typeparam name="T">type of BaseViewModel</typeparam>
+        /// <returns>bounded page</returns>
+        public Page ResolvePage<T>() where T : BaseViewModel
+        {
+            return ResolvePage(typeof(T));
+        }
+
         #endregion
 
         #region Helpers

@@ -20,5 +20,12 @@ namespace CafeLib.Core.Mobile.Services
         /// <typeparam name="T">BaseViewModel</typeparam>
         /// <returns>page</returns>
         Page ResolvePage<T>(T viewModel) where T : BaseViewModel;
+
+        /// <summary>
+        /// Resolves the page for the view model
+        /// </summary>
+        /// <typeparam name="T">BaseViewModel</typeparam>
+        /// <returns>page</returns>
+        Page ResolvePage<T>() where T : BaseViewModel;
     }
 }

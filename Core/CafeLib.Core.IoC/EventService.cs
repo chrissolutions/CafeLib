@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using CafeLib.Core.Eventing;
 
 namespace CafeLib.Core.IoC
 {
     internal class EventService : ServiceBase, IEventService
     {
-        private readonly ConcurrentDictionary<Type, ConcurrentDictionary<Guid, object>> _magazine;
+        /// <summary>
+        /// This map contains the event Message type key and a collection of subscribers associated with the message type.
+        /// </summary>
+        private readonly ConcurrentDictionary<Type, ConcurrentDictionary<Guid, object>> _subscriptions;
 
         /// <summary>
         /// EventBus constructor.
         /// </summary>
         public EventService()
         {
-            _magazine = new ConcurrentDictionary<Type, ConcurrentDictionary<Guid, object>>();
+            _subscriptions = new ConcurrentDictionary<Type, ConcurrentDictionary<Guid, object>>();
         }
 
         /// <summary>
@@ -29,7 +31,7 @@ namespace CafeLib.Core.IoC
         /// </typeparam>
         public Guid Subscribe<T>(Action<T> action) where T : IEventMessage
         {
-            var subscribers = _magazine.GetOrAdd(typeof(T), new ConcurrentDictionary<Guid, object>());
+            var subscribers = _subscriptions.GetOrAdd(typeof(T), new ConcurrentDictionary<Guid, object>());
             var key = Guid.NewGuid();
             subscribers.TryAdd(key, action);
             return key;
@@ -46,9 +48,9 @@ namespace CafeLib.Core.IoC
         /// </typeparam>
         public void Publish<T>(T message) where T : IEventMessage
         {
-            if (_magazine.ContainsKey(typeof(T)))
+            if (_subscriptions.ContainsKey(typeof(T)))
             {
-                var subscribers = _magazine[typeof(T)];
+                var subscribers = _subscriptions[typeof(T)];
                 foreach (var subscriber in subscribers)
                 {
                     ((Action<T>)subscriber.Value)?.Invoke(message);
@@ -64,15 +66,15 @@ namespace CafeLib.Core.IoC
         /// </typeparam>
         public void Unsubscribe<T>() where T : IEventMessage
         {
-            if (_magazine.ContainsKey(typeof(T)))
+            if (_subscriptions.ContainsKey(typeof(T)))
             {
-                var subscribers = _magazine[typeof(T)];
+                var subscribers = _subscriptions[typeof(T)];
                 foreach (KeyValuePair<Guid, object> subscriber in subscribers)
                 {
                     subscribers.TryRemove(subscriber.Key, out _);
                 }
 
-                _magazine.TryRemove(typeof(T), out _);
+                _subscriptions.TryRemove(typeof(T), out _);
             }
         }
 
@@ -85,13 +87,13 @@ namespace CafeLib.Core.IoC
         /// </typeparam>
         public void Unsubscribe<T>(Guid actionId) where T : IEventMessage
         {
-            if (_magazine.ContainsKey(typeof(T)))
+            if (_subscriptions.ContainsKey(typeof(T)))
             {
-                var subscribers = _magazine[typeof(T)];
+                var subscribers = _subscriptions[typeof(T)];
                 subscribers.TryRemove(actionId, out _);
                 if (subscribers.Count == 0)
                 {
-                    _magazine.TryRemove(typeof(T), out _);
+                    _subscriptions.TryRemove(typeof(T), out _);
                 }
             }
         }
