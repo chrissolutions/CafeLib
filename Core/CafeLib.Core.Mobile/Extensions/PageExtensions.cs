@@ -11,9 +11,10 @@ namespace CafeLib.Core.Mobile.Extensions
         /// Get the view model bound to the page.
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TPage"></typeparam>
         /// <param name="page"></param>
         /// <returns></returns>
-        public static T GetViewModel<T>(this Page page) where T : BaseViewModel
+        public static T GetViewModel<T, TPage>(this TPage page) where T : BaseViewModel<TPage> where TPage : Page
         {
             return (T) page.BindingContext;
         }
@@ -21,22 +22,25 @@ namespace CafeLib.Core.Mobile.Extensions
         /// <summary>
         /// Set the view model to the binding context of the page.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="page"></param>
         /// <param name="viewModel"></param>
-        public static void SetViewModel<T>(this Page page, T viewModel) where T : BaseViewModel
+        public static void SetViewModel(this Page page, AbstractViewModel viewModel)
         {
-            page.BindingContext = viewModel;
+            if (page.BindingContext != viewModel)
+            {
+                page.BindingContext = viewModel;
+            }
         }
 
         /// <summary>
         /// Invoke the page viewmodel back command.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="view"></param>
-        public static void InvokeBackCommand<T>(this Page view) where T : BaseViewModel
+        /// <typeparam name="TPage"></typeparam>
+        /// <param name="page"></param>
+        public static void InvokeBackCommand<T, TPage>(this TPage page) where T : BaseViewModel<TPage> where TPage : Page
         {
-            var viewModel = view.GetViewModel<T>();
+            var viewModel = page.GetViewModel<T, TPage>();
             var viewModelType = viewModel.GetType();
             var propInfo = viewModelType.GetTypeInfo().GetDeclaredProperty("BackCommand");
             var command = (ICommand)propInfo?.GetValue(viewModel);

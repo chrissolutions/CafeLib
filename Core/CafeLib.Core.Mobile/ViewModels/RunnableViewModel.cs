@@ -2,10 +2,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Runnable;
+using Xamarin.Forms;
 
 namespace CafeLib.Core.Mobile.ViewModels
 { 
-    public abstract class RunnableViewModel : BaseViewModel, IRunnable
+    public abstract class RunnableViewModel<T> : BaseViewModel<T>, IRunnable where T : Page
     {
         #region Private Variables
 
