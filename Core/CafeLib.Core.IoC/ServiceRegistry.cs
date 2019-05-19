@@ -8,7 +8,7 @@ namespace CafeLib.Core.IoC
     {
         #region Private Variables
 
-        private readonly ConcurrentDictionary<Type, ServiceFactory> _factories;
+        private readonly ConcurrentDictionary<Type, ServiceFactory<object>> _factories;
         private readonly ConcurrentDictionary<Type, object> _services;
         private bool _disposed;
 
@@ -22,7 +22,7 @@ namespace CafeLib.Core.IoC
         public ServiceRegistry()
         {
             // Create dictionaries.
-            _factories = new ConcurrentDictionary<Type, ServiceFactory>();
+            _factories = new ConcurrentDictionary<Type, ServiceFactory<object>>();
             _services = new ConcurrentDictionary<Type, object>();
         }
 
@@ -41,7 +41,7 @@ namespace CafeLib.Core.IoC
         /// </typeparam>
         public T Create<T>(params object[] p) where T : IServiceProvider
         {
-            return (T)_factories[typeof(T)](p);
+            return (T)_factories[typeof(T)].Invoke(p);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace CafeLib.Core.IoC
         /// </summary>
         /// <typeparam name='T'> The 1st type parameter.</typeparam>
         /// <param name="factory">service factory</param>
-        public void Register<T>(ServiceFactory factory)
+        public void Register<T>(ServiceFactory<T> factory) where T : class
         {
             _factories.AddOrUpdate(typeof(T), factory, (k, v) => factory);
         }
@@ -73,7 +73,7 @@ namespace CafeLib.Core.IoC
         /// <typeparam name='T'>
         /// The 1st type parameter.
         /// </typeparam>
-        public T Resolve<T>(params object[] p) where T : IServiceProvider
+        public T Resolve<T>(params object[] p) where T : class, IServiceProvider
         {
             return (T)_services.GetOrAdd(typeof(T), Create<T>(p));
         }

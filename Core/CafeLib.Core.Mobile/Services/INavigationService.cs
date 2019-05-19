@@ -15,10 +15,18 @@ namespace CafeLib.Core.Mobile.Services
         /// <summary>
         /// Insert view model before the current view model.
         /// </summary>
-        /// <param name="page"></param>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="TPage1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="TPage2"></typeparam>
+        /// <param name="viewModel"></param>
         /// <param name="currentViewModel"></param>
         /// <returns></returns>
-        Task InsertBeforeAsync(Page page, Page currentViewModel);
+        Task InsertBeforeAsync<T1, TPage1, T2, TPage2>(T1 viewModel, T2 currentViewModel)
+            where T1 : BaseViewModel<TPage1>
+            where TPage1 : Page
+            where T2 : BaseViewModel<TPage2>
+            where TPage2 : Page;
 
         /// <summary>
         /// Navigate to pushed view model.

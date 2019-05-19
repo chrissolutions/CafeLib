@@ -40,13 +40,13 @@ namespace CafeLib.Core.IoC
         }
 
         /// <summary>
-        /// Register the specified service facory.
+        /// Register the specified service factory.
         /// </summary>
         /// <typeparam name="T">service type</typeparam>
         /// <param name="factory">service factory</param>
-        public static void Register<T>(ServiceFactory factory) where T : IServiceProvider
+        public static void Register<T>(ServiceFactory<T> factory) where T : class, IServiceProvider
         {
-            Instance._serviceRegistry.Register<T>(factory);
+            Instance._serviceRegistry.Register(factory);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace CafeLib.Core.IoC
         /// <typeparam name="T">service type</typeparam>
         /// <param name="p">service factory parameters</param>
         /// <returns>the service object</returns>
-        public static T Resolve<T>(params object[] p) where T : IServiceProvider
+        public static T Resolve<T>(params object[] p) where T : class, IServiceProvider
         {
             return Instance._serviceRegistry.Resolve<T>(p);
         }
