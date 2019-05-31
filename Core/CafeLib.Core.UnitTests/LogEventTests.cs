@@ -1,7 +1,7 @@
-using System.Threading.Tasks;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.IoC;
 using CafeLib.Core.Logging;
+using CafeLib.Core.UnitTests.Services;
 using Microsoft.Extensions.Logging;
 using Xunit;
 
@@ -54,18 +54,17 @@ namespace CafeLib.Core.UnitTests
         [Fact]
         public void ServiceProviderTest()
         {
-            ServiceProvider.InitAsync(async () =>
-            {
-                ServiceProvider.Register<ITestService>(p => new TestService());
-                await Task.CompletedTask;
-            }).Wait();
+            var registry = ServiceProvider.CreateRegistry();
+            registry.AddPropertyService()
+                .AddSingleton<ITestService>(x => new TestService());
 
-            var propertyService = ServiceProvider.Resolve<IPropertyService>();
+            var propertyService = registry.Resolve<IPropertyService>();
             Assert.NotNull(propertyService);
+
             propertyService.SetProperty("name", "Kilroy");
             Assert.Equal("Kilroy", propertyService.GetProperty<string>("name"));
 
-            var testService = ServiceProvider.Resolve<ITestService>();
+            var testService = registry.Resolve<ITestService>();
             Assert.Equal("Kilroy is here!", testService.Test());
         }
     }

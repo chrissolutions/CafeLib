@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using CafeLib.Core.Extensions;
 
 namespace CafeLib.Core.IoC
 {
@@ -49,6 +50,11 @@ namespace CafeLib.Core.IoC
         public void SetProperty<T>(Guid guid, T value)
         {
             _dictionary.AddOrUpdate(guid.ToString("B"), value, (k, v) => value);
+        }
+
+        public T ToObject<T>()
+        {
+            return (T)_dictionary.ToObject();
         }
     }
 }

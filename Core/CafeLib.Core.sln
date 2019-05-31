@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core", "CafeLib.Core\CafeLib.Core.csproj", "{706ECC1E-D5D5-4ED0-9CF4-52EB54F5A88F}"
 EndProject
@@ -10,8 +10,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Mobile", "CafeLib.Core.Mobile\CafeLib.Core.Mobile.csproj", "{D7D225CE-6D2B-4E62-AC4D-D99C09E5C819}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Client.SignalR", "CafeLib.Core.Client.SignalR\CafeLib.Core.Client.SignalR.csproj", "{20130552-0D78-4A97-B235-5AA38F0BAE1F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.IoC", "CafeLib.Core.IoC\CafeLib.Core.IoC.csproj", "{A0118C03-FB31-49DA-A6F7-C16003FDF0B7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.UnitTests", "CafeLib.Core.UnitTests\CafeLib.Core.UnitTests.csproj", "{BA7F1EC2-F53A-40DB-A4E4-CB1AE7601AD6}"
 EndProject
@@ -22,6 +20,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Messaging", "CafeLib.Core.Messaging\CafeLib.Core.Messaging.csproj", "{CA1D3D92-4ECC-4F00-81E6-5660AA02643B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Binding", "CafeLib.Core.Binding\CafeLib.Core.Binding.csproj", "{BC804C63-4BB4-4484-9BD1-CFA298B13B86}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.IoC", "CafeLib.Core.IoC\CafeLib.Core.IoC.csproj", "{077D2BD2-2E71-4601-A4CC-08C31D0469EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +45,6 @@ Global
 		{20130552-0D78-4A97-B235-5AA38F0BAE1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20130552-0D78-4A97-B235-5AA38F0BAE1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20130552-0D78-4A97-B235-5AA38F0BAE1F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A0118C03-FB31-49DA-A6F7-C16003FDF0B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A0118C03-FB31-49DA-A6F7-C16003FDF0B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A0118C03-FB31-49DA-A6F7-C16003FDF0B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A0118C03-FB31-49DA-A6F7-C16003FDF0B7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BA7F1EC2-F53A-40DB-A4E4-CB1AE7601AD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BA7F1EC2-F53A-40DB-A4E4-CB1AE7601AD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA7F1EC2-F53A-40DB-A4E4-CB1AE7601AD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -69,6 +65,10 @@ Global
 		{BC804C63-4BB4-4484-9BD1-CFA298B13B86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC804C63-4BB4-4484-9BD1-CFA298B13B86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC804C63-4BB4-4484-9BD1-CFA298B13B86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{077D2BD2-2E71-4601-A4CC-08C31D0469EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{077D2BD2-2E71-4601-A4CC-08C31D0469EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{077D2BD2-2E71-4601-A4CC-08C31D0469EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{077D2BD2-2E71-4601-A4CC-08C31D0469EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

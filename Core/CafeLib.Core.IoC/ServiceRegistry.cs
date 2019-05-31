@@ -1,81 +1,132 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using CafeLib.Core.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.IoC
 {
-    internal sealed class ServiceRegistry : ServiceBase, IDisposable
+    public class ServiceRegistry : IServiceRegistry
     {
         #region Private Variables
 
-        private readonly ConcurrentDictionary<Type, ServiceFactory<object>> _factories;
-        private readonly ConcurrentDictionary<Type, object> _services;
+        private readonly ServiceCollection _serviceCollection;
+        private IServiceProvider _serviceProvider;
         private bool _disposed;
 
         #endregion
 
         #region Constructors
 
-        /// <summary>
-        /// ServiceProvider instance constructor.
-        /// </summary>
         public ServiceRegistry()
         {
-            // Create dictionaries.
-            _factories = new ConcurrentDictionary<Type, ServiceFactory<object>>();
-            _services = new ConcurrentDictionary<Type, object>();
+            _serviceCollection = new ServiceCollection();
         }
+
+        #endregion
+
+        #region Properties
+
+        public IServiceProvider ServiceProvider => _serviceProvider ?? (_serviceProvider = _serviceCollection.BuildServiceProvider());
 
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// Creates an instance of the service type.
+        /// 
         /// </summary>
-        /// <param name='p'>
-        /// P.
-        /// </param>
-        /// <typeparam name='T'>
-        /// The 1st type parameter.
-        /// </typeparam>
-        public T Create<T>(params object[] p) where T : IServiceProvider
-        {
-            return (T)_factories[typeof(T)].Invoke(p);
-        }
-
-        /// <summary>
-        /// Returns the service.
-        /// </summary>
-        /// <param name="serviceType">the service type</param>
+        /// <param name="configuration">configuration action</param>
         /// <returns></returns>
-        public override object GetService(Type serviceType)
+        public IServiceRegistry AddLogging(Action<ILoggingBuilder> configuration)
         {
-            return _services.TryGetValue(serviceType, out var value) ? value : null;
+            if (_serviceProvider != null) throw new InvalidOperationException(nameof(_serviceProvider));
+            _serviceCollection.AddLogging(configuration);
+            return this;
         }
 
         /// <summary>
-        /// Register the service factory.
+        /// 
         /// </summary>
-        /// <typeparam name='T'> The 1st type parameter.</typeparam>
-        /// <param name="factory">service factory</param>
-        public void Register<T>(ServiceFactory<T> factory) where T : class
+        /// <typeparam name="TService"></typeparam>
+        /// <typeparam name="TImpl"></typeparam>
+        /// <returns></returns>
+        public IServiceRegistry AddScoped<TService, TImpl>() where TService : class where TImpl : class, TService
         {
-            _factories.AddOrUpdate(typeof(T), factory, (k, v) => factory);
+            if (_serviceProvider != null) throw new InvalidOperationException(nameof(_serviceProvider));
+            _serviceCollection.AddScoped<TService, TImpl>();
+            return this;
         }
 
         /// <summary>
-        /// Resolve the specified service type.
+        /// 
         /// </summary>
-        /// <param name='p'>
-        /// P.
-        /// </param>
-        /// <typeparam name='T'>
-        /// The 1st type parameter.
-        /// </typeparam>
-        public T Resolve<T>(params object[] p) where T : class, IServiceProvider
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="factory"></param>
+        /// <returns></returns>
+        public IServiceRegistry AddScoped<TService>(Func<IServiceProvider, TService> factory) where TService : class
         {
-            return (T)_services.GetOrAdd(typeof(T), Create<T>(p));
+            if (_serviceProvider != null) throw new InvalidOperationException(nameof(_serviceProvider));
+            _serviceCollection.AddScoped(factory.Invoke);
+            return this;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <typeparam name="TImpl"></typeparam>
+        /// <returns></returns>
+        public IServiceRegistry AddSingleton<TService, TImpl>() where TService : class where TImpl : class, TService
+        {
+            if (_serviceProvider != null) throw new InvalidOperationException(nameof(_serviceProvider));
+            _serviceCollection.AddSingleton<TService, TImpl>();
+            return this;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="factory"></param>
+        /// <returns></returns>
+        public IServiceRegistry AddSingleton<TService>(Func<IServiceProvider, TService> factory) where TService : class
+        {
+            if (_serviceProvider != null) throw new InvalidOperationException(nameof(_serviceProvider));
+            _serviceCollection.AddSingleton(factory.Invoke);
+            return this;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <typeparam name="TImpl"></typeparam>
+        /// <returns></returns>
+        public IServiceRegistry AddTransient<TService, TImpl>() where TService : class where TImpl : class, TService
+        {
+            if (_serviceProvider != null) throw new InvalidOperationException(nameof(_serviceProvider));
+            _serviceCollection.AddTransient<TService, TImpl>();
+            return this;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="factory"></param>
+        /// <returns></returns>
+        public IServiceRegistry AddTransient<T>(Func<IServiceProvider, T> factory) where T : class
+        {
+            if (_serviceProvider != null) throw new InvalidOperationException(nameof(_serviceProvider));
+            _serviceCollection.AddTransient(factory.Invoke);
+            return this;
+        }
+
+        public T Resolve<T>() where T : class, IServiceProvider
+        {
+            return ServiceProvider.GetService<T>();
         }
 
         /// <summary>
@@ -94,7 +145,7 @@ namespace CafeLib.Core.IoC
         private void Dispose(bool disposing)
         {
             if (!disposing) return;
-            _services.ForEach(x => (x.Value as IDisposable)?.Dispose());
+            _serviceProvider?.GetServices<IServiceProvider>().ForEach(x => (x as IDisposable)?.Dispose());
         }
 
         #endregion

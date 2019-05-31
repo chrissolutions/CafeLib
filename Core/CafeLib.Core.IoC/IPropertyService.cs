@@ -49,5 +49,10 @@ namespace CafeLib.Core.IoC
         /// <param name="guid">property guid</param>
         /// <param name="value">property value</param>
         void SetProperty<T>(Guid guid, T value);
+
+        /// <summary>
+        /// Set a property in the property bag using a guid.
+        /// </summary>
+        T ToObject<T>();
     }
 }

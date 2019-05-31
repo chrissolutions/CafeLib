@@ -1,7 +1,7 @@
 using System;
 using CafeLib.Core.IoC;
 
-namespace CafeLib.Core.UnitTests
+namespace CafeLib.Core.UnitTests.Services
 {
     public interface ITestService : IServiceProvider
     {
