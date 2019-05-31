@@ -1,7 +1,6 @@
 ﻿using System;
 using CafeLib.Core.IoC;
 using CafeLib.Core.Support;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Core.Mobile.Services
@@ -10,7 +9,7 @@ namespace CafeLib.Core.Mobile.Services
     {
         #region Private Variables
 
-        private readonly ServiceRegistry _serviceRegistry;
+        private readonly IServiceRegistry _serviceRegistry;
 
         #endregion
 
@@ -21,23 +20,22 @@ namespace CafeLib.Core.Mobile.Services
         /// </summary>
         private MobileServices()
         {
-            _serviceRegistry = new ServiceRegistry();
-
             var mobileService = new MobileService();
-            _serviceRegistry.AddSingleton(x => mobileService as IPageService);
-            _serviceRegistry.AddSingleton(x => mobileService as INavigationService);
-            _serviceRegistry.AddSingleton(x => mobileService as IDeviceService);
+            _serviceRegistry = IocFactory.CreateRegistry()
+                .AddSingleton(x => mobileService as IPageService)
+                .AddSingleton(x => mobileService as INavigationService)
+                .AddSingleton(x => mobileService as IDeviceService);
         }
 
         #endregion
 
         #region Automatic Properties
 
-        internal static IPageService PageService => Instance._serviceRegistry.Resolve<IPageService>();
+        internal static IPageService PageService => Instance.GetResolver().Resolve<IPageService>();
 
-        internal static INavigationService NavigationService => Instance._serviceRegistry.Resolve<INavigationService>();
+        internal static INavigationService NavigationService => Instance.GetResolver().Resolve<INavigationService>();
 
-        internal static IDeviceService DeviceService => Instance._serviceRegistry.Resolve<IDeviceService>();
+        internal static IDeviceService DeviceService => Instance.GetResolver().Resolve<IDeviceService>();
 
         #endregion
 
@@ -122,11 +120,10 @@ namespace CafeLib.Core.Mobile.Services
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T Resolve<T>() where T : class, IServiceProvider
+        public IServiceResolver GetResolver()
         {
-            return _serviceRegistry.ServiceProvider.GetService<T>();
+            return _serviceRegistry.GetResolver();
         }
 
         /// <summary>
@@ -142,13 +139,13 @@ namespace CafeLib.Core.Mobile.Services
         #region Static Methods
 
         /// <summary>
-        /// Resolve the specified service type.
+        /// 
         /// </summary>
-        /// <typeparam name="T">service type</typeparam>
-        /// <returns>the service object</returns>
-        public static T GetService<T>() where T : class, IServiceProvider
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T Resolve<T>() where T : class, IServiceProvider
         {
-            return Instance.Resolve<T>();
+            return Instance.GetResolver().Resolve<T>();
         }
 
         /// <summary>

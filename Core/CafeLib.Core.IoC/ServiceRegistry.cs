@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Core.IoC
 {
-    public class ServiceRegistry : IServiceRegistry
+    public class ServiceRegistry : IServiceRegistry, IServiceResolver
     {
         #region Private Variables
 
@@ -19,7 +19,7 @@ namespace CafeLib.Core.IoC
 
         #region Constructors
 
-        public ServiceRegistry()
+        internal ServiceRegistry()
         {
             _serviceCollection = new ServiceCollection();
         }
@@ -121,6 +121,11 @@ namespace CafeLib.Core.IoC
         {
             if (_serviceProvider != null) throw new InvalidOperationException(nameof(_serviceProvider));
             _serviceCollection.AddTransient(factory.Invoke);
+            return this;
+        }
+
+        public IServiceResolver GetResolver()
+        {
             return this;
         }
 

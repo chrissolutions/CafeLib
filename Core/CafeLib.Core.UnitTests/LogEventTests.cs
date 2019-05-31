@@ -54,17 +54,18 @@ namespace CafeLib.Core.UnitTests
         [Fact]
         public void ServiceProviderTest()
         {
-            var registry = ServiceProvider.CreateRegistry();
-            registry.AddPropertyService()
-                .AddSingleton<ITestService>(x => new TestService());
+            var resolver = IocFactory.CreateRegistry()
+                .AddPropertyService()
+                .AddSingleton<ITestService>(x => new TestService())
+                .GetResolver();
 
-            var propertyService = registry.Resolve<IPropertyService>();
+            var propertyService = resolver.Resolve<IPropertyService>();
             Assert.NotNull(propertyService);
 
             propertyService.SetProperty("name", "Kilroy");
             Assert.Equal("Kilroy", propertyService.GetProperty<string>("name"));
 
-            var testService = registry.Resolve<ITestService>();
+            var testService = resolver.Resolve<ITestService>();
             Assert.Equal("Kilroy is here!", testService.Test());
         }
     }

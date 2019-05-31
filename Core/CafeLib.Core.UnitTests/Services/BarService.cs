@@ -12,12 +12,12 @@ namespace CafeLib.Core.UnitTests.Services
     public class BarService : ServiceBase, IBarService
     {
         private readonly IFooService _fooService;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceResolver _serviceResolver;
 
-        public BarService(IFooService fooService, IServiceProvider serviceProvider)
+        public BarService(IFooService fooService, IServiceResolver serviceResolver)
         {
             _fooService = fooService;
-            _serviceProvider = serviceProvider;
+            _serviceResolver = serviceResolver;
         }
 
         public void DoSomeRealWork()

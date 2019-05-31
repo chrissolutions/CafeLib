@@ -61,10 +61,9 @@ namespace CafeLib.Core.IoC
         IServiceRegistry AddTransient<TService>(Func<IServiceProvider, TService> factory) where TService : class;
 
         /// <summary>
-        /// Resolve the specified service type.
+        /// Obtain the service resolver.
         /// </summary>
-        /// <typeparam name="T">service type</typeparam>
-        /// <returns>the service object</returns>
-        T Resolve<T>() where T : class, IServiceProvider;
+        /// <returns>service resolve</returns>
+        IServiceResolver GetResolver();
     }
 }

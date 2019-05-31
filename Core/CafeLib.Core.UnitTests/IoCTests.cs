@@ -10,14 +10,14 @@ namespace CafeLib.Core.UnitTests
         [Fact]
         public void IocTest()
         {
-            var registry = ServiceProvider.CreateRegistry();
-            registry
+            var resolver = IocFactory.CreateRegistry()
                 .AddLogging(builder => builder.AddConsole().AddDebug())
                 .AddSingleton<IFooService, FooService>()
-                .AddSingleton<IBarService, BarService>();
+                .AddSingleton<IBarService, BarService>()
+                .GetResolver();
 
             //do the actual work here
-            var bar = registry.Resolve<IBarService>();
+            var bar = resolver.Resolve<IBarService>();
             bar.DoSomeRealWork();
         }
     }
