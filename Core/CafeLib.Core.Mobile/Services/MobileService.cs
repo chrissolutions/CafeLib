@@ -29,7 +29,14 @@ namespace CafeLib.Core.Mobile.Services
 
         #endregion
 
-        public Page NavigationPage { get; private set; } = null;
+        #region Properties
+
+        public Page NavigationPage { get; private set; }
+
+        #endregion
+
+        #region Methods
+
         public Task InsertBeforeAsync(Page page, Page currentViewModel)
         {
             throw new NotImplementedException();
@@ -163,6 +170,8 @@ namespace CafeLib.Core.Mobile.Services
             NavigationPage = new NavigationPage(page);
             return NavigationPage;
         }
+
+        #endregion
 
         #region Helpers
 
