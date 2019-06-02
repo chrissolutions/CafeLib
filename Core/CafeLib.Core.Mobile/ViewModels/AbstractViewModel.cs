@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CafeLib.Core.Mobile.Extensions;
 using CafeLib.Core.Mobile.Services;
+using JetBrains.Annotations;
 using Xamarin.Forms;
 
 namespace CafeLib.Core.Mobile.ViewModels
@@ -28,6 +29,7 @@ namespace CafeLib.Core.Mobile.ViewModels
         /// Title.
         /// </summary>
         private string _title;
+        [UsedImplicitly]
         public string Title
         {
             get => _title;
@@ -47,6 +49,7 @@ namespace CafeLib.Core.Mobile.ViewModels
         /// <summary>
         /// 
         /// </summary>
+        [UsedImplicitly]
         protected IDeviceService DeviceService => MobileServices.DeviceService;
 
         #endregion
@@ -57,6 +60,7 @@ namespace CafeLib.Core.Mobile.ViewModels
         /// Establish viewmodel as the navigation page.
         /// </summary>
         /// <returns></returns>
+        [UsedImplicitly]
         public Page AsNavigationPage()
         {
             return NavigationService.SetNavigationPage(ResolvePage());
@@ -86,6 +90,7 @@ namespace CafeLib.Core.Mobile.ViewModels
         /// <param name="title">title</param>
         /// <param name="message">message</param>
         /// <param name="ok">OK</param>
+        [UsedImplicitly]
         public void DisplayAlert(string title, string message, string ok = "OK")
         {
             Device.BeginInvokeOnMainThread(async () =>
@@ -102,6 +107,7 @@ namespace CafeLib.Core.Mobile.ViewModels
         /// <param name="ok">OK</param>
         /// <param name="cancel">cancel</param>
         // ReSharper disable once MethodOverloadWithOptionalParameter
+        [UsedImplicitly]
         public async Task<bool> DisplayConfirm(string title, string message, string ok = "OK", string cancel = "Cancel")
         {
             var completed = new TaskCompletionSource<bool>();
@@ -123,6 +129,7 @@ namespace CafeLib.Core.Mobile.ViewModels
         /// <param name="destroy">destroy string</param>
         /// <param name="options">option list</param>
         /// <returns></returns>
+        [UsedImplicitly]
         public async Task<string> DisplayActionSheet(string title, string cancel, string destroy, IEnumerable<string> options)
         {
             var completed = new TaskCompletionSource<string>();
@@ -142,6 +149,7 @@ namespace CafeLib.Core.Mobile.ViewModels
         /// <param name="viewModel"></param>
         /// <param name="animate"></param>
         /// <returns></returns>
+        [UsedImplicitly]
         public async Task PushAsync(AbstractViewModel viewModel, bool animate = false)
         {
             viewModel.ResolvePage().SetViewModel(viewModel);
@@ -156,6 +164,7 @@ namespace CafeLib.Core.Mobile.ViewModels
         /// Runs an action on the main thread.
         /// </summary>
         /// <param name="action">action</param>
+        [UsedImplicitly]
         protected virtual async Task RunOnMainThread(Action action)
         {
             var completed = new TaskCompletionSource<bool>();
