@@ -4,7 +4,7 @@ using System.ComponentModel;
 namespace CafeLib.Core.Mobile.ViewModels
 {
     /// <summary>
-    /// ObservableModel implemenation class.
+    /// ObservableModel implementation class.
     /// </summary>
     /// <typeparam name="T">serialization type</typeparam>
     public abstract class ObservableModel<T> : ObservableBase, ISerializableModel<T>
