@@ -1,6 +1,7 @@
 ﻿using System;
 using CafeLib.Core.IoC;
 using CafeLib.Core.Support;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Core.Mobile.Services
@@ -143,6 +144,7 @@ namespace CafeLib.Core.Mobile.Services
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
+        [UsedImplicitly]
         public static T Resolve<T>() where T : class, IServiceProvider
         {
             return Instance.GetResolver().Resolve<T>();
@@ -151,6 +153,7 @@ namespace CafeLib.Core.Mobile.Services
         /// <summary>
         /// 
         /// </summary>
+        [UsedImplicitly]
         public static void ShutDown()
         {
             Instance.Dispose();
