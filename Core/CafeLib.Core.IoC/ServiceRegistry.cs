@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Core.IoC
 {
-    public class ServiceRegistry : IServiceRegistry, IServiceResolver
+    public class ServiceRegistry : ServiceBase, IServiceRegistry, IServiceResolver
     {
         #region Private Variables
 

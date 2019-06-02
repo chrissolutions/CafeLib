@@ -2,7 +2,7 @@
 
 namespace CafeLib.Core.IoC
 {
-    public interface IServiceResolver
+    public interface IServiceResolver : IServiceProvider
     {
         /// <summary>
         /// Resolve the specified service type.
