@@ -2,10 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Runnable;
+using JetBrains.Annotations;
 using Xamarin.Forms;
 
 namespace CafeLib.Mobile.Core.ViewModels
 { 
+    [UsedImplicitly]
     public abstract class RunnableViewModel<T> : BaseViewModel<T>, IRunnable where T : Page
     {
         #region Private Variables
@@ -37,6 +39,7 @@ namespace CafeLib.Mobile.Core.ViewModels
             await Task.FromResult(0);
         }
 
+        [UsedImplicitly]
         public async void Delay(int milliseconds)
         {
             try

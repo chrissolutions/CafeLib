@@ -1,4 +1,6 @@
 ﻿
+using JetBrains.Annotations;
+
 namespace CafeLib.Mobile.Core.ViewModels
 {
     /// <summary>
@@ -10,17 +12,20 @@ namespace CafeLib.Mobile.Core.ViewModels
         /// <summary>
         /// Deserializes the observable model from the local storage.
         /// </summary>
+        [UsedImplicitly]
         void Deserialize(T data);
 
         /// <summary>
         /// Serializes the observable model in the local storage.
         /// Returns the serialized model as a JSON string.
         /// </summary>
+        [UsedImplicitly]
         T Serialize();
 
         /// <summary>
         /// Reset model data to default.
         /// </summary>
+        [UsedImplicitly]
         void Reset();
     }
 }

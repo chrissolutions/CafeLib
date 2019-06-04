@@ -5,6 +5,7 @@ using CafeLib.Core.IoC;
 using CafeLib.Mobile.Core.Extensions;
 using CafeLib.Mobile.Core.Support;
 using CafeLib.Mobile.Core.ViewModels;
+using JetBrains.Annotations;
 using Xamarin.Forms;
 
 namespace CafeLib.Mobile.Core.Services
@@ -29,7 +30,15 @@ namespace CafeLib.Mobile.Core.Services
 
         #endregion
 
-        public Page NavigationPage { get; private set; } = null;
+        #region Properties
+
+        public Page NavigationPage { get; private set; }
+
+        #endregion
+
+        #region Methods
+
+        [UsedImplicitly]
         public Task InsertBeforeAsync(Page page, Page currentViewModel)
         {
             throw new NotImplementedException();
@@ -61,6 +70,7 @@ namespace CafeLib.Mobile.Core.Services
         /// Resolves page associated with the viewmodel.
         /// </summary>
         /// <returns>bounded page</returns>
+        [UsedImplicitly]
         public TPage ResolvePage<T, TPage>(T viewModel) where T : BaseViewModel<TPage> where TPage : Page
         {
             // Check resolver registration.
@@ -164,6 +174,8 @@ namespace CafeLib.Mobile.Core.Services
             return NavigationPage;
         }
 
+        #endregion
+
         #region Helpers
 
         /// <summary>
@@ -190,7 +202,7 @@ namespace CafeLib.Mobile.Core.Services
 
             // Resolve the page.
             var pageResolver = _pageResolvers[typeof(T)];
-            return (TPage)pageResolver.Resolve(pageResolver.GetResolveType());
+            return (TPage)pageResolver.Resolve();
         }
 
         #endregion
