@@ -6,7 +6,7 @@ using Xamarin.Forms;
 
 namespace CafeLib.Mobile.Core.Services
 {
-    public interface IPageService : IServiceProvider
+    public interface IPageService
     {
         /// <summary>
         /// Displays an alert on the page.

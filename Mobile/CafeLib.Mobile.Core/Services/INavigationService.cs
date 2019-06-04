@@ -1,11 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CafeLib.Mobile.Core.ViewModels;
+using JetBrains.Annotations;
 using Xamarin.Forms;
 
 namespace CafeLib.Mobile.Core.Services
 {
-    public interface INavigationService : IServiceProvider
+    public interface INavigationService
     {
         /// <summary>
         /// Navigation page.
@@ -22,6 +22,7 @@ namespace CafeLib.Mobile.Core.Services
         /// <param name="viewModel"></param>
         /// <param name="currentViewModel"></param>
         /// <returns></returns>
+        [UsedImplicitly]
         Task InsertBeforeAsync<T1, TPage1, T2, TPage2>(T1 viewModel, T2 currentViewModel)
             where T1 : BaseViewModel<TPage1>
             where TPage1 : Page
@@ -34,6 +35,7 @@ namespace CafeLib.Mobile.Core.Services
         /// <param name="page"></param>
         /// <param name="animate">transition animation flag</param>
         /// <returns></returns>
+        [UsedImplicitly]
         Task PushAsync(Page page, bool animate = false);
 
         /// <summary>
@@ -41,6 +43,7 @@ namespace CafeLib.Mobile.Core.Services
         /// </summary>
         /// <param name="animate">transition animation flag</param>
         /// <returns>page associated with view model</returns>
+        [UsedImplicitly]
         Task<TPage> PopAsync<TPage>(bool animate = false) where TPage : Page;
 
         /// <summary>
@@ -48,6 +51,7 @@ namespace CafeLib.Mobile.Core.Services
         /// </summary>
         /// <param name="animate">transition animation flag</param>
         /// <returns>page associated with view model</returns>
+        [UsedImplicitly]
         Task<T> PopAsync<T, TPage>(bool animate = false) where T : BaseViewModel<TPage> where TPage : Page;
 
         /// <summary>

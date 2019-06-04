@@ -10,7 +10,7 @@ using Xamarin.Forms;
 
 namespace CafeLib.Mobile.Core.Services
 {
-    internal class MobileService : ServiceBase, IPageService, INavigationService, IDeviceService
+    internal class MobileService : IPageService, INavigationService, IDeviceService
     {
         #region Private Members
 
