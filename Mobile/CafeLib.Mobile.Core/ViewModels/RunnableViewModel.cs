@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CafeLib.Core.IoC;
 using CafeLib.Core.Runnable;
 using JetBrains.Annotations;
 using Xamarin.Forms;
@@ -10,22 +11,21 @@ namespace CafeLib.Mobile.Core.ViewModels
     [UsedImplicitly]
     public abstract class RunnableViewModel<T> : BaseViewModel<T>, IRunnable where T : Page
     {
-        #region Private Variables
-
         private CancellationTokenSource _cancellationSource;
         private bool _disposed;
 
-        #endregion
-
-        #region Properties
+        /// <summary>
+        /// BaseViewModel constructor.
+        /// </summary>
+        /// <param name="resolver"></param>
+        protected RunnableViewModel(IServiceResolver resolver)
+            : base(resolver)
+        {
+        }
 
         public bool IsRunning => _cancellationSource.IsCancellationRequested;
 
         public CancellationToken CancellationToken { get; protected set; }
-
-        #endregion
-
-        #region Methods
 
         public virtual async Task Start()
         {
@@ -51,10 +51,6 @@ namespace CafeLib.Mobile.Core.ViewModels
                 // ignore
             }
         }
-
-        #endregion
-
-        #region IDisposible
 
         /// <summary>
         /// Dispose.
@@ -86,7 +82,5 @@ namespace CafeLib.Mobile.Core.ViewModels
                 _cancellationSource = null;
             }
         }
-
-        #endregion
     }
 }

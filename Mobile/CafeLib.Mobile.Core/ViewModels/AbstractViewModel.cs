@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CafeLib.Core.IoC;
 using CafeLib.Mobile.Core.Extensions;
 using CafeLib.Mobile.Core.Services;
 using JetBrains.Annotations;
@@ -11,19 +12,19 @@ namespace CafeLib.Mobile.Core.ViewModels
 {
     public abstract class AbstractViewModel : ObservableBase
     {
-        #region Constructors
-
         /// <summary>
         /// BaseViewModel constructor.
         /// </summary>
-        protected AbstractViewModel()
+        protected AbstractViewModel(IServiceResolver resolver)
         {
+            Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
             Bind();
         }
 
-        #endregion
-
-        #region Properties
+        /// <summary>
+        /// 
+        /// </summary>
+        protected IServiceResolver Resolver { get; }
 
         /// <summary>
         /// Title.
@@ -39,22 +40,18 @@ namespace CafeLib.Mobile.Core.ViewModels
         /// <summary>
         /// Page service.
         /// </summary>
-        protected IPageService PageService => MobileServices.PageService;
+        protected IPageService PageService => Resolver.Resolve<IPageService>();
 
         /// <summary>
         /// Navigation service.
         /// </summary>
-        protected INavigationService NavigationService => MobileServices.NavigationService;
+        protected INavigationService NavigationService => Resolver.Resolve<INavigationService>();
 
         /// <summary>
         /// 
         /// </summary>
         [UsedImplicitly]
-        protected IDeviceService DeviceService => MobileServices.DeviceService;
-
-        #endregion
-
-        #region Public Methods
+        protected IDeviceService DeviceService => Resolver.Resolve<IDeviceService>();
 
         /// <summary>
         /// Establish viewmodel as the navigation page.
@@ -144,7 +141,7 @@ namespace CafeLib.Mobile.Core.ViewModels
         }
 
         /// <summary>
-        /// Push page assoiciated with the viewmodel onto the navigation stack.
+        /// Push page associated with the viewmodel onto the navigation stack.
         /// </summary>
         /// <param name="viewModel"></param>
         /// <param name="animate"></param>
@@ -155,10 +152,6 @@ namespace CafeLib.Mobile.Core.ViewModels
             viewModel.ResolvePage().SetViewModel(viewModel);
             await NavigationService.NavigationPage.Navigation.PushAsync(viewModel.ResolvePage());
         }
-
-        #endregion
-
-        #region Protected Methods
 
         /// <summary>
         /// Runs an action on the main thread.
@@ -183,7 +176,5 @@ namespace CafeLib.Mobile.Core.ViewModels
 
             await completed.Task;
         }
-
-        #endregion
     }
 }

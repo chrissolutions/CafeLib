@@ -1,46 +1,35 @@
 ﻿using System;
 using CafeLib.Core.IoC;
-using CafeLib.Core.Support;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Mobile.Core.Services
 {
-    public sealed class MobileServices : SingletonBase<MobileServices>, IServiceRegistry
+    public sealed class MobileServices : IServiceRegistry, IServiceResolver
     {
-        #region Private Variables
-
         private readonly IServiceRegistry _serviceRegistry;
-
-        #endregion
-
-        #region Constructors
 
         /// <summary>
         /// ServiceProvider instance constructor.
         /// </summary>
-        private MobileServices()
+        public MobileServices()
         {
             var mobileService = new MobileService();
             _serviceRegistry = IocFactory.CreateRegistry()
+                .AddSingleton<IServiceResolver>(x => this)
                 .AddSingleton(x => mobileService as IPageService)
                 .AddSingleton(x => mobileService as INavigationService)
                 .AddSingleton(x => mobileService as IDeviceService);
         }
 
-        #endregion
+        [UsedImplicitly]
+        internal IPageService PageService => GetResolver().Resolve<IPageService>();
 
-        #region Automatic Properties
+        [UsedImplicitly]
+        internal INavigationService NavigationService => GetResolver().Resolve<INavigationService>();
 
-        internal static IPageService PageService => Instance.GetResolver().Resolve<IPageService>();
-
-        internal static INavigationService NavigationService => Instance.GetResolver().Resolve<INavigationService>();
-
-        internal static IDeviceService DeviceService => Instance.GetResolver().Resolve<IDeviceService>();
-
-        #endregion
-
-        #region Methods
+        [UsedImplicitly]
+        internal IDeviceService DeviceService => GetResolver().Resolve<IDeviceService>();
 
         /// <summary>
         /// 
@@ -135,30 +124,15 @@ namespace CafeLib.Mobile.Core.Services
             _serviceRegistry.Dispose();
         }
 
-        #endregion
-
-        #region Static Methods
-
         /// <summary>
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [UsedImplicitly]
-        public static T Resolve<T>() where T : class, IServiceProvider
+        public T Resolve<T>() where T : class
         {
-            return Instance.GetResolver().Resolve<T>();
+            return GetResolver().Resolve<T>();
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [UsedImplicitly]
-        public static void ShutDown()
-        {
-            Instance.Dispose();
-        }
-
-        #endregion
     }
 }
