@@ -103,7 +103,6 @@ namespace CafeLib.Mobile.Core.ViewModels
         /// <param name="message">message</param>
         /// <param name="ok">OK</param>
         /// <param name="cancel">cancel</param>
-        // ReSharper disable once MethodOverloadWithOptionalParameter
         [UsedImplicitly]
         public async Task<bool> DisplayConfirm(string title, string message, string ok = "OK", string cancel = "Cancel")
         {
