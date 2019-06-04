@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CafeLib.Core.Mobile.ViewModels;
 using Xamarin.Forms;
 
 namespace CafeLib.Core.Mobile.Services
 {
-    public interface IPageService : IServiceProvider
+    public interface IPageService
     {
         /// <summary>
         /// Displays an alert on the page.

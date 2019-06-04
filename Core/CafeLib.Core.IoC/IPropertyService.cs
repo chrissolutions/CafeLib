@@ -2,7 +2,7 @@
 
 namespace CafeLib.Core.IoC
 {
-    public interface IPropertyService : IServiceProvider
+    public interface IPropertyService
     {
         /// <summary>
         /// Get property from property bag

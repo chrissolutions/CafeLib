@@ -3,7 +3,7 @@ using CafeLib.Core.Eventing;
 
 namespace CafeLib.Core.IoC
 {
-    public interface IEventService : IServiceProvider
+    public interface IEventService
     {
         /// <summary>
         /// Subscribe the specified handler.

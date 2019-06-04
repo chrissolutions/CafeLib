@@ -5,7 +5,7 @@ using CafeLib.Core.Eventing;
 
 namespace CafeLib.Core.IoC
 {
-    internal class EventService : ServiceBase, IEventService
+    internal class EventService : CafeLib.Core.IoC.IEventService
     {
         /// <summary>
         /// This map contains the event Message type key and a collection of subscribers associated with the message type.

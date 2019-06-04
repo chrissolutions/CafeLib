@@ -1,14 +1,11 @@
-using System;
-using CafeLib.Core.IoC;
-
 namespace CafeLib.Core.UnitTests.Services
 {
-    public interface ITestService : IServiceProvider
+    public interface ITestService
     {
         string Test();
     }
 
-    public class TestService : ServiceBase, ITestService
+    public class TestService : ITestService
     {
         public string Test()
         {

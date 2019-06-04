@@ -4,7 +4,7 @@ using CafeLib.Core.Extensions;
 
 namespace CafeLib.Core.IoC
 {
-    internal class PropertyService : ServiceBase, IPropertyService
+    internal class PropertyService : IPropertyService
     {
         private readonly ConcurrentDictionary<string, object> _dictionary;
 

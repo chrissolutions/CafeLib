@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 namespace CafeLib.Core.Mobile.Services
 {
-    public interface IDeviceService : IServiceProvider
+    public interface IDeviceService
     {
         /// <summary>
         /// Runs an action on the main thread.

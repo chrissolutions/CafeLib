@@ -1,11 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CafeLib.Core.Mobile.ViewModels;
 using Xamarin.Forms;
 
 namespace CafeLib.Core.Mobile.Services
 {
-    public interface INavigationService : IServiceProvider
+    public interface INavigationService
     {
         /// <summary>
         /// Navigation page.

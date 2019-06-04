@@ -4,12 +4,12 @@ using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Core.UnitTests.Services
 {
-    public interface IFooService : IServiceProvider
+    public interface IFooService
     {
         void DoThing(int number);
     }
 
-    public class FooService : ServiceBase, IFooService
+    public class FooService : IFooService
     {
         private readonly ILogger<FooService> _logger;
         public FooService(ILoggerFactory loggerFactory)

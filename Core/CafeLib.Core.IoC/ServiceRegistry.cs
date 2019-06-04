@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Core.IoC
 {
-    public class ServiceRegistry : ServiceBase, IServiceRegistry, IServiceResolver
+    public class ServiceRegistry : IServiceRegistry, IServiceResolver
     {
         #region Private Variables
 
@@ -129,18 +129,24 @@ namespace CafeLib.Core.IoC
             return this;
         }
 
-        public T Resolve<T>() where T : class, IServiceProvider
+        /// <summary>
+        /// Resolve the service.
+        /// </summary>
+        /// <typeparam name="T">service type</typeparam>
+        /// <returns>service instance</returns>
+        public T Resolve<T>() where T : class
         {
             return ServiceProvider.GetService<T>();
         }
 
         /// <summary>
-        /// Shuts down.
+        /// Dispose service registry.
         /// </summary>
         public void Dispose()
         {
             Dispose(!_disposed);
             _disposed = true;
+            GC.SuppressFinalize(this);
         }
 
         #endregion

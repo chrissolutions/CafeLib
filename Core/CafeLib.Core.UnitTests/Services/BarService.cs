@@ -1,15 +1,14 @@
-using System;
 using System.Collections.Generic;
 using CafeLib.Core.IoC;
 
 namespace CafeLib.Core.UnitTests.Services
 {
-    public interface IBarService : IServiceProvider
+    public interface IBarService
     {
         void DoSomeRealWork();
     }
 
-    public class BarService : ServiceBase, IBarService
+    public class BarService : IBarService
     {
         private readonly IFooService _fooService;
         private readonly IServiceResolver _serviceResolver;
