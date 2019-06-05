@@ -17,13 +17,13 @@
 
   <ItemGroup>
     <Reference Include="CafeLib.Core">
-      <HintPath>..\..\Core\CafeLib.Core.Mobile\bin\Debug\netstandard2.0\CafeLib.Core.dll</HintPath>
+      <HintPath>..\..\Core\CafeLib.Core\bin\Debug\netstandard2.0\CafeLib.Core.dll</HintPath>	
     </Reference>
     <Reference Include="CafeLib.Core.IoC">
-      <HintPath>..\..\Core\CafeLib.Core.IoC\bin\Debug\netstandard2.0\CafeLib.Core.IoC.dll</HintPath>
+      <HintPath>..\..\Core\CafeLib.Core.IoC\bin\Debug\netstandard2.0\CafeLib.Core.IoC.dll</HintPath>	
     </Reference>
     <Reference Include="CafeLib.Core.Runnable">
-      <HintPath>..\..\Core\CafeLib.Core.Mobile\bin\Debug\netstandard2.0\CafeLib.Core.Runnable.dll</HintPath>
+      <HintPath>..\..\Core\CafeLib.Core.Runnable\bin\Debug\netstandard2.0\CafeLib.Core.Runnable.dll</HintPath>	
     </Reference>
   </ItemGroup>
 
