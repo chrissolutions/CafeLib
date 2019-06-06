@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace CafeLib.Mobile.Core.Views
+namespace CafeLib.Mobile.Views
 {
     [Obsolete]
     public class CafeToolbarItem : ToolbarItem

@@ -3,7 +3,7 @@ using CafeLib.Core.IoC;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace CafeLib.Mobile.Core.Services
+namespace CafeLib.Mobile.Services
 {
     public sealed class MobileServices : IServiceRegistry, IServiceResolver
     {

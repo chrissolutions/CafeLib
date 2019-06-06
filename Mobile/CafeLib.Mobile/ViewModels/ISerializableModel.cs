@@ -1,7 +1,6 @@
-﻿
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
-namespace CafeLib.Mobile.Core.ViewModels
+namespace CafeLib.Mobile.ViewModels
 {
     /// <summary>
     /// Observable model interface

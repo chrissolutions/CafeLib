@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace CafeLib.Mobile.Core.ViewModels
+namespace CafeLib.Mobile.ViewModels
 {
     public abstract class ObservableBase : INotifyPropertyChanged
     {

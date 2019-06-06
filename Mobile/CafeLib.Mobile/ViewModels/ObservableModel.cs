@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace CafeLib.Mobile.Core.ViewModels
+namespace CafeLib.Mobile.ViewModels
 {
     /// <summary>
     /// ObservableModel implementation class.

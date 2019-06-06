@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
-using CafeLib.Mobile.Core.ViewModels;
+using CafeLib.Mobile.ViewModels;
 using JetBrains.Annotations;
 using Xamarin.Forms;
 
-namespace CafeLib.Mobile.Core.Services
+namespace CafeLib.Mobile.Services
 {
     public interface INavigationService
     {

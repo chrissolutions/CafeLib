@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CafeLib.Core.IoC;
-using CafeLib.Mobile.Core.Extensions;
-using CafeLib.Mobile.Core.Support;
-using CafeLib.Mobile.Core.ViewModels;
+using CafeLib.Mobile.Extensions;
+using CafeLib.Mobile.Support;
+using CafeLib.Mobile.ViewModels;
 using JetBrains.Annotations;
 using Xamarin.Forms;
 
-namespace CafeLib.Mobile.Core.Services
+namespace CafeLib.Mobile.Services
 {
     internal class MobileService : IPageService, INavigationService, IDeviceService
     {

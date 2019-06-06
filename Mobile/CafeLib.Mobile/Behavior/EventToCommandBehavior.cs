@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Windows.Input;
 using Xamarin.Forms;
 
-namespace CafeLib.Mobile.Core.Behavior
+namespace CafeLib.Mobile.Behavior
 {
     /// <summary>
     /// This behavior allow you to bind any event on any View to an <see cref="ICommand"/>.

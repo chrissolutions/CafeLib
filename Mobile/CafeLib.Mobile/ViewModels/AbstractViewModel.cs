@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CafeLib.Core.IoC;
-using CafeLib.Mobile.Core.Extensions;
-using CafeLib.Mobile.Core.Services;
+using CafeLib.Mobile.Extensions;
+using CafeLib.Mobile.Services;
 using JetBrains.Annotations;
 using Xamarin.Forms;
 
-namespace CafeLib.Mobile.Core.ViewModels
+namespace CafeLib.Mobile.ViewModels
 {
     public abstract class AbstractViewModel : ObservableBase
     {

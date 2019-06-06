@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using System.Windows.Input;
-using CafeLib.Mobile.Core.ViewModels;
+using CafeLib.Mobile.ViewModels;
 using Xamarin.Forms;
 
-namespace CafeLib.Mobile.Core.Extensions
+namespace CafeLib.Mobile.Extensions
 {
     public static class PageExtensions
     {

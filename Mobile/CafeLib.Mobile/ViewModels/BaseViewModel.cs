@@ -1,9 +1,9 @@
 ﻿using CafeLib.Core.IoC;
-using CafeLib.Mobile.Core.Extensions;
+using CafeLib.Mobile.Extensions;
 using JetBrains.Annotations;
 using Xamarin.Forms;
 
-namespace CafeLib.Mobile.Core.ViewModels
+namespace CafeLib.Mobile.ViewModels
 {
     public abstract class BaseViewModel<TPage> : AbstractViewModel where TPage : Page
     {

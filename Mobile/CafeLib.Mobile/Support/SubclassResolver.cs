@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CafeLib.Mobile.Core.Support
+namespace CafeLib.Mobile.Support
 {
     /// <summary>
     /// Subclass resolver.

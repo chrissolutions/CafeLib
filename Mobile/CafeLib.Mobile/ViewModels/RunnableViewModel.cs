@@ -6,7 +6,7 @@ using CafeLib.Core.Runnable;
 using JetBrains.Annotations;
 using Xamarin.Forms;
 
-namespace CafeLib.Mobile.Core.ViewModels
+namespace CafeLib.Mobile.ViewModels
 { 
     [UsedImplicitly]
     public abstract class RunnableViewModel<T> : BaseViewModel<T>, IRunnable where T : Page

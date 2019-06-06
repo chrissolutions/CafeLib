@@ -2,7 +2,7 @@
 using System.Reflection;
 using Xamarin.Forms;
 
-namespace CafeLib.Mobile.Core.Support
+namespace CafeLib.Mobile.Support
 {
     /// <summary>
     /// Page Attribute.

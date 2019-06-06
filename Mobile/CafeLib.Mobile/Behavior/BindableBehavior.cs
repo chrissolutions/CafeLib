@@ -1,7 +1,7 @@
 ﻿using System;
 using Xamarin.Forms;
 
-namespace CafeLib.Mobile.Core.Behavior
+namespace CafeLib.Mobile.Behavior
 {
     /// <summary>
     /// This base behavior class is aware of the binding context of its associated view,

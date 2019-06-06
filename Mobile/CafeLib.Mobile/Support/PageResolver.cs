@@ -1,9 +1,9 @@
 ﻿using System;
 using Xamarin.Forms;
 
-namespace CafeLib.Mobile.Core.Support
+namespace CafeLib.Mobile.Support
 {
-    internal sealed class PageResolver : SubclassResolver<Page> //: ResolverBase<Page>
+    internal sealed class PageResolver : SubclassResolver<Page>
     {
         /// <summary>
         /// Page resolver constructor
