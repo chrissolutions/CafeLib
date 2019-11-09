@@ -1,209 +1,421 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
+using CafeLib.Core.Extensions;
+using CafeLib.Core.IoC;
 using CafeLib.Mobile.Extensions;
+using CafeLib.Mobile.Startup;
 using CafeLib.Mobile.Support;
 using CafeLib.Mobile.ViewModels;
-using JetBrains.Annotations;
+using CafeLib.Mobile.Views;
 using Xamarin.Forms;
 
 namespace CafeLib.Mobile.Services
 {
-    internal class MobileService : IPageService, INavigationService, IDeviceService
+    internal sealed class MobileService : IPageService, IAlertService, INavigationService, IDeviceService, IServiceResolver
     {
-        #region Private Members
-
+        private readonly Assembly _appAssembly;
         private readonly Dictionary<Type, PageResolver> _pageResolvers;
+        private readonly Dictionary<Type, NavigationPage> _navigators;
+        private readonly IServiceResolver _resolver;
+        private readonly int _mainThreadId;
 
-        #endregion
+        private const string ViewModelSuffix = "ViewModel";
+        private const string PageSuffix = "Page";
+        private const string DefaultAcceptText = "OK";
+        private const string DefaultCancelText = "Cancel";
 
-        #region Constructors
+        public NavigationPage Navigator { get; private set; }
 
         /// <summary>
         /// Bootstrapper constructor
         /// </summary>
-        internal MobileService()
+        internal MobileService(IServiceResolver resolver)
         {
+            _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+            _appAssembly = Application.Current.GetType().Assembly;
             _pageResolvers = new Dictionary<Type, PageResolver>();
-        }
-
-        #endregion
-
-        #region Properties
-
-        public Page NavigationPage { get; private set; }
-
-        #endregion
-
-        #region Methods
-
-        [UsedImplicitly]
-        public Task InsertBeforeAsync(Page page, Page currentViewModel)
-        {
-            throw new NotImplementedException();
+            _navigators = new Dictionary<Type, NavigationPage>();
+            _mainThreadId = Environment.CurrentManagedThreadId;
+            InitPageResolvers();
         }
 
         /// <summary>
-        /// 
+        /// Resolve the dependency.
         /// </summary>
-        /// <typeparam name="T1"></typeparam>
-        /// <typeparam name="TPage1"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="TPage2"></typeparam>
-        /// <param name="viewModel"></param>
-        /// <param name="currentViewModel"></param>
+        /// <typeparam name="T">dependency type</typeparam>
+        /// <returns>instance of dependency type</returns>
+        public T Resolve<T>() where T : class
+        {
+            return _resolver.Resolve<T>();
+        }
+
+        /// <summary>
+        /// Resolve viewmodel type to is associated view.
+        /// </summary>
+        /// <typeparam name="TViewModel">view model type</typeparam>
+        /// <returns>page instance that corresponds to the view model type</returns>
+        public Page ResolvePage<TViewModel>() where TViewModel : BaseViewModel
+        {
+            return ResolvePage(typeof(TViewModel));
+        }
+
+        /// <summary>
+        /// Resolve the page associated to the view model.
+        /// </summary>
+        /// <param name="viewModel">view model</param>
+        /// <returns>page instance that corresponds to the view model type</returns>
+        public Page ResolvePage(BaseViewModel viewModel)
+        {
+            return ResolvePage(viewModel.GetType());
+        }
+
+        /// <summary>
+        /// Display an alert dialog.
+        /// </summary>
+        /// <param name="title">dialog title</param>
+        /// <param name="message">dialog message</param>
+        /// <param name="ok">accept button display</param>
+        public Task DisplayAlert(string title, string message, string ok = DefaultAcceptText)
+        {
+            return ((CafeApplication)Application.Current).DisplayAlert(title, message, ok);
+        }
+
+        /// <summary>
+        /// Display confirmation dialog
+        /// </summary>
+        /// <param name="title">dialog title</param>
+        /// <param name="message">dialog message</param>
+        /// <param name="ok">accept button display</param>
+        /// <param name="cancel">cancel button display</param>
+        /// <returns>true for OK, false for cancel</returns>
+        public async Task<bool> DisplayConfirm(string title, string message, string ok = DefaultAcceptText, string cancel = DefaultCancelText)
+        {
+            return await ((CafeApplication)Application.Current).DisplayConfirm(title, message, ok, cancel);
+        }
+
+        /// <summary>
+        /// Display option selection dialog.
+        /// </summary>
+        /// <param name="title">dialog title</param>
+        /// <param name="cancel">cancel button display</param>
+        /// <param name="delete">delete button display</param>
+        /// <param name="options">enumerable list of option strings</param>
+        /// <returns>the selected option string</returns>
+        public async Task<string> DisplayOptions(string title, string cancel, string delete, IEnumerable<string> options)
+        {
+            return await ((CafeApplication)Application.Current).DisplayOptions(title, cancel, delete, options);
+        }
+
+        /// <summary>
+        /// Insert viewmodel ahead of another viewmodel
+        /// </summary>
+        /// <typeparam name="T1">type of view model to insert before</typeparam>
+        /// <typeparam name="T2">type of the current view model</typeparam>
+        /// <param name="viewModel">view model to insert before</param>
+        /// <param name="currentViewModel">current view model</param>
+        /// <returns>awaitable task</returns>
+        public void InsertBefore<T1, T2>(T1 viewModel, T2 currentViewModel) where T1 : BaseViewModel where T2 : BaseViewModel
+        {
+            Navigator.Navigation.InsertPageBefore(viewModel.ResolvePage(), currentViewModel.ResolvePage());
+        }
+
+        /// <summary>
+        /// Asynchronously adds page to the top of the navigation stack.
+        /// </summary>
+        /// <typeparam name="T">view model type</typeparam>
+        /// <param name="viewModel">view model</param>
+        /// <param name="animate">optional animation</param>
         /// <returns></returns>
-        public async Task InsertBeforeAsync<T1, TPage1, T2, TPage2>(T1 viewModel, T2 currentViewModel)
-            where T1 : BaseViewModel<TPage1>
-            where TPage1 : Page
-            where T2 : BaseViewModel<TPage2>
-            where TPage2 : Page
+        public async Task PushAsync<T>(T viewModel, bool animate = false) where T : BaseViewModel
         {
-            var page = ResolvePage<T1, TPage1>();
-            var currentPage = ResolvePage<T2, TPage2>();
-            Application.Current.MainPage.Navigation.InsertPageBefore(page, currentPage);
-            await Task.CompletedTask;
-        }
+            var vm = viewModel ?? Resolve<T>();
+            var page = vm.ResolvePage();
 
-        /// <summary>
-        /// Resolves page associated with the viewmodel.
-        /// </summary>
-        /// <returns>bounded page</returns>
-        [UsedImplicitly]
-        public TPage ResolvePage<T, TPage>(T viewModel) where T : BaseViewModel<TPage> where TPage : Page
-        {
-            // Check resolver registration.
-            CheckResolverRegistration<T, TPage>();
-
-            // Obtain page from resolver.
-            return GetPageFromResolver<T, TPage>();
-        }
-
-        public void DisplayAlert(string title, string message, string ok = "OK")
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> DisplayConfirm(string title, string message, string ok = "OK", string cancel = "Cancel")
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<string> DisplayPopup(string title, string cancel, string destroy, IEnumerable<string> options)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Resolves page associated with the viewmodel.
-        /// </summary>
-        /// <returns>bounded page</returns>
-        public TPage ResolvePage<T, TPage>() where T : BaseViewModel<TPage> where TPage : Page
-        {
-            // Check resolver registration.
-            CheckResolverRegistration<T, TPage>();
-
-            // Obtain page from resolver.
-            return GetPageFromResolver<T, TPage>();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="animate"></param>
-        /// <returns></returns>
-        public async Task PushAsync(Page page, bool animate = false)
-        {
-            if (page != null)
+            if (Navigator.CurrentPage?.GetType() != page.GetType())
             {
-                await NavigationPage.Navigation.PushAsync(page, animate);
+                page.SetViewModel(vm);
+                await Navigator.Navigation.PushAsync(page, animate);
             }
         }
 
         /// <summary>
-        /// 
+        /// Asynchronously adds page to the top of the modal stack.
         /// </summary>
-        /// <typeparam name="TPage"></typeparam>
-        /// <param name="animate"></param>
+        /// <typeparam name="T">view model type</typeparam>
+        /// <param name="viewModel">view model</param>
+        /// <param name="animate">optional animation</param>
         /// <returns></returns>
-        public async Task<TPage> PopAsync<TPage>(bool animate = false) where TPage : Page
+        public async Task PushModalAsync<T>(T viewModel, bool animate = false) where T : BaseViewModel
         {
-            var completed = new TaskCompletionSource<TPage>();
+            var vm = viewModel ?? Resolve<T>();
+            var page = vm.ResolvePage();
+            page.SetViewModel(vm);
+            await Navigator.Navigation.PushModalAsync(page.HasToolbarItems() ? page.AsNavigationPage<ModalNavigationPage>() : page, animate);
+        }
+
+        /// <summary>
+        /// Asynchronously remove most recent page from the navigation stack.
+        /// </summary>
+        /// <param name="animate">optional animation</param>
+        /// <returns>The page previously at top of the navigation stack</returns>
+        public async Task PopAsync(bool animate = false)
+        {
+            var page = await Navigator.Navigation.PopAsync(animate);
+            page.Parent = null;
+        }
+
+        /// <summary>
+        /// Asynchronously remove most recent page from the modal stack.
+        /// </summary>
+        /// <typeparam name="T">view model type</typeparam>
+        /// <param name="animate">optional animation</param>
+        /// <returns>The page previously at top of the navigation stack</returns>
+        public async Task PopModalAsync<T>(bool animate = false) where T : BaseViewModel
+        {
+            await Navigator.Navigation.PopModalAsync(animate);
+        }
+
+        /// <summary>
+        /// Pops all but the root Page off the navigation stack.
+        /// </summary>
+        /// <param name="animate">transition animation flag</param>
+        public async Task PopToRootAsync(bool animate = false)
+        {
             RunOnMainThread(async () =>
             {
-                var page = await Application.Current.MainPage.Navigation.PopAsync(animate);
-                completed.SetResult((TPage)page);
+                await Navigator.Navigation.PopToRootAsync(animate);
             });
 
-            return await completed.Task;
+            await Task.CompletedTask;
         }
 
         /// <summary>
-        /// 
+        /// Remove from navigation stack.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TPage"></typeparam>
-        /// <param name="animate"></param>
-        /// <returns></returns>
-        public async Task<T> PopAsync<T, TPage>(bool animate = false) where T : BaseViewModel<TPage> where TPage : Page
+        /// <typeparam name="T">view model type</typeparam>
+        public void Remove<T>(T viewModel) where T : BaseViewModel
         {
-            var page = (TPage) await Application.Current.MainPage.Navigation.PopAsync(animate);
-            return page.GetViewModel<T, TPage>();
+            RunOnMainThread(() =>
+            {
+                var vm = viewModel ?? Resolve<T>();
+                var page = vm.ResolvePage();
+                Navigator.Navigation.RemovePage(page);
+            });
         }
 
         /// <summary>
-        /// 
+        /// Set the navigation page from the view model
         /// </summary>
-        /// <param name="action"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">view model type</typeparam>
+        /// <returns>navigation page</returns>
+        public NavigationPage SetNavigator<T>() where T : BaseViewModel
+        {
+            return SetNavigator(Resolve<T>());
+        }
+
+        /// <summary>
+        /// Set the navigation page from the view model
+        /// </summary>
+        /// <typeparam name="T">view model type</typeparam>
+        /// <param name="viewModel">view model</param>
+        /// <returns>navigation page</returns>
+        public NavigationPage SetNavigator<T>(T viewModel) where T : BaseViewModel
+        {
+            Navigator = _navigators.GetOrAdd(viewModel.GetType(), () => CreateNavigator(viewModel.ResolvePage()));
+            return Navigator;
+        }
+
+        /// <summary>
+        /// Check whether the current managed thread id is the main thread.
+        /// </summary>
+        /// <returns>true if running on the main thread; otherwise false.</returns>
+        public bool IsOnMainThread() => Environment.CurrentManagedThreadId == _mainThreadId;
+
+        /// <summary>
+        /// Run action on main UI thread.
+        /// </summary>
+        /// <param name="action">action</param>
         public void RunOnMainThread(Action action)
+        {
+            if (IsOnMainThread())
+            {
+                action();
+            }
+            else
+            {
+                QueueOnMainThread(action);
+            }
+        }
+
+        /// <summary>
+        /// Schedules an action on the main thread.
+        /// </summary>
+        /// <param name="action">action</param>
+        public void QueueOnMainThread(Action action)
         {
             Device.BeginInvokeOnMainThread(action);
         }
 
         /// <summary>
-        /// Set the application navigator.
+        /// Runs an action on a background worker thread.
         /// </summary>
-        /// <param name="page"></param>
-        /// <returns>previous navigator</returns>
-        public Page SetNavigationPage(Page page)
+        /// <param name="action">action</param>
+        /// <param name="cancellationToken"></param>
+        public void RunOnWorkerThread(Action action, CancellationToken cancellationToken = default)
         {
-            NavigationPage = new NavigationPage(page);
-            return NavigationPage;
-        }
-
-        #endregion
-
-        #region Helpers
-
-        /// <summary>
-        /// Register view models.
-        /// </summary>
-        private void CheckResolverRegistration<T, TPage>() where T : BaseViewModel<TPage> where TPage : Page
-        {
-            if (!_pageResolvers.ContainsKey(typeof(T)))
+            if (IsOnMainThread())
             {
-                _pageResolvers.Add(typeof(T), new PageResolver(typeof(TPage)));
+                Task.Run(action, cancellationToken);
+            }
+            else
+            {
+                action();
             }
         }
 
         /// <summary>
-        /// 
+        /// Dispose.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TPage"></typeparam>
-        /// <returns></returns>
-        private TPage GetPageFromResolver<T, TPage>() where T : BaseViewModel<TPage> where TPage : Page
+        public void Dispose()
         {
-            // Leave if no page resolver exist for this view model type.
-            if (!_pageResolvers.ContainsKey(typeof(T))) return null;
-
-            // Resolve the page.
-            var pageResolver = _pageResolvers[typeof(T)];
-            return (TPage)pageResolver.Resolve();
+            _resolver?.Dispose();
         }
 
-        #endregion
+        /// <summary>
+        /// Create an application navigator.
+        /// </summary>
+        /// <param name="page">content page</param>
+        /// <returns>previous navigator</returns>
+        private NavigationPage CreateNavigator(Page page)
+        {
+            if (page == null) throw new ArgumentNullException(nameof(page));
+            var contentPage = page is MasterDetailPage masterDetailPage ? masterDetailPage.Detail : page;
+            return contentPage.IsNavigationPage() ? (NavigationPage)contentPage : new NavigationPage(contentPage);
+        }
+
+        /// <summary>
+        /// Set up page resolvers.
+        /// </summary>
+        private void InitPageResolvers()
+        {
+            var viewModelTypeInfos = _appAssembly
+                .CreatableTypes()
+                .Inherits<BaseViewModel>()
+                .EndsWith(ViewModelSuffix);
+
+            foreach (var viewModelTypeInfo in viewModelTypeInfos)
+            {
+                var pageType = FindPageType(viewModelTypeInfo);
+                if (pageType == null) continue;
+                _pageResolvers.Add(viewModelTypeInfo.AsType(), new PageResolver(pageType));
+            }
+        }
+
+        /// <summary>
+        /// Find corresponding page type for a view model type.
+        /// </summary>
+        /// <param name="viewModelTypeInfo">view model type</param>
+        /// <returns>page type</returns>
+        private Type FindPageType(MemberInfo viewModelTypeInfo)
+        {
+            var pageTypeInfo = _appAssembly
+                .CreatableTypes()
+                .Inherits<IPageBase>()
+                .SingleOrDefault(x => x.Name == PageNameFromViewModel(viewModelTypeInfo));
+
+            return pageTypeInfo?.AsType();
+        }
+
+        /// <summary>
+        /// Gets the name of a view based on the associated view model.
+        /// </summary>
+        private static string PageNameFromViewModel(MemberInfo viewModelTypeInfo)
+        {
+            var viewModelName = viewModelTypeInfo.Name;
+            if (viewModelName.EndsWith(ViewModelSuffix))
+            {
+                return viewModelName.Replace(ViewModelSuffix, PageSuffix);
+            }
+
+            throw new FormatException($"{viewModelName} is treated as view model but does not end with '{ViewModelSuffix}'. Name should be '{viewModelName}{ViewModelSuffix}', expected corresponding view should be named '{viewModelName}{PageSuffix}'.");
+        }
+
+        /// <summary>
+        /// Resolve the page associated to the view model.
+        /// </summary>
+        /// <param name="viewModel">view model</param>
+        /// <returns>page instance that corresponds to the view model type</returns>
+        internal void ReleasePage(BaseViewModel viewModel)
+        {
+            ReleasePage(viewModel.GetType());
+        }
+
+        /// <summary>
+        /// Resolve the page associated to the view model.
+        /// </summary>
+        /// <param name="viewModelType">view model type</param>
+        private void ReleasePage(Type viewModelType)
+        {
+            if (ResolvePage(viewModelType)?.GetType().GetCustomAttribute<TransientAttribute>() == null) return;
+            var resolver = GetPageResolver(viewModelType);
+            resolver?.Release();
+        }
+
+        /// <summary>
+        /// Resolves page associated with the viewmodel.
+        /// </summary>
+        /// <param name="viewModelType">view model type</param>
+        /// <returns>bounded page</returns>
+        private Page ResolvePage(Type viewModelType)
+        {
+            if (!viewModelType.GetTypeInfo().IsSubclassOf(typeof(BaseViewModel)))
+            {
+                throw new ArgumentException($"{nameof(viewModelType)} is not a type of BaseViewModel");
+            }
+
+            // Check resolver registration.
+            CheckResolverRegistration(viewModelType);
+
+            // Obtain page from resolver.
+            return GetPageFromResolver(viewModelType);
+        }
+
+        /// <summary>
+        /// Check resolver registration.
+        /// </summary>
+        /// <param name="viewModelType"></param>
+        private void CheckResolverRegistration(Type viewModelType)
+        {
+            if (!_pageResolvers.ContainsKey(viewModelType))
+            {
+                _pageResolvers.Add(viewModelType, new PageResolver(FindPageType(viewModelType)));
+            }
+        }
+
+        /// <summary>
+        /// Get the page from the page resolver.
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="viewModelType"></param>
+        /// <returns></returns>
+        private Page GetPageFromResolver(Type viewModelType)
+        {
+            var resolver = GetPageResolver(viewModelType);
+            return (Page)resolver?.Resolve();
+        }
+
+        /// <summary>
+        /// Obtain the page resolver associated with the view model type.
+        /// </summary>
+        /// <param name="viewModelType">view model type</param>
+        /// <returns></returns>
+        private PageResolver GetPageResolver(Type viewModelType)
+        {
+            return _pageResolvers.ContainsKey(viewModelType) ? _pageResolvers[viewModelType] : default;
+        }
     }
 }

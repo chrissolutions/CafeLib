@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CafeLib.Mobile.ViewModels;
-using JetBrains.Annotations;
 using Xamarin.Forms;
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.Services
 {
@@ -10,55 +10,74 @@ namespace CafeLib.Mobile.Services
         /// <summary>
         /// Navigation page.
         /// </summary>
-        Page NavigationPage { get; }
+        NavigationPage Navigator { get; }
 
         /// <summary>
-        /// Insert view model before the current view model.
+        /// Insert viewmodel ahead of another viewmodel
         /// </summary>
-        /// <typeparam name="T1"></typeparam>
-        /// <typeparam name="TPage1"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="TPage2"></typeparam>
-        /// <param name="viewModel"></param>
-        /// <param name="currentViewModel"></param>
-        /// <returns></returns>
-        [UsedImplicitly]
-        Task InsertBeforeAsync<T1, TPage1, T2, TPage2>(T1 viewModel, T2 currentViewModel)
-            where T1 : BaseViewModel<TPage1>
-            where TPage1 : Page
-            where T2 : BaseViewModel<TPage2>
-            where TPage2 : Page;
+        /// <typeparam name="T1">type of view model to insert before</typeparam>
+        /// <typeparam name="T2">type of the current view model</typeparam>
+        /// <param name="viewModel">view model to insert before</param>
+        /// <param name="currentViewModel">current view model</param>
+        /// <returns>awaitable task</returns>
+        void InsertBefore<T1, T2>(T1 viewModel, T2 currentViewModel) where T1 : BaseViewModel where T2 : BaseViewModel;
 
         /// <summary>
         /// Navigate to pushed view model.
         /// </summary>
-        /// <param name="page"></param>
+        /// <param name="viewModel">view model</param>
         /// <param name="animate">transition animation flag</param>
         /// <returns></returns>
-        [UsedImplicitly]
-        Task PushAsync(Page page, bool animate = false);
+        Task PushAsync<T>(T viewModel, bool animate = false) where T : BaseViewModel;
+
+        /// <summary>
+        /// Navigate to modal page via view model.
+        /// </summary>
+        /// <param name="viewModel">view model</param>
+        /// <param name="animate">transition animation flag</param>
+        /// <returns>task</returns>
+        Task PushModalAsync<T>(T viewModel, bool animate = false) where T : BaseViewModel;
 
         /// <summary>
         /// Navigate back to popped view model
         /// </summary>
         /// <param name="animate">transition animation flag</param>
-        /// <returns>page associated with view model</returns>
-        [UsedImplicitly]
-        Task<TPage> PopAsync<TPage>(bool animate = false) where TPage : Page;
+        /// <returns>task</returns>
+        Task PopAsync(bool animate = false);
 
         /// <summary>
-        /// Navigate back to popped view model
+        /// Navigate back from modal stack
         /// </summary>
         /// <param name="animate">transition animation flag</param>
-        /// <returns>page associated with view model</returns>
-        [UsedImplicitly]
-        Task<T> PopAsync<T, TPage>(bool animate = false) where T : BaseViewModel<TPage> where TPage : Page;
+        /// <returns>task</returns>
+        Task PopModalAsync<T>(bool animate = false) where T : BaseViewModel;
 
         /// <summary>
-        /// Set the application navigator.
+        /// Pops all but the root Page off the navigation stack.
         /// </summary>
-        /// <param name="page"></param>
-        /// <returns>previous navigator</returns>
-        Page SetNavigationPage(Page page);
+        /// <param name="animate">transition animation flag</param>
+        Task PopToRootAsync(bool animate = false);
+
+        /// <summary>
+        /// Remove from navigation stack.
+        /// </summary>
+        /// <typeparam name="T">view model type</typeparam>
+        /// <param name="viewModel">view model</param>
+        void Remove<T>(T viewModel) where T : BaseViewModel;
+
+        /// <summary>
+        /// Set the application navigator from the view model
+        /// </summary>
+        /// <typeparam name="T">view model type</typeparam>
+        /// <returns>navigation page</returns>
+        NavigationPage SetNavigator<T>() where T : BaseViewModel;
+
+        /// <summary>
+        /// Set the application navigator from the view model
+        /// </summary>
+        /// <typeparam name="T">view model type</typeparam>
+        /// <param name="viewModel">view model</param>
+        /// <returns>navigation page</returns>
+        NavigationPage SetNavigator<T>(T viewModel) where T : BaseViewModel;
     }
 }
