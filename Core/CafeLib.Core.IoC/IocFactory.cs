@@ -2,11 +2,13 @@
 {
     public static class IocFactory
     {
+        /// <summary>
+        /// Create the IoC service registry.
+        /// </summary>
+        /// <returns>service registry interface</returns>
         public static IServiceRegistry CreateRegistry()
         {
-            var registry = new ServiceRegistry();
-            registry.AddSingleton<IServiceResolver>(x => registry);
-            return registry;
+            return new ServiceRegistry();
         }
     }
 }

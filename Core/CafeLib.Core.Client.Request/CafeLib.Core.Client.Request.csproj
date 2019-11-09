@@ -1,19 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.5.6</Version>
+    <Version>0.6.8</Version>
     <Description>HTTP client request library</Description>
     <Copyright></Copyright>
-    <PackageIconUrl></PackageIconUrl>
-    <PackageReleaseNotes>Revised version of HTTP client request library.</PackageReleaseNotes>
+    <PackageIconUrl>https://raw.githubusercontent.com/cwaldron/CafeLib/master/favicon.ico</PackageIconUrl>
+    <PackageReleaseNotes></PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>0.5.6.0</AssemblyVersion>
-    <FileVersion>0.5.6.0</FileVersion>
+    <AssemblyVersion>0.6.8.0</AssemblyVersion>
+    <FileVersion>0.6.8.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 
   <ItemGroup>

@@ -17,8 +17,8 @@ namespace CafeLib.Core.UnitTests
             if (!state.GetType().IsAnonymousType()) return;
             var message = formatter?.Invoke(state, exception);
             var messageInfo = typeof(TState).ToObjectMap(state);
-            var eventMesaage = new TestLogEventMessage(Category, this.ToErrorLevel(logLevel), new LogEventInfo(eventId), message, messageInfo, exception);
-            Messenger?.LogMessage(eventMesaage);
+            var eventMessage = new TestLogEventMessage(Category, this.ToErrorLevel(logLevel), new LogEventInfo(eventId), message, messageInfo, exception);
+            Messenger?.LogMessage(eventMessage);
         }
     }
 }

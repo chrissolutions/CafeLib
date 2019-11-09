@@ -3,7 +3,7 @@
     /// <summary>
     /// Logs event by classification.
     /// </summary>
-    public struct NullMessenger : ILogEventMessenger
+    public struct LogNullEventMessenger : ILogEventMessenger
     {
         /// <summary>
         /// Log OK event

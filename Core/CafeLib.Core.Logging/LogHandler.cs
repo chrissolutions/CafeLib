@@ -24,7 +24,7 @@ namespace CafeLib.Core.Logging
         public LogHandler(string category, ILogEventMessenger messenger)
         {
             Category = category;
-            Messenger = messenger ?? new NullMessenger();
+            Messenger = messenger ?? new LogNullEventMessenger();
         }
 
         #endregion

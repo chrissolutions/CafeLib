@@ -70,7 +70,7 @@ namespace CafeLib.Core.Logging
         public void AddProvider(ILoggerProvider provider)
         {
             var category = (provider as LogProvider<T>)?.Category;
-            LoggerProviders.GetOrAdd(category, provider);
+            LoggerProviders.GetOrAdd(category ?? throw new InvalidOperationException(nameof(category)), provider);
         }
 
         /// <summary>

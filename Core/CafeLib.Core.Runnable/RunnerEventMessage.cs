@@ -1,6 +1,7 @@
 ﻿using System;
 using CafeLib.Core.Diagnostics;
 using CafeLib.Core.Eventing;
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Runnable
 {

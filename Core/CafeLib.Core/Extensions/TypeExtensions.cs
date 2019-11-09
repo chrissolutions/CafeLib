@@ -5,45 +5,34 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Extensions
 {
     public static class TypeExtensions
     {
         /// <summary>
-        /// Create instnace of specfied type.
+        /// Create instance of specified type.
         /// </summary>
-        /// <typeparam name="T">type</typeparam>
-        /// <param name="type">type object</param>
+        /// <typeparam name="T">type to create</typeparam>
+        /// <param name="_">type object</param>
         /// <returns>instance object</returns>
-        public static T CreateInstance<T>(this Type type)
+        public static T CreateInstance<T>(this Type _)
         {
-            return CreateInstance<T>(type, null);
+            return typeof(T).CreateInstance<T>(null);
         }
 
         /// <summary>
-        /// Create instnace of specfied type.
+        /// Create instance of specified type.
         /// </summary>
-        /// <typeparam name="T">type</typeparam>
-        /// <param name="type">type object</param>
-        /// <param name="args"></param>
+        /// <typeparam name="T">type to create</typeparam>
+        /// <param name="_">type object</param>
+        /// <param name="args">constructor arguments</param>
         /// <returns>instance object</returns>
-        public static T CreateInstance<T>(this Type type, params object[] args)
+        public static T CreateInstance<T>(this Type _, params object[] args)
         {
-            var activator = FindConstructor(type, args);
+            var activator = FindConstructor(typeof(T), args);
             return (T)activator?.Invoke(args);
-        }
-
-        /// <summary>
-        /// Create instnace of specfied type.
-        /// </summary>
-        /// <param name="type">type object</param>
-        /// <param name="args"></param>
-        /// <returns>instance object</returns>
-        public static object CreateInstance(this Type type, params object[] args)
-        {
-            var activator = FindConstructor(type, args);
-            return activator?.Invoke(args);
         }
 
         /// <summary>
@@ -62,9 +51,11 @@ namespace CafeLib.Core.Extensions
 
             bool MatchSignature(ConstructorInfo constructorInfo)
             {
-                var argIndex = 0;
                 var parameters = constructorInfo.GetParameters();
-                return parameters.All(parameter => argIndex != args.Length && parameter.ParameterType.IsInstanceOfType(args[argIndex++]));
+                if (!parameters.Any()) return false;
+                var match = true;
+                parameters.ForEach((p, i) => match &= p.ParameterType.IsInstanceOfType(args[i]));
+                return match;
             }
         }
 
@@ -180,9 +171,9 @@ namespace CafeLib.Core.Extensions
         }
 
         /// <summary>
-        /// Create a delegate from a methodinfo.
+        /// Create a delegate from a method.
         /// </summary>
-        /// <param name="method">method methodinfo</param>
+        /// <param name="method">method info</param>
         /// <param name="instance">object instance</param>
         /// <returns>delegate</returns>
         public static Delegate CreateDelegate(this MethodInfo method, object instance)

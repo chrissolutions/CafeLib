@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
+using System.Threading.Tasks;
+
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Extensions
 {
@@ -13,12 +16,27 @@ namespace CafeLib.Core.Extensions
         /// </summary>
         /// <typeparam name="T">item type</typeparam>
         /// <param name="enumerable">enumerable</param>
-        /// <param name="eachFunc">select function</param>
-        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> eachFunc)
+        /// <param name="eachAction">iterative action</param>
+        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> eachAction)
         {
             foreach (var item in enumerable)
             {
-                eachFunc?.Invoke(item);
+                eachAction?.Invoke(item);
+            }
+        }
+
+        /// <summary>
+        /// For each extension.
+        /// </summary>
+        /// <typeparam name="T">item type</typeparam>
+        /// <param name="enumerable">enumerable</param>
+        /// <param name="eachAction">iterative action</param>
+        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T, int> eachAction)
+        {
+            var index = 0;
+            foreach (var item in enumerable)
+            {
+                eachAction?.Invoke(item, index++);
             }
         }
 
@@ -50,12 +68,35 @@ namespace CafeLib.Core.Extensions
         }
 
         /// <summary>
+        /// Asynchronous for each extension.
+        /// </summary>
+        /// <typeparam name="T">item type</typeparam>
+        /// <param name="enumerable">enumerable</param>
+        /// <param name="action">iterative action</param>
+        public static Task ForEachAsync<T>(this IEnumerable<T> enumerable, Action<T> action)
+        {
+            return enumerable.ForEachAsync(async x => { action.Invoke(x); await Task.CompletedTask; });
+        }
+
+        /// <summary>
+        /// Asynchronous for each extension.
+        /// </summary>
+        /// <typeparam name="T">item type</typeparam>
+        /// <param name="enumerable">enumerable</param>
+        /// <param name="task">iterative task</param>
+        public static Task ForEachAsync<T>(this IEnumerable<T> enumerable, Func<T, Task> task)
+        {
+            var tasks = enumerable.Select(task).ToArray();
+            return Task.WhenAll(tasks);
+        }
+
+        /// <summary>
         /// Some extension.
         /// </summary>
         /// <typeparam name="T">item type</typeparam>
         /// <param name="enumerable">enumerable</param>
         /// <param name="someFunc">some function with item and index</param>
-        /// <returns>returns list of results</returns>
+        /// <returns>returns true if any item matched the criteria; false otherwise</returns>
         public static bool Some<T>(this IEnumerable<T> enumerable, Func<T, int, bool> someFunc)
         {
             var index = 0;
@@ -85,7 +126,7 @@ namespace CafeLib.Core.Extensions
         }
 
         /// <summary>
-        /// Retreive or add a value to dictionary
+        /// Retrieve or add a value to dictionary
         /// </summary>
         /// <typeparam name="TK">key type</typeparam>
         /// <typeparam name="TV">value type</typeparam>
@@ -104,7 +145,7 @@ namespace CafeLib.Core.Extensions
         }
 
         /// <summary>
-        /// Retreive or add a value to dictionary via add function.
+        /// Retrieve or add a value to dictionary via add function.
         /// </summary>
         /// <typeparam name="TK">key type</typeparam>
         /// <typeparam name="TV">value type</typeparam>
@@ -171,11 +212,11 @@ namespace CafeLib.Core.Extensions
         }
 
         /// <summary>
-        /// Add value to the dictionary.
+        /// Convert dictionary to an object.
         /// </summary>
         /// <typeparam name="T">value type</typeparam>
         /// <param name="dictionary"></param>
-        /// <returns></returns>
+        /// <returns>object</returns>
         public static object ToObject<T>(this IDictionary<string, T> dictionary)
         {
             try
@@ -255,7 +296,7 @@ namespace CafeLib.Core.Extensions
         ///<param name="collection">The collection to search.</param>
         ///<param name="predicate">The expression to test the items against.</param>
         ///<returns>The index of the first matching item, or -1 if no items match.</returns>
-        public static int FindIndexInternal<T>(ICollection<T> collection, NonNullable<Predicate<T>> predicate)
+        private static int FindIndexInternal<T>(IEnumerable<T> collection, NonNullable<Predicate<T>> predicate)
         {
             var result = 0;
             foreach (var item in collection)

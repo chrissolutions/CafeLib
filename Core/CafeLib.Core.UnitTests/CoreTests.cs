@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using CafeLib.Core.Collections;
 using CafeLib.Core.Extensions;
 using Xunit;
@@ -44,6 +46,21 @@ namespace CafeLib.Core.UnitTests
 
             dictionary["key2"] = "newValue2";
             Assert.Equal("newValue2", dictionary["key2"]);
+        }
+
+        [Fact]
+        public void ForEachWithIndexTest()
+        {
+            var list = new List<string> {"Ape", "Bunny", "Cat", "Dog", "Elephant", "Fox"};
+            var testList = new List<string>();
+
+            list.ForEach((x, i) =>
+            {
+                testList.Insert(i, x);
+            });
+
+            var same = !list.Except(testList).Any() && !testList.Except(list).Any();
+            Assert.True(same);
         }
     }
 }

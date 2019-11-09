@@ -1,23 +1,26 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.5.6</Version>
-    <Description>IcosLive Signal/R support package</Description>
+    <Version>0.6.8</Version>
+    <Description>Cafe Signal/R support package supporting method binding &amp; webchannels</Description>
     <Copyright></Copyright>
-    <PackageIconUrl></PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/cwaldron/CafeLib/master/favicon.ico</PackageIconUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageReleaseNotes>Support for MethodBinding &amp; WebChannels</PackageReleaseNotes>
-    <AssemblyVersion>0.5.6.0</AssemblyVersion>
-    <FileVersion>0.5.6.0</FileVersion>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <AssemblyVersion>0.6.8.0</AssemblyVersion>
+    <FileVersion>0.6.8.0</FileVersion>
+    <Authors />
+    <Company />
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CafeLib.Core.Binding\CafeLib.Core.Binding.csproj" />
+    <ProjectReference Include="..\CafeLib.Core.Logging\CafeLib.Core.Logging.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Runnable\CafeLib.Core.Runnable.csproj" />
     <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />
   </ItemGroup>

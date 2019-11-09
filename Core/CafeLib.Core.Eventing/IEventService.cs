@@ -1,7 +1,8 @@
 ﻿using System;
-using CafeLib.Core.Eventing;
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMemberInSuper.Global
 
-namespace CafeLib.Core.IoC
+namespace CafeLib.Core.Eventing
 {
     public interface IEventService
     {
@@ -38,10 +39,16 @@ namespace CafeLib.Core.IoC
         /// <summary>
         /// Unsubscribe the specified handler of type T and Guid identifier.
         /// </summary>
-        /// <param name="actionId">action id</param>
+        /// <param name="subscriberId">subscriber identifier</param>
         /// <typeparam name='T'>
         /// Event message type parameter.
         /// </typeparam>
-        void Unsubscribe<T>(Guid actionId) where T : IEventMessage;
+        void Unsubscribe<T>(Guid subscriberId) where T : IEventMessage;
+
+        /// <summary>
+        /// Unsubscribe the specified handler using subscriber identifier.
+        /// </summary>
+        /// <param name="subscriberId">subscriber identifier</param>
+        void Unsubscribe(Guid subscriberId);
     }
 }

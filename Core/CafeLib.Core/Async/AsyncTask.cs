@@ -9,7 +9,7 @@ namespace CafeLib.Core.Async
     public static class AsyncTask
     {
         /// <summary>
-        // Runs an async task from synchronous environment.
+        /// Runs an async task from synchronous environment.
         /// </summary>
         /// <param name="func">async function.</param>
         public static void Run(Func<Task> func)

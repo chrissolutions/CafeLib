@@ -40,7 +40,28 @@ namespace CafeLib.Core.Support
 
         #endregion
 
-        #region Helpers
+        #region Methods
+
+        /// <summary>
+        /// Asynchronous initialization of singleton.
+        /// </summary>
+        /// <returns>task</returns>
+        public virtual async Task InitAsync()
+        {
+            await Task.CompletedTask;
+        }
+
+        #endregion 
+
+        #region Protected Methods
+
+        /// <summary>
+        /// Releases the singleton.
+        /// </summary>
+        protected void ReleaseSingleton()
+        {
+            _singleton = null;
+        }
 
         /// <summary>
         /// Gets the instance.
@@ -52,6 +73,7 @@ namespace CafeLib.Core.Support
         {
             get
             {
+                // ReSharper disable once InvertIf
                 if (_singleton == null)
                 {
                     lock (Mutex)
@@ -59,21 +81,13 @@ namespace CafeLib.Core.Support
                         // Create the singleton object.
                         _singleton = typeof(T).CreateInstance<T>();
 
-                        // Asynchronous initalization of singleton.
+                        // Asynchronous initialization of singleton.
                         AsyncTask.Run(_singleton.InitAsync);
                     }
                 }
+
                 return (T)_singleton;
             }
-        }
-
-        /// <summary>
-        // Asynchronous initalization of singleton.
-        /// </summary>
-        /// <returns>task</returns>
-        public virtual async Task InitAsync()
-        {
-            await Task.CompletedTask;
         }
 
         #endregion

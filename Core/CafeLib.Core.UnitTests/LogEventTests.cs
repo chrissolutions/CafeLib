@@ -1,7 +1,5 @@
 using CafeLib.Core.Extensions;
-using CafeLib.Core.IoC;
 using CafeLib.Core.Logging;
-using CafeLib.Core.UnitTests.Services;
 using Microsoft.Extensions.Logging;
 using Xunit;
 
@@ -33,7 +31,7 @@ namespace CafeLib.Core.UnitTests
         [Fact]
         public void LogFactoryTest()
         {
-            var messenger = new TestLogFactoryMessenger("testfactory", TestLoggerFactoryListener);
+            var messenger = new TestLogFactoryMessenger("testFactory", TestLoggerFactoryListener);
 
             messenger.Logger.Log(LogLevel.Information, 
                         new EventId(3, "TestEvent"),
@@ -49,24 +47,6 @@ namespace CafeLib.Core.UnitTests
             Assert.Equal(20, eventMessage.MessageInfo["tag"]);
             Assert.Equal(40, eventMessage.MessageInfo["state"]);
             Assert.Equal("Message 20 for state 40", logEventMessage.Message);
-        }
-
-        [Fact]
-        public void ServiceProviderTest()
-        {
-            var resolver = IocFactory.CreateRegistry()
-                .AddPropertyService()
-                .AddSingleton<ITestService>(x => new TestService())
-                .GetResolver();
-
-            var propertyService = resolver.Resolve<IPropertyService>();
-            Assert.NotNull(propertyService);
-
-            propertyService.SetProperty("name", "Kilroy");
-            Assert.Equal("Kilroy", propertyService.GetProperty<string>("name"));
-
-            var testService = resolver.Resolve<ITestService>();
-            Assert.Equal("Kilroy is here!", testService.Test());
         }
     }
 }

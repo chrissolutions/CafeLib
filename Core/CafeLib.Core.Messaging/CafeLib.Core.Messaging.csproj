@@ -1,14 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.5.6</Version>
-    <Description>Provide messaging queuing capabilities.</Description>
-    <Copyright>© 2018 IcosLive Ltd.</Copyright>
-    <PackageIconUrl>https://login.icos.net.nz/icoslivepreview/favicon.ico</PackageIconUrl>
-    <PackageReleaseNotes>Support for IMessage, IMessageProcessor, Message, &amp; MessageQueue</PackageReleaseNotes>
-    <AssemblyVersion>0.5.6.0</AssemblyVersion>
+    <Version>0.6.8</Version>
+    <Description>A simple messaging library.</Description>
+    <Copyright></Copyright>
+    <PackageIconUrl>https://raw.githubusercontent.com/cwaldron/CafeLib/master/favicon.ico</PackageIconUrl>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <AssemblyVersion>0.6.8.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
