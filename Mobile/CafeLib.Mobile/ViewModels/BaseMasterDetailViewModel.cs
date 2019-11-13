@@ -30,7 +30,6 @@ namespace CafeLib.Mobile.ViewModels
         private IXamCommand<bool> _presentedCommand;
         public IXamCommand<bool> PresentedCommand
         {
-            get => _presentedCommand;
             set => SetValue(ref _presentedCommand, value);
         }
     }

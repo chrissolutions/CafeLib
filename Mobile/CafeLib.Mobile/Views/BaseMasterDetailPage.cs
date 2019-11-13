@@ -54,10 +54,11 @@ namespace CafeLib.Mobile.Views
         /// <summary>
         /// Process OnAppearing lifecycle event.
         /// </summary>
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
-            GetMasterDetailViewModel()?.AppearingCommand.Execute(null);
+            if (GetMasterDetailViewModel()?.AppearingCommand == null) return;
+            await GetMasterDetailViewModel().AppearingCommand.ExecuteAsync();
         }
 
         /// <summary>
@@ -66,9 +67,10 @@ namespace CafeLib.Mobile.Views
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            GetMasterDetailViewModel()?.DisappearingCommand.Execute(null);
+            if (GetMasterDetailViewModel()?.DisappearingCommand == null) return;
+            GetMasterDetailViewModel()?.DisappearingCommand.ExecuteAsync();
         }
-
+        
         /// <summary>
         /// Process OnLoad lifecycle event.
         /// </summary>
@@ -83,7 +85,7 @@ namespace CafeLib.Mobile.Views
         protected virtual void OnUnload()
         {
             GetMasterDetailViewModel()?.UnloadCommand.Execute(null);
-        }
+		}        
 
         /// <summary>
         /// Process hardware back button press event.

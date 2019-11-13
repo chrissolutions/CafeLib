@@ -7,10 +7,11 @@ namespace CafeLib.Mobile.Services
 {
     public interface INavigationService
     {
-        /// <summary>
-        /// Navigation page.
-        /// </summary>
-        NavigationPage Navigator { get; }
+        Page CurrentPage { get; }
+
+        NavigationPage CurrentNavigation { get; }
+
+        bool IsCurrent<T>(T viewModel) where T : BaseViewModel;
 
         /// <summary>
         /// Insert viewmodel ahead of another viewmodel
@@ -50,7 +51,7 @@ namespace CafeLib.Mobile.Services
         /// </summary>
         /// <param name="animate">transition animation flag</param>
         /// <returns>task</returns>
-        Task PopModalAsync<T>(bool animate = false) where T : BaseViewModel;
+        Task PopModalAsync(bool animate = false);
 
         /// <summary>
         /// Pops all but the root Page off the navigation stack.
@@ -64,20 +65,5 @@ namespace CafeLib.Mobile.Services
         /// <typeparam name="T">view model type</typeparam>
         /// <param name="viewModel">view model</param>
         void Remove<T>(T viewModel) where T : BaseViewModel;
-
-        /// <summary>
-        /// Set the application navigator from the view model
-        /// </summary>
-        /// <typeparam name="T">view model type</typeparam>
-        /// <returns>navigation page</returns>
-        NavigationPage SetNavigator<T>() where T : BaseViewModel;
-
-        /// <summary>
-        /// Set the application navigator from the view model
-        /// </summary>
-        /// <typeparam name="T">view model type</typeparam>
-        /// <param name="viewModel">view model</param>
-        /// <returns>navigation page</returns>
-        NavigationPage SetNavigator<T>(T viewModel) where T : BaseViewModel;
     }
 }
