@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using CafeLib.Core.Extensions;
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Client.Request
 {
@@ -272,8 +273,8 @@ namespace CafeLib.Core.Client.Request
                 if (method.Method == HttpMethod.Post.Method)
                 {
                     var content = body != null
-                        ? body is byte[]
-                            ? new ByteArrayContent((byte[])body)
+                        ? body is byte[] bytes
+                            ? new ByteArrayContent(bytes)
                             : new StringContent(body.ToString(), Encoding.UTF8, MimeType.Json)
                         : null;
 
@@ -283,8 +284,8 @@ namespace CafeLib.Core.Client.Request
                 if (method.Method == HttpMethod.Put.Method)
                 {
                     var content = body != null
-                        ? body is byte[]
-                            ? new ByteArrayContent((byte[])body)
+                        ? body is byte[] bytes
+                            ? new ByteArrayContent(bytes)
                             : new StringContent(body.ToString(), Encoding.UTF8, MimeType.Json)
                         : null;
 

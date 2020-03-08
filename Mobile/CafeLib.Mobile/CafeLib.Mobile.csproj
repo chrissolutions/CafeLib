@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageIconUrl>https://raw.githubusercontent.com/cwaldron/CafeLib/master/favicon.ico</PackageIconUrl>
+    <Description>Cafe library for Mobile applications.</Description>
+    <AssemblyVersion>0.7.1.0</AssemblyVersion>
+    <Version>0.7.1</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0" />
+    <PackageReference Include="Xamarin.Forms" Version="4.3.0.947036" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\CafeLib.Core.Eventing\CafeLib.Core.Eventing.csproj" />
+    <ProjectReference Include="..\..\Core\CafeLib.Core.IoC\CafeLib.Core.IoC.csproj" />
+    <ProjectReference Include="..\..\Core\CafeLib.Core.Logging\CafeLib.Core.Logging.csproj" />
+    <ProjectReference Include="..\..\Core\CafeLib.Core\CafeLib.Core.csproj" />
+  </ItemGroup>
+
+</Project>

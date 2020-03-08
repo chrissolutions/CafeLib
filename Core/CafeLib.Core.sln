@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Runnable", "Ca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Client.SignalR", "CafeLib.Core.Client.SignalR\CafeLib.Core.Client.SignalR.csproj", "{20130552-0D78-4A97-B235-5AA38F0BAE1F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.UnitTests", "CafeLib.Core.UnitTests\CafeLib.Core.UnitTests.csproj", "{BA7F1EC2-F53A-40DB-A4E4-CB1AE7601AD6}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Client.Request", "CafeLib.Core.Client.Request\CafeLib.Core.Client.Request.csproj", "{BB8278C9-5A2F-4142-B74B-0F5071141F41}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Queueing", "CafeLib.Core.Queueing\CafeLib.Core.Queueing.csproj", "{870091BD-29B6-48D2-A332-859E52190EF1}"
@@ -21,9 +19,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Binding", "Caf
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.IoC", "CafeLib.Core.IoC\CafeLib.Core.IoC.csproj", "{077D2BD2-2E71-4601-A4CC-08C31D0469EA}"
 EndProject
+<<<<<<< HEAD
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Core.Eventing", "CafeLib.Core.Eventing\CafeLib.Core.Eventing.csproj", "{7D022F67-D087-4706-BE1C-F8EDDE177E6D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Core.Logging", "CafeLib.Core.Logging\CafeLib.Core.Logging.csproj", "{2F1C6641-A895-426E-9A10-108805F5A321}"
+=======
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Eventing", "CafeLib.Core.Eventing\CafeLib.Core.Eventing.csproj", "{7D022F67-D087-4706-BE1C-F8EDDE177E6D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Logging", "CafeLib.Core.Logging\CafeLib.Core.Logging.csproj", "{2F1C6641-A895-426E-9A10-108805F5A321}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Core.UnitTests", "CafeLib.Core.UnitTests\CafeLib.Core.UnitTests.csproj", "{6D5D76C5-CE70-4EC4-A28E-5B443CBD136E}"
+>>>>>>> 75943a93029f3eaf70089891e3d41c32fe70252d
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,10 +49,6 @@ Global
 		{20130552-0D78-4A97-B235-5AA38F0BAE1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20130552-0D78-4A97-B235-5AA38F0BAE1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20130552-0D78-4A97-B235-5AA38F0BAE1F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BA7F1EC2-F53A-40DB-A4E4-CB1AE7601AD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BA7F1EC2-F53A-40DB-A4E4-CB1AE7601AD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BA7F1EC2-F53A-40DB-A4E4-CB1AE7601AD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BA7F1EC2-F53A-40DB-A4E4-CB1AE7601AD6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BB8278C9-5A2F-4142-B74B-0F5071141F41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BB8278C9-5A2F-4142-B74B-0F5071141F41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB8278C9-5A2F-4142-B74B-0F5071141F41}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -75,6 +77,13 @@ Global
 		{2F1C6641-A895-426E-9A10-108805F5A321}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F1C6641-A895-426E-9A10-108805F5A321}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F1C6641-A895-426E-9A10-108805F5A321}.Release|Any CPU.Build.0 = Release|Any CPU
+<<<<<<< HEAD
+=======
+		{6D5D76C5-CE70-4EC4-A28E-5B443CBD136E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D5D76C5-CE70-4EC4-A28E-5B443CBD136E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D5D76C5-CE70-4EC4-A28E-5B443CBD136E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D5D76C5-CE70-4EC4-A28E-5B443CBD136E}.Release|Any CPU.Build.0 = Release|Any CPU
+>>>>>>> 75943a93029f3eaf70089891e3d41c32fe70252d
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+<<<<<<< HEAD
     <TargetFramework>netstandard2.0</TargetFramework>
+=======
+    <TargetFramework>netstandard2.1</TargetFramework>
+>>>>>>> 75943a93029f3eaf70089891e3d41c32fe70252d
   </PropertyGroup>
 
   <ItemGroup>

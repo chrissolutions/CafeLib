@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using CafeLib.Core.Extensions;
 using Newtonsoft.Json;
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Client.Request
 {
@@ -99,7 +100,7 @@ namespace CafeLib.Core.Client.Request
                 return (T)(object)true;
             }
 
-            if (contentStream == null) return default(T);
+            if (contentStream == null) return default;
 
             if (typeof(T) == typeof(byte[]))
             {
@@ -108,7 +109,7 @@ namespace CafeLib.Core.Client.Request
 
             var reader = new StreamReader(contentStream, Encoding.UTF8);
             var response = await reader.ReadToEndAsync();
-            if (response == null) return default(T);
+            if (response == null) return default;
 
             var data = response.TrimStart();
             if (data.StartsWith("{") || data.StartsWith("["))
