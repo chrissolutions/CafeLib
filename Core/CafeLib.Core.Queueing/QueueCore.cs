@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Threading;
 
+// ReSharper disable UnusedMember.Global
+
 namespace CafeLib.Core.Queueing
 {
     /// <summary>
@@ -11,8 +13,8 @@ namespace CafeLib.Core.Queueing
     {
         #region Private Members
 
-        private Semaphore _producer;
-        private Semaphore _consumer;
+        private SemaphoreSlim _producer;
+        private SemaphoreSlim _consumer;
         private ConcurrentQueue<T> _queue;
         private bool _disposed;
 
@@ -56,7 +58,7 @@ namespace CafeLib.Core.Queueing
         public void Enqueue(T item)
         {
             _queue.Enqueue(item);
-            _consumer.WaitOne();
+            _consumer.Wait();
             _producer.Release();
         }
 
@@ -65,7 +67,7 @@ namespace CafeLib.Core.Queueing
         /// </summary>
         public T Dequeue()
         {
-            _producer.WaitOne();
+            _producer.Wait();
             _consumer.Release();
             _queue.TryDequeue(out var item);
             return item;
@@ -77,8 +79,8 @@ namespace CafeLib.Core.Queueing
         public void Clear()
         {
             Dispose(true);
-            _producer = new Semaphore(0, int.MaxValue);
-            _consumer = new Semaphore(int.MaxValue, int.MaxValue);
+            _producer = new SemaphoreSlim(0, int.MaxValue);
+            _consumer = new SemaphoreSlim(int.MaxValue, int.MaxValue);
             _queue = new ConcurrentQueue<T>();
         }
 

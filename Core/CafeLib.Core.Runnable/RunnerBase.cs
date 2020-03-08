@@ -9,7 +9,7 @@ namespace CafeLib.Core.Runnable
     /// <summary>
     /// Runs a background task.
     /// </summary>
-    public abstract class Runner : IRunnable
+    public abstract class RunnerBase : IRunnable
     {
         #region Private Variables
 
@@ -17,6 +17,7 @@ namespace CafeLib.Core.Runnable
         private int _delay;
         private bool _disposed;
         private Action<IEventMessage> _runnerEvent = delegate { };
+        private CancellationTokenSource _cancellationSource;
 
         #endregion
 
@@ -42,18 +43,13 @@ namespace CafeLib.Core.Runnable
         protected int Delay
         {
             get => _delay;
-            set => _delay = value > 0 ? value : 0;
+            set => _delay = value > 0 ? value : default;
         }
-
-        /// <summary>
-        /// Cancellation source.
-        /// </summary>
-        protected CancellationTokenSource CancellationSource { get; set; }
 
         /// <summary>
         /// Determines whether the service is running.
         /// </summary>
-        public bool IsRunning => CancellationSource != null && !CancellationSource.IsCancellationRequested;
+        public bool IsRunning => _cancellationSource != null && !_cancellationSource.IsCancellationRequested;
 
         #endregion
 
@@ -63,10 +59,19 @@ namespace CafeLib.Core.Runnable
         /// ServiceRunnerBase constructor.
         /// </summary>
         /// <param name="delay">runner delay duration</param>
-        protected Runner(uint delay = 0)
+        protected RunnerBase(int delay)
+            : this((uint)delay)
+        {
+        }
+
+        /// <summary>
+        /// ServiceRunnerBase constructor.
+        /// </summary>
+        /// <param name="delay">runner delay duration</param>
+        protected RunnerBase(uint delay = default)
         {
             Name = GetType().Name;
-            CancellationSource = null;
+            _cancellationSource = null;
             Delay = (int)delay;
         }
 
@@ -83,7 +88,7 @@ namespace CafeLib.Core.Runnable
             {
                 lock (Mutex)
                 {
-                    CancellationSource = new CancellationTokenSource();
+                    _cancellationSource = new CancellationTokenSource();
                     RunnerEvent.Invoke(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} started."));
                     RunTask();
                 }
@@ -98,11 +103,8 @@ namespace CafeLib.Core.Runnable
         {
             if (IsRunning)
             {
-                lock (Mutex)
-                {
-                    CancellationSource.Cancel();
-                    RunnerEvent?.Invoke(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} stopped."));
-                }
+                _cancellationSource.Cancel();
+                RunnerEvent?.Invoke(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} stopped."));
             }
 
             await Task.CompletedTask;
@@ -131,10 +133,10 @@ namespace CafeLib.Core.Runnable
                 }
                 catch (Exception ex)
                 {
-                    RunnerEvent.Invoke(new RunnerEventMessage(ErrorLevel.Error, $"{Name} exception: {ex.Message} {ex.InnerException?.Message}", ex));
+                    RunnerEvent.Invoke(new RunnerEventMessage($"{Name} exception: {ex.Message} {ex.InnerException?.Message}"));
                 }
 
-                await Task.Delay(Delay, CancellationSource.Token);
+                await Task.Delay(Delay, _cancellationSource.Token);
             }
         }
 
@@ -158,7 +160,7 @@ namespace CafeLib.Core.Runnable
                     ExitTask();
                 }
 
-            }, CancellationSource.Token);
+            }, _cancellationSource.Token);
         }
 
         #endregion
@@ -172,8 +174,8 @@ namespace CafeLib.Core.Runnable
         {
             lock (Mutex)
             {
-                CancellationSource?.Dispose();
-                CancellationSource = null;
+                _cancellationSource?.Dispose();
+                _cancellationSource = null;
             }
         }
 
@@ -200,7 +202,7 @@ namespace CafeLib.Core.Runnable
             if (!disposing) return;
             try
             {
-                CancellationSource?.Dispose();
+                _cancellationSource?.Dispose();
             }
             catch
             {
@@ -208,7 +210,7 @@ namespace CafeLib.Core.Runnable
             }
             finally
             {
-                CancellationSource = null;
+                _cancellationSource = null;
             }
         }
 

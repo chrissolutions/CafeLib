@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.IoC
@@ -29,7 +30,7 @@ namespace CafeLib.Core.IoC
 
         #region Properties
 
-        public IServiceProvider ServiceProvider => _serviceProvider ?? (_serviceProvider = _serviceCollection.BuildServiceProvider());
+        public IServiceProvider ServiceProvider => _serviceProvider ??= _serviceCollection.BuildServiceProvider();
 
         #endregion
 
@@ -161,6 +162,16 @@ namespace CafeLib.Core.IoC
         }
 
         /// <summary>
+        /// Get the service
+        /// </summary>
+        /// <param name="serviceType">service type</param>
+        /// <returns>service instance</returns>
+        public object GetService(Type serviceType)
+        {
+            return Resolve(serviceType);
+        }
+
+        /// <summary>
         /// Resolve the service.
         /// </summary>
         /// <typeparam name="T">service type</typeparam>
@@ -168,6 +179,55 @@ namespace CafeLib.Core.IoC
         public T Resolve<T>() where T : class
         {
             return ServiceProvider.GetService<T>();
+        }
+
+        /// <summary>
+        /// Resolve the service. 
+        /// </summary>
+        /// <param name="type">service type</param>
+        /// <returns>service instance</returns>
+        public object Resolve(Type type)
+        {
+            return ServiceProvider.GetService(type);
+        }
+
+        /// <summary>
+        /// Resolve the service.
+        /// </summary>
+        /// <typeparam name="T">service type</typeparam>
+        /// <returns>service instance</returns>
+        public bool TryResolve<T>(out T value) where T : class
+        {
+            try
+            {
+                value = ServiceProvider.GetService<T>();
+                return true;
+            }
+            catch
+            {
+                value = default;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Resolve the service.
+        /// </summary>
+        /// <param name="type">service type</param>
+        /// <param name="value">service instance</param>
+        /// <returns>service instance</returns>
+        public bool TryResolve(Type type, out object value)
+        {
+            try
+            {
+                value = ServiceProvider.GetService(type);
+                return true;
+            }
+            catch
+            {
+                value = default;
+                return false;
+            }
         }
 
         /// <summary>

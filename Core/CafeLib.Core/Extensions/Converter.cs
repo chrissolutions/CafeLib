@@ -80,9 +80,10 @@ namespace CafeLib.Core.Extensions
         /// Converts an object to an intrinsic type.
         /// </summary>
         /// <typeparam name="T">conversion type</typeparam>
+        /// <typeparam name="TU"></typeparam>
         /// <param name="value">object value</param>
         /// <returns></returns>
-        public static T Convert<T>(object value)
+        public static T Convert<T, TU>(TU value) where TU : class
         {
             return (T)ConvertTo(typeof(T), value);
         }
@@ -93,7 +94,7 @@ namespace CafeLib.Core.Extensions
         /// <param name="type">type</param>
         /// <param name="value">object value</param>
         /// <returns>converted value or original object</returns>
-        public static object ConvertTo(Type type, object value)
+        public static object ConvertTo<T>(Type type, T value) where T : class
         {
             try
             {
@@ -114,71 +115,71 @@ namespace CafeLib.Core.Extensions
 
         private static char ToChar(string s)
         {
-            return char.TryParse(s, out var result) ? result : default(char);
+            return char.TryParse(s, out var result) ? result : default;
         }
 
         private static sbyte ToSbyte(string s)
         {
-            return sbyte.TryParse(s, out var result) ? result : default(sbyte);
+            return sbyte.TryParse(s, out var result) ? result : default;
         }
 
         private static byte ToByte(string s)
         {
-            return byte.TryParse(s, out var result) ? result : default(byte);
+            return byte.TryParse(s, out var result) ? result : default;
         }
 
         private static short ToShort(string s)
         {
-            return short.TryParse(s, out var result) ? result : default(short);
+            return short.TryParse(s, out var result) ? result : default;
         }
 
         private static ushort ToUshort(string s)
         {
-            return ushort.TryParse(s, out var result) ? result : default(ushort);
+            return ushort.TryParse(s, out var result) ? result : default;
         }
 
         private static int ToInt(string s)
         {
-            return int.TryParse(s, out var result) ? result : default(int);
+            return int.TryParse(s, out var result) ? result : default;
         }
 
         private static uint ToUint(string s)
         {
-            return uint.TryParse(s, out var result) ? result : default(uint);
+            return uint.TryParse(s, out var result) ? result : default;
         }
         private static long ToLong(string s)
         {
-            return long.TryParse(s, out var result) ? result : default(long);
+            return long.TryParse(s, out var result) ? result : default;
         }
 
         private static ulong ToUlong(string s)
         {
-            return ulong.TryParse(s, out var result) ? result : default(ulong);
+            return ulong.TryParse(s, out var result) ? result : default;
         }
 
         private static float ToFloat(string s)
         {
-            return float.TryParse(s, out var result) ? result : default(float);
+            return float.TryParse(s, out var result) ? result : default;
         }
 
         private static double ToDouble(string s)
         {
-            return double.TryParse(s, out var result) ? result : default(double);
+            return double.TryParse(s, out var result) ? result : default;
         }
 
         private static decimal ToDecimal(string s)
         {
-            return decimal.TryParse(s, out var result) ? result : default(decimal);
+            return decimal.TryParse(s, out var result) ? result : default;
         }
 
         private static DateTime ToDateTime(string s)
         {
-            return DateTime.TryParse(s, out var result) ? result : default(DateTime);
+            return DateTime.TryParse(s, out var result) ? result : default;
         }
 
         private static Guid ToGuid(string s)
         {
-            return Guid.TryParse(s, out var result) ? result : default(Guid);
+            return Guid.TryParse(s, out var result) ? result : default;
         }
 
         #endregion

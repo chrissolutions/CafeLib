@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Extensions
@@ -15,11 +14,11 @@ namespace CafeLib.Core.Extensions
         /// For each extension.
         /// </summary>
         /// <typeparam name="T">item type</typeparam>
-        /// <param name="enumerable">enumerable</param>
+        /// <param name="collection">collection</param>
         /// <param name="eachAction">iterative action</param>
-        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> eachAction)
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> eachAction)
         {
-            foreach (var item in enumerable)
+            foreach (var item in collection)
             {
                 eachAction?.Invoke(item);
             }
@@ -29,12 +28,12 @@ namespace CafeLib.Core.Extensions
         /// For each extension.
         /// </summary>
         /// <typeparam name="T">item type</typeparam>
-        /// <param name="enumerable">enumerable</param>
+        /// <param name="collection">collection</param>
         /// <param name="eachAction">iterative action</param>
-        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T, int> eachAction)
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T, int> eachAction)
         {
             var index = 0;
-            foreach (var item in enumerable)
+            foreach (var item in collection)
             {
                 eachAction?.Invoke(item, index++);
             }
@@ -45,12 +44,12 @@ namespace CafeLib.Core.Extensions
         /// </summary>
         /// <typeparam name="T">item type</typeparam>
         /// <typeparam name="TU">result type</typeparam>
-        /// <param name="enumerable">enumerable</param>
+        /// <param name="collection">collection</param>
         /// <param name="eachFunc">select function</param>
         /// <returns>returns list of results</returns>
-        public static IEnumerable<TU> ForEach<T, TU>(this IEnumerable<T> enumerable, Func<T, TU> eachFunc)
+        public static IEnumerable<TU> ForEach<T, TU>(this IEnumerable<T> collection, Func<T, TU> eachFunc)
         {
-            return enumerable.Select(eachFunc.Invoke).ToList();
+            return collection.Select(eachFunc.Invoke).ToList();
         }
 
         /// <summary>
@@ -58,49 +57,122 @@ namespace CafeLib.Core.Extensions
         /// </summary>
         /// <typeparam name="T">item type</typeparam>
         /// <typeparam name="TU">result type</typeparam>
-        /// <param name="enumerable">enumerable</param>
+        /// <param name="collection">collection</param>
         /// <param name="eachFunc">select function with item and index</param>
         /// <returns>returns list of results</returns>
-        public static IEnumerable<TU> ForEach<T, TU>(this IEnumerable<T> enumerable, Func<T, int, TU> eachFunc)
+        public static IEnumerable<TU> ForEach<T, TU>(this IEnumerable<T> collection, Func<T, int, TU> eachFunc)
         {
-            var index = 0;
-            return enumerable.Select(item => eachFunc.Invoke(item, index++)).ToList();
+            return collection.Select(eachFunc.Invoke).ToList();
         }
 
         /// <summary>
         /// Asynchronous for each extension.
         /// </summary>
         /// <typeparam name="T">item type</typeparam>
-        /// <param name="enumerable">enumerable</param>
+        /// <param name="collection">collection</param>
         /// <param name="action">iterative action</param>
-        public static Task ForEachAsync<T>(this IEnumerable<T> enumerable, Action<T> action)
+        public static Task ForEachAsync<T>(this IEnumerable<T> collection, Action<T> action)
         {
-            return enumerable.ForEachAsync(async x => { action.Invoke(x); await Task.CompletedTask; });
+            return collection.ForEachAsync(async x => { action.Invoke(x); await Task.CompletedTask; });
         }
 
         /// <summary>
         /// Asynchronous for each extension.
         /// </summary>
         /// <typeparam name="T">item type</typeparam>
-        /// <param name="enumerable">enumerable</param>
+        /// <param name="collection">collection</param>
         /// <param name="task">iterative task</param>
-        public static Task ForEachAsync<T>(this IEnumerable<T> enumerable, Func<T, Task> task)
+        public static Task ForEachAsync<T>(this IEnumerable<T> collection, Func<T, Task> task)
         {
-            var tasks = enumerable.Select(task).ToArray();
+            var tasks = collection.Select(task).ToArray();
             return Task.WhenAll(tasks);
+        }
+
+        /// <summary>
+        /// Filter collection by distinct items.
+        /// </summary>
+        /// <typeparam name="T">collection type</typeparam>
+        /// <typeparam name="TKey">filter key type</typeparam>
+        /// <param name="collection">collection</param>
+        /// <param name="filter">filter</param>
+        /// <returns>collection of distinct items</returns>
+        public static IEnumerable<T> DistinctBy<T, TKey>(this IEnumerable<T> collection, Func<T, TKey> filter)
+        {
+            return collection.GroupBy(filter).Select(x => x.First());
+        }
+
+        /// <summary>
+        /// Obtain groups of non-unique items in collection.
+        /// </summary>
+        /// <typeparam name="T">collection type</typeparam>
+        /// <typeparam name="TKey">filter key type</typeparam>
+        /// <param name="collection">collection</param>
+        /// <param name="filter">filter</param>
+        /// <returns></returns>
+        public static IEnumerable<IGrouping<TKey, T>> NonUnique<T, TKey>(this IEnumerable<T> collection, Func<T, TKey> filter)
+        {
+            return collection.GroupBy(filter).Where(x => x.Count() > 1);
         }
 
         /// <summary>
         /// Some extension.
         /// </summary>
         /// <typeparam name="T">item type</typeparam>
-        /// <param name="enumerable">enumerable</param>
+        /// <param name="collection">collection</param>
         /// <param name="someFunc">some function with item and index</param>
         /// <returns>returns true if any item matched the criteria; false otherwise</returns>
-        public static bool Some<T>(this IEnumerable<T> enumerable, Func<T, int, bool> someFunc)
+        public static bool Some<T>(this IEnumerable<T> collection, Func<T, int, bool> someFunc)
         {
             var index = 0;
-            return enumerable.Any(item => someFunc.Invoke(item, index++));
+            return collection.Any(item => someFunc.Invoke(item, index++));
+        }
+
+        /// <summary>
+        /// Transform collection items.
+        /// </summary>
+        /// <typeparam name="T">item type</typeparam>
+        /// <param name="collection">collection</param>
+        /// <param name="eachFunc">select function with item</param>
+        /// <returns>returns list of results</returns>
+        public static IEnumerable<T> Transform<T>(this IEnumerable<T> collection, Action<T> eachFunc)
+        {
+            return collection.Select(item =>
+            {
+                eachFunc.Invoke(item);
+                return item;
+            }).ToList();
+        }
+
+        /// <summary>
+        /// Traversal extension.
+        /// </summary>
+        /// <typeparam name="T">item type</typeparam>
+        /// <param name="collection">collection</param>
+        /// <param name="subtree">subtree</param>
+        /// <returns></returns>
+        public static IEnumerable<T> Traverse<T>(this IEnumerable<T> collection, Func<T, IEnumerable<T>> subtree)
+        {
+            var stack = new Stack<T>(collection);
+            while (stack.Any())
+            {
+                var next = stack.Pop();
+                yield return next;
+                foreach (var item in subtree(next))
+                    stack.Push(item);
+            }
+        }
+
+        /// <summary>
+        /// Return a unique collection filtered by a key.
+        /// </summary>
+        /// <typeparam name="T">collection type</typeparam>
+        /// <typeparam name="TKey">filter key type</typeparam>
+        /// <param name="collection">collection</param>
+        /// <param name="filter">filter</param>
+        /// <returns>unique collection</returns>
+        public static IEnumerable<T> Unique<T, TKey>(this IEnumerable<T> collection, Func<T, TKey> filter)
+        {
+            return collection.GroupBy(filter).Where(x => x.Count() == 1).Select(x => x.First());
         }
 
         /// <summary>
@@ -217,16 +289,16 @@ namespace CafeLib.Core.Extensions
         /// <typeparam name="T">value type</typeparam>
         /// <param name="dictionary"></param>
         /// <returns>object</returns>
-        public static object ToObject<T>(this IDictionary<string, T> dictionary)
+        public static T ToObject<T>(this IDictionary<string, T> dictionary)
         {
             try
             {
                 dynamic dyn = dictionary.Aggregate(new ExpandoObject() as IDictionary<string, object>, (x, p) => { x.Add(p.Key.ToString(), p.Value); return x; });
-                return (object) dyn;
+                return (T) (object) dyn;
             }
             catch (Exception)
             {
-                return null;
+                return default;
             }
         }
 

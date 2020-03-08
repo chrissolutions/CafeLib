@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CafeLib.Core.Binding\CafeLib.Core.Binding.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Logging\CafeLib.Core.Logging.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Runnable\CafeLib.Core.Runnable.csproj" />
     <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />

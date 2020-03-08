@@ -30,6 +30,11 @@ namespace CafeLib.Core.Support
 
         #region Constructors
 
+        public Retry(int limit)
+            : this(limit, DefaultInterval)
+        {
+        }
+
         /// <summary>
         /// Retry constructor.
         /// </summary>
@@ -50,11 +55,11 @@ namespace CafeLib.Core.Support
         /// </summary>
         /// <param name="action">action</param>
         /// <returns>awaitable task</returns>
-        public async Task Do(Action action)
+        public async Task Do(Action<int> action)
         {
-            await Do(async () =>
+            await Do(async x =>
             {
-                action();
+                action(x);
                 return await Task.FromResult(0);
             });
         }
@@ -65,11 +70,11 @@ namespace CafeLib.Core.Support
         /// <typeparam name="T">result type</typeparam>
         /// <param name="function">function</param>
         /// <returns>awaitable task</returns>
-        public async Task<T> Do<T>(Func<T> function)
+        public async Task<T> Do<T>(Func<int, T> function)
         {
-            return await Do(async () =>
+            return await Do(async x =>
             {
-                var result = function();
+                var result = function(x);
                 return await Task.FromResult(result);
             });
         }
@@ -80,7 +85,7 @@ namespace CafeLib.Core.Support
         /// <typeparam name="T">return type</typeparam>
         /// <param name="function">retry function</param>
         /// <returns>the action return result</returns>
-        public async Task<T> Do<T>(Func<Task<T>> function)
+        public async Task<T> Do<T>(Func<int, Task<T>> function)
         {
             var exceptions = new List<Exception>();
 
@@ -88,7 +93,7 @@ namespace CafeLib.Core.Support
             {
                 try
                 {
-                    return await function();
+                    return await function(retry + 1);
                 }
                 catch (TaskCanceledException)
                 {
@@ -113,9 +118,20 @@ namespace CafeLib.Core.Support
         /// </summary>
         /// <param name="action">retry action</param>
         /// <returns>asynchronous task</returns>
-        public static Task Run(Action action)
+        public static Task Run(Action<int> action)
         {
             return new Retry().Do(action);
+        }
+
+        /// <summary>
+        /// Run retry action.
+        /// </summary>
+        /// <param name="limit">retry limit</param>
+        /// <param name="action">retry action</param>
+        /// <returns>asynchronous task</returns>
+        public static Task Run(int limit, Action<int> action)
+        {
+            return new Retry(limit, DefaultInterval).Do(action);
         }
 
         /// <summary>
@@ -125,7 +141,7 @@ namespace CafeLib.Core.Support
         /// <param name="interval">interval between retries</param>
         /// <param name="action">retry action</param>
         /// <returns>asynchronous task</returns>
-        public static Task Run(int limit, int interval, Action action)
+        public static Task Run(int limit, int interval, Action<int> action)
         {
             return new Retry(limit, interval).Do(action);
         }
@@ -136,9 +152,21 @@ namespace CafeLib.Core.Support
         /// <typeparam name="T">return type</typeparam>
         /// <param name="function">retry function</param>
         /// <returns>asynchronous task</returns>
-        public static Task<T> Run<T>(Func<T> function)
+        public static Task<T> Run<T>(Func<int, T> function)
         {
             return new Retry().Do(function);
+        }
+
+        /// <summary>
+        /// Run retry function.
+        /// </summary>
+        /// <typeparam name="T">return type</typeparam>
+        /// <param name="limit">retry limit</param>
+        /// <param name="function">retry function</param>
+        /// <returns>asynchronous task</returns>
+        public static Task<T> Run<T>(int limit, Func<int, T> function)
+        {
+            return new Retry(limit, DefaultInterval).Do(function);
         }
 
         /// <summary>
@@ -149,7 +177,7 @@ namespace CafeLib.Core.Support
         /// <param name="interval">interval between retries</param>
         /// <param name="function">retry function</param>
         /// <returns>asynchronous task</returns>
-        public static Task<T> Run<T>(int limit, int interval, Func<T> function)
+        public static Task<T> Run<T>(int limit, int interval, Func<int, T> function)
         {
             return new Retry(limit, interval).Do(function);
         }
@@ -160,9 +188,21 @@ namespace CafeLib.Core.Support
         /// <typeparam name="T">return type</typeparam>
         /// <param name="function">retry function</param>
         /// <returns>asynchronous task</returns>
-        public static Task<T> Run<T>(Func<Task<T>> function)
+        public static Task<T> Run<T>(Func<int, Task<T>> function)
         {
             return new Retry().Do(function);
+        }
+
+        /// <summary>
+        /// Run retry function.
+        /// </summary>
+        /// <typeparam name="T">return type</typeparam>
+        /// <param name="limit">retry limit</param>
+        /// <param name="function">retry function</param>
+        /// <returns>asynchronous task</returns>
+        public static Task<T> Run<T>(int limit, Func<int, Task<T>> function)
+        {
+            return new Retry(limit, DefaultInterval).Do(function);
         }
 
         /// <summary>
@@ -173,7 +213,7 @@ namespace CafeLib.Core.Support
         /// <param name="interval">interval between retries</param>
         /// <param name="function">retry function</param>
         /// <returns>asynchronous task</returns>
-        public static Task<T> Run<T>(int limit, int interval, Func<Task<T>> function)
+        public static Task<T> Run<T>(int limit, int interval, Func<int, Task<T>> function)
         {
             return new Retry(limit, interval).Do(function);
         }

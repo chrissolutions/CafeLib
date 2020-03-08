@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using CafeLib.Core.Async;
 using CafeLib.Core.Extensions;
 
 namespace CafeLib.Core.Support
@@ -82,7 +81,7 @@ namespace CafeLib.Core.Support
                         _singleton = typeof(T).CreateInstance<T>();
 
                         // Asynchronous initialization of singleton.
-                        AsyncTask.Run(_singleton.InitAsync);
+                        Task.Run(async () => await _singleton.InitAsync());
                     }
                 }
 

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
-using CafeLib.Core.Async;
 using CafeLib.Core.Runnable;
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Queueing
 {
@@ -9,7 +9,7 @@ namespace CafeLib.Core.Queueing
     /// Facilitates the producer/consumer queue.
     /// </summary>
     /// <typeparam name="T">queue item type</typeparam>
-    public abstract class QueueController<T> : Runner, IQueueProducer<T>
+    public abstract class QueueProducer<T> : RunnerBase, IQueueProducer<T>
     {
         #region Private Members
 
@@ -24,7 +24,9 @@ namespace CafeLib.Core.Queueing
         /// QueueController constructor.
         /// </summary>
         /// <param name="queueConsumer">consumer queue</param>
-        protected QueueController(IQueueConsumer<T> queueConsumer)
+        /// <param name="frequency">producer frequency</param>
+        protected QueueProducer(IQueueConsumer<T> queueConsumer, int frequency = default)
+            : base(frequency)
         {
             Contract.Assert(queueConsumer != null, nameof(queueConsumer));
             _queueConsumer = queueConsumer;
@@ -56,7 +58,7 @@ namespace CafeLib.Core.Queueing
         /// Process queued items.
         /// </summary>
         /// <returns>awaitable task</returns>
-        protected override async Task Run()
+        protected sealed override async Task Run()
         {
             await _queueConsumer.Consume(_queue.Dequeue());
         }
@@ -72,9 +74,12 @@ namespace CafeLib.Core.Queueing
         protected override void Dispose(bool disposing)
         {
             if (!disposing) return;
-            AsyncTask.Run(Stop);
-            _queue.Dispose();
-            base.Dispose(true);
+            Task.Run(async () =>
+            {
+                await Stop();
+                _queue.Dispose();
+                base.Dispose(true);
+            });
         }
 
         #endregion

@@ -1,15 +1,15 @@
-﻿using System;
-using CafeLib.Core.Diagnostics;
+﻿using CafeLib.Core.Diagnostics;
 using CafeLib.Core.Eventing;
+
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Runnable
 {
     public class RunnerEventMessage : EventMessage
     {
-        public string Message { get; }
+        public string Name { get; set; }
 
-        public Exception Exception { get; }
+        public string Message { get; }
 
         public ErrorLevel ErrorLevel { get; set; }
 
@@ -19,29 +19,34 @@ namespace CafeLib.Core.Runnable
         }
 
         public RunnerEventMessage(string message)
-            : this(ErrorLevel.Info, message)
+            : this(null, ErrorLevel.Info, message)
         {
         }
 
-        public RunnerEventMessage(Exception ex)
-            : this(ErrorLevel.Error, null, ex)
+        public RunnerEventMessage(string name, string message)
+            : this(name, ErrorLevel.Info, message)
         {
         }
 
-        public RunnerEventMessage(ErrorLevel errorLevel, string message, Exception exception = null)
+        public RunnerEventMessage(ErrorLevel errorLevel, string message)
+            : this(null, errorLevel, message)
         {
+        }
+
+        public RunnerEventMessage(string name, ErrorLevel errorLevel, string message)
+        {
+            Name = name;
+            Message = message ?? string.Empty;
             ErrorLevel = errorLevel;
-            Message = message ?? exception?.Message ?? string.Empty;
-            Exception = exception;
         }
 
         public RunnerEventMessage(IEventMessage eventMessage)
             : base(eventMessage)
         {
             if (!(eventMessage is RunnerEventMessage message)) return;
-            ErrorLevel = message.ErrorLevel;
+            Name = message.Name;
             Message = message.Message ?? string.Empty;
-            Exception = message.Exception;
+            ErrorLevel = message.ErrorLevel;
         }
     }
 }
