@@ -1,9 +1,17 @@
 ﻿using System;
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.IoC
 {
-    public interface IPropertyService : IServiceProvider
+    public interface IPropertyService
     {
+        /// <summary>
+        /// Determine whether property bag contains the property.
+        /// </summary>
+        /// <typeparam name="T">property type</typeparam>
+        /// <returns>true if the property contains the property; false otherwise</returns>
+        bool HasProperty<T>();
+
         /// <summary>
         /// Get property from property bag
         /// </summary>
@@ -17,6 +25,20 @@ namespace CafeLib.Core.IoC
         /// <typeparam name="T">property type</typeparam>
         /// <param name="value">property value</param>
         void SetProperty<T>(T value);
+
+        /// <summary>
+        /// Remove entry from property bag keyed by its type.
+        /// </summary>
+        /// <typeparam name="T">property type</typeparam>
+        /// <returns>true if the property has been removed; false otherwise</returns>
+        bool RemoveProperty<T>();
+
+        /// <summary>
+        /// Determine whether property bag contains the property.
+        /// </summary>
+        /// <param name="key">property key</param>
+        /// <returns>true if the property contains the property; false otherwise</returns>
+        bool HasProperty(string key);
 
         /// <summary>
         /// Get property from property bag based on its key.
@@ -35,6 +57,20 @@ namespace CafeLib.Core.IoC
         void SetProperty<T>(string key, T value);
 
         /// <summary>
+        /// Remove entry from property bag based on its key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns>true if the property has been removed; false otherwise</returns>
+        bool RemoveProperty(string key);
+
+        /// <summary>
+        /// Determine whether property bag contains the property.
+        /// </summary>
+        /// <param name="guid">property guid</param>
+        /// <returns>true if the property contains the property; false otherwise</returns>
+        bool HasProperty(Guid guid);
+
+        /// <summary>
         /// Get property from property bag based on its key.
         /// </summary>
         /// <typeparam name="T">property type</typeparam>
@@ -51,7 +87,14 @@ namespace CafeLib.Core.IoC
         void SetProperty<T>(Guid guid, T value);
 
         /// <summary>
-        /// Set a property in the property bag using a guid.
+        /// Remove entry from property bag keyed by a guid.
+        /// </summary>
+        /// <param name="guid">property guid</param>
+        /// <returns>true if the property has been removed; false otherwise</returns>
+        bool RemoveProperty(Guid guid);
+
+        /// <summary>
+        /// Convert the property bag to an object.
         /// </summary>
         T ToObject<T>();
     }
