@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\CafeLib.Core\CafeLib.Core.csproj" />
+    <ProjectReference Include="..\CafeLib.Dto\CafeLib.Dto.csproj" />
+  </ItemGroup>
+
+</Project>
