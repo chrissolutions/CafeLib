@@ -1,18 +1,26 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Copyright></Copyright>
-    <Description>Provides runloop support.</Description>
-    <PackageReleaseNotes>Provides runloop support for a background task.</PackageReleaseNotes>
-    <Version>0.5.6</Version>
+    <Description>Provides producer-consumer support.</Description>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <Version>0.7.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIconUrl></PackageIconUrl>
+    <PackageIcon>favicon.ico</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CafeLib.Core.Runnable\CafeLib.Core.Runnable.csproj" />
     <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\favicon.ico">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

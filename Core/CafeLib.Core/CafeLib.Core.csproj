@@ -2,14 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Description>Provides core functionality across all Cafe applications and services.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>Provides core functionality across applications and services.</Description>
     <Version>0.7.0</Version>
     <Copyright></Copyright>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageIconUrl>https://raw.githubusercontent.com/cwaldron/CafeLib/master/favicon.ico</PackageIconUrl>
+    <PackageIcon>favicon.ico</PackageIcon>
     <AssemblyVersion>0.7.0.0</AssemblyVersion>
     <FileVersion>0.7.0.0</FileVersion>
+    <PackageIconUrl />
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +21,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\favicon.ico">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

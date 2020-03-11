@@ -103,7 +103,10 @@ namespace CafeLib.Core.Runnable
         {
             if (IsRunning)
             {
-                _cancellationSource.Cancel();
+                lock (Mutex)
+                {
+                    _cancellationSource.Cancel();
+                }
                 RunnerEvent?.Invoke(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} stopped."));
             }
 

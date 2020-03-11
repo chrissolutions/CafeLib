@@ -48,11 +48,11 @@ namespace CafeLib.Core.Caching
         /// <typeparam name="T">item type</typeparam>
         /// <param name="key">item key</param>
         /// <param name="getItem">get item function</param>
-        /// <param name="forceUpdate">force item update via getItem</param>
+        /// <param name="updateNow">force item update via getItem</param>
         /// <returns>item</returns>
-        public T Get<T>(string key, Func<T> getItem, bool forceUpdate) where T : class
+        public T Get<T>(string key, Func<T> getItem, bool updateNow) where T : class
         {
-            if (!forceUpdate && Cache.Get(key) is T item) return item;
+            if (!updateNow && Cache.Get(key) is T item) return item;
 
             item = getItem();
             var cacheItemPolicy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddMilliseconds(_lifetimeMilliseconds) };
@@ -78,11 +78,11 @@ namespace CafeLib.Core.Caching
         /// <typeparam name="T">item type</typeparam>
         /// <param name="key">item key</param>
         /// <param name="getItem">get item function</param>
-        /// <param name="forceUpdate">force item update via getItem</param>
+        /// <param name="updateNow">force item update via getItem</param>
         /// <returns>item</returns>
-        public Task<T> GetAsync<T>(string key, Func<T> getItem, bool forceUpdate) where T : class
+        public Task<T> GetAsync<T>(string key, Func<T> getItem, bool updateNow) where T : class
         {
-            return GetAsync(key, Task.FromResult(getItem()), forceUpdate);
+            return GetAsync(key, Task.FromResult(getItem()), updateNow);
         }
 
         /// <summary>
@@ -103,11 +103,11 @@ namespace CafeLib.Core.Caching
         /// <typeparam name="T">item type</typeparam>
         /// <param name="key">item key</param>
         /// <param name="getItem">get item task</param>
-        /// <param name="forceUpdate">force item update via getItem</param>
+        /// <param name="updateNow">force item update via getItem</param>
         /// <returns>item</returns>
-        public Task<T> GetAsync<T>(string key, Task<T> getItem, bool forceUpdate) where T : class
+        public Task<T> GetAsync<T>(string key, Task<T> getItem, bool updateNow) where T : class
         {
-            if (!forceUpdate && Cache.Get(key) is T item) return Task.FromResult(item);
+            if (!updateNow && Cache.Get(key) is T item) return Task.FromResult(item);
 
             item = getItem.Result;
             var cacheItemPolicy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddMilliseconds(_lifetimeMilliseconds) };

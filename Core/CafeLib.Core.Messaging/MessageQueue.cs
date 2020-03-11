@@ -4,9 +4,9 @@ using CafeLib.Core.Queueing;
 
 namespace CafeLib.Core.Messaging
 {
-    public class MessageQueue : QueueProducer<IEventMessage>
+    public class MessageQueue<T> : QueueProducer<T> where T : IEventMessage
     {
-        public MessageQueue(IQueueConsumer<IEventMessage> eventConsumer)
+        public MessageQueue(IQueueConsumer<T> eventConsumer)
             : base(eventConsumer)
         {
         }
