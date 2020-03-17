@@ -1,24 +1,24 @@
-using System;
+﻿using System;
+using System.Diagnostics;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.Logging;
 using Microsoft.Extensions.Logging;
 
-namespace CafeLib.Core.UnitTests
+namespace CafeLib.Core.UnitTests.Logging
 {
-    public class TestLogHandler : LogHandler
+    public class TestLogAdapter : LogAdapter
     {
-        public TestLogHandler(string category, ILogEventMessenger messenger) 
-            : base(category, messenger)
+        public TestLogAdapter(string category, Action<LogEventMessage> listener)
+            : base(category, listener)
         {
         }
 
         public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            if (!state.GetType().IsAnonymousType()) return;
             var message = formatter?.Invoke(state, exception);
-            var messageInfo = typeof(TState).ToObjectMap(state);
+            var messageInfo = state.GetType().IsAnonymousType() ? typeof(TState).ToObjectMap(state) : null;
             var eventMessage = new TestLogEventMessage(Category, this.ToErrorLevel(logLevel), new LogEventInfo(eventId), message, messageInfo, exception);
-            Messenger?.LogMessage(eventMessage);
+            Receiver.LogMessage(eventMessage);
         }
     }
 }

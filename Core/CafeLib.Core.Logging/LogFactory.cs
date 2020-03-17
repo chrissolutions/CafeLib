@@ -3,18 +3,17 @@ using System.Collections.Concurrent;
 using System.Linq;
 using CafeLib.Core.Extensions;
 using Microsoft.Extensions.Logging;
-
 // ReSharper disable StaticMemberInGenericType
 
 namespace CafeLib.Core.Logging
 {
-    public class LogFactory<T> : ILoggerFactory where T : LogHandler
+    public class LogFactory<T> : ILoggerFactory where T : LoggerBase
     {
         #region Private Variables
 
         private static readonly ConcurrentDictionary<string, ILogger> Loggers;
         private static readonly ConcurrentDictionary<string, ILoggerProvider> LoggerProviders;
-        private readonly ILogEventMessenger _defaultMessenger;
+        private readonly ILogEventReceiver _defaultReceiver;
         private bool _disposed;
 
         #endregion
@@ -30,9 +29,9 @@ namespace CafeLib.Core.Logging
         /// <summary>
         /// CoreLoggerFactory constructor.
         /// </summary>
-        /// <param name="messenger">log event messenger</param>
-        public LogFactory(ILogEventMessenger messenger = null)
-            : this(new Guid().ToString(), messenger)
+        /// <param name="receiver">log event receiver</param>
+        public LogFactory(ILogEventReceiver receiver = null)
+            : this(new Guid().ToString(), receiver)
         {
         }
 
@@ -40,11 +39,11 @@ namespace CafeLib.Core.Logging
         /// CoreLoggerFactory constructor.
         /// </summary>
         /// <param name="category">log category</param>
-        /// <param name="messenger">log event messenger</param>
-        public LogFactory(NonNullable<string> category, ILogEventMessenger messenger)
+        /// <param name="receiver">log event receiver</param>
+        public LogFactory(NonNullable<string> category, ILogEventReceiver receiver)
         {
-            _defaultMessenger = messenger;
-            AddProvider(new LogProvider<T>(category, messenger));
+            _defaultReceiver = receiver;
+            AddProvider(new LogProvider<T>(category, receiver));
         }
 
         #endregion
@@ -60,7 +59,7 @@ namespace CafeLib.Core.Logging
         {
             if (!LoggerProviders.TryGetValue(category, out var provider))
             {
-                provider = new LogProvider<T>(category, _defaultMessenger);
+                provider = new LogProvider<T>(category, _defaultReceiver);
                 AddProvider(provider);
             }
 

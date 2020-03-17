@@ -3,15 +3,13 @@
     /// <summary>
     /// Logs event by classification.
     /// </summary>
-    public struct LogNullEventMessenger : ILogEventMessenger
+    public interface ILogEventReceiver
     {
         /// <summary>
-        /// Log OK event
+        /// Log message receiver.
         /// </summary>
+        /// <typeparam name="T">LogEventMessage type</typeparam>
         /// <param name="message">event message</param>
-        public void LogMessage<T>(T message) where T : LogEventMessage
-        {
-            // do nothing.
-        }
+        void LogMessage<T>(T message) where T : LogEventMessage;
     }
 }

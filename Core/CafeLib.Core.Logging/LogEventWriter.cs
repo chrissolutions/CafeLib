@@ -9,7 +9,7 @@ namespace CafeLib.Core.Logging
     /// <summary>
     /// Log event writer.
     /// </summary>
-    public class LogEventWriter : ILogEventWriter, ILogEventMessenger
+    public class LogEventWriter : ILogEventWriter, ILogEventReceiver
     {
         #region Priavate Variables
 

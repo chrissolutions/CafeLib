@@ -2,9 +2,9 @@ using System;
 using CafeLib.Core.Logging;
 using Microsoft.Extensions.Logging;
 
-namespace CafeLib.Core.UnitTests
+namespace CafeLib.Core.UnitTests.Logging
 {
-    public class TestLogFactoryMessenger : ILogEventMessenger
+    public class TestLogFactoryMessenger : ILogEventReceiver
     {
         private readonly Action<LogEventMessage> _listener;
 
@@ -12,7 +12,7 @@ namespace CafeLib.Core.UnitTests
         {
             _listener = listener;
             var factory = new TestLogFactory(category, this);
-            Logger = factory.CreateLogger<TestLogHandler>();
+            Logger = factory.CreateLogger<TestLogSender>();
         }
 
         public ILogger Logger { get; }

@@ -5,12 +5,12 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CafeLib.Core.Logging
 {
-    public class LogHandler : ILogger
+    public abstract class LoggerBase : ILogger
     {
         #region Properties
 
         protected string Category { get; }
-        protected ILogEventMessenger Messenger { get; }
+        protected ILogEventReceiver Receiver { get; set; }
 
         #endregion
 
@@ -20,11 +20,11 @@ namespace CafeLib.Core.Logging
         /// LoggerHandler constructor.
         /// </summary>
         /// <param name="category">log category</param>
-        /// <param name="messenger">log event messenger</param>
-        public LogHandler(string category, ILogEventMessenger messenger)
+        /// <param name="receiver">logger receiver</param>
+        protected LoggerBase(string category, ILogEventReceiver receiver)
         {
             Category = category;
-            Messenger = messenger ?? new LogNullEventMessenger();
+            Receiver = receiver ?? new LogNullEventReceiver();
         }
 
         #endregion
@@ -43,7 +43,7 @@ namespace CafeLib.Core.Logging
         public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             var message = formatter?.Invoke(state, exception);
-            Messenger.LogMessage(new LogEventMessage(Category, this.ToErrorLevel(logLevel), new LogEventInfo(eventId), message, exception));
+            Receiver.LogMessage(new LogEventMessage(Category, this.ToErrorLevel(logLevel), new LogEventInfo(eventId), message, exception));
         }
 
         /// <summary>
@@ -68,5 +68,6 @@ namespace CafeLib.Core.Logging
         }
 
         #endregion
+
     }
 }

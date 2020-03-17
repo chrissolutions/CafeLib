@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CafeLib.Core.Diagnostics;
 using CafeLib.Core.Logging;
 
-namespace CafeLib.Core.UnitTests
+namespace CafeLib.Core.UnitTests.Logging
 {
     public class TestLogEventMessage : LogEventMessage
     {

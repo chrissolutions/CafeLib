@@ -2,7 +2,7 @@
 
 namespace CafeLib.Core.Logging
 {
-    internal class CoreLoggerProvider : LogProvider<LogHandler>
+    internal class CoreLoggerProvider : LogProvider<LogEventSender>
     {
         #region Constructors
 
@@ -11,7 +11,7 @@ namespace CafeLib.Core.Logging
         /// </summary>
         /// <param name="category">log category</param>
         /// <param name="messenger">log event messenger</param>
-        public CoreLoggerProvider(NonNullable<string> category, ILogEventMessenger messenger)
+        public CoreLoggerProvider(NonNullable<string> category, ILogEventReceiver messenger)
             : base(category, messenger)
         {
         }
