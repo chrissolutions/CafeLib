@@ -2,11 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Version>0.7.0</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\CafeLib.Core\CafeLib.Core.csproj" />
-    <ProjectReference Include="..\CafeLib.Dto\CafeLib.Dto.csproj" />
+    <PackageReference Include="CafeLib.Core" Version="0.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CafeLib.Data.Dto\CafeLib.Data.Dto.csproj" />
   </ItemGroup>
 
 </Project>

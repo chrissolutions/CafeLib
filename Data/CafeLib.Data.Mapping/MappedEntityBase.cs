@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using CafeLib.Dto;
+using CafeLib.Data.Dto;
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Mapping

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.IoC;
-using CafeLib.Dto;
+using CafeLib.Data.Dto;
 
 namespace CafeLib.Data.Persistence
 {

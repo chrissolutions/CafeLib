@@ -1,4 +1,4 @@
-﻿namespace IcosLive.Data.Legacy.Extensions
+﻿namespace CafeLib.Data.Extensions
 {
     public static class SqlExtensions
     {

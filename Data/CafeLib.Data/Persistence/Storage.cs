@@ -1,5 +1,5 @@
 ﻿using CafeLib.Core.Extensions;
-using CafeLib.Dto;
+using CafeLib.Data.Dto;
 
 namespace CafeLib.Data.Persistence
 {

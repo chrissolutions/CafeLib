@@ -8,10 +8,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CafeLib.Core.Extensions;
-using CafeLib.Dto;
-using CafeLib.Dto.Cache;
+using CafeLib.Data.Dto;
+using CafeLib.Data.Dto.Cache;
 using Dapper;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Persistence

@@ -1,4 +1,4 @@
-﻿namespace CafeLib.Dto
+﻿namespace CafeLib.Data.Dto
 {
     public interface IEntity : IDataModel
     {

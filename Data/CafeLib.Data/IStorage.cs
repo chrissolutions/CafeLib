@@ -1,5 +1,5 @@
 ﻿using System;
-using CafeLib.Dto;
+using CafeLib.Data.Dto;
 
 namespace CafeLib.Data
 {

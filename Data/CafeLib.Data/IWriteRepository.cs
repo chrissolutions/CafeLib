@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using CafeLib.Dto;
+using CafeLib.Data.Dto;
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data

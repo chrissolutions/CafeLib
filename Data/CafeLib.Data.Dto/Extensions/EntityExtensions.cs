@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 
-namespace CafeLib.Dto.Extensions
+namespace CafeLib.Data.Dto.Extensions
 {
     public static class EntityExtensions
     {

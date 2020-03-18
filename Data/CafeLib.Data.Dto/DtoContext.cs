@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Dto
+namespace CafeLib.Data.Dto
 {
     public abstract class DtoContext
     {

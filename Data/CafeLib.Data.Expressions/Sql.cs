@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
-using CafeLib.Dto;
+using CafeLib.Data.Dto;
 
 // ReSharper disable UnusedMember.Global
 

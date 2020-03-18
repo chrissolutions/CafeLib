@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using CafeLib.Core.Collections;
 using CafeLib.Core.Extensions;
-using CafeLib.Dto;
+using CafeLib.Data.Dto;
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Mapping

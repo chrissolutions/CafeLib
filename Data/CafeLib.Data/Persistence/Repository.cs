@@ -7,10 +7,10 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using CafeLib.Core.Extensions;
+using CafeLib.Data.Dto;
+using CafeLib.Data.Dto.Cache;
+using CafeLib.Data.Dto.Extensions;
 using CafeLib.Data.Expressions;
-using CafeLib.Dto;
-using CafeLib.Dto.Cache;
-using CafeLib.Dto.Extensions;
 using Dapper;
 // ReSharper disable UnusedMember.Global
 

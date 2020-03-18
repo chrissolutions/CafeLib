@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using CafeLib.Core.Extensions;
-using CafeLib.Dto;
-
+using CafeLib.Data.Dto;
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Scripts

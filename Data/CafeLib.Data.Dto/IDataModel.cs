@@ -1,5 +1,5 @@
 ﻿// ReSharper disable UnusedMember.Global
-namespace CafeLib.Dto
+namespace CafeLib.Data.Dto
 {
     public interface IDataModel
     {

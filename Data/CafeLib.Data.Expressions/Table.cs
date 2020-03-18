@@ -1,5 +1,4 @@
-﻿using CafeLib.Dto;
-
+﻿using CafeLib.Data.Dto;
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Expressions

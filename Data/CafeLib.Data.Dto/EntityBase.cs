@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Dto
+namespace CafeLib.Data.Dto
 {
     public class EntityBase<T> : IEntity
     {

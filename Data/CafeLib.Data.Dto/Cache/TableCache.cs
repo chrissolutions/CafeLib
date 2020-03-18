@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Reflection;
 
-namespace CafeLib.Dto.Cache
+namespace CafeLib.Data.Dto.Cache
 {
     /// <summary>
     /// Used to store table names

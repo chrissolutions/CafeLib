@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
-
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Dto.Cache
+namespace CafeLib.Data.Dto.Cache
 {
     internal static class PropertyCache
     {

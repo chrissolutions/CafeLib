@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Dto.Cache
+namespace CafeLib.Data.Dto.Cache
 {
     public class PropertyExpressionList<T> : List<Expression<Func<T, object>>> where T : IEntity
     {
