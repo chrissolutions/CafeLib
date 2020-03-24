@@ -15,10 +15,10 @@ namespace CafeLib.Data.Dto.Cache
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>> ComputedProperties = new ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>>();
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, IReadOnlyDictionary<string, string>> ColumnNames = new ConcurrentDictionary<RuntimeTypeHandle, IReadOnlyDictionary<string, string>>();
 
-        public static IReadOnlyList<PropertyInfo> TypePropertiesCache<T>() where T : IEntity
-        {
-            var type = typeof(T);
+        public static IReadOnlyList<PropertyInfo> TypePropertiesCache<T>() where T : IEntity => TypePropertiesCache(typeof(T));
 
+        public static IReadOnlyList<PropertyInfo> TypePropertiesCache(Type type)
+        {
             if (TypeProperties.TryGetValue(type.TypeHandle, out var cachedProps))
             {
                 return cachedProps.ToList();
@@ -78,16 +78,16 @@ namespace CafeLib.Data.Dto.Cache
         /// <returns>name of the primary key</returns>
         public static string PrimaryKeyName<T>() where T : IEntity => KeyPropertiesCache<T>().First().Name;
 
-        public static IReadOnlyList<PropertyInfo> KeyPropertiesCache<T>() where T : IEntity
-        {
-            var type = typeof(T);
+        public static IReadOnlyList<PropertyInfo> KeyPropertiesCache<T>() where T : IEntity => KeyPropertiesCache(typeof(T));
 
+        public static IReadOnlyList<PropertyInfo> KeyPropertiesCache(Type type)
+        {
             if (KeyProperties.TryGetValue(type.TypeHandle, out var cachedProps))
             {
                 return cachedProps.ToList();
             }
 
-            var allProperties = TypePropertiesCache<T>();
+            var allProperties = TypePropertiesCache(type);
             var keyProperties = allProperties.Where(p => p.GetCustomAttributes(true).Any(a => a.GetType().Name == "KeyAttribute")).ToList();
 
             if (keyProperties.Count == 0)
@@ -103,7 +103,7 @@ namespace CafeLib.Data.Dto.Cache
             return keyProperties;
         }
 
-        public static IReadOnlyList<PropertyInfo> ComputedPropertiesCache<T>() where T : IEntity
+        public static List<PropertyInfo> ComputedPropertiesCache<T>() where T : IEntity
         {
             var type = typeof(T);
 

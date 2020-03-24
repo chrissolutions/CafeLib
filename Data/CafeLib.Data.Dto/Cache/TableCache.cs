@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Reflection;
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Dto.Cache
 {
@@ -10,7 +11,7 @@ namespace CafeLib.Data.Dto.Cache
     /// Used to store table names
     /// </summary>
     // ReSharper disable once UnusedMember.Global
-    public static class TableCache
+    internal static class TableCache
     {
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, string> TableNames = new ConcurrentDictionary<RuntimeTypeHandle, string>();
 
@@ -36,9 +37,9 @@ namespace CafeLib.Data.Dto.Cache
             TableNames.Clear();
         }
 
-        internal static string TableName<T>() where T : IEntity => TableName(typeof(T));
+        public static string TableName<T>() where T : IEntity => TableName(typeof(T));
 
-        internal static string TableName(Type type)
+        public static string TableName(Type type)
         {
             if (TableNames.TryGetValue(type.TypeHandle, out var name))
             {

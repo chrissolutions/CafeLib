@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Data.Mapping", "Caf
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Data.Dto", "CafeLib.Data.Dto\CafeLib.Data.Dto.csproj", "{46B7322F-672A-4FAD-8A55-CCE9B8AFA99A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Data.SqlGenerator", "CafeLib.Data.SqlGenerator\CafeLib.Data.SqlGenerator.csproj", "{7D4D0CEE-3EB9-43BA-9916-4D0ABD702BF8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Data.UnitTest", "CafeLib.Data.UnitTest\CafeLib.Data.UnitTest.csproj", "{ED31A56F-E0B0-47D5-A462-756642776FAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{46B7322F-672A-4FAD-8A55-CCE9B8AFA99A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46B7322F-672A-4FAD-8A55-CCE9B8AFA99A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46B7322F-672A-4FAD-8A55-CCE9B8AFA99A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D4D0CEE-3EB9-43BA-9916-4D0ABD702BF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D4D0CEE-3EB9-43BA-9916-4D0ABD702BF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D4D0CEE-3EB9-43BA-9916-4D0ABD702BF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D4D0CEE-3EB9-43BA-9916-4D0ABD702BF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED31A56F-E0B0-47D5-A462-756642776FAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED31A56F-E0B0-47D5-A462-756642776FAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED31A56F-E0B0-47D5-A462-756642776FAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED31A56F-E0B0-47D5-A462-756642776FAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
