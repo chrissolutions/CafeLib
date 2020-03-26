@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.UnitTests", "C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Caching", "CafeLib.Core.Caching\CafeLib.Core.Caching.csproj", "{68012EB0-CA0C-4895-AC46-561CCA56ECD4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Core.Data", "CafeLib.Core.Data\CafeLib.Core.Data.csproj", "{FDC03064-0BE6-4533-B04C-47E5758E3B0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{68012EB0-CA0C-4895-AC46-561CCA56ECD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68012EB0-CA0C-4895-AC46-561CCA56ECD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68012EB0-CA0C-4895-AC46-561CCA56ECD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDC03064-0BE6-4533-B04C-47E5758E3B0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDC03064-0BE6-4533-B04C-47E5758E3B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDC03064-0BE6-4533-B04C-47E5758E3B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDC03064-0BE6-4533-B04C-47E5758E3B0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
