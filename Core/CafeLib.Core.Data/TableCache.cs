@@ -34,11 +34,9 @@ namespace CafeLib.Core.Data
             _domain.GetEntityTypes().ForEach(x =>
             {
                 var tableAttr = x.GetCustomAttribute<TableAttribute>(false);
-                var name = tableAttr switch
-                {
-                    _ when tableAttr != null => tableAttr.Name,
-                    _ => $"{prefix}{(x.IsInterface && x.Name.StartsWith("I") ? x.Name.Substring(1) : x.Name)}{suffix}"
-                };
+                var name = tableAttr != null
+                    ? tableAttr.Name
+                    : $"{prefix}{(x.IsInterface && x.Name.StartsWith("I") ? x.Name.Substring(1) : x.Name)}{suffix}";
                 _tableNames[x] = name;
             });
         }
