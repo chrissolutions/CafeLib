@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
 using System.Reflection;
 using CafeLib.Core.Extensions;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Data
