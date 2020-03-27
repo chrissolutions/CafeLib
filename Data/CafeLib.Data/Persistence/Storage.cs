@@ -1,17 +1,17 @@
-﻿using CafeLib.Core.Extensions;
-using CafeLib.Data.Dto;
+﻿using CafeLib.Core.Data;
+using CafeLib.Core.Extensions;
 
 namespace CafeLib.Data.Persistence
 {
     /// <summary>
     /// Database storage wrapper class.
     /// </summary>
-    public class Storage<T> : StorageBase where T : DtoContext
+    public class Storage<T> : StorageBase where T : Domain
     {
         /// <summary>
         /// Context.
         /// </summary>
-        protected new T Context { get; }
+        protected new T Domain { get; }
 
         /// <summary>
         /// Constructs a storage from the connection uri.
@@ -29,7 +29,7 @@ namespace CafeLib.Data.Persistence
         private Storage(IConnectionInfo connectionInfo)
             : base(connectionInfo, typeof(T).CreateInstance<T>())
         {
-            Context = (T)base.Context;
+            Domain = (T)base.Domain;
         }
     }
 }

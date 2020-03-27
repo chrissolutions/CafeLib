@@ -1,5 +1,5 @@
 ﻿using System.Data.SqlClient;
-using CafeLib.Data.Dto;
+using CafeLib.Core.Data;
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Persistence
@@ -27,7 +27,7 @@ namespace CafeLib.Data.Persistence
 
         public SqlConnection GetConnection() => new SqlConnection(ConnectionInfo.ConnectionString);
 
-        protected internal DtoContext Context { get; }
+        protected internal Domain Domain { get; }
 
         internal EntityRegistry Repositories { get; set; }
 
@@ -35,11 +35,11 @@ namespace CafeLib.Data.Persistence
 
         #region Constructors
 
-        protected StorageBase(IConnectionInfo connectionInfo, DtoContext context)
+        protected StorageBase(IConnectionInfo connectionInfo, Domain domain)
         {
             ConnectionInfo = connectionInfo;
             ConnectionTimeout = connectionInfo.ConnectionTimeout > 0 ? connectionInfo.ConnectionTimeout : DefaultConnectionTimeout;
-            Context = context;
+            Domain = domain;
             Repositories = new EntityRegistry(this);
         }
 
@@ -50,12 +50,10 @@ namespace CafeLib.Data.Persistence
         public IRepository<T> CreateRepository<T>() where T : class, IEntity
         {
             var repo = Repositories.Find<T>();
-            if (repo == null)
-            {
-                repo = new Repository<T>(this);
-                Repositories.Add(repo);
-            }
+            if (repo != null) return repo;
 
+            repo = new Repository<T>(this);
+            Repositories.Add(repo);
             return repo;
         }
 

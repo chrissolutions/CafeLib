@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CafeLib.Data.Dto;
+using CafeLib.Core.Data;
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data

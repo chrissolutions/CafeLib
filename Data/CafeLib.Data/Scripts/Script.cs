@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
-using CafeLib.Data.Dto;
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Scripts
@@ -12,15 +12,15 @@ namespace CafeLib.Data.Scripts
 
         private static readonly IDictionary<string, string> ScriptResourceDictionary = new Dictionary<string, string>();
 
-        public static string GetScript<T>(this T context, string resourceName) where T : DtoContext
+        public static string GetScript<T>(this T domain, string resourceName) where T : Domain
         {
-            var manifest = $"{context.GetType().Namespace}.Scripts.{resourceName}.sql";
-            return ScriptResourceDictionary.GetOrAdd(manifest, () => LoadScript(context, manifest));
+            var manifest = $"{domain.GetType().Namespace}.Scripts.{resourceName}.sql";
+            return ScriptResourceDictionary.GetOrAdd(manifest, () => LoadScript(domain, manifest));
         }
 
-        private static string LoadScript<T>(T context, string manifest) where T : DtoContext
+        private static string LoadScript<T>(T domain, string manifest) where T : Domain
         {
-            var stream = context.GetType().Assembly.GetManifestResourceStream(manifest);
+            var stream = domain.GetType().Assembly.GetManifestResourceStream(manifest);
             return stream.ToTextString();
         }
 

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using CafeLib.Data.Dto;
+using CafeLib.Core.Data;
 
 namespace CafeLib.Data
 {

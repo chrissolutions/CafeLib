@@ -7,9 +7,8 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
-using CafeLib.Data.Dto;
-using CafeLib.Data.Dto.Cache;
 using Dapper;
 // ReSharper disable UnusedMember.Global
 
@@ -18,18 +17,19 @@ namespace CafeLib.Data.Persistence
     /// <summary>
     /// Bulk inserts for Dapper
     /// </summary>
-    public static class SqlBulk
+    internal static class SqlBulk
     {
         /// <summary>
         /// Updates entity in table "Ts", checks if the entity is modified if the entity is tracked by the Get() extension.
         /// </summary>
         /// <typeparam name="T">Type to be updated</typeparam>
         /// <param name="connection">Open SqlConnection</param>
+        /// <param name="domain">Entity domain</param>
         /// <param name="entityToUpdate">Entity to be updated</param>
         /// <param name="transaction">The transaction to run under, null (the default) if none</param>
         /// <param name="commandTimeout">Number of seconds before command execution timeout</param>
         /// <returns>true if updated, false if not found or not modified (tracked entities)</returns>
-        public static bool Update<T>(this IDbConnection connection, T entityToUpdate, IDbTransaction? transaction = null, int? commandTimeout = null) where T : IEntity
+        public static bool Update<T>(this IDbConnection connection, Domain domain, T entityToUpdate, IDbTransaction? transaction = null, int? commandTimeout = null) where T : IEntity
         {
             var type = typeof(T);
 
@@ -50,18 +50,18 @@ namespace CafeLib.Data.Persistence
                 }
             }
 
-            var keyProperties = PropertyCache.KeyPropertiesCache<T>();
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
             if (!keyProperties.Any())
                 throw new ArgumentException("Entity must have at least one [Key] or [ExplicitKey] property");
 
-            var name = TableCache.TableName(type);
+            var name = domain.TableCache.TableName(type);
 
             var sb = new StringBuilder();
             sb.Append($"UPDATE {name} SET ");
 
-            var allProperties = PropertyCache.TypePropertiesCache<T>();
-            var columns = PropertyCache.GetColumnNamesCache<T>();
-            var computedProperties = PropertyCache.ComputedPropertiesCache<T>();
+            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
+            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
+            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
             var nonIdProps = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
 
             nonIdProps.ForEach(x =>
@@ -90,11 +90,12 @@ namespace CafeLib.Data.Persistence
         /// </summary>
         /// <typeparam name="T">Type of entity</typeparam>
         /// <param name="connection">Open SqlConnection</param>
+        /// <param name="domain">Entity domain</param>
         /// <param name="entityToDelete">Entity to delete</param>
         /// <param name="transaction">The transaction to run under, null (the default) if none</param>
         /// <param name="commandTimeout">Number of seconds before command execution timeout</param>
         /// <returns>true if deleted, false if not found</returns>
-        public static bool Delete<T>(this IDbConnection connection, T entityToDelete, IDbTransaction? transaction = null, int? commandTimeout = null) where T : IEntity
+        public static bool Delete<T>(this IDbConnection connection, Domain domain, T entityToDelete, IDbTransaction? transaction = null, int? commandTimeout = null) where T : IEntity
         {
             if (entityToDelete == null)
                 throw new ArgumentException("Cannot Delete null Object", nameof(entityToDelete));
@@ -118,11 +119,11 @@ namespace CafeLib.Data.Persistence
                 }
             }
 
-            var keyProperties = PropertyCache.KeyPropertiesCache<T>().ToList();  //added ToList() due to issue #418, must work on a list copy
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>().ToList();  //added ToList() due to issue #418, must work on a list copy
             if (!keyProperties.Any())
                 throw new ArgumentException("Entity must have at least one [Key] or [ExplicitKey] property");
 
-            var name = TableCache.TableName(type);
+            var name = domain.TableCache.TableName(type);
 
             var sb = new StringBuilder();
             sb.Append($"DELETE FROM {name} WHERE ");
@@ -141,15 +142,26 @@ namespace CafeLib.Data.Persistence
             return deleted > 0;
         }
 
-        public static T Insert<T>(this SqlConnection connection, T data, SqlTransaction? transaction = null, int batchSize = 0, int bulkCopyTimeout = 30) where T : IEntity
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection"></param>
+        /// <param name="domain">Entity domain</param>
+        /// <param name="data"></param>
+        /// <param name="transaction"></param>
+        /// <param name="batchSize"></param>
+        /// <param name="bulkCopyTimeout"></param>
+        /// <returns></returns>
+        public static T Insert<T>(this SqlConnection connection, Domain domain, T data, SqlTransaction? transaction = null, int batchSize = 0, int bulkCopyTimeout = 30) where T : IEntity
         {
             try
             {
-                var tableName = TableCache.TableName<T>();
-                var allProperties = PropertyCache.TypePropertiesCache<T>();
-                var keyProperties = PropertyCache.KeyPropertiesCache<T>();
-                var computedProperties = PropertyCache.ComputedPropertiesCache<T>();
-                var columns = PropertyCache.GetColumnNamesCache<T>();
+                var tableName = domain.TableCache.TableName<T>();
+                var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
+                var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
+                var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
+                var columns = domain.PropertyCache.GetColumnNamesCache<T>();
 
                 var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
                 var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
@@ -182,17 +194,18 @@ namespace CafeLib.Data.Persistence
         /// </summary>
         /// <typeparam name="T">The type being inserted.</typeparam>
         /// <param name="connection">Open SqlConnection</param>
+        /// <param name="domain">Entity domain</param>
         /// <param name="data">Entities to insert</param>
         /// <param name="transaction">The transaction to run under, null (the default) if none</param>
         /// <param name="batchSize">Number of bulk items inserted together, 0 (the default) if all</param>
         /// <param name="bulkCopyTimeout">Number of seconds before bulk command execution timeout, 30 (the default)</param>
-        public static int BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, SqlTransaction? transaction = null, int batchSize = 0, int bulkCopyTimeout = 30) where T : IEntity
+        public static int BulkInsert<T>(this SqlConnection connection, Domain domain, IEnumerable<T> data, SqlTransaction? transaction = null, int batchSize = 0, int bulkCopyTimeout = 30) where T : IEntity
         {
-            var tableName = TableCache.TableName<T>();
-            var allProperties = PropertyCache.TypePropertiesCache<T>();
-            var keyProperties = PropertyCache.KeyPropertiesCache<T>();
-            var computedProperties = PropertyCache.ComputedPropertiesCache<T>();
-            var columns = PropertyCache.GetColumnNamesCache<T>();
+            var tableName = domain.TableCache.TableName<T>();
+            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
+            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
+            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
 
             var allPropertiesString = GetColumnsStringSqlServer(allProperties, columns);
             var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
@@ -268,23 +281,24 @@ namespace CafeLib.Data.Persistence
         /// </summary>
         /// <typeparam name="T">The element type of the array</typeparam>
         /// <param name="connection">Open SqlConnection</param>
+        /// <param name="domain">Entity domain</param>
         /// <param name="data">Entities to insert</param>
         /// <param name="transaction">The transaction to run under, null (the default) if none</param>
         /// <param name="batchSize">Number of bulk items inserted together, 0 (the default) if all</param>
         /// <param name="bulkCopyTimeout">Number of seconds before bulk command execution timeout, 30 (the default)</param>
         /// <returns>Inserted entities</returns>
-        public static IEnumerable<T> BulkInsertAndSelect<T>(this SqlConnection connection, IEnumerable<T> data, SqlTransaction? transaction = null, int batchSize = 0, int bulkCopyTimeout = 30) where T : IEntity
+        public static IEnumerable<T> BulkInsertAndSelect<T>(this SqlConnection connection, Domain domain, IEnumerable<T> data, SqlTransaction? transaction = null, int batchSize = 0, int bulkCopyTimeout = 30) where T : IEntity
         {
-            var tableName = TableCache.TableName<T>();
-            var allProperties = PropertyCache.TypePropertiesCache<T>();
-            var keyProperties = PropertyCache.KeyPropertiesCache<T>();
-            var computedProperties = PropertyCache.ComputedPropertiesCache<T>();
-            var columns = PropertyCache.GetColumnNamesCache<T>();
+            var tableName = domain.TableCache.TableName<T>();
+            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
+            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
+            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
 
             if (keyProperties.Count == 0)
             {
                 var dataList = data.ToList();
-                connection.BulkInsert(dataList, transaction, batchSize, bulkCopyTimeout);
+                connection.BulkInsert(domain, dataList, transaction, batchSize, bulkCopyTimeout);
                 return dataList;
             }
 
@@ -327,17 +341,18 @@ namespace CafeLib.Data.Persistence
         /// </summary>
         /// <typeparam name="T">The type being inserted.</typeparam>
         /// <param name="connection">Open SqlConnection</param>
+        /// <param name="domain">Entity domain</param>
         /// <param name="data">Entities to insert</param>
         /// <param name="transaction">The transaction to run under, null (the default) if none</param>
         /// <param name="batchSize">Number of bulk items inserted together, 0 (the default) if all</param>
         /// <param name="bulkCopyTimeout">Number of seconds before bulk command execution timeout, 30 (the default)</param>
-        public static async Task BulkInsertAsync<T>(this SqlConnection connection, IEnumerable<T> data, SqlTransaction? transaction = null, int batchSize = 0, int bulkCopyTimeout = 30) where T : IEntity
+        public static async Task BulkInsertAsync<T>(this SqlConnection connection, Domain domain, IEnumerable<T> data, SqlTransaction? transaction = null, int batchSize = 0, int bulkCopyTimeout = 30) where T : IEntity
         {
-            var tableName = TableCache.TableName<T>();
-            var allProperties = PropertyCache.TypePropertiesCache<T>();
-            var keyProperties = PropertyCache.KeyPropertiesCache<T>();
-            var computedProperties = PropertyCache.ComputedPropertiesCache<T>();
-            var columns = PropertyCache.GetColumnNamesCache<T>();
+            var tableName = domain.TableCache.TableName<T>();
+            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
+            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
+            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
 
             var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
             var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
@@ -366,23 +381,24 @@ namespace CafeLib.Data.Persistence
         /// </summary>
         /// <typeparam name="T">The type being inserted.</typeparam>
         /// <param name="connection">Open SqlConnection</param>
+        /// <param name="domain">Entity domain</param>
         /// <param name="data">Entities to insert</param>
         /// <param name="transaction">The transaction to run under, null (the default) if none</param>
         /// <param name="batchSize">Number of bulk items inserted together, 0 (the default) if all</param>
         /// <param name="bulkCopyTimeout">Number of seconds before bulk command execution timeout, 30 (the default)</param>
         /// <returns>Inserted entities</returns>
-        public static async Task<IEnumerable<T>> BulkInsertAndSelectAsync<T>(this SqlConnection connection, IEnumerable<T> data, SqlTransaction? transaction = null, int batchSize = 0, int bulkCopyTimeout = 30) where T : IEntity
+        public static async Task<IEnumerable<T>> BulkInsertAndSelectAsync<T>(this SqlConnection connection, Domain domain, IEnumerable<T> data, SqlTransaction? transaction = null, int batchSize = 0, int bulkCopyTimeout = 30) where T : IEntity
         {
-            var tableName = TableCache.TableName<T>();
-            var allProperties = PropertyCache.TypePropertiesCache<T>();
-            var keyProperties = PropertyCache.KeyPropertiesCache<T>();
-            var computedProperties = PropertyCache.ComputedPropertiesCache<T>();
-            var columns = PropertyCache.GetColumnNamesCache<T>();
+            var tableName = domain.TableCache.TableName<T>();
+            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
+            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
+            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
 
             if (keyProperties.Count == 0)
             {
                 var dataList = data.ToList();
-                await connection.BulkInsertAsync(dataList, transaction, batchSize, bulkCopyTimeout);
+                await connection.BulkInsertAsync(domain, dataList, transaction, batchSize, bulkCopyTimeout);
                 return dataList;
             }
 
@@ -425,18 +441,19 @@ namespace CafeLib.Data.Persistence
         /// </summary>
         /// <typeparam name="T">The type being inserted.</typeparam>
         /// <param name="connection">Open SqlConnection</param>
+        /// <param name="domain">Entity domain</param>
         /// <param name="data">Entities to insert</param>
         /// <param name="expressionList"></param>
         /// <param name="batchSize">Number of bulk items inserted together, 0 (the default) if all</param>
         /// <param name="bulkCopyTimeout">Number of seconds before bulk command execution timeout, 30 (the default)</param>
         /// <param name="transaction">The transaction to run under, null (the default) if none</param>
-        public static int BulkUpsert<T>(this SqlConnection connection, IEnumerable<T> data, PropertyExpressionList<T>? expressionList, int batchSize = 0, int bulkCopyTimeout = 30, SqlTransaction? transaction = null) where T : IEntity
+        public static int BulkUpsert<T>(this SqlConnection connection, Domain domain, IEnumerable<T> data, PropertyExpressionList<T>? expressionList, int batchSize = 0, int bulkCopyTimeout = 30, SqlTransaction? transaction = null) where T : IEntity
         {
-            var tableName = TableCache.TableName<T>();
-            var allProperties = PropertyCache.TypePropertiesCache<T>();
-            var keyProperties = PropertyCache.KeyPropertiesCache<T>();
-            var computedProperties = PropertyCache.ComputedPropertiesCache<T>();
-            var columns = PropertyCache.GetColumnNamesCache<T>();
+            var tableName = domain.TableCache.TableName<T>();
+            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
+            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
+            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
 
             var allPropertiesString = GetColumnsStringSqlServer(allProperties, columns);
             var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
@@ -471,7 +488,7 @@ namespace CafeLib.Data.Persistence
                 var sql = $@"MERGE INTO {FormatTableName(tableName)} as tgt  
                                     USING {tempToBeInserted} as src
                                     ON 
-                                        {string.Join(" AND ", FormatMergeOnMatchList(expressionList))}
+                                        {string.Join(" AND ", FormatMergeOnMatchList(domain, expressionList))}
                                     WHEN MATCHED THEN
                                         UPDATE SET
                                             {string.Join(", ", FormatUpdateList(propertiesString))}
@@ -574,7 +591,7 @@ namespace CafeLib.Data.Persistence
             return columnsString.Split(',').Select(x => $"[{target}].{x.Trim()} = [{source}].{x.Trim()}");
         }
 
-        private static IEnumerable<string> FormatMergeOnMatchList<T>(PropertyExpressionList<T>? expressionList, string source = "src", string target = "tgt") where T : IEntity
+        private static IEnumerable<string> FormatMergeOnMatchList<T>(Domain domain, PropertyExpressionList<T>? expressionList, string source = "src", string target = "tgt") where T : IEntity
         {
             const string template = "[{target}].{targetKey}=[{source}].{sourceKey}";
             var results = new List<string>();
@@ -586,7 +603,7 @@ namespace CafeLib.Data.Persistence
             }
             else
             {
-                var keyName = PropertyCache.KeyPropertiesCache<T>().First().Name;
+                var keyName = domain.PropertyCache.KeyPropertiesCache<T>().First().Name;
                 results.Add(template.Render(new { target, targetKey = keyName, source, sourceKey = keyName }));
             }
 

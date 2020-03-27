@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.IoC;
-using CafeLib.Data.Dto;
 
 namespace CafeLib.Data.Persistence
 {
@@ -84,9 +84,7 @@ namespace CafeLib.Data.Persistence
                 .GetMethods()
                 .First(x => x.Name == "AddSingleton" && x.IsGenericMethod && x.GetParameters().Length == 1);
 
-            var dtoTypes = ((StorageBase)storage).Context.GetEntityTypes();
-
-            dtoTypes.ForEach(x =>
+            ((StorageBase)storage).Domain.GetEntityTypes().ForEach(x =>
             {
                 var repoInterface = typeof(IRepository<>).MakeGenericType(x);
                 var repoType = typeof(Repository<>).MakeGenericType(x);

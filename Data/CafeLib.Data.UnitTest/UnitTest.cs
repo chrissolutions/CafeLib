@@ -13,14 +13,14 @@ namespace CafeLib.Data.UnitTest
         [Fact]
         public void Test1()
         {
-            var context = new TestContext();
+            var domain = new TestDomain.TestDomain();
 
             var query = new List<Post>().AsQueryable().
                 Where(p => p.Content != null).
                 GroupBy(p => p.BlogId).
                 Select(g => new { cnt = g.Count() });
 
-            var script = QueryTranslator.Translate(query.Expression, new EntityModelInfoProvider(context), new SqliteObjectFactory());
+            var script = QueryTranslator.Translate(query.Expression, new EntityModelInfoProvider(domain), new SqliteObjectFactory());
             var sql = script.ToString();
 
             const string expected = @"

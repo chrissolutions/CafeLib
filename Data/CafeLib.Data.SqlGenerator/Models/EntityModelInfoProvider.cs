@@ -2,9 +2,8 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
+using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
-using CafeLib.Data.Dto;
-using CafeLib.Data.Dto.Cache;
 
 namespace CafeLib.Data.SqlGenerator.Models
 {
@@ -16,14 +15,14 @@ namespace CafeLib.Data.SqlGenerator.Models
         private readonly ConcurrentDictionary<MemberInfo, EntityFieldInfo> _fieldInfos =
             new ConcurrentDictionary<MemberInfo, EntityFieldInfo>();
 
-        public EntityModelInfoProvider(DtoContext context)
+        public EntityModelInfoProvider(Domain domain)
         {
-            context.GetEntityTypes().ForEach(x =>
+            domain.GetEntityTypes().ForEach(x =>
             {
-                var entityInfo = new EntityInfo {Namespace = string.Empty, EntityName = TableCache.TableName(x), Type = x};
+                var entityInfo = new EntityInfo {Namespace = string.Empty, EntityName = domain.TableCache.TableName(x), Type = x};
                 _entityInfos.TryAdd(x, entityInfo);
 
-                entityInfo.Keys = PropertyCache.KeyPropertiesCache(x).Select((k, i) => new EntityFieldInfo 
+                entityInfo.Keys = domain.PropertyCache.KeyPropertiesCache(x).Select((k, i) => new EntityFieldInfo 
                     {
                         ClrProperty = k,
                         PropertyName = k.Name,
@@ -33,7 +32,7 @@ namespace CafeLib.Data.SqlGenerator.Models
                         Entity = entityInfo
                     }).ToList();
 
-                entityInfo.Columns = PropertyCache.TypePropertiesCache(x).Select(p => new EntityFieldInfo
+                entityInfo.Columns = domain.PropertyCache.TypePropertiesCache(x).Select(p => new EntityFieldInfo
                     {
                         ClrProperty = p,
                         PropertyName = p.Name,
@@ -45,8 +44,6 @@ namespace CafeLib.Data.SqlGenerator.Models
                 foreach (var fieldInfo in entityInfo.Keys.Concat(entityInfo.Columns))
                     _fieldInfos.TryAdd(fieldInfo.ClrProperty, fieldInfo);
             });
-
-
         }
 
         //private void UpdateKeysAndColumns(IEntityType et, EntityInfo ei)

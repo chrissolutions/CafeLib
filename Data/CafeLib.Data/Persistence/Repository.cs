@@ -6,11 +6,13 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
-using CafeLib.Data.Dto;
-using CafeLib.Data.Dto.Cache;
-using CafeLib.Data.Dto.Extensions;
-using CafeLib.Data.Expressions;
+using CafeLib.Data.Extensions;
+using CafeLib.Data.SqlGenerator;
+using CafeLib.Data.SqlGenerator.DbObjects;
+using CafeLib.Data.SqlGenerator.DbObjects.SqlObjects;
+using CafeLib.Data.SqlGenerator.Models;
 using Dapper;
 // ReSharper disable UnusedMember.Global
 
@@ -19,6 +21,10 @@ namespace CafeLib.Data.Persistence
     public class Repository<T> : IRepository<T> where T : class, IEntity
     {
         private readonly StorageBase _storage;
+        private readonly string _tableName;
+        private readonly PropertyCache _propertyCache;
+        private readonly IModelInfoProvider _modelInfoProvider;
+        private readonly IDbObjectFactory _dbObjectFactory;
 
         /// <summary>
         /// Repository constructor.
@@ -27,6 +33,10 @@ namespace CafeLib.Data.Persistence
         internal Repository(IStorage storage)
         {
             _storage = (StorageBase)storage;
+            _tableName = _storage.Domain.TableCache.TableName<T>();
+            _propertyCache = _storage.Domain.PropertyCache;
+            _modelInfoProvider = new EntityModelInfoProvider(_storage.Domain);
+            _dbObjectFactory = new SqlObjectFactory();
         }
 
         /// <summary>
@@ -46,9 +56,8 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<bool> Any<TU>(TU id)
         {
-            var tableName = TableCache.TableName<T>();
-            var keyColumnName = PropertyCache.PrimaryKeyName<T>();
-            var result = await ExecuteCommand($@"SELECT TOP 1 {keyColumnName} FROM {tableName} WHERE {keyColumnName} = {CheckSqlId(id)}");
+            var keyColumnName = _propertyCache.PrimaryKeyName<T>();
+            var result = await ExecuteCommand($@"SELECT TOP 1 {keyColumnName} FROM {_tableName} WHERE {keyColumnName} = {CheckSqlId(id)}");
             return result == 1;
         }
 
@@ -69,7 +78,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public Task<int> Count()
         {
-            return _storage.GetConnection().ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {TableCache.TableName<T>()}");
+            return _storage.GetConnection().ExecuteScalarAsync<int>($"select count(*) from {_tableName}");
         }
 
         /// <summary>
@@ -80,7 +89,9 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<int> Count(Expression<Func<T, bool>> predicate, params object[]? parameters)
         {
-            var sql = $"SELECT COUNT({PropertyCache.KeyPropertiesCache<T>().First().Name}) FROM {Sql.Table<T>(TableCache.TableName<T>()).ToSql()}{Sql.Where<T, bool>(predicate).ToSql()}";
+            var query = new List<T>().AsQueryable().Where(predicate);
+            var script = QueryTranslator.Translate(query.Expression, _modelInfoProvider, _dbObjectFactory);
+            var sql = $"select count(*) {script.ToString().Substring(script.ToString().IndexOf("from", StringComparison.Ordinal))}";
             await using var connection = _storage.GetConnection();
             return connection.ExecuteScalar<int>(sql);
         }
@@ -93,7 +104,9 @@ namespace CafeLib.Data.Persistence
         /// <returns>collection matching the predicate</returns>
         public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate, params object[]? parameters)
         {
-            var sql = Sql.Select<T, T>(x => x).Where(predicate).ToString();
+            var query = new List<T>().AsQueryable().Where(predicate);
+            var script = QueryTranslator.Translate(query.Expression, _modelInfoProvider, _dbObjectFactory);
+            var sql = script.ToString();
             var results = await ExecuteQuery(sql, parameters).ConfigureAwait(false);
             return results.Records;
         }
@@ -104,7 +117,7 @@ namespace CafeLib.Data.Persistence
         /// <returns>collection of all table records</returns>
         public async Task<IEnumerable<T>> FindAll()
         {
-            var sql = $"SELECT * FROM {DtoContext.TableName<T>()}";
+            var sql = $"select * from {_tableName}";
             await using var connection = _storage.GetConnection();
             return await connection.QueryAsync<T>(sql).ConfigureAwait(false);
         }
@@ -117,7 +130,9 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<T> FindOne(Expression<Func<T, bool>> predicate, params object[]? parameters)
         {
-            var sql = Sql.Select((T x) => x).Where(predicate).ToString();
+            var query = new List<T>().AsQueryable().Where(predicate);
+            var script = QueryTranslator.Translate(query.Expression, _modelInfoProvider, _dbObjectFactory);
+            var sql = $"{script} limit 1";
             var results = await ExecuteQuery(sql, parameters).ConfigureAwait(false);
             return results.Records.FirstOrDefault();
         }
@@ -130,7 +145,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<T> FindById<TU>(TU id)
         {
-            var sql = $"SELECT * FROM {TableCache.TableName<T>()} WHERE Id = @Id;";
+            var sql = $"select * from {_tableName} where Id = @Id";
             await using var connection = _storage.GetConnection();
             return await connection.QueryFirstOrDefaultAsync<T>(sql, new {Id = id}).ConfigureAwait(false);
         }
@@ -143,7 +158,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<IEnumerable<T>> FindById<TU>(IEnumerable<TU> id)
         {
-            var sql = $"SELECT * FROM {TableCache.TableName<T>()} WHERE Id = @Id;";
+            var sql = $"SELECT * FROM {_tableName} WHERE Id = @Id;";
             await using var connection = _storage.GetConnection();
             return await connection.QueryAsync<T>(sql, new { Id = id }).ConfigureAwait(false);
         }
@@ -211,7 +226,7 @@ namespace CafeLib.Data.Persistence
         public async Task<T> Add(T entity)
         {
             await using var connection = _storage.GetConnection();
-            return connection.Insert(entity);
+            return connection.Insert(_storage.Domain, entity);
         }
 
         /// <summary>
@@ -222,7 +237,7 @@ namespace CafeLib.Data.Persistence
         public async Task<bool> Add(IEnumerable<T> entities)
         {
             await using var connection = _storage.GetConnection();
-            return connection.BulkInsert(entities) > 0;
+            return connection.BulkInsert(_storage.Domain, entities) > 0;
         }
 
         /// <summary>
@@ -233,9 +248,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<bool> RemoveById<TU>(TU id)
         {
-            var tableName = TableCache.TableName<T>();
-            var keyColumnName = PropertyCache.PrimaryKeyName<T>();
-            var rows = await ExecuteCommand($"DELETE FROM {tableName} WHERE {keyColumnName} = {CheckSqlId(id)}");
+            var rows = await ExecuteCommand($"DELETE FROM {_tableName} WHERE {_propertyCache.PrimaryKeyName<T>()} = {CheckSqlId(id)}");
             return rows == 1;
         }
 
@@ -261,10 +274,7 @@ namespace CafeLib.Data.Persistence
             builder.Remove(1, separator.Length);
             builder.Append(closeParen);
 
-            var tableName = TableCache.TableName<T>();
-            var keyColumnName = PropertyCache.PrimaryKeyName<T>();
-
-            var rows = await ExecuteCommand($"DELETE FROM {tableName} WHERE {keyColumnName} IN {builder}");
+            var rows = await ExecuteCommand($"DELETE FROM {_tableName} WHERE {_propertyCache.PrimaryKeyName<T>()} IN {builder}");
             return rows == ids.Length;
         }
 
@@ -276,7 +286,7 @@ namespace CafeLib.Data.Persistence
         public async Task<bool> Remove(T entity)
         {
             await using var connection = _storage.GetConnection();
-            return connection.Delete(entity);
+            return connection.Delete(_storage.Domain, entity);
         }
 
         /// <summary>
@@ -327,8 +337,8 @@ namespace CafeLib.Data.Persistence
         public async Task<int> Save(IEnumerable<T> entities, params Expression<Func<T, object>>[]? expressions)
         {
             await using var connection = _storage.GetConnection();
-            var propertyExpressions = expressions != null && expressions.Any() ? new PropertyExpressionList<T>(expressions) : null;
-            return connection.BulkUpsert(entities, propertyExpressions);
+            var propertyExpressions = expressions != null && expressions.Any() ? new PropertyExpressionList<T>(_storage.Domain, expressions) : null;
+            return connection.BulkUpsert(_storage.Domain, entities, propertyExpressions);
         }
 
         /// <summary>
@@ -339,7 +349,7 @@ namespace CafeLib.Data.Persistence
         public async Task<bool> Update(T entity)
         {
             await using var connection = _storage.GetConnection();
-            return connection.Update(entity);
+            return connection.Update(_storage.Domain, entity);
         }
 
         /// <summary>

@@ -4,8 +4,8 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
-using CafeLib.Data.Dto;
 using CafeLib.Data.Persistence;
 using Dapper;
 // ReSharper disable UnusedMember.Global

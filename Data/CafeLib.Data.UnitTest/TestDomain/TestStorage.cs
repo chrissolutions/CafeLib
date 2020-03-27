@@ -2,7 +2,7 @@
 
 namespace CafeLib.Data.UnitTest.TestDomain
 {
-    public class TestStorage : Storage<TestContext>
+    public class TestStorage : Storage<TestDomain>
     {
         public TestStorage(string connectionUri) : base(connectionUri)
         {

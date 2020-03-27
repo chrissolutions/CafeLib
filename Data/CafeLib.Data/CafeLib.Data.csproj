@@ -21,8 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CafeLib.Data.Expressions\CafeLib.Data.Expressions.csproj" />
     <ProjectReference Include="..\CafeLib.Data.Mapping\CafeLib.Data.Mapping.csproj" />
+    <ProjectReference Include="..\CafeLib.Data.SqlGenerator\CafeLib.Data.SqlGenerator.csproj" />
   </ItemGroup>
 
   <ItemGroup>
