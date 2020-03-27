@@ -24,9 +24,9 @@ namespace CafeLib.Data
 
         Task<T> FindOne(Expression<Func<T, bool>> predicate, params object[]? parameters);
 
-        Task<T> FindById<TU>(TU id);
+        Task<T> FindByKey<TKey>(TKey id);
 
-        Task<IEnumerable<T>> FindById<TU>(IEnumerable<TU> ids);
+        Task<IEnumerable<T>> FindByKey<TKey>(IEnumerable<TKey> ids);
 
         Task<IEnumerable<T>> FindBySqlQuery(string sql, params object[]? parameters);
 

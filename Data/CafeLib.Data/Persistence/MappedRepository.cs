@@ -73,15 +73,15 @@ namespace CafeLib.Data.Persistence
             return dto.ToModel(Activator.CreateInstance<TDataModel>());
         }
 
-        public async Task<TDataModel> FindById<TU>(TU id)
+        public async Task<TDataModel> FindByKey<TKey>(TKey key)
         {
-            var dto = await _repository.FindById(id);
+            var dto = await _repository.FindByKey(key);
             return dto?.ToModel(Activator.CreateInstance<TDataModel>()) ?? default!;
         }
 
-        public async Task<IEnumerable<TDataModel>> FindById<TU>(IEnumerable<TU> ids)
+        public async Task<IEnumerable<TDataModel>> FindByKey<TKey>(IEnumerable<TKey> keys)
         {
-            var results = await _repository.FindById(ids);
+            var results = await _repository.FindByKey(keys);
             return results.Select(x => x.ToModel(Activator.CreateInstance<TDataModel>()));
         }
 

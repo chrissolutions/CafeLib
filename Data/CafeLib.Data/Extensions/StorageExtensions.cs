@@ -102,15 +102,15 @@ namespace CafeLib.Data.Extensions
             => ((StorageBase)storage).Repositories.Find<T>().Find(exp, ToSqlParameters(parameters)?.ToArray<object>());
 
         /// <summary>
-        /// Find entity by its identifier.
+        /// Find entity by its key identifier.
         /// </summary>
         /// <typeparam name="T">Data transfer type</typeparam>
-        /// <typeparam name="TU">Data id type</typeparam>
+        /// <typeparam name="TKey">Key type</typeparam>
         /// <param name="storage">storage</param>
-        /// <param name="id">identifier</param>
+        /// <param name="key">key</param>
         /// <returns>data transfer object</returns>
-        public static Task<T> FindById<T, TU>(this IStorage storage, TU id) where T : class, IEntity
-            => ((StorageBase)storage).Repositories.Find<T>().FindById(id);
+        public static Task<T> FindByKey<T, TKey>(this IStorage storage, TKey key) where T : class, IEntity
+            => ((StorageBase)storage).Repositories.Find<T>().FindByKey(key);
 
         /// <summary>
         /// Query using sql.

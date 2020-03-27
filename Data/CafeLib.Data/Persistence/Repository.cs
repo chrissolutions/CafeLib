@@ -140,27 +140,29 @@ namespace CafeLib.Data.Persistence
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="TU"></typeparam>
-        /// <param name="id"></param>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="key"></param>
         /// <returns></returns>
-        public async Task<T> FindById<TU>(TU id)
+        public async Task<T> FindByKey<TKey>(TKey key)
         {
-            var sql = $"select * from {_tableName} where Id = @Id";
+            var keyName = _storage.Domain.PropertyCache.PrimaryKeyName<T>();
+            var sql = $"select * from {_tableName} where {keyName} = @Key";
             await using var connection = _storage.GetConnection();
-            return await connection.QueryFirstOrDefaultAsync<T>(sql, new {Id = id}).ConfigureAwait(false);
+            return await connection.QueryFirstOrDefaultAsync<T>(sql, new {Key = key}).ConfigureAwait(false);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="TU"></typeparam>
-        /// <param name="id"></param>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="keys"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<T>> FindById<TU>(IEnumerable<TU> id)
+        public async Task<IEnumerable<T>> FindByKey<TKey>(IEnumerable<TKey> keys)
         {
-            var sql = $"SELECT * FROM {_tableName} WHERE Id = @Id;";
+            var key = _storage.Domain.PropertyCache.PrimaryKeyName<T>();
+            var sql = $"select * from {_tableName} where {key} = @Keys;";
             await using var connection = _storage.GetConnection();
-            return await connection.QueryAsync<T>(sql, new { Id = id }).ConfigureAwait(false);
+            return await connection.QueryAsync<T>(sql, new { Keys = keys }).ConfigureAwait(false);
         }
 
         /// <summary>
