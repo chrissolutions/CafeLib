@@ -1,5 +1,6 @@
 ﻿using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
+using CafeLib.Data.Options;
 
 namespace CafeLib.Data.Persistence
 {
@@ -17,8 +18,9 @@ namespace CafeLib.Data.Persistence
         /// Constructs a storage from the connection uri.
         /// </summary>
         /// <param name="connectionUri"></param>
-        public Storage(string connectionUri)
-            : this(new StorageConnectionInfo(connectionUri))
+        /// <param name="options">storage options</param>
+        public Storage(string connectionUri, IConnectionOptions? options = null)
+            : this(new StorageConnectionInfo(connectionUri, options))
         {
         }
 

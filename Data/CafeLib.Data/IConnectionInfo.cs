@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using CafeLib.Data.Options;
+
 // ReSharper disable UnusedMemberInSuper.Global
 
 namespace CafeLib.Data
@@ -15,5 +17,6 @@ namespace CafeLib.Data
         string UserName { get; }
         string Password { get; }
         IReadOnlyDictionary<string, string> Parameters { get; }
+        IConnectionOptions Options { get; }
     }
 }

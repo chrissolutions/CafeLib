@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CafeLib.Data.Mapping\CafeLib.Data.Mapping.csproj" />
     <ProjectReference Include="..\CafeLib.Data.SqlGenerator\CafeLib.Data.SqlGenerator.csproj" />
+    <ProjectReference Include="..\CafeLib.Data.SqlOptions\CafeLib.Data.Options.csproj" />
   </ItemGroup>
 
   <ItemGroup>

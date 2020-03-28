@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Data.SqlGenerator",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Data.UnitTest", "CafeLib.Data.UnitTest\CafeLib.Data.UnitTest.csproj", "{ED31A56F-E0B0-47D5-A462-756642776FAA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Data.Options", "CafeLib.Data.SqlOptions\CafeLib.Data.Options.csproj", "{D65EF1CD-ACA6-4320-8BD2-6229778AC215}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{ED31A56F-E0B0-47D5-A462-756642776FAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED31A56F-E0B0-47D5-A462-756642776FAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED31A56F-E0B0-47D5-A462-756642776FAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D65EF1CD-ACA6-4320-8BD2-6229778AC215}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D65EF1CD-ACA6-4320-8BD2-6229778AC215}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D65EF1CD-ACA6-4320-8BD2-6229778AC215}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D65EF1CD-ACA6-4320-8BD2-6229778AC215}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

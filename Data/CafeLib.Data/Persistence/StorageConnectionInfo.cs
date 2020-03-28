@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 using System.Data.SqlClient;
 using System.Linq;
 using CafeLib.Core.Extensions;
+using CafeLib.Data.Options;
+using CafeLib.Data.Options.SqlServer;
 
 namespace CafeLib.Data.Persistence
 {
-    public class StorageConnectionInfo : IConnectionInfo
+    internal class StorageConnectionInfo : IConnectionInfo
     {
         private const string ConnectionUriKey = "CONNECTIONURI";
         private const string ConnectionSchemeKey = "CONNECTIONSCHEME";
@@ -103,7 +105,8 @@ namespace CafeLib.Data.Persistence
         /// Storage connection info constructor.
         /// </summary>
         /// <param name="connectionUri">connection URI</param>
-        public StorageConnectionInfo(string connectionUri)
+        /// <param name="options">connection options</param>
+        public StorageConnectionInfo(string connectionUri, IConnectionOptions? options = null)
         {
             ConnectionUri = connectionUri;
             try
@@ -222,6 +225,8 @@ namespace CafeLib.Data.Persistence
         }
 
         public IReadOnlyDictionary<string, string> Parameters { get; private set; }
+
+        public IConnectionOptions Options { get; } = new SqlServerOptions();
 
         #endregion
 
