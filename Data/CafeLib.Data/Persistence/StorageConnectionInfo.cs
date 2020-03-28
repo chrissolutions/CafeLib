@@ -19,7 +19,7 @@ namespace CafeLib.Data.Persistence
         private const string PasswordKey = "PASSWORD";
 
         private const string SqlServerScheme = "sqlserver";
-        private const string SqlLiteScheme = "sqlite";
+        private const string SqliteScheme = "sqlite";
         private const string OrientDbScheme = "orientdb";
 
         private const string ConnectionSchemeDefault = "sqlserver";
@@ -86,7 +86,7 @@ namespace CafeLib.Data.Persistence
                     conn.Parameters = new ReadOnlyDictionary<string, string>(conn._connectionParameters);
                 }
             },
-            {SqlLiteScheme, (uri, conn) =>
+            {SqliteScheme, (uri, conn) =>
                 {
                     conn.HostName = uri.Host;
                     conn.Port = uri.Port;
