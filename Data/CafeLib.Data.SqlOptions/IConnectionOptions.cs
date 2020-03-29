@@ -2,5 +2,6 @@
 {
     public interface IConnectionOptions
     {
+        ISqlCommandProcessor CommandProcessor { get; }
     }
 }
