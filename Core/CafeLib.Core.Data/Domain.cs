@@ -13,8 +13,8 @@ namespace CafeLib.Core.Data
 
         #region Automatic Properties
 
-        internal PropertyCache PropertyCache { get; }
-        internal TableCache TableCache { get; }
+        public PropertyCache PropertyCache { get; }
+        public TableCache TableCache { get; }
 
         #endregion
 

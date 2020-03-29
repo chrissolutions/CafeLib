@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
+using CafeLib.Data.Options;
 using Dapper;
 // ReSharper disable UnusedMember.Global
 

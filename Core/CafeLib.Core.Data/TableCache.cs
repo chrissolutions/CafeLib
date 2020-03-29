@@ -11,7 +11,7 @@ namespace CafeLib.Core.Data
     /// Used to store table names
     /// </summary>
     // ReSharper disable once UnusedMember.Global
-    internal class TableCache
+    public class TableCache
     {
         private readonly Domain _domain;
 

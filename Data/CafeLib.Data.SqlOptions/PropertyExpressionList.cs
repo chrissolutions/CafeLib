@@ -5,9 +5,9 @@ using System.Linq.Expressions;
 using CafeLib.Core.Data;
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Data.Persistence
+namespace CafeLib.Data.Options
 {
-    internal class PropertyExpressionList<T> : List<Expression<Func<T, object>>> where T : IEntity
+    public class PropertyExpressionList<T> : List<Expression<Func<T, object>>> where T : IEntity
     {
         private readonly Domain _domain;
 
@@ -22,7 +22,7 @@ namespace CafeLib.Data.Persistence
             return this.Select(GetMemberName);
         }
 
-        internal IEnumerable<string> GetColumnNames()
+        public IEnumerable<string> GetColumnNames()
         {
             return this.Select(x => _domain.PropertyCache.GetColumnNamesCache<T>()[GetMemberName(x)]);
         }

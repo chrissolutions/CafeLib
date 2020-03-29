@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace CafeLib.Core.Data
 {
-    internal class PropertyCache
+    public class PropertyCache
     {
         private readonly ConcurrentDictionary<Type, IEnumerable<PropertyInfo>> _keyProperties = new ConcurrentDictionary<Type, IEnumerable<PropertyInfo>>();
         private readonly ConcurrentDictionary<Type, IEnumerable<PropertyInfo>> _typeProperties = new ConcurrentDictionary<Type, IEnumerable<PropertyInfo>>();
