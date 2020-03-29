@@ -42,7 +42,7 @@ namespace CafeLib.Data.Sources.SqlServer
             var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
             var tempToBeInserted = $"#TempInsert_{tableName}".Replace(".", string.Empty);
 
-            await connection.ExecuteAsync($@"SELECT TOP 0 {allPropertiesExceptKeyAndComputedString} INTO {tempToBeInserted} FROM {FormatTableName(tableName)} target WITH(NOLOCK);", null, null);
+            await connection.ExecuteAsync($@"SELECT TOP 0 {allPropertiesExceptKeyAndComputedString} INTO {tempToBeInserted} FROM {FormatTableName(tableName)} target WITH(NOLOCK);");
 
             using (var bulkCopy = new SqlBulkCopy((SqlConnection)connection, SqlBulkCopyOptions.Default, null))
             {
@@ -57,7 +57,7 @@ namespace CafeLib.Data.Sources.SqlServer
                 INSERT INTO {FormatTableName(tableName)}({allPropertiesExceptKeyAndComputedString}) 
                 SELECT {allPropertiesExceptKeyAndComputedString} FROM {tempToBeInserted}
 
-                DROP TABLE {tempToBeInserted};", null, null);
+                DROP TABLE {tempToBeInserted};");
         }
 
         public bool Update<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
