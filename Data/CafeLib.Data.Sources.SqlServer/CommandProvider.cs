@@ -5,19 +5,22 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
+using CafeLib.Core.Support;
 using Dapper;
 
 namespace CafeLib.Data.Sources.SqlServer
 {
-    public class SqlServerCommandProcessor : ISqlCommandProcessor
+    internal class CommandProvider : SingletonBase<CommandProvider>, ISqlCommandProcessor
     {
         public T Insert<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
         {
-            throw new NotImplementedException();
+            var sql = InsertSql<T>(domain);
+            return connection.QuerySingleOrDefault<T>(sql, data);
         }
 
         public int Insert<T>(IDbConnection connection, Domain domain, IEnumerable<T> data) where T : IEntity
@@ -27,7 +30,8 @@ namespace CafeLib.Data.Sources.SqlServer
 
         public Task<T> InsertAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
         {
-            throw new NotImplementedException();
+            var sql = InsertSql<T>(domain);
+            return connection.QuerySingleOrDefaultAsync<T>(sql, data);
         }
 
         public async Task InsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
@@ -93,6 +97,34 @@ namespace CafeLib.Data.Sources.SqlServer
 
         #region Helpers
 
+        private static string InsertSql<T>(Domain domain) where T : IEntity
+        {
+            var tableName = domain.TableCache.TableName<T>();
+            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
+            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
+            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
+
+            var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
+            var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
+
+            var sbParameterList = new StringBuilder(null);
+            for (var i = 0; i < allPropertiesExceptKeyAndComputed.Count; i++)
+            {
+                var property = allPropertiesExceptKeyAndComputed[i];
+                sbParameterList.Append($"@{property.Name}");
+                if (i < allPropertiesExceptKeyAndComputed.Count - 1)
+                    sbParameterList.Append(", ");
+            }
+
+            var sql = $@"
+            INSERT INTO { FormatTableName(tableName)} ({ allPropertiesExceptKeyAndComputedString}) 
+            OUTPUT INSERTED.*
+            VALUES({sbParameterList})";
+
+            return sql;
+        }
+
         private static string GetColumnsStringSqlServer(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<string, string> columnNames, string tablePrefix = null)
         {
             if (tablePrefix == "target.")
@@ -157,7 +189,6 @@ namespace CafeLib.Data.Sources.SqlServer
 
             return $"[{parts[0]}].[{parts[1]}]";
         }
-
 
         private static IEnumerable<string> FormatColumnNames(string columnsString, string prefix)
         {

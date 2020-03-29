@@ -2,6 +2,6 @@
 {
     public class SqlServerOptions : IConnectionOptions
     {
-        public ISqlCommandProcessor CommandProcessor { get; } = new SqlServerCommandProcessor();
+        public ISqlCommandProcessor CommandProcessor { get; } = CommandProvider.Current;
     }
 }
