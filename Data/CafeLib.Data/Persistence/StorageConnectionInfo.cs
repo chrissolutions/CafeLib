@@ -4,8 +4,7 @@ using System.Collections.ObjectModel;
 using System.Data.SqlClient;
 using System.Linq;
 using CafeLib.Core.Extensions;
-using CafeLib.Data.Options;
-using CafeLib.Data.Options.SqlServer;
+using CafeLib.Data.Sources;
 
 namespace CafeLib.Data.Persistence
 {
@@ -226,7 +225,7 @@ namespace CafeLib.Data.Persistence
 
         public IReadOnlyDictionary<string, string> Parameters { get; private set; }
 
-        public IConnectionOptions Options { get; } = new SqlServerOptions();
+        public IConnectionOptions Options { get; } = new SqlOptions();
 
         #endregion
 
