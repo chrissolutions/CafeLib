@@ -154,13 +154,74 @@ namespace CafeLib.Data.Sources.SqlServer
 
         public int Upsert<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, Expression<Func<T, object>>[] expressions) where T : IEntity
         {
-            throw new NotImplementedException();
+            return UpsertAsync(connection, domain, data, expressions).GetAwaiter().GetResult();
         }
 
-        public Task<int> UpsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, Expression<Func<T, object>>[] expressions,
-            CancellationToken token = default) where T : IEntity
+        public async Task<int> UpsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
         {
-            throw new NotImplementedException();
+            var tableName = domain.TableCache.TableName<T>();
+            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
+            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
+            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
+
+            var allPropertiesString = GetColumnsStringSqlServer(allProperties, columns);
+            var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
+            var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
+            var tempToBeInserted = $"#TempInsert_{tableName}".Replace(".", string.Empty);
+
+            var propertiesString = keyProperties.First().PropertyType == typeof(Guid) ? allPropertiesString : allPropertiesExceptKeyAndComputedString;
+            var expressionList = new PropertyExpressionList<T>(domain, expressions);
+
+            // Open connection.
+            connection.Open();
+
+            // Create temporary table to cache resultant bulk copy.
+            connection.Execute($@"SELECT TOP 0 {allPropertiesExceptKeyAndComputedString} INTO {tempToBeInserted} FROM {FormatTableName(tableName)} target WITH(NOLOCK);");
+            connection.Execute($@"ALTER TABLE {tempToBeInserted} ADD {keyProperties.First().Name} {PropertyCache.GetSqlType(keyProperties.First().PropertyType)}");
+
+            try
+            {
+                // Perform bulk copy
+                using (var bulkCopy = new SqlBulkCopy((SqlConnection)connection, SqlBulkCopyOptions.Default, null))
+                {
+                    bulkCopy.BulkCopyTimeout = 30;
+                    bulkCopy.BatchSize = 0;
+                    bulkCopy.DestinationTableName = tempToBeInserted;
+
+                    // ReSharper disable once AccessToDisposedClosure
+                    allProperties.ForEach((x, i) => bulkCopy.ColumnMappings.Add(x.Name, columns[x.Name]));
+                    await using var table = ToDataTable(data, allProperties).CreateDataReader();
+                    bulkCopy.WriteToServer(table);
+                }
+
+                //Now use the merge command to upsert from the temp table to the production table
+                var sql = $@"MERGE INTO {FormatTableName(tableName)} as tgt  
+                                    USING {tempToBeInserted} as src
+                                    ON 
+                                        {string.Join(" AND ", FormatMergeOnMatchList(domain, expressionList))}
+                                    WHEN MATCHED THEN
+                                        UPDATE SET
+                                            {string.Join(", ", FormatUpdateList(propertiesString))}
+                                    WHEN NOT MATCHED THEN
+                                        INSERT 
+                                            ({propertiesString}) 
+                                        VALUES
+                                            ({string.Join(", ", FormatColumnNames(propertiesString, "src"))});";
+
+
+                // Merge from temporary table to actual table.
+                var result = await connection.ExecuteAsync(sql);
+
+                await connection.ExecuteAsync($@"DROP TABLE {tempToBeInserted};");
+                connection.Close();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
 
         public bool Delete<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
