@@ -254,7 +254,7 @@ namespace CafeLib.Data.Persistence
         public async Task<bool> Remove(T entity)
         {
             using var connection = _storage.GetConnection();
-            return await Task.FromResult(connection.Delete(_storage.Domain, entity));
+            return await _options.CommandProcessor.DeleteAsync(connection, _storage.Domain, entity);
         }
 
         /// <summary>
@@ -316,7 +316,7 @@ namespace CafeLib.Data.Persistence
         public async Task<bool> Update(T entity)
         {
             using var connection = _storage.GetConnection();
-            return await Task.FromResult(connection.Update(_storage.Domain, entity));
+            return await _options.CommandProcessor.UpdateAsync(connection, _storage.Domain, entity);
         }
 
         /// <summary>
