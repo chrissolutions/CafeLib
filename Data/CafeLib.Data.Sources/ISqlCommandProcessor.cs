@@ -50,6 +50,7 @@ namespace CafeLib.Data.Sources
         /// <param name="domain">Entity domain</param>
         /// <param name="data">Entities to insert</param>
         /// <param name="token">Cancellation token</param>
+        /// <returns></returns>
         Task<int> InsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity;
 
         /// <summary>

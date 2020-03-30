@@ -20,8 +20,7 @@ namespace CafeLib.Data.Sources.SqlServer
     {
         public T Insert<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
         {
-            var sql = InsertSql<T>(domain);
-            return connection.QuerySingleOrDefault<T>(sql, data);
+            return InsertAsync(connection, domain, data).GetAwaiter().GetResult();
         }
 
         public int Insert<T>(IDbConnection connection, Domain domain, IEnumerable<T> data) where T : IEntity
@@ -31,11 +30,41 @@ namespace CafeLib.Data.Sources.SqlServer
 
         public async Task<T> InsertAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
         {
-            var sql = InsertSql<T>(domain);
+            var tableName = domain.TableCache.TableName<T>();
+            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
+            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
+            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
+
+            var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
+            var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
+
+            var sbParameterList = new StringBuilder(null);
+            for (var i = 0; i < allPropertiesExceptKeyAndComputed.Count; i++)
+            {
+                var property = allPropertiesExceptKeyAndComputed[i];
+                sbParameterList.Append($"@{property.Name}");
+                if (i < allPropertiesExceptKeyAndComputed.Count - 1)
+                    sbParameterList.Append(", ");
+            }
+
+            var sql = $@"
+            INSERT INTO { FormatTableName(tableName)} ({ allPropertiesExceptKeyAndComputedString}) 
+            OUTPUT INSERTED.*
+            VALUES({sbParameterList})";
+
             return await connection.QuerySingleOrDefaultAsync<T>(sql, data).ConfigureAwait(false);
         }
 
-
+        /// <summary>
+        /// Bulk insert entities asynchronously.
+        /// </summary>
+        /// <typeparam name="T">The type being inserted.</typeparam>
+        /// <param name="connection">Data source connection</param>
+        /// <param name="domain">Entity domain</param>
+        /// <param name="data">Entities to insert</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns></returns>
         public async Task<int> InsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
         {
             var tableName = domain.TableCache.TableName<T>();
@@ -136,43 +165,57 @@ namespace CafeLib.Data.Sources.SqlServer
 
         public bool Delete<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
         {
-            throw new NotImplementedException();
+            return DeleteAsync(connection, domain, data).GetAwaiter().GetResult();
         }
 
-        public Task<bool> DeleteAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
+        public async Task<bool> DeleteAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
         {
-            throw new NotImplementedException();
+            if (data == null)
+                throw new ArgumentException("Cannot Delete null Object", nameof(data));
+
+            var type = typeof(T);
+
+            if (type.IsArray)
+            {
+                type = type.GetElementType();
+            }
+            else if (type.IsGenericType)
+            {
+                var typeInfo = type.GetTypeInfo();
+                var implementsGenericIEnumerableOrIsGenericIEnumerable =
+                    typeInfo.ImplementedInterfaces.Any(ti => ti.IsGenericType && ti.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ||
+                    typeInfo.GetGenericTypeDefinition() == typeof(IEnumerable<>);
+
+                if (implementsGenericIEnumerableOrIsGenericIEnumerable)
+                {
+                    type = type.GetGenericArguments()[0];
+                }
+            }
+
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>().ToList();  //added ToList() due to issue #418, must work on a list copy
+            if (!keyProperties.Any())
+                throw new ArgumentException("Entity must have at least one [Key] or [ExplicitKey] property");
+
+            var name = domain.TableCache.TableName(type);
+
+            var sb = new StringBuilder();
+            sb.Append($"DELETE FROM {name} WHERE ");
+
+            for (var i = 0; i < keyProperties.Count; i++)
+            {
+                var property = keyProperties[i];
+                sb.Append($"{property.Name} = @{property.Name}");
+                if (i < keyProperties.Count - 1)
+                {
+                    sb.Append(" AND ");
+                }
+            }
+
+            var deleted = await connection.ExecuteAsync(sb.ToString(), data);
+            return deleted > 0;
         }
 
         #region Helpers
-
-        private static string InsertSql<T>(Domain domain) where T : IEntity
-        {
-            var tableName = domain.TableCache.TableName<T>();
-            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
-            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
-            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
-            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
-
-            var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
-            var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
-
-            var sbParameterList = new StringBuilder(null);
-            for (var i = 0; i < allPropertiesExceptKeyAndComputed.Count; i++)
-            {
-                var property = allPropertiesExceptKeyAndComputed[i];
-                sbParameterList.Append($"@{property.Name}");
-                if (i < allPropertiesExceptKeyAndComputed.Count - 1)
-                    sbParameterList.Append(", ");
-            }
-
-            var sql = $@"
-            INSERT INTO { FormatTableName(tableName)} ({ allPropertiesExceptKeyAndComputedString}) 
-            OUTPUT INSERTED.*
-            VALUES({sbParameterList})";
-
-            return sql;
-        }
 
         private static string GetColumnsStringSqlServer(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<string, string> columnNames, string tablePrefix = null)
         {
