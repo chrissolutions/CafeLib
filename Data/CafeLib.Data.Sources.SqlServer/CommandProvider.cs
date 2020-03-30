@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
@@ -25,16 +26,17 @@ namespace CafeLib.Data.Sources.SqlServer
 
         public int Insert<T>(IDbConnection connection, Domain domain, IEnumerable<T> data) where T : IEntity
         {
-            throw new NotImplementedException();
+            return InsertAsync(connection, domain, data).GetAwaiter().GetResult();
         }
 
-        public Task<T> InsertAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
+        public async Task<T> InsertAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
         {
             var sql = InsertSql<T>(domain);
-            return connection.QuerySingleOrDefaultAsync<T>(sql, data);
+            return await connection.QuerySingleOrDefaultAsync<T>(sql, data).ConfigureAwait(false);
         }
 
-        public async Task InsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
+
+        public async Task<int> InsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
         {
             var tableName = domain.TableCache.TableName<T>();
             var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
@@ -42,26 +44,73 @@ namespace CafeLib.Data.Sources.SqlServer
             var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
             var columns = domain.PropertyCache.GetColumnNamesCache<T>();
 
+            var allPropertiesString = GetColumnsStringSqlServer(allProperties, columns);
             var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
             var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
             var tempToBeInserted = $"#TempInsert_{tableName}".Replace(".", string.Empty);
 
-            await connection.ExecuteAsync($@"SELECT TOP 0 {allPropertiesExceptKeyAndComputedString} INTO {tempToBeInserted} FROM {FormatTableName(tableName)} target WITH(NOLOCK);");
+            var properties = keyProperties.First().PropertyType == typeof(Guid) ? allProperties : allPropertiesExceptKeyAndComputed;
+            var propertiesString = keyProperties.First().PropertyType == typeof(Guid) ? allPropertiesString : allPropertiesExceptKeyAndComputedString;
 
-            using (var bulkCopy = new SqlBulkCopy((SqlConnection)connection, SqlBulkCopyOptions.Default, null))
+            // Open connection.
+            connection.Open();
+
+            // Create temporary table to cache resultant bulk copy.
+            await connection.ExecuteAsync($@"SELECT TOP 0 {propertiesString} INTO {tempToBeInserted} FROM {FormatTableName(tableName)} target WITH(NOLOCK);");
+
+            var sqlBulkCopy = new SqlBulkCopy((SqlConnection)connection, SqlBulkCopyOptions.Default, null);
+
+            try
             {
-                bulkCopy.BulkCopyTimeout = 30;
-                bulkCopy.BatchSize = 0;
-                bulkCopy.DestinationTableName = tempToBeInserted;
-                await using var reader = ToDataTable(data, allPropertiesExceptKeyAndComputed).CreateDataReader();
-                await bulkCopy.WriteToServerAsync(reader, token);
+                // Perform bulk copy
+                using (var bulkCopy = sqlBulkCopy) //new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction))
+                {
+                    bulkCopy.BulkCopyTimeout = 30;
+                    bulkCopy.BatchSize = 0;
+                    bulkCopy.DestinationTableName = tempToBeInserted;
+
+                    // ReSharper disable once AccessToDisposedClosure
+                    properties.ForEach((x, i) => bulkCopy.ColumnMappings.Add(x.Name, columns[x.Name]));
+                    await using var table = ToDataTable(data, properties).CreateDataReader();
+                    bulkCopy.WriteToServer(table);
+                }
+
+                // Insert from temporary table to actual table.
+                var sql = $@"INSERT INTO {FormatTableName(tableName)}({propertiesString}) SELECT {propertiesString} FROM {tempToBeInserted}";
+                var result = await connection.ExecuteAsync(sql);
+
+                await connection.ExecuteAsync($@"DROP TABLE {tempToBeInserted};");
+                connection.Close();
+                return result;
             }
+            catch (SqlException ex)
+            {
+                if (ex.Message.Contains(@"Received an invalid column length from the bcp client for colid"))
+                {
+                    const string pattern = @"\d+";
+                    var match = Regex.Match(ex.Message, pattern);
+                    var index = Convert.ToInt32(match.Value) - 1;
 
-            await connection.ExecuteAsync($@"
-                INSERT INTO {FormatTableName(tableName)}({allPropertiesExceptKeyAndComputedString}) 
-                SELECT {allPropertiesExceptKeyAndComputedString} FROM {tempToBeInserted}
+                    var fi = typeof(SqlBulkCopy).GetField("_sortedColumnMappings", BindingFlags.NonPublic | BindingFlags.Instance);
+                    var sortedColumns = fi?.GetValue(sqlBulkCopy);
+                    var items = (object[])sortedColumns?.GetType().GetField("_items", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(sortedColumns);
 
-                DROP TABLE {tempToBeInserted};");
+                    var itemData = items?[index].GetType().GetField("_metadata", BindingFlags.NonPublic | BindingFlags.Instance);
+                    var metadata = items != null ? itemData?.GetValue(items[index]) : null;
+
+                    var column = metadata?.GetType().GetField("column", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(metadata);
+                    var length = metadata?.GetType().GetField("length", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(metadata);
+                    throw new DataException($"Column: {column} contains data with a length greater than: {length}");
+                }
+
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
 
         public bool Update<T>(IDbConnection connection, Domain domain, T data) where T : IEntity

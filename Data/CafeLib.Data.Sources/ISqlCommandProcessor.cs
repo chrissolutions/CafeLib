@@ -23,7 +23,7 @@ namespace CafeLib.Data.Sources
         T Insert<T>(IDbConnection connection, Domain domain, T data) where T : IEntity;
 
         /// <summary>
-        /// Inserts entities into table <typeparamref name="T"/>s (by default).
+        /// Bulk insert entities.
         /// </summary>
         /// <typeparam name="T">The type being inserted.</typeparam>
         /// <param name="connection">Data source connection</param>
@@ -43,14 +43,14 @@ namespace CafeLib.Data.Sources
         Task<T> InsertAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity;
 
         /// <summary>
-        /// Inserts entities into table <typeparamref name="T"/>s (by default) asynchronously.
+        /// Bulk insert entities asynchronously.
         /// </summary>
         /// <typeparam name="T">The type being inserted.</typeparam>
         /// <param name="connection">Data source connection</param>
         /// <param name="domain">Entity domain</param>
         /// <param name="data">Entities to insert</param>
         /// <param name="token">Cancellation token</param>
-        Task InsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity;
+        Task<int> InsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity;
 
         /// <summary>
         /// Sql update command
