@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -18,12 +19,49 @@ namespace CafeLib.Data.Sources.SqlServer
 {
     internal class CommandProvider : SingletonBase<CommandProvider>, ISqlCommandProcessor
     {
-        public T Insert<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
+        public QueryResult<T> ExecuteQuery<T>(IDbConnection connection, string sql, params object[] parameters) where T : class, IEntity
         {
-            return InsertAsync(connection, domain, data).GetAwaiter().GetResult();
+            return ExecuteQueryAsync<T>(connection, sql, parameters).GetAwaiter().GetResult();
         }
 
-        public int Insert<T>(IDbConnection connection, Domain domain, IEnumerable<T> data) where T : IEntity
+        public async Task<QueryResult<T>> ExecuteQueryAsync<T>(IDbConnection connection, string sql, params object[] parameters) where T : class, IEntity
+        {
+            var conn = (SqlConnection)connection;
+            var command = conn.CreateCommand();
+            command.CommandText = sql;
+            if (parameters?.Any() ?? false)
+            {
+                command.Parameters.AddRange(parameters);
+            }
+
+            conn.Open();
+            await using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+            var totalCount = -1;
+            var results = new List<T>();
+
+            var model = Activator.CreateInstance<T>();
+            while (reader.Read())
+            {
+                foreach (var prop in model.GetType().GetProperties())
+                {
+                    var attr = prop.GetCustomAttribute(typeof(ColumnAttribute));
+                    var name = attr != null ? ((ColumnAttribute)attr).Name : prop.Name;
+                    var val = reader[name];
+                    prop.SetValue(model, val == DBNull.Value ? null : val);
+                }
+                results.Add(model);
+                model = Activator.CreateInstance<T>();
+            }
+
+            if (reader.NextResult())
+            {
+                reader.Read();
+                totalCount = reader.GetInt32(0);
+            }
+            return new QueryResult<T> { Records = results.ToArray(), TotalCount = totalCount };
+        }
+
+        public T Insert<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
         {
             return InsertAsync(connection, domain, data).GetAwaiter().GetResult();
         }
@@ -57,6 +95,19 @@ namespace CafeLib.Data.Sources.SqlServer
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection"></param>
+        /// <param name="domain"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public int Insert<T>(IDbConnection connection, Domain domain, IEnumerable<T> data) where T : IEntity
+        {
+            return InsertAsync(connection, domain, data).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
         /// Bulk insert entities asynchronously.
         /// </summary>
         /// <typeparam name="T">The type being inserted.</typeparam>
@@ -85,7 +136,7 @@ namespace CafeLib.Data.Sources.SqlServer
             connection.Open();
 
             // Create temporary table to cache resultant bulk copy.
-            await connection.ExecuteAsync($@"SELECT TOP 0 {propertiesString} INTO {tempToBeInserted} FROM {FormatTableName(tableName)} target WITH(NOLOCK);");
+            await connection.ExecuteAsync($@"SELECT TOP 0 {propertiesString} INTO {tempToBeInserted} FROM {FormatTableName(tableName)} target WITH(NOLOCK);").ConfigureAwait(false);
 
             var sqlBulkCopy = new SqlBulkCopy((SqlConnection)connection, SqlBulkCopyOptions.Default, null);
 
@@ -101,14 +152,14 @@ namespace CafeLib.Data.Sources.SqlServer
                     // ReSharper disable once AccessToDisposedClosure
                     properties.ForEach((x, i) => bulkCopy.ColumnMappings.Add(x.Name, columns[x.Name]));
                     await using var table = ToDataTable(data, properties).CreateDataReader();
-                    bulkCopy.WriteToServer(table);
+                    await bulkCopy.WriteToServerAsync(table, token).ConfigureAwait(false);
                 }
 
                 // Insert from temporary table to actual table.
                 var sql = $@"INSERT INTO {FormatTableName(tableName)}({propertiesString}) SELECT {propertiesString} FROM {tempToBeInserted}";
-                var result = await connection.ExecuteAsync(sql);
+                var result = await connection.ExecuteAsync(sql).ConfigureAwait(false); 
 
-                await connection.ExecuteAsync($@"DROP TABLE {tempToBeInserted};");
+                await connection.ExecuteAsync($@"DROP TABLE {tempToBeInserted};").ConfigureAwait(false);
                 connection.Close();
                 return result;
             }
@@ -142,14 +193,82 @@ namespace CafeLib.Data.Sources.SqlServer
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection"></param>
+        /// <param name="domain"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public bool Update<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
         {
-            throw new NotImplementedException();
+            return UpdateAsync(connection, domain, data).GetAwaiter().GetResult();
         }
 
-        public bool UpdateAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection"></param>
+        /// <param name="domain"></param>
+        /// <param name="data"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
         {
-            throw new NotImplementedException();
+            var type = typeof(T);
+
+            if (type.IsArray)
+            {
+                type = type.GetElementType();
+            }
+            else if (type.IsGenericType)
+            {
+                var typeInfo = type.GetTypeInfo();
+                var implementsGenericIEnumerableOrIsGenericIEnumerable =
+                    typeInfo.ImplementedInterfaces.Any(ti => ti.IsGenericType && ti.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ||
+                    typeInfo.GetGenericTypeDefinition() == typeof(IEnumerable<>);
+
+                if (implementsGenericIEnumerableOrIsGenericIEnumerable)
+                {
+                    type = type.GetGenericArguments()[0];
+                }
+            }
+
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
+            if (!keyProperties.Any())
+                throw new ArgumentException("Entity must have at least one [Key] or [ExplicitKey] property");
+
+            var name = domain.TableCache.TableName(type);
+
+            var sb = new StringBuilder();
+            sb.Append($"UPDATE {name} SET ");
+
+            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
+            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
+            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
+            var nonIdProps = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
+
+            nonIdProps.ForEach(x =>
+            {
+                sb.Append($"{columns[x.Name]} = @{x.Name}");
+                sb.Append(", ");
+            });
+            sb.Remove(sb.Length - ", ".Length, ", ".Length);
+
+            sb.Append(" WHERE ");
+
+            for (var i = 0; i < keyProperties.Count; i++)
+            {
+                var property = keyProperties[i];
+                sb.Append($"{property.Name} = @{property.Name}");
+                if (i < keyProperties.Count - 1)
+                    sb.Append(" AND ");
+            }
+
+            var updated = await connection.ExecuteAsync(sb.ToString(), data).ConfigureAwait(false);
+            return updated > 0;
         }
 
         public int Upsert<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, Expression<Func<T, object>>[] expressions) where T : IEntity
@@ -177,8 +296,8 @@ namespace CafeLib.Data.Sources.SqlServer
             connection.Open();
 
             // Create temporary table to cache resultant bulk copy.
-            connection.Execute($@"SELECT TOP 0 {allPropertiesExceptKeyAndComputedString} INTO {tempToBeInserted} FROM {FormatTableName(tableName)} target WITH(NOLOCK);");
-            connection.Execute($@"ALTER TABLE {tempToBeInserted} ADD {keyProperties.First().Name} {PropertyCache.GetSqlType(keyProperties.First().PropertyType)}");
+            await connection.ExecuteAsync($@"SELECT TOP 0 {allPropertiesExceptKeyAndComputedString} INTO {tempToBeInserted} FROM {FormatTableName(tableName)} target WITH(NOLOCK);").ConfigureAwait(false);
+            await connection.ExecuteAsync($@"ALTER TABLE {tempToBeInserted} ADD {keyProperties.First().Name} {PropertyCache.GetSqlType(keyProperties.First().PropertyType)}").ConfigureAwait(false);
 
             try
             {
@@ -192,7 +311,7 @@ namespace CafeLib.Data.Sources.SqlServer
                     // ReSharper disable once AccessToDisposedClosure
                     allProperties.ForEach((x, i) => bulkCopy.ColumnMappings.Add(x.Name, columns[x.Name]));
                     await using var table = ToDataTable(data, allProperties).CreateDataReader();
-                    bulkCopy.WriteToServer(table);
+                    await bulkCopy.WriteToServerAsync(table, token).ConfigureAwait(false);
                 }
 
                 //Now use the merge command to upsert from the temp table to the production table
@@ -211,9 +330,9 @@ namespace CafeLib.Data.Sources.SqlServer
 
 
                 // Merge from temporary table to actual table.
-                var result = await connection.ExecuteAsync(sql);
+                var result = await connection.ExecuteAsync(sql).ConfigureAwait(false);
 
-                await connection.ExecuteAsync($@"DROP TABLE {tempToBeInserted};");
+                await connection.ExecuteAsync($@"DROP TABLE {tempToBeInserted};").ConfigureAwait(false);
                 connection.Close();
                 return result;
             }
@@ -272,7 +391,7 @@ namespace CafeLib.Data.Sources.SqlServer
                 }
             }
 
-            var deleted = await connection.ExecuteAsync(sb.ToString(), data);
+            var deleted = await connection.ExecuteAsync(sb.ToString(), data).ConfigureAwait(false);
             return deleted > 0;
         }
 

@@ -10,17 +10,22 @@ namespace CafeLib.Data.Sources
 {
     public class SqlCommandProcessor : ISqlCommandProcessor
     {
+        public Task<QueryResult<T>> ExecuteQueryAsync<T>(IDbConnection connection, string sql, params object[] parameters) where T : class, IEntity
+        {
+            throw new NotImplementedException();
+        }
+
         public T Insert<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
         {
             throw new NotImplementedException();
         }
 
-        public int Insert<T>(IDbConnection connection, Domain domain, IEnumerable<T> data) where T : IEntity
+        public Task<T> InsertAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
         {
             throw new NotImplementedException();
         }
 
-        public Task<T> InsertAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
+        public int Insert<T>(IDbConnection connection, Domain domain, IEnumerable<T> data) where T : IEntity
         {
             throw new NotImplementedException();
         }
@@ -35,7 +40,7 @@ namespace CafeLib.Data.Sources
             throw new NotImplementedException();
         }
 
-        public bool UpdateAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
+        public Task<bool> UpdateAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
         {
             throw new NotImplementedException();
         }
@@ -57,6 +62,11 @@ namespace CafeLib.Data.Sources
         }
 
         public Task<bool> DeleteAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
+        {
+            throw new NotImplementedException();
+        }
+
+        public QueryResult<T> ExecuteQuery<T>(IDbConnection connection, string sql, params object[] parameters) where T : class, IEntity
         {
             throw new NotImplementedException();
         }
