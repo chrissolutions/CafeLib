@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
@@ -186,39 +184,8 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<QueryResult<T>> ExecuteQuery(string sql, params object[]? parameters)
         {
-            await using var connection = _storage.GetConnection();
-            var command = connection.CreateCommand();
-            command.CommandText = sql;
-            if (parameters?.Any() ?? false)
-            {
-                command.Parameters.AddRange(parameters);
-            }
-
-            connection.Open();
-            await using var reader = await command.ExecuteReaderAsync();
-            var totalCount = -1;
-            var results = new List<T>();
-
-            var model = Activator.CreateInstance<T>();
-            while (reader.Read())
-            {
-                foreach (var prop in model.GetType().GetProperties())
-                {
-                    var attr = prop.GetCustomAttribute(typeof(ColumnAttribute));
-                    var name = attr != null ? ((ColumnAttribute)attr).Name : prop.Name;
-                    var val = reader[name];
-                    prop.SetValue(model, val == DBNull.Value ? null : val);
-                }
-                results.Add(model);
-                model = Activator.CreateInstance<T>();
-            }
-
-            if (reader.NextResult())
-            {
-                reader.Read();
-                totalCount = reader.GetInt32(0);
-            }
-            return new QueryResult<T> { Records = results.ToArray(), TotalCount = totalCount };
+            using var connection = _storage.ConnectionInfo.Options.GetConnection();
+            return await _storage.ConnectionInfo.Options.CommandProcessor.ExecuteQueryAsync<T>(connection, sql, parameters);
         }
 
         /// <summary>

@@ -3,7 +3,7 @@ using System.Linq;
 using CafeLib.Core.Data;
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Data
+namespace CafeLib.Data.Sources
 {
     /// <summary>
     /// QueryResult structure.
@@ -18,7 +18,6 @@ namespace CafeLib.Data
             : this(records.ToArray(), totalCount)
         {
         }
-
         public QueryResult(IEnumerable<T> records, int totalCount = -1)
         {
             Records = records;

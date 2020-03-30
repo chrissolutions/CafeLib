@@ -3,7 +3,7 @@
 namespace CafeLib.Data
 {
     /// <summary>
-    /// QueryResult structure.
+    /// SaveResult structure.
     /// </summary>
     public struct SaveResult<T>
     {
