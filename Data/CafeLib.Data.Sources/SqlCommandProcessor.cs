@@ -10,6 +10,21 @@ namespace CafeLib.Data.Sources
 {
     public class SqlCommandProcessor : ISqlCommandProcessor
     {
+        public bool Delete<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
+        {
+            throw new NotImplementedException();
+        }
+
+        public QueryResult<T> ExecuteQuery<T>(IDbConnection connection, string sql, params object[] parameters) where T : class, IEntity
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<QueryResult<T>> ExecuteQueryAsync<T>(IDbConnection connection, string sql, params object[] parameters) where T : class, IEntity
         {
             throw new NotImplementedException();
@@ -50,23 +65,7 @@ namespace CafeLib.Data.Sources
             throw new NotImplementedException();
         }
 
-        public Task<int> UpsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, Expression<Func<T, object>>[] expressions,
-            CancellationToken token = default) where T : IEntity
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Delete<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> DeleteAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
-        {
-            throw new NotImplementedException();
-        }
-
-        public QueryResult<T> ExecuteQuery<T>(IDbConnection connection, string sql, params object[] parameters) where T : class, IEntity
+        public Task<int> UpsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
         {
             throw new NotImplementedException();
         }

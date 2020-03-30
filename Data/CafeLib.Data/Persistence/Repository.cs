@@ -9,8 +9,6 @@ using CafeLib.Core.Extensions;
 using CafeLib.Data.Extensions;
 using CafeLib.Data.Sources;
 using CafeLib.Data.SqlGenerator;
-using CafeLib.Data.SqlGenerator.DbObjects;
-using CafeLib.Data.SqlGenerator.DbObjects.SqlObjects;
 using CafeLib.Data.SqlGenerator.Models;
 using Dapper;
 // ReSharper disable UnusedMember.Global
@@ -23,7 +21,7 @@ namespace CafeLib.Data.Persistence
         private readonly string _tableName;
         private readonly PropertyCache _propertyCache;
         private readonly IModelInfoProvider _modelInfoProvider;
-        private readonly IDbObjectFactory _dbObjectFactory;
+        private readonly IConnectionOptions _options;
 
         /// <summary>
         /// Repository constructor.
@@ -34,8 +32,8 @@ namespace CafeLib.Data.Persistence
             _storage = (StorageBase)storage;
             _tableName = _storage.Domain.TableCache.TableName<T>();
             _propertyCache = _storage.Domain.PropertyCache;
+            _options = _storage.ConnectionInfo.Options;
             _modelInfoProvider = new EntityModelInfoProvider(_storage.Domain);
-            _dbObjectFactory = new SqlObjectFactory();
         }
 
         /// <summary>
@@ -89,10 +87,10 @@ namespace CafeLib.Data.Persistence
         public async Task<int> Count(Expression<Func<T, bool>> predicate, params object[]? parameters)
         {
             var query = new List<T>().AsQueryable().Where(predicate);
-            var script = QueryTranslator.Translate(query.Expression, _modelInfoProvider, _dbObjectFactory);
+            var script = QueryTranslator.Translate(query.Expression, _modelInfoProvider, _options.DbObjectFactory);
             var sql = $"select count(*) {script.ToString().Substring(script.ToString().IndexOf("from", StringComparison.Ordinal))}";
-            await using var connection = _storage.GetConnection();
-            return connection.ExecuteScalar<int>(sql);
+            using var connection = _storage.GetConnection();
+            return await Task.FromResult(connection.ExecuteScalar<int>(sql));
         }
 
         /// <summary>
@@ -104,7 +102,7 @@ namespace CafeLib.Data.Persistence
         public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate, params object[]? parameters)
         {
             var query = new List<T>().AsQueryable().Where(predicate);
-            var script = QueryTranslator.Translate(query.Expression, _modelInfoProvider, _dbObjectFactory);
+            var script = QueryTranslator.Translate(query.Expression, _modelInfoProvider, _options.DbObjectFactory);
             var sql = script.ToString();
             var results = await ExecuteQuery(sql, parameters).ConfigureAwait(false);
             return results.Records;
@@ -117,7 +115,7 @@ namespace CafeLib.Data.Persistence
         public async Task<IEnumerable<T>> FindAll()
         {
             var sql = $"select * from {_tableName}";
-            await using var connection = _storage.GetConnection();
+            using var connection = _storage.GetConnection();
             return await connection.QueryAsync<T>(sql).ConfigureAwait(false);
         }
 
@@ -130,7 +128,7 @@ namespace CafeLib.Data.Persistence
         public async Task<T> FindOne(Expression<Func<T, bool>> predicate, params object[]? parameters)
         {
             var query = new List<T>().AsQueryable().Where(predicate);
-            var script = QueryTranslator.Translate(query.Expression, _modelInfoProvider, _dbObjectFactory);
+            var script = QueryTranslator.Translate(query.Expression, _modelInfoProvider, _options.DbObjectFactory);
             var sql = $"{script} limit 1";
             var results = await ExecuteQuery(sql, parameters).ConfigureAwait(false);
             return results.Records.FirstOrDefault();
@@ -146,7 +144,7 @@ namespace CafeLib.Data.Persistence
         {
             var keyName = _storage.Domain.PropertyCache.PrimaryKeyName<T>();
             var sql = $"select * from {_tableName} where {keyName} = @Key";
-            await using var connection = _storage.GetConnection();
+            using var connection = _storage.GetConnection();
             return await connection.QueryFirstOrDefaultAsync<T>(sql, new {Key = key}).ConfigureAwait(false);
         }
 
@@ -160,7 +158,7 @@ namespace CafeLib.Data.Persistence
         {
             var key = _storage.Domain.PropertyCache.PrimaryKeyName<T>();
             var sql = $"select * from {_tableName} where {key} = @Keys;";
-            await using var connection = _storage.GetConnection();
+            using var connection = _storage.GetConnection();
             return await connection.QueryAsync<T>(sql, new { Keys = keys }).ConfigureAwait(false);
         }
 
@@ -172,8 +170,8 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<IEnumerable<T>> FindBySqlQuery(string sql, params object[]? parameters)
         {
-            await using var connection = _storage.GetConnection();
-            return await connection.QueryAsync<T>(sql, parameters).ConfigureAwait(false);
+            using var connection = _storage.GetConnection();
+            return await connection.QueryAsync<T>(sql, parameters);
         }
 
         /// <summary>
@@ -184,8 +182,8 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<QueryResult<T>> ExecuteQuery(string sql, params object[]? parameters)
         {
-            using var connection = _storage.ConnectionInfo.Options.GetConnection();
-            return await _storage.ConnectionInfo.Options.CommandProcessor.ExecuteQueryAsync<T>(connection, sql, parameters);
+            using var connection = _storage.GetConnection();
+            return await _options.CommandProcessor.ExecuteQueryAsync<T>(connection, sql, parameters);
         }
 
         /// <summary>
@@ -195,8 +193,8 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<T> Add(T entity)
         {
-            await using var connection = _storage.GetConnection();
-            return connection.Insert(_storage.Domain, entity);
+            using var connection = _storage.GetConnection();
+            return await _options.CommandProcessor.InsertAsync(connection, _storage.Domain, entity);
         }
 
         /// <summary>
@@ -206,8 +204,8 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<bool> Add(IEnumerable<T> entities)
         {
-            await using var connection = _storage.GetConnection();
-            return connection.BulkInsert(_storage.Domain, entities) > 0;
+            using var connection = _storage.GetConnection();
+            return await _options.CommandProcessor.InsertAsync(connection, _storage.Domain, entities) > 0;
         }
 
         /// <summary>
@@ -255,8 +253,8 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<bool> Remove(T entity)
         {
-            await using var connection = _storage.GetConnection();
-            return connection.Delete(_storage.Domain, entity);
+            using var connection = _storage.GetConnection();
+            return await Task.FromResult(connection.Delete(_storage.Domain, entity));
         }
 
         /// <summary>
@@ -306,9 +304,8 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<int> Save(IEnumerable<T> entities, params Expression<Func<T, object>>[]? expressions)
         {
-            await using var connection = _storage.GetConnection();
-            var propertyExpressions = expressions != null && expressions.Any() ? new PropertyExpressionList<T>(_storage.Domain, expressions) : null;
-            return connection.BulkUpsert(_storage.Domain, entities, propertyExpressions);
+            using var connection = _storage.GetConnection();
+            return await _options.CommandProcessor.UpsertAsync(connection, _storage.Domain, entities, expressions);
         }
 
         /// <summary>
@@ -318,8 +315,8 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<bool> Update(T entity)
         {
-            await using var connection = _storage.GetConnection();
-            return connection.Update(_storage.Domain, entity);
+            using var connection = _storage.GetConnection();
+            return await Task.FromResult(connection.Update(_storage.Domain, entity));
         }
 
         /// <summary>
@@ -342,7 +339,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<int> ExecuteCommand(string sql, params object[]? parameters)
         {
-            await using var connection = _storage.GetConnection();
+            using var connection = _storage.GetConnection();
             return await connection.ExecuteAsync(sql, parameters);
         }
 
@@ -355,19 +352,19 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<SaveResult<TU>> ExecuteSave<TU>(string sql, params object[]? parameters)
         {
-            await using var connection = _storage.GetConnection();
+            using var connection = _storage.GetConnection();
             connection.Open();
             var command = connection.CreateCommand();
             command.CommandText = sql;
-            if (parameters?.Any() ?? false)
-            {
-                command.Parameters.AddRange(parameters.ToArray());
-            }
+            //if (parameters?.Any() ?? false)
+            //{
+            //    command.Parameters.AddRange(parameters.ToArray());
+            //}
 
             var inserted = false;
             var id = (TU) DefaultSqlId<TU>();
 
-            var result = command.ExecuteScalar();
+            var result = await Task.FromResult(command.ExecuteScalar());
             if (result != null)
             {
                 id = (TU)result;

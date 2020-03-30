@@ -23,7 +23,7 @@ namespace CafeLib.Data.Persistence
         private const string SqliteScheme = "sqlite";
         private const string OrientDbScheme = "orientdb";
 
-        private const string ConnectionSchemeDefault = "sqlserver";
+        //private const string ConnectionSchemeDefault = "sqlserver";
         private const string HostNameDefault = "127.0.0.1";
         private const int PortDefault = -1;
         private const string UserNameDefault = "root";
@@ -108,6 +108,7 @@ namespace CafeLib.Data.Persistence
         public StorageConnectionInfo(string connectionUri, IConnectionOptions? options = null)
         {
             ConnectionUri = connectionUri;
+            Options = options ?? new SqlOptions();
             try
             {
                 var uri = new Uri(connectionUri);
@@ -151,24 +152,24 @@ namespace CafeLib.Data.Persistence
             }
         }
 
-        /// <summary>
-        /// StorageConnectionInfo constructor.
-        /// </summary>
-        /// <param name="databaseName"></param>
-        /// <param name="hostName"></param>
-        /// <param name="port"></param>
-        /// <param name="userName"></param>
-        /// <param name="password"></param>
-        public StorageConnectionInfo(string databaseName, string hostName, int port, string userName, string password)
-        {
-            ConnectionName = databaseName;
-            HostName = hostName;
-            Port = port;
-            UserName = userName;
-            Password = password;
-            Parameters = new Dictionary<string, string>();
-            ConnectionUri = $"{ConnectionSchemeDefault}://{HostName}:{Port}/{ConnectionName}?user={UserName}&password={Password}";
-        }
+        ///// <summary>
+        ///// StorageConnectionInfo constructor.
+        ///// </summary>
+        ///// <param name="databaseName"></param>
+        ///// <param name="hostName"></param>
+        ///// <param name="port"></param>
+        ///// <param name="userName"></param>
+        ///// <param name="password"></param>
+        //public StorageConnectionInfo(string databaseName, string hostName, int port, string userName, string password)
+        //{
+        //    ConnectionName = databaseName;
+        //    HostName = hostName;
+        //    Port = port;
+        //    UserName = userName;
+        //    Password = password;
+        //    Parameters = new Dictionary<string, string>();
+        //    ConnectionUri = $"{ConnectionSchemeDefault}://{HostName}:{Port}/{ConnectionName}?user={UserName}&password={Password}";
+        //}
 
         #region Properties
 
@@ -225,7 +226,7 @@ namespace CafeLib.Data.Persistence
 
         public IReadOnlyDictionary<string, string> Parameters { get; private set; }
 
-        public IConnectionOptions Options { get; } = new SqlOptions();
+        public IConnectionOptions Options { get; }
 
         #endregion
 

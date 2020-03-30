@@ -8,4 +8,8 @@
     <PackageReference Include="CafeLib.Core.Data" Version="0.7.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CafeLib.Data.SqlGenerator\CafeLib.Data.SqlGenerator.csproj" />
+  </ItemGroup>
+
 </Project>

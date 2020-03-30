@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System.Data;
+using System.Data.SqlClient;
 using CafeLib.Core.Data;
 // ReSharper disable UnusedMember.Global
 
@@ -12,7 +13,6 @@ namespace CafeLib.Data.Persistence
         #region Member Variables
 
         private const int DefaultConnectionTimeout = 15; // seconds
-
         private bool _disposed;
 
         #endregion
@@ -25,7 +25,7 @@ namespace CafeLib.Data.Persistence
 
         public string DatabaseName => ConnectionInfo.ConnectionName;
 
-        public SqlConnection GetConnection() => new SqlConnection(ConnectionInfo.ConnectionString);
+        public IDbConnection GetConnection() => ConnectionInfo.Options.GetConnection(ConnectionInfo.ConnectionString);
 
         protected internal Domain Domain { get; }
 
