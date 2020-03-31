@@ -19,19 +19,76 @@ namespace CafeLib.Data.Sources.SqlServer
 {
     internal class CommandProvider : SingletonBase<CommandProvider>, ISqlCommandProcessor
     {
-        public QueryResult<T> ExecuteQuery<T>(IDbConnection connection, string sql, params object[] parameters) where T : class, IEntity
+        public async Task<bool> DeleteAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
         {
-            return ExecuteQueryAsync<T>(connection, sql, parameters).GetAwaiter().GetResult();
+            if (data == null)
+                throw new ArgumentException("Cannot Delete null Object", nameof(data));
+
+            var type = typeof(T);
+
+            if (type.IsArray)
+            {
+                type = type.GetElementType();
+            }
+            else if (type.IsGenericType)
+            {
+                var typeInfo = type.GetTypeInfo();
+                var implementsGenericIEnumerableOrIsGenericIEnumerable =
+                    typeInfo.ImplementedInterfaces.Any(ti => ti.IsGenericType && ti.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ||
+                    typeInfo.GetGenericTypeDefinition() == typeof(IEnumerable<>);
+
+                if (implementsGenericIEnumerableOrIsGenericIEnumerable)
+                {
+                    type = type.GetGenericArguments()[0];
+                }
+            }
+
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>().ToList();  //added ToList() due to issue #418, must work on a list copy
+            if (!keyProperties.Any())
+                throw new ArgumentException("Entity must have at least one [Key] or [ExplicitKey] property");
+
+            var name = domain.TableCache.TableName(type);
+
+            var sb = new StringBuilder();
+            sb.Append($"DELETE FROM {name} WHERE ");
+
+            for (var i = 0; i < keyProperties.Count; i++)
+            {
+                var property = keyProperties[i];
+                sb.Append($"{property.Name} = @{property.Name}");
+                if (i < keyProperties.Count - 1)
+                {
+                    sb.Append(" AND ");
+                }
+            }
+
+            var deleted = await connection.ExecuteAsync(sb.ToString(), data).ConfigureAwait(false);
+            return deleted > 0;
         }
 
-        public async Task<QueryResult<T>> ExecuteQueryAsync<T>(IDbConnection connection, string sql, params object[] parameters) where T : class, IEntity
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection"></param>
+        /// <param name="domain"></param>
+        /// <param name="data"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public Task<bool> DeleteAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<QueryResult<T>> ExecuteQueryAsync<T>(IDbConnection connection, string sql, object parameters) where T : class, IEntity
         {
             var conn = (SqlConnection)connection;
             var command = conn.CreateCommand();
             command.CommandText = sql;
-            if (parameters?.Any() ?? false)
+            var args = typeof(SqlParameter).ToObjectMap(parameters);
+            if (args?.Any() ?? false)
             {
-                command.Parameters.AddRange(parameters);
+                command.Parameters.AddRange(args.ToArray());
             }
 
             conn.Open();
@@ -61,9 +118,36 @@ namespace CafeLib.Data.Sources.SqlServer
             return new QueryResult<T> { Records = results.ToArray(), TotalCount = totalCount };
         }
 
-        public T Insert<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="connection"></param>
+        /// <param name="sql"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public async Task<SaveResult<TKey>> ExecuteUpsert<TKey>(IDbConnection connection, string sql, object parameters)
         {
-            return InsertAsync(connection, domain, data).GetAwaiter().GetResult();
+            var conn = (SqlConnection)connection;
+            conn.Open();
+            await using var command = conn.CreateCommand();
+            command.CommandText = sql;
+            //if (parameters?.Any() ?? false)
+            //{
+            //    command.Parameters.AddRange(parameters.ToArray());
+            //}
+
+            var inserted = false;
+            var id = (TKey)DefaultSqlId<TKey>();
+
+            var result = await Task.FromResult(command.ExecuteScalar());
+            if (result != null)
+            {
+                id = (TKey)result;
+                inserted = true;
+            }
+
+            return new SaveResult<TKey>(id, inserted);
         }
 
         public async Task<T> InsertAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
@@ -92,19 +176,6 @@ namespace CafeLib.Data.Sources.SqlServer
             VALUES({sbParameterList})";
 
             return await connection.QuerySingleOrDefaultAsync<T>(sql, data).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="connection"></param>
-        /// <param name="domain"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public int Insert<T>(IDbConnection connection, Domain domain, IEnumerable<T> data) where T : IEntity
-        {
-            return InsertAsync(connection, domain, data).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -194,20 +265,7 @@ namespace CafeLib.Data.Sources.SqlServer
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="connection"></param>
-        /// <param name="domain"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public bool Update<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
-        {
-            return UpdateAsync(connection, domain, data).GetAwaiter().GetResult();
-        }
-
-        /// <summary>
-        /// 
+        /// Update entity.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="connection"></param>
@@ -271,11 +329,16 @@ namespace CafeLib.Data.Sources.SqlServer
             return updated > 0;
         }
 
-        public int Upsert<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, Expression<Func<T, object>>[] expressions) where T : IEntity
-        {
-            return UpsertAsync(connection, domain, data, expressions).GetAwaiter().GetResult();
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection"></param>
+        /// <param name="domain"></param>
+        /// <param name="data"></param>
+        /// <param name="expressions"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public async Task<int> UpsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
         {
             var tableName = domain.TableCache.TableName<T>();
@@ -343,59 +406,27 @@ namespace CafeLib.Data.Sources.SqlServer
             }
         }
 
-        public bool Delete<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
-        {
-            return DeleteAsync(connection, domain, data).GetAwaiter().GetResult();
-        }
-
-        public async Task<bool> DeleteAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
-        {
-            if (data == null)
-                throw new ArgumentException("Cannot Delete null Object", nameof(data));
-
-            var type = typeof(T);
-
-            if (type.IsArray)
-            {
-                type = type.GetElementType();
-            }
-            else if (type.IsGenericType)
-            {
-                var typeInfo = type.GetTypeInfo();
-                var implementsGenericIEnumerableOrIsGenericIEnumerable =
-                    typeInfo.ImplementedInterfaces.Any(ti => ti.IsGenericType && ti.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ||
-                    typeInfo.GetGenericTypeDefinition() == typeof(IEnumerable<>);
-
-                if (implementsGenericIEnumerableOrIsGenericIEnumerable)
-                {
-                    type = type.GetGenericArguments()[0];
-                }
-            }
-
-            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>().ToList();  //added ToList() due to issue #418, must work on a list copy
-            if (!keyProperties.Any())
-                throw new ArgumentException("Entity must have at least one [Key] or [ExplicitKey] property");
-
-            var name = domain.TableCache.TableName(type);
-
-            var sb = new StringBuilder();
-            sb.Append($"DELETE FROM {name} WHERE ");
-
-            for (var i = 0; i < keyProperties.Count; i++)
-            {
-                var property = keyProperties[i];
-                sb.Append($"{property.Name} = @{property.Name}");
-                if (i < keyProperties.Count - 1)
-                {
-                    sb.Append(" AND ");
-                }
-            }
-
-            var deleted = await connection.ExecuteAsync(sb.ToString(), data).ConfigureAwait(false);
-            return deleted > 0;
-        }
-
         #region Helpers
+
+        /// <summary>
+        /// Check Sql key type for requiring quotation.
+        /// </summary>
+        /// <typeparam name="TKey">key type</typeparam>
+        /// <returns>return quoted id for certain types</returns>
+        private static object DefaultSqlId<TKey>()
+        {
+            switch (typeof(TKey).Name)
+            {
+                case "String":
+                    return string.Empty;
+
+                case "Guid":
+                    return Guid.Empty;
+
+                default:
+                    return 0;
+            }
+        }
 
         private static string GetColumnsStringSqlServer(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<string, string> columnNames, string tablePrefix = null)
         {

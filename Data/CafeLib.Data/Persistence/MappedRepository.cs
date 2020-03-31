@@ -116,14 +116,14 @@ namespace CafeLib.Data.Persistence
             return await _repository.Add(results);
         }
 
-        public Task<bool> RemoveById<TU>(TU id)
+        public Task<bool> RemoveByKey<TKey>(TKey key)
         {
-            return _repository.RemoveById(id);
+            return _repository.RemoveByKey(key);
         }
 
-        public Task<bool> RemoveById<TU>(IEnumerable<TU> ids)
+        public Task<bool> RemoveByKey<TKey>(IEnumerable<TKey> keys)
         {
-            return _repository.RemoveById(ids);
+            return _repository.RemoveByKey(keys);
         }
 
         public async Task<bool> Remove(TDataModel entity)

@@ -10,27 +10,22 @@ namespace CafeLib.Data.Sources
 {
     public class SqlCommandProcessor : ISqlCommandProcessor
     {
-        public bool Delete<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<bool> DeleteAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
         {
             throw new NotImplementedException();
         }
 
-        public QueryResult<T> ExecuteQuery<T>(IDbConnection connection, string sql, params object[] parameters) where T : class, IEntity
+        public Task<bool> DeleteAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
         {
             throw new NotImplementedException();
         }
 
-        public Task<QueryResult<T>> ExecuteQueryAsync<T>(IDbConnection connection, string sql, params object[] parameters) where T : class, IEntity
+        public Task<QueryResult<T>> ExecuteQueryAsync<T>(IDbConnection connection, string sql, object parameters) where T : class, IEntity
         {
             throw new NotImplementedException();
         }
 
-        public T Insert<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
+        public Task<SaveResult<TU>> ExecuteUpsert<TU>(IDbConnection connection, string sql, object parameters)
         {
             throw new NotImplementedException();
         }
@@ -40,27 +35,12 @@ namespace CafeLib.Data.Sources
             throw new NotImplementedException();
         }
 
-        public int Insert<T>(IDbConnection connection, Domain domain, IEnumerable<T> data) where T : IEntity
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<int> InsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
         {
             throw new NotImplementedException();
         }
 
-        public bool Update<T>(IDbConnection connection, Domain domain, T data) where T : IEntity
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<bool> UpdateAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
-        {
-            throw new NotImplementedException();
-        }
-
-        public int Upsert<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, Expression<Func<T, object>>[] expressions) where T : IEntity
         {
             throw new NotImplementedException();
         }

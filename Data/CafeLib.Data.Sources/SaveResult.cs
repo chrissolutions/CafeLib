@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CafeLib.Data
+namespace CafeLib.Data.Sources
 {
     /// <summary>
     /// SaveResult structure.
@@ -13,7 +13,7 @@ namespace CafeLib.Data
 
         public bool Updated => !Inserted;
 
-        public Exception? Exception { get; set; }
+        public Exception Exception { get; set; }
 
         public SaveResult(T id, bool inserted = false)
         {

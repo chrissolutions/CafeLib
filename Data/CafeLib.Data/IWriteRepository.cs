@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
+using CafeLib.Data.Sources;
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data
@@ -13,15 +14,15 @@ namespace CafeLib.Data
 
         Task<bool> Add(IEnumerable<T> entities);
 
-        Task<bool> RemoveById<TU>(TU id);
+        Task<bool> RemoveByKey<TKey>(TKey key);
 
-        Task<bool> RemoveById<TU>(IEnumerable<TU> id);
+        Task<bool> RemoveByKey<TKey>(IEnumerable<TKey> keys);
 
         Task<bool> Remove(T entity);
 
         Task<bool> Remove(IEnumerable<T> entities);
 
-        Task<int> Remove(Expression<Func<T, bool>> predicate, params object[]? parameters);
+        Task<int> Remove(Expression<Func<T, bool>> predicate, object? parameters);
 
         Task<T> Save(T entity);
 
@@ -31,6 +32,6 @@ namespace CafeLib.Data
 
         Task<bool> Update(IEnumerable<T> entities);
 
-        Task<SaveResult<TU>> ExecuteSave<TU>(string sql, params object[]? parameters);
+        Task<SaveResult<TU>> ExecuteSave<TU>(string sql, object? parameters);
     }
 }

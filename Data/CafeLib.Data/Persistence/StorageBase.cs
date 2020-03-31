@@ -1,6 +1,6 @@
 ﻿using System.Data;
-using System.Data.SqlClient;
 using CafeLib.Core.Data;
+using CafeLib.Data.Sources;
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Persistence
@@ -23,11 +23,11 @@ namespace CafeLib.Data.Persistence
 
         public int ConnectionTimeout { get; set; }
 
-        public string DatabaseName => ConnectionInfo.ConnectionName;
+        //public string DatabaseName => ConnectionInfo.ConnectionName;
 
         public IDbConnection GetConnection() => ConnectionInfo.Options.GetConnection(ConnectionInfo.ConnectionString);
 
-        protected internal Domain Domain { get; }
+        //protected internal Domain Domain { get; }
 
         internal EntityRegistry Repositories { get; set; }
 
@@ -35,11 +35,10 @@ namespace CafeLib.Data.Persistence
 
         #region Constructors
 
-        protected StorageBase(IConnectionInfo connectionInfo, Domain domain)
+        protected StorageBase(IConnectionInfo connectionInfo)
         {
             ConnectionInfo = connectionInfo;
-            ConnectionTimeout = connectionInfo.ConnectionTimeout > 0 ? connectionInfo.ConnectionTimeout : DefaultConnectionTimeout;
-            Domain = domain;
+            //ConnectionTimeout = connectionInfo.ConnectionTimeout > 0 ? connectionInfo.ConnectionTimeout : DefaultConnectionTimeout;
             Repositories = new EntityRegistry(this);
         }
 

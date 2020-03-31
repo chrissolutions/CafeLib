@@ -17,7 +17,6 @@
   <ItemGroup>
     <PackageReference Include="CafeLib.Core.IoC" Version="0.7.0" />
     <PackageReference Include="Dapper" Version="2.0.30" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>

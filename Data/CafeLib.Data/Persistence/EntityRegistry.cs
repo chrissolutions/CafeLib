@@ -84,7 +84,7 @@ namespace CafeLib.Data.Persistence
                 .GetMethods()
                 .First(x => x.Name == "AddSingleton" && x.IsGenericMethod && x.GetParameters().Length == 1);
 
-            ((StorageBase)storage).Domain.GetEntityTypes().ForEach(x =>
+            ((StorageBase)storage).ConnectionInfo.Domain.GetEntityTypes().ForEach(x =>
             {
                 var repoInterface = typeof(IRepository<>).MakeGenericType(x);
                 var repoType = typeof(Repository<>).MakeGenericType(x);

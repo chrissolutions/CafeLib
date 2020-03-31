@@ -40,9 +40,9 @@ namespace CafeLib.Data
 
         Task<bool> Add(IEnumerable<TDataModel> entities);
 
-        Task<bool> RemoveById<TU>(TU id);
+        Task<bool> RemoveByKey<TKey>(TKey key);
 
-        Task<bool> RemoveById<TU>(IEnumerable<TU> ids);
+        Task<bool> RemoveByKey<TKey>(IEnumerable<TKey> keys);
 
         Task<bool> Remove(TDataModel entity);
 
