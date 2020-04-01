@@ -8,6 +8,7 @@ using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
 using CafeLib.Data.Extensions;
 using CafeLib.Data.Sources;
+using CafeLib.Data.Sources.Extensions;
 using CafeLib.Data.SqlGenerator;
 using CafeLib.Data.SqlGenerator.Models;
 using Dapper;
@@ -274,8 +275,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<bool> Remove(IEnumerable<T> entities)
         {
-            using var connection = _storage.GetConnection();
-            return await _options.CommandProcessor.DeleteAsync(connection, _domain, entities);
+            return await _storage.ConnectionInfo.DeleteAsync(entities);
         }
 
         /// <summary>
