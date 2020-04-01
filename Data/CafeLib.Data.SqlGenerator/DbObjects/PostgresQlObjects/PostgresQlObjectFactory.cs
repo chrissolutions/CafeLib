@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq.Expressions;
-using CafeLib.Data.SqlGenerator.DbObjects.SqliteObjects;
+using CafeLib.Data.SqlGenerator.DbObjects.SqlObjects;
 
 namespace CafeLib.Data.SqlGenerator.DbObjects.PostgresQlObjects
 {
-    public class PostgresQlObjectFactory : SqliteObjectFactory
+    public class PostgresQlObjectFactory : SqlObjectFactory
     {
         public PostgresQlObjectFactory()
         {

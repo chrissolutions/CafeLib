@@ -1,6 +1,6 @@
 ﻿namespace CafeLib.Data.SqlGenerator
 {
-    internal static class TranslationConstants
+    public static class TranslationConstants
     {
         public const string JoinKeySuffix = "_jk";
         public const string SubSelectPrefix = "sq";

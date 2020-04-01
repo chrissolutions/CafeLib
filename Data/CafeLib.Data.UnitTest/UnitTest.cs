@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using CafeLib.Data.Sources.Sqlite.DbObjects;
 using CafeLib.Data.SqlGenerator;
-using CafeLib.Data.SqlGenerator.DbObjects.SqliteObjects;
 using CafeLib.Data.SqlGenerator.Models;
 using CafeLib.Data.UnitTest.TestDomain;
 using Xunit;

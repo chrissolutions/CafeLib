@@ -1,7 +1,8 @@
 ﻿using System;
+using CafeLib.Data.SqlGenerator.DbObjects;
 using CafeLib.Data.SqlGenerator.DbObjects.SqlObjects;
 
-namespace CafeLib.Data.SqlGenerator.DbObjects.SqliteObjects
+namespace CafeLib.Data.Sources.Sqlite.DbObjects
 {
     public class SqliteFunc : SqlFunc
     {

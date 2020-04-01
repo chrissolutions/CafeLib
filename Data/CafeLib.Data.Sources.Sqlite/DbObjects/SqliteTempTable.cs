@@ -1,8 +1,10 @@
 ﻿using System.Text;
+using CafeLib.Data.SqlGenerator;
+using CafeLib.Data.SqlGenerator.DbObjects;
 using CafeLib.Data.SqlGenerator.DbObjects.SqlObjects;
 using CafeLib.Data.SqlGenerator.Extensions;
 
-namespace CafeLib.Data.SqlGenerator.DbObjects.SqliteObjects
+namespace CafeLib.Data.Sources.Sqlite.DbObjects
 {
     public class SqliteTempTable : SqlTempTable
     {

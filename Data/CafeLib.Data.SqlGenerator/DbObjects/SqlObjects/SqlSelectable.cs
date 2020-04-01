@@ -36,8 +36,7 @@ namespace CafeLib.Data.SqlGenerator.DbObjects.SqlObjects
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            var other = obj as SqlSelectable;
-            return other != null && Equals(other);
+            return obj is SqlSelectable other && Equals(other);
         }
 
         public override int GetHashCode()

@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CafeLib.Data.Sources.Sqlite\CafeLib.Data.Sources.Sqlite.csproj" />
     <ProjectReference Include="..\CafeLib.Data.SqlGenerator\CafeLib.Data.SqlGenerator.csproj" />
     <ProjectReference Include="..\CafeLib.Data\CafeLib.Data.csproj" />
   </ItemGroup>

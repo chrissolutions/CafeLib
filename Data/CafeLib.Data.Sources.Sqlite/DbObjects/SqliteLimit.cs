@@ -1,6 +1,7 @@
 ﻿using System.Text;
+using CafeLib.Data.SqlGenerator.DbObjects;
 
-namespace CafeLib.Data.SqlGenerator.DbObjects.SqliteObjects
+namespace CafeLib.Data.Sources.Sqlite.DbObjects
 {
     public class SqliteLimit : DbLimit
     {
