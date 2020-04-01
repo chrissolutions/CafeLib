@@ -87,6 +87,28 @@ namespace CafeLib.Data.Sources
         Task<bool> UpdateAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity;
 
         /// <summary>
+        /// Sql update command
+        /// </summary>
+        /// <typeparam name="T">Type to be updated</typeparam>
+        /// <param name="connection">Open SqlConnection</param>
+        /// <param name="domain">Entity domain</param>
+        /// <param name="data">Entity to be updated</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>true if updated, false if not found or not modified (tracked entities)</returns>
+        Task<bool> UpdateAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity;
+
+        /// <summary>
+        /// Inserts entities into table <typeparamref name="T"/>s (by default).
+        /// </summary>
+        /// <typeparam name="T">The type being inserted.</typeparam>
+        /// <param name="connection">Open SqlConnection</param>
+        /// <param name="domain">Entity domain</param>
+        /// <param name="data">Entities to insert</param>
+        /// <param name="expressions"></param>
+        /// <param name="token">Cancellation token</param>
+        Task<int> UpsertAsync<T>(IDbConnection connection, Domain domain, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity;
+
+        /// <summary>
         /// Inserts entities into table <typeparamref name="T"/>s (by default).
         /// </summary>
         /// <typeparam name="T">The type being inserted.</typeparam>

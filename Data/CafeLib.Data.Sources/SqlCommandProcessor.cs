@@ -45,6 +45,17 @@ namespace CafeLib.Data.Sources
             throw new NotImplementedException();
         }
 
+        public Task<bool> UpdateAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> UpsertAsync<T>(IDbConnection connection, Domain domain, T data, Expression<Func<T, object>>[] expressions,
+            CancellationToken token = default) where T : IEntity
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<int> UpsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
         {
             throw new NotImplementedException();

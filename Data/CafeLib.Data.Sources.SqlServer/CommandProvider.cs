@@ -275,6 +275,9 @@ namespace CafeLib.Data.Sources.SqlServer
         /// <returns></returns>
         public async Task<bool> UpdateAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
         {
+            var cmd = connection.CreateCommand();
+            cmd.Prepare();
+
             var type = typeof(T);
 
             if (type.IsArray)
@@ -327,6 +330,36 @@ namespace CafeLib.Data.Sources.SqlServer
 
             var updated = await connection.ExecuteAsync(sb.ToString(), data).ConfigureAwait(false);
             return updated > 0;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection"></param>
+        /// <param name="domain"></param>
+        /// <param name="data"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public Task<bool> UpdateAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection"></param>
+        /// <param name="domain"></param>
+        /// <param name="data"></param>
+        /// <param name="expressions"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public Task<int> UpsertAsync<T>(IDbConnection connection, Domain domain, T data, Expression<Func<T, object>>[] expressions,
+            CancellationToken token = default) where T : IEntity
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

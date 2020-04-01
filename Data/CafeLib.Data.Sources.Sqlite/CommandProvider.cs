@@ -337,6 +337,35 @@ namespace CafeLib.Data.Sources.Sqlite
         /// <param name="connection"></param>
         /// <param name="domain"></param>
         /// <param name="data"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public Task<bool> UpdateAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection"></param>
+        /// <param name="domain"></param>
+        /// <param name="data"></param>
+        /// <param name="expressions"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public Task<int> UpsertAsync<T>(IDbConnection connection, Domain domain, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection"></param>
+        /// <param name="domain"></param>
+        /// <param name="data"></param>
         /// <param name="expressions"></param>
         /// <param name="token"></param>
         /// <returns></returns>
