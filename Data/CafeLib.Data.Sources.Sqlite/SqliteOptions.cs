@@ -9,7 +9,7 @@ namespace CafeLib.Data.Sources.Sqlite
 {
     public class SqliteOptions : IConnectionOptions
     {
-        public ISqlCommandProcessor CommandProcessor { get; } = CommandProvider.Current;
+        public ISqlCommandProvider CommandProcessor { get; } = SqliteCommandProvider.Current;
         public IDbObjectFactory DbObjectFactory { get; } = new SqlObjectFactory();
         public IDbConnection GetConnection(string connectionString) => new SqliteConnection(connectionString);
     }

@@ -12,14 +12,23 @@ using System.Threading.Tasks;
 using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.Support;
+using CafeLib.Data.Sources.Extensions;
 using Dapper;
 using Microsoft.Data.Sqlite;
 
 namespace CafeLib.Data.Sources.Sqlite
 {
-    internal class CommandProvider : SingletonBase<CommandProvider>, ISqlCommandProcessor
+    internal class SqliteCommandProvider : SingletonBase<SqliteCommandProvider>, ISqlCommandProvider
     {
-        public async Task<bool> DeleteAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
+        /// <summary>
+        /// Delete entity from table.
+        /// </summary>
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <param name="connectionInfo">Connection info</param>
+        /// <param name="data">Entity record</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>true if deleted, false if not found</returns>
+        public async Task<bool> DeleteAsync<T>(IConnectionInfo connectionInfo, T data, CancellationToken token = default) where T : IEntity
         {
             if (data == null)
                 throw new ArgumentException("Cannot Delete null Object", nameof(data));
@@ -43,11 +52,11 @@ namespace CafeLib.Data.Sources.Sqlite
                 }
             }
 
-            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>().ToList();  //added ToList() due to issue #418, must work on a list copy
+            var keyProperties = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>().ToList();  //added ToList() due to issue #418, must work on a list copy
             if (!keyProperties.Any())
                 throw new ArgumentException("Entity must have at least one [Key] or [ExplicitKey] property");
 
-            var name = domain.TableCache.TableName(type);
+            var name = connectionInfo.Domain.TableCache.TableName(type);
 
             var sb = new StringBuilder();
             sb.Append($"DELETE FROM {name} WHERE ");
@@ -62,28 +71,51 @@ namespace CafeLib.Data.Sources.Sqlite
                 }
             }
 
+            var connection = new SqliteConnection(connectionInfo.ConnectionString);
             var deleted = await connection.ExecuteAsync(sb.ToString(), data).ConfigureAwait(false);
             return deleted > 0;
         }
 
         /// <summary>
-        /// 
+        /// Delete entity record.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="connection"></param>
-        /// <param name="domain"></param>
-        /// <param name="data"></param>
-        /// <param name="token"></param>
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <param name="connectionInfo">Connection info</param>
+        /// <param name="data">Collection of entity records</param>
+        /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        public Task<bool> DeleteAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
+        public Task<bool> DeleteAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
         {
             throw new NotImplementedException();
         }
 
-        public async Task<QueryResult<T>> ExecuteQueryAsync<T>(IDbConnection connection, string sql, object parameters) where T : class, IEntity
+        /// <summary>
+        /// Execute sql command.
+        /// </summary>
+        /// <param name="connectionInfo">Connection info</param>
+        /// <param name="sql">Sql query</param>
+        /// <param name="parameters">Sql parameters</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns></returns>
+        public async Task<int> ExecuteAsync(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default)
         {
-            var conn = (SqliteConnection)connection;
-            var command = conn.CreateCommand();
+            await using var connection = connectionInfo.GetConnection<SqliteConnection>();
+            return await connection.ExecuteAsync(sql, parameters);
+        }
+
+        /// <summary>
+        /// Execute sql query
+        /// </summary>
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <param name="connectionInfo">Connection info</param>
+        /// <param name="sql">Sql query</param>
+        /// <param name="parameters">Sql parameters</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Query result</returns>
+        public async Task<QueryResult<T>> ExecuteQueryAsync<T>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default) where T : IEntity
+        {
+            await using var connection = connectionInfo.GetConnection<SqliteConnection>();
+            await using var command = connection.CreateCommand();
             command.CommandText = sql;
             var args = typeof(SqliteParameter).ToObjectMap(parameters);
             if (args?.Any() ?? false)
@@ -91,8 +123,8 @@ namespace CafeLib.Data.Sources.Sqlite
                 command.Parameters.AddRange(args.ToArray());
             }
 
-            conn.Open();
-            await using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+            connection.Open();
+            await using var reader = await command.ExecuteReaderAsync(token).ConfigureAwait(false);
             var totalCount = -1;
             var results = new List<T>();
 
@@ -119,18 +151,18 @@ namespace CafeLib.Data.Sources.Sqlite
         }
 
         /// <summary>
-        /// 
+        /// Execute sql insert or update command.
         /// </summary>
-        /// <typeparam name="TKey"></typeparam>
-        /// <param name="connection"></param>
-        /// <param name="sql"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public async Task<SaveResult<TKey>> ExecuteUpsert<TKey>(IDbConnection connection, string sql, object parameters)
+        /// <typeparam name="TKey">Entity key</typeparam>
+        /// <param name="connectionInfo">Connection info</param>
+        /// <param name="sql">Sql query</param>
+        /// <param name="parameters">Sql parameters</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Upsert result</returns>
+        public async Task<SaveResult<TKey>> ExecuteUpsert<TKey>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default)
         {
-            var conn = (SqliteConnection)connection;
-            conn.Open();
-            await using var command = conn.CreateCommand();
+            await using var connection = connectionInfo.GetConnection<SqliteConnection>();
+            await using var command = connection.CreateCommand();
             command.CommandText = sql;
             //if (parameters?.Any() ?? false)
             //{
@@ -150,13 +182,21 @@ namespace CafeLib.Data.Sources.Sqlite
             return new SaveResult<TKey>(id, inserted);
         }
 
-        public async Task<T> InsertAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
+        /// <summary>
+        /// Sql insert command
+        /// </summary>
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <param name="connectionInfo">Connection info</param>
+        /// <param name="data">Entity record</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns></returns>
+        public async Task<T> InsertAsync<T>(IConnectionInfo connectionInfo, T data, CancellationToken token = default) where T : IEntity
         {
-            var tableName = domain.TableCache.TableName<T>();
-            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
-            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
-            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
-            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
+            var tableName = connectionInfo.Domain.TableCache.TableName<T>();
+            var allProperties = connectionInfo.Domain.PropertyCache.TypePropertiesCache<T>();
+            var keyProperties = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>();
+            var computedProperties = connectionInfo.Domain.PropertyCache.ComputedPropertiesCache<T>();
+            var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<T>();
 
             var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
             var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
@@ -175,19 +215,19 @@ namespace CafeLib.Data.Sources.Sqlite
             OUTPUT INSERTED.*
             VALUES({sbParameterList})";
 
+            await using var connection = connectionInfo.GetConnection<SqliteConnection>();
             return await connection.QuerySingleOrDefaultAsync<T>(sql, data).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Bulk insert entities asynchronously.
         /// </summary>
-        /// <typeparam name="T">The type being inserted.</typeparam>
-        /// <param name="connection">Data source connection</param>
-        /// <param name="domain">Entity domain</param>
-        /// <param name="data">Entities to insert</param>
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <param name="connectionInfo">Connection info</param>
+        /// <param name="data">Collection of entity records</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        public async Task<int> InsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
+        public Task<int> InsertAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
         {
             throw new NotImplementedException();
             //var tableName = domain.TableCache.TableName<T>();
@@ -266,16 +306,19 @@ namespace CafeLib.Data.Sources.Sqlite
         }
 
         /// <summary>
-        /// Update entity.
+        /// Sql update command
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="connection"></param>
-        /// <param name="domain"></param>
-        /// <param name="data"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public async Task<bool> UpdateAsync<T>(IDbConnection connection, Domain domain, T data, CancellationToken token = default) where T : IEntity
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <param name="connectionInfo">Connection info</param>
+        /// <param name="data">Entity record</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>true if updated, false if not found or not modified (tracked entities)</returns>
+        public async Task<bool> UpdateAsync<T>(IConnectionInfo connectionInfo, T data, CancellationToken token = default) where T : IEntity
         {
+            await using var connection = connectionInfo.GetConnection<SqliteConnection>();
+            await using var cmd = connection.CreateCommand();
+            cmd.Prepare();
+
             var type = typeof(T);
 
             if (type.IsArray)
@@ -295,18 +338,18 @@ namespace CafeLib.Data.Sources.Sqlite
                 }
             }
 
-            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
+            var keyProperties = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>();
             if (!keyProperties.Any())
                 throw new ArgumentException("Entity must have at least one [Key] or [ExplicitKey] property");
 
-            var name = domain.TableCache.TableName(type);
+            var name = connectionInfo.Domain.TableCache.TableName(type);
 
             var sb = new StringBuilder();
             sb.Append($"UPDATE {name} SET ");
 
-            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
-            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
-            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
+            var allProperties = connectionInfo.Domain.PropertyCache.TypePropertiesCache<T>();
+            var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<T>();
+            var computedProperties = connectionInfo.Domain.PropertyCache.ComputedPropertiesCache<T>();
             var nonIdProps = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
 
             nonIdProps.ForEach(x =>
@@ -331,45 +374,40 @@ namespace CafeLib.Data.Sources.Sqlite
         }
 
         /// <summary>
-        /// 
+        /// Sql update command
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="connection"></param>
-        /// <param name="domain"></param>
-        /// <param name="data"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public Task<bool> UpdateAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
+        /// <typeparam name="T">Type to be updated</typeparam>
+        /// <param name="connectionInfo">Connection info</param>
+        /// <param name="data">Entity record</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>true if updated, false if not found or not modified (tracked entities)</returns>
+        public Task<bool> UpdateAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
         {
             throw new NotImplementedException();
         }
 
         /// <summary>
-        /// 
+        /// Insert or update entities into table <typeparamref name="T"/>s (by default).
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="connection"></param>
-        /// <param name="domain"></param>
-        /// <param name="data"></param>
+        /// <typeparam name="T">The type being inserted.</typeparam>
+        /// <param name="connectionInfo">Connection info</param>
+        /// <param name="data">Entity record</param>
         /// <param name="expressions"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public Task<int> UpsertAsync<T>(IDbConnection connection, Domain domain, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
+        /// <param name="token">Cancellation token</param>
+        public Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
         {
             throw new NotImplementedException();
         }
 
         /// <summary>
-        /// 
+        /// Inserts entities into table <typeparamref name="T"/>s (by default).
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="connection"></param>
-        /// <param name="domain"></param>
-        /// <param name="data"></param>
+        /// <typeparam name="T">The type being inserted.</typeparam>
+        /// <param name="connectionInfo">Connection info</param>
+        /// <param name="data">Collection of entity records</param>
         /// <param name="expressions"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public async Task<int> UpsertAsync<T>(IDbConnection connection, Domain domain, IEnumerable<T> data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
+        /// <param name="token">Cancellation token</param>
+        public Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
         {
             throw new NotImplementedException();
             //var tableName = domain.TableCache.TableName<T>();

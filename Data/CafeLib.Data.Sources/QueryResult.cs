@@ -8,7 +8,7 @@ namespace CafeLib.Data.Sources
     /// <summary>
     /// QueryResult structure.
     /// </summary>
-    public struct QueryResult<T> where T : class, IDataModel
+    public struct QueryResult<T> where T : IDataModel
     {
         public int TotalCount { get; set; }
 

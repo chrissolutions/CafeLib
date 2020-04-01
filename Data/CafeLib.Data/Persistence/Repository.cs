@@ -19,7 +19,6 @@ namespace CafeLib.Data.Persistence
     public class Repository<T> : IRepository<T> where T : class, IEntity
     {
         private readonly StorageBase _storage;
-        private readonly Domain _domain;
         private readonly string _tableName;
         private readonly PropertyCache _propertyCache;
         private readonly IModelInfoProvider _modelInfoProvider;
@@ -32,11 +31,10 @@ namespace CafeLib.Data.Persistence
         internal Repository(IStorage storage)
         {
             _storage = (StorageBase)storage;
-            _domain = _storage.ConnectionInfo.Domain;
-            _tableName = _domain.TableCache.TableName<T>();
-            _propertyCache = _domain.PropertyCache;
+            _tableName = _storage.ConnectionInfo.Domain.TableCache.TableName<T>();
+            _propertyCache = _storage.ConnectionInfo.Domain.PropertyCache;
             _options = _storage.ConnectionInfo.Options;
-            _modelInfoProvider = new EntityModelInfoProvider(_domain);
+            _modelInfoProvider = new EntityModelInfoProvider(_storage.ConnectionInfo.Domain);
         }
 
         /// <summary>
@@ -193,8 +191,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<QueryResult<T>> ExecuteQuery(string sql, object? parameters)
         {
-            using var connection = _storage.GetConnection();
-            return await _options.CommandProcessor.ExecuteQueryAsync<T>(connection, sql, parameters);
+            return await _storage.ConnectionInfo.ExecuteQueryAsync<T>(sql, parameters);
         }
 
         /// <summary>
@@ -204,8 +201,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<T> Add(T entity)
         {
-            using var connection = _storage.GetConnection();
-            return await _options.CommandProcessor.InsertAsync(connection, _storage.ConnectionInfo.Domain, entity);
+            return await _storage.ConnectionInfo.InsertAsync(entity);
         }
 
         /// <summary>
@@ -215,8 +211,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<bool> Add(IEnumerable<T> entities)
         {
-            using var connection = _storage.GetConnection();
-            return await _options.CommandProcessor.InsertAsync(connection, _domain, entities) > 0;
+            return await _storage.ConnectionInfo.InsertAsync(entities) > 0;
         }
 
         /// <summary>
@@ -264,8 +259,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<bool> Remove(T entity)
         {
-            using var connection = _storage.GetConnection();
-            return await _options.CommandProcessor.DeleteAsync(connection, _domain, entity);
+            return await _storage.ConnectionInfo.DeleteAsync(entity);
         }
 
         /// <summary>
@@ -313,8 +307,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<int> Save(IEnumerable<T> entities, params Expression<Func<T, object>>[]? expressions)
         {
-            using var connection = _storage.GetConnection();
-            return await _options.CommandProcessor.UpsertAsync(connection, _storage.ConnectionInfo.Domain, entities, expressions);
+            return await _storage.ConnectionInfo.UpsertAsync(entities, expressions);
         }
 
         /// <summary>
@@ -324,8 +317,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<bool> Update(T entity)
         {
-            using var connection = _storage.GetConnection();
-            return await _options.CommandProcessor.UpdateAsync(connection, _domain, entity);
+            return await _storage.ConnectionInfo.UpdateAsync(entity);
         }
 
         /// <summary>
@@ -346,10 +338,9 @@ namespace CafeLib.Data.Persistence
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<int> ExecuteCommand(string sql, params object[]? parameters)
+        public async Task<int> ExecuteCommand(string sql, object? parameters = null)
         {
-            using var connection = _storage.GetConnection();
-            return await connection.ExecuteAsync(sql, parameters);
+            return await _storage.ConnectionInfo.ExecuteAsync(sql, parameters);
         }
 
         /// <summary>
