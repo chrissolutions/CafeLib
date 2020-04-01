@@ -14,7 +14,21 @@ namespace CafeLib.Data.SqlGenerator.DbObjects.PostgresQlObjects
                 QuotationMark = "\""
             };
         }
-        
+
+        public override IDbFunc BuildFunc(string name, bool isAggregation, Type type, params IDbObject[] parameters)
+        {
+            return new PostgresQlFunc(name, type, parameters)
+            {
+                IsAggregation = isAggregation,
+                OutputOption = OutputOption
+            };
+        }
+
+        public override IDbStatment BuildStatement(IDbObject script)
+        {
+            return new PostgresQlStatement(script);
+        }
+
         public override IDbTable BuildTable(EntityInfo entityInfo)
         {
             var sqlTable = base.BuildTable(entityInfo);

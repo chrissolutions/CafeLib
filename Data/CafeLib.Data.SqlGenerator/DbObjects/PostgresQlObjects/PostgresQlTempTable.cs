@@ -38,6 +38,5 @@ namespace CafeLib.Data.SqlGenerator.DbObjects.PostgresQlObjects
 
             return new DbDynamicStatement(Action);
         }
-
     }
 }
