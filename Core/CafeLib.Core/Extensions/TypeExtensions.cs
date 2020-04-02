@@ -196,7 +196,7 @@ namespace CafeLib.Core.Extensions
         /// <param name="_"></param>
         /// <param name="instance"></param>
         /// <returns>object map</returns>
-        public static IDictionary<string, object> ToObjectMap<T>(this Type _, T instance)
+        public static IDictionary<string, object> ToObjectMap<T>(this T instance)
         {
             var objectMap = new Dictionary<string, object>();
             if (instance != null)
