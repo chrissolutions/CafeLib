@@ -117,7 +117,7 @@ namespace CafeLib.Data.Sources.SqlServer
             await using var connection = connectionInfo.GetConnection<SqlConnection>();
             await using var command = connection.CreateCommand();
             command.CommandText = sql;
-            var args = typeof(SqlParameter).ToObjectMap(parameters);
+            var args = parameters.ToObjectMap();
             if (args?.Any() ?? false)
             {
                 command.Parameters.AddRange(args.ToArray());
@@ -307,7 +307,7 @@ namespace CafeLib.Data.Sources.SqlServer
         }
 
         /// <summary>
-        /// Sql update command
+        /// Update an entity record.
         /// </summary>
         /// <typeparam name="T">Entity type</typeparam>
         /// <param name="connectionInfo">Connection info</param>
@@ -375,7 +375,7 @@ namespace CafeLib.Data.Sources.SqlServer
         }
 
         /// <summary>
-        /// Sql update command
+        /// Bulk update entities asynchronously.
         /// </summary>
         /// <typeparam name="T">Type to be updated</typeparam>
         /// <param name="connectionInfo">Connection info</param>
@@ -388,9 +388,9 @@ namespace CafeLib.Data.Sources.SqlServer
         }
 
         /// <summary>
-        /// Insert or update entities into table <typeparamref name="T"/>s (by default).
+        /// Insert or update entities into table.
         /// </summary>
-        /// <typeparam name="T">The type being inserted.</typeparam>
+        /// <typeparam name="T">Entity type</typeparam>
         /// <param name="connectionInfo">Connection info</param>
         /// <param name="data">Entity record</param>
         /// <param name="expressions"></param>
@@ -401,13 +401,14 @@ namespace CafeLib.Data.Sources.SqlServer
         }
 
         /// <summary>
-        /// Inserts entities into table <typeparamref name="T"/>s (by default).
+        /// Insert or update an entity record.
         /// </summary>
         /// <typeparam name="T">The type being inserted.</typeparam>
         /// <param name="connectionInfo">Connection info</param>
-        /// <param name="data">Collection of entity records</param>
+        /// <param name="data">Entity record</param>
         /// <param name="expressions"></param>
         /// <param name="token">Cancellation token</param>
+        /// <returns></returns>
         public async Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
         {
             var tableName = connectionInfo.Domain.TableCache.TableName<T>();

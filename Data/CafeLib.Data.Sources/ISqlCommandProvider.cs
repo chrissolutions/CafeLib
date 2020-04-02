@@ -64,7 +64,7 @@ namespace CafeLib.Data.Sources
         Task<SaveResult<TKey>> ExecuteUpsert<TKey>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default);
 
         /// <summary>
-        /// Sql insert command
+        /// Insert an entity record into the table.
         /// </summary>
         /// <typeparam name="T">Entity type</typeparam>
         /// <param name="connectionInfo">Connection info</param>
@@ -84,7 +84,7 @@ namespace CafeLib.Data.Sources
         Task<int> InsertAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, CancellationToken token = default) where T : IEntity;
 
         /// <summary>
-        /// Sql update command
+        /// Update an entity record.
         /// </summary>
         /// <typeparam name="T">Entity type</typeparam>
         /// <param name="connectionInfo">Connection info</param>
@@ -94,7 +94,7 @@ namespace CafeLib.Data.Sources
         Task<bool> UpdateAsync<T>(IConnectionInfo connectionInfo, T data, CancellationToken token = default) where T : IEntity;
 
         /// <summary>
-        /// Sql update command
+        /// Bulk update entities asynchronously.
         /// </summary>
         /// <typeparam name="T">Type to be updated</typeparam>
         /// <param name="connectionInfo">Connection info</param>
@@ -104,23 +104,25 @@ namespace CafeLib.Data.Sources
         Task<bool> UpdateAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, CancellationToken token = default) where T : IEntity;
 
         /// <summary>
-        /// Inserts entities into table <typeparamref name="T"/>s (by default).
+        /// Insert or update an entity record.
         /// </summary>
         /// <typeparam name="T">The type being inserted.</typeparam>
         /// <param name="connectionInfo">Connection info</param>
         /// <param name="data">Entity record</param>
         /// <param name="expressions"></param>
         /// <param name="token">Cancellation token</param>
+        /// <returns></returns>
         Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity;
 
         /// <summary>
-        /// Inserts entities into table <typeparamref name="T"/>s (by default).
+        /// Insert or update entities.
         /// </summary>
         /// <typeparam name="T">The type being inserted.</typeparam>
         /// <param name="connectionInfo">Connection info</param>
         /// <param name="data">Collection of entity records</param>
         /// <param name="expressions"></param>
         /// <param name="token">Cancellation token</param>
+        /// <returns></returns>
         Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity;
     }
 }

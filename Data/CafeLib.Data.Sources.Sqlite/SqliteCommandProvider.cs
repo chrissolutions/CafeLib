@@ -6,7 +6,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
@@ -117,7 +116,7 @@ namespace CafeLib.Data.Sources.Sqlite
             await using var connection = connectionInfo.GetConnection<SqliteConnection>();
             await using var command = connection.CreateCommand();
             command.CommandText = sql;
-            var args = typeof(SqliteParameter).ToObjectMap(parameters);
+            var args = parameters.ToObjectMap();
             if (args?.Any() ?? false)
             {
                 command.Parameters.AddRange(args.ToArray());

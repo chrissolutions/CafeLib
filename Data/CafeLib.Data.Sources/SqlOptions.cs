@@ -6,7 +6,7 @@ namespace CafeLib.Data.Sources
 {
     public class SqlOptions : IConnectionOptions
     {
-        public ISqlCommandProvider CommandProcessor { get; } = new SqlCommandProvider();
+        public ISqlCommandProvider CommandProcessor { get; } = new SqlCommandProvider<NullDbConnection>();
         public IDbObjectFactory DbObjectFactory { get; } = new SqlObjectFactory();
         public IDbConnection GetConnection(string connectionString) => null;
     }
