@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -17,6 +18,9 @@ namespace CafeLib.Data.Sources
 {
     public class SqlCommandProvider<T> : ISqlCommandProvider where T : IDbConnection, IAsyncDisposable
     {
+        // ReSharper disable once StaticMemberInGenericType
+        private static readonly KeyValuePair<string, object>[] EmptyParameters = new KeyValuePair<string, object>[0];
+
         /// <summary>
         /// Delete entity from table.
         /// </summary>
@@ -114,11 +118,8 @@ namespace CafeLib.Data.Sources
             await using var connection = connectionInfo.GetConnection<T>();
             using var command = connection.CreateCommand();
             command.CommandText = sql;
-            var args = parameters.ToObjectMap();
-            //if (args?.Any() ?? false)
-            //{
-            //    command.Parameters.AddRange(args.ToArray());
-            //}
+            var commandParameters = (DbParameterCollection)command.Parameters;
+            commandParameters.AddRange(parameters?.ToObjectMap().ToArray() ?? EmptyParameters);
 
             connection.Open();
             using var reader = command.ExecuteReader();
@@ -162,10 +163,8 @@ namespace CafeLib.Data.Sources
             await using var connection = connectionInfo.GetConnection<T>();
             using var command = connection.CreateCommand();
             command.CommandText = sql;
-            //if (parameters?.Any() ?? false)
-            //{
-            //    command.Parameters.AddRange(parameters.ToArray());
-            //}
+            var commandParameters = (DbParameterCollection) command.Parameters;
+            commandParameters.AddRange( parameters?.ToObjectMap().ToArray() ?? EmptyParameters);
 
             var inserted = false;
             var id = (TKey)DefaultSqlId<TKey>();

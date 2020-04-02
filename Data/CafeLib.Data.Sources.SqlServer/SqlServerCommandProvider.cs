@@ -20,6 +20,8 @@ namespace CafeLib.Data.Sources.SqlServer
 {
     internal class SqlServerCommandProvider : SingletonBase<SqlServerCommandProvider>, ISqlCommandProvider
     {
+        private static readonly SqlCommandProvider<SqlConnection> SqlCommandProvider = new SqlCommandProvider<SqlConnection>();
+
         /// <summary>
         /// Delete entity from table.
         /// </summary>
@@ -30,50 +32,7 @@ namespace CafeLib.Data.Sources.SqlServer
         /// <returns>true if deleted, false if not found</returns>
         public async Task<bool> DeleteAsync<T>(IConnectionInfo connectionInfo, T data, CancellationToken token = default) where T : IEntity
         {
-            if (data == null)
-                throw new ArgumentException("Cannot Delete null Object", nameof(data));
-
-            var type = typeof(T);
-
-            if (type.IsArray)
-            {
-                type = type.GetElementType();
-            }
-            else if (type.IsGenericType)
-            {
-                var typeInfo = type.GetTypeInfo();
-                var implementsGenericIEnumerableOrIsGenericIEnumerable =
-                    typeInfo.ImplementedInterfaces.Any(ti => ti.IsGenericType && ti.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ||
-                    typeInfo.GetGenericTypeDefinition() == typeof(IEnumerable<>);
-
-                if (implementsGenericIEnumerableOrIsGenericIEnumerable)
-                {
-                    type = type.GetGenericArguments()[0];
-                }
-            }
-
-            var keyProperties = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>().ToList();  //added ToList() due to issue #418, must work on a list copy
-            if (!keyProperties.Any())
-                throw new ArgumentException("Entity must have at least one [Key] or [ExplicitKey] property");
-
-            var name = connectionInfo.Domain.TableCache.TableName(type);
-
-            var sb = new StringBuilder();
-            sb.Append($"DELETE FROM {name} WHERE ");
-
-            for (var i = 0; i < keyProperties.Count; i++)
-            {
-                var property = keyProperties[i];
-                sb.Append($"{property.Name} = @{property.Name}");
-                if (i < keyProperties.Count - 1)
-                {
-                    sb.Append(" AND ");
-                }
-            }
-
-            await using var connection = connectionInfo.GetConnection<SqlConnection>();
-            var deleted = await connection.ExecuteAsync(sb.ToString(), data).ConfigureAwait(false);
-            return deleted > 0;
+            return await SqlCommandProvider.DeleteAsync(connectionInfo, data, token).ConfigureAwait(false);
         }
 
         /// <summary>

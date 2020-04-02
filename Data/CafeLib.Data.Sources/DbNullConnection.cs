@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CafeLib.Data.Sources
 {
-    internal class NullDbConnection : DbConnection
+    internal class DbNullConnection : DbConnection
     {
         protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel)
         {
