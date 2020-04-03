@@ -56,7 +56,7 @@ namespace CafeLib.Data.Sources
                 foreach (var entity in data)
                 {
                     var command = new CommandDefinition(SqlCommandFormatter.FormatDeleteStatement<TEntity>(connectionInfo.Domain), entity, transaction);
-                    await connection.ExecuteAsync(command);
+                    await connection.ExecuteAsync(command).ConfigureAwait(false);
                 }
 
                 transaction.Commit();
@@ -103,17 +103,13 @@ namespace CafeLib.Data.Sources
         public async Task<QueryResult<TEntity>> ExecuteQueryAsync<TEntity>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token) where TEntity : IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            using var command = connection.CreateCommand();
-            command.CommandText = sql;
-            var commandParameters = (DbParameterCollection)command.Parameters;
-            commandParameters.AddRange(parameters?.ToObjectMap().ToArray() ?? EmptyParameters);
+            var command = new CommandDefinition(sql, parameters);
+            using var reader = await connection.ExecuteReaderAsync(command).ConfigureAwait(false);
 
-            connection.Open();
-            using var reader = command.ExecuteReader();
             var totalCount = -1;
             var results = new List<TEntity>();
-
             var model = Activator.CreateInstance<TEntity>();
+
             while (reader.Read())
             {
                 foreach (var prop in model.GetType().GetProperties())
@@ -133,7 +129,7 @@ namespace CafeLib.Data.Sources
                 totalCount = reader.GetInt32(0);
             }
 
-            return await Task.FromResult(new QueryResult<TEntity> { Records = results.ToArray(), TotalCount = totalCount });
+            return new QueryResult<TEntity> { Records = results.ToArray(), TotalCount = totalCount };
         }
 
         /// <summary>
