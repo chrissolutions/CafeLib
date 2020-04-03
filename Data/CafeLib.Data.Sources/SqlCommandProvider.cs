@@ -34,7 +34,8 @@ namespace CafeLib.Data.Sources
             if (data == null)
                 throw new ArgumentException("Cannot Delete null Object", nameof(data));
 
-            var deleted = await connectionInfo.ExecuteAsync(SqlCommandFormatter.FormatDeleteStatement<TEntity>(connectionInfo.Domain), data, token).ConfigureAwait(false);
+            await using var connection = connectionInfo.GetConnection<T>();
+            var deleted = await connection.ExecuteAsync(SqlCommandFormatter.FormatDeleteStatement<TEntity>(connectionInfo.Domain), token).ConfigureAwait(false);
             return deleted > 0;
         }
 
