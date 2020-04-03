@@ -75,7 +75,7 @@ namespace CafeLib.Data.Sources.SqlServer
         }
 
         /// <summary>
-        /// Execute sql insert or update command.
+        /// Execute sql command to save an entry.
         /// </summary>
         /// <typeparam name="TKey">Entity key</typeparam>
         /// <param name="connectionInfo">Connection info</param>
@@ -83,9 +83,9 @@ namespace CafeLib.Data.Sources.SqlServer
         /// <param name="parameters">Sql parameters</param>
         /// <param name="token">Cancellation token</param>
         /// <returns>Upsert result</returns>
-        public async Task<SaveResult<TKey>> ExecuteUpsert<TKey>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default)
+        public async Task<SaveResult<TKey>> ExecuteSave<TKey>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default)
         {
-            return await SqlCommandProvider.ExecuteUpsert<TKey>(connectionInfo, sql, parameters, token).ConfigureAwait(false);
+            return await SqlCommandProvider.ExecuteSave<TKey>(connectionInfo, sql, parameters, token).ConfigureAwait(false);
         }
 
         /// <summary>

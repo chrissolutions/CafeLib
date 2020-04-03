@@ -35,9 +35,9 @@ namespace CafeLib.Data.Sources.Extensions
             return await connectionInfo.Options.CommandProcessor.ExecuteQueryAsync<T>(connectionInfo, sql, parameters, token);
         }
 
-        public static async Task<SaveResult<TKey>> ExecuteUpsert<TKey>(this IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default)
+        public static async Task<SaveResult<TKey>> ExecuteSave<TKey>(this IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default)
         {
-            return await connectionInfo.Options.CommandProcessor.ExecuteUpsert<TKey>(connectionInfo, sql, parameters, token);
+            return await connectionInfo.Options.CommandProcessor.ExecuteSave<TKey>(connectionInfo, sql, parameters, token);
         }
 
         public static async Task<T> InsertAsync<T>(this IConnectionInfo connectionInfo, T data, CancellationToken token = default) where T : IEntity

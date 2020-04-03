@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,7 +52,7 @@ namespace CafeLib.Data.Sources
         Task<QueryResult<T>> ExecuteQueryAsync<T>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default) where T : IEntity;
 
         /// <summary>
-        /// Execute sql insert or update command.
+        /// Execute sql command to save an entry.
         /// </summary>
         /// <typeparam name="TKey">Entity key</typeparam>
         /// <param name="connectionInfo">Connection info</param>
@@ -61,7 +60,7 @@ namespace CafeLib.Data.Sources
         /// <param name="parameters">Sql parameters</param>
         /// <param name="token">Cancellation token</param>
         /// <returns>Upsert result</returns>
-        Task<SaveResult<TKey>> ExecuteUpsert<TKey>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default);
+        Task<SaveResult<TKey>> ExecuteSave<TKey>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default);
 
         /// <summary>
         /// Insert an entity record into the table.

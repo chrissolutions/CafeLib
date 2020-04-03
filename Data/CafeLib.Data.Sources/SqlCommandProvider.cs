@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
-using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -10,7 +9,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
-using CafeLib.Core.Extensions;
 using CafeLib.Data.Sources.Extensions;
 using Dapper;
 
@@ -18,9 +16,6 @@ namespace CafeLib.Data.Sources
 {
     public class SqlCommandProvider<T> : ISqlCommandProvider where T : IDbConnection, IAsyncDisposable
     {
-        // ReSharper disable once StaticMemberInGenericType
-        private static readonly KeyValuePair<string, object>[] EmptyParameters = new KeyValuePair<string, object>[0];
-
         /// <summary>
         /// Delete entity from table.
         /// </summary>
@@ -133,34 +128,22 @@ namespace CafeLib.Data.Sources
         }
 
         /// <summary>
-        /// Execute sql insert or update command.
+        /// Execute sql command to save an entry.
         /// </summary>
         /// <typeparam name="TKey">Entity key</typeparam>
         /// <param name="connectionInfo">Connection info</param>
         /// <param name="sql">Sql query</param>
         /// <param name="parameters">Sql parameters</param>
         /// <param name="token">Cancellation token</param>
-        /// <returns>Upsert result</returns>
-        public async Task<SaveResult<TKey>> ExecuteUpsert<TKey>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default)
+        /// <returns>Save result</returns>
+        public async Task<SaveResult<TKey>> ExecuteSave<TKey>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default)
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            using var command = connection.CreateCommand();
-            command.CommandText = sql;
-            var commandParameters = (DbParameterCollection) command.Parameters;
-            commandParameters.AddRange( parameters?.ToObjectMap().ToArray() ?? EmptyParameters);
-
-            var inserted = false;
+            var command = new CommandDefinition(sql, parameters);
             var id = (TKey)DefaultSqlId<TKey>();
 
-            connection.Open();
-            var result = await Task.FromResult(command.ExecuteScalar());
-            if (result != null)
-            {
-                id = (TKey)result;
-                inserted = true;
-            }
-
-            return new SaveResult<TKey>(id, inserted);
+            var result = await connection.ExecuteScalarAsync(command).ConfigureAwait(false);
+            return result != null ? new SaveResult<TKey>((TKey)result, true) : new SaveResult<TKey>(id, false);
         }
 
         /// <summary>
