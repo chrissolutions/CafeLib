@@ -333,10 +333,10 @@ namespace CafeLib.Data.Persistence
         }
 
         /// <summary>
-        /// 
+        /// Execute sql command.
         /// </summary>
-        /// <param name="sql"></param>
-        /// <param name="parameters"></param>
+        /// <param name="sql">sql command text</param>
+        /// <param name="parameters">sql command parameters</param>
         /// <returns></returns>
         public async Task<int> ExecuteCommand(string sql, object? parameters = null)
         {
