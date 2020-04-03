@@ -55,7 +55,7 @@ namespace CafeLib.Data.Sources
             {
                 foreach (var entity in data)
                 {
-                    var command = new CommandDefinition(SqlCommandFormatter.FormatDeleteStatement<TEntity>(connectionInfo.Domain), data, transaction);
+                    var command = new CommandDefinition(SqlCommandFormatter.FormatDeleteStatement<TEntity>(connectionInfo.Domain), entity, transaction);
                     await connection.ExecuteAsync(command);
                 }
 
