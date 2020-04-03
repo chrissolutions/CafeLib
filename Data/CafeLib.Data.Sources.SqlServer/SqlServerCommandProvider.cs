@@ -35,16 +35,16 @@ namespace CafeLib.Data.Sources.SqlServer
         }
 
         /// <summary>
-        /// Delete entity record.
+        /// Bulk delete of entity records.
         /// </summary>
         /// <typeparam name="T">Entity type</typeparam>
         /// <param name="connectionInfo">Connection info</param>
         /// <param name="data">Collection of entity records</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        public Task<bool> DeleteAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
+        public async Task<bool> DeleteAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
         {
-            throw new NotImplementedException();
+            return await SqlCommandProvider.DeleteAsync(connectionInfo, data, token).ConfigureAwait(false);
         }
 
         /// <summary>

@@ -22,7 +22,7 @@ namespace CafeLib.Data.Sources
         Task<bool> DeleteAsync<T>(IConnectionInfo connectionInfo, T data, CancellationToken token = default) where T : IEntity;
 
         /// <summary>
-        /// Delete entity record.
+        /// Bulk delete of entity records.
         /// </summary>
         /// <typeparam name="T">Entity type</typeparam>
         /// <param name="connectionInfo">Connection info</param>

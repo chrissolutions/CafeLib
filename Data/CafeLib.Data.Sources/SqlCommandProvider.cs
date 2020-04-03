@@ -34,60 +34,50 @@ namespace CafeLib.Data.Sources
             if (data == null)
                 throw new ArgumentException("Cannot Delete null Object", nameof(data));
 
-            var type = typeof(T);
-
-            if (type.IsArray)
-            {
-                type = type.GetElementType();
-            }
-            else if (type.IsGenericType)
-            {
-                var typeInfo = type.GetTypeInfo();
-                var implementsGenericIEnumerableOrIsGenericIEnumerable =
-                    typeInfo.ImplementedInterfaces.Any(ti => ti.IsGenericType && ti.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ||
-                    typeInfo.GetGenericTypeDefinition() == typeof(IEnumerable<>);
-
-                if (implementsGenericIEnumerableOrIsGenericIEnumerable)
-                {
-                    type = type.GetGenericArguments()[0];
-                }
-            }
-
-            var keyProperties = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<TEntity>().ToList();  //added ToList() due to issue #418, must work on a list copy
-            if (!keyProperties.Any())
-                throw new ArgumentException("Entity must have at least one [Key] or [ExplicitKey] property");
-
-            var name = connectionInfo.Domain.TableCache.TableName(type);
-
-            var sb = new StringBuilder();
-            sb.Append($"DELETE FROM {name} WHERE ");
-
-            for (var i = 0; i < keyProperties.Count; i++)
-            {
-                var property = keyProperties[i];
-                sb.Append($"{property.Name} = @{property.Name}");
-                if (i < keyProperties.Count - 1)
-                {
-                    sb.Append(" AND ");
-                }
-            }
-
-            await using var connection = connectionInfo.GetConnection<T>();
-            var deleted = await connection.ExecuteAsync(sb.ToString(), data).ConfigureAwait(false);
+            var deleted = await connectionInfo.ExecuteAsync(SqlCommandFormatter.FormatDeleteStatement<TEntity>(connectionInfo.Domain), data, token).ConfigureAwait(false);
             return deleted > 0;
         }
 
         /// <summary>
-        /// Delete entity record.
+        /// Bulk delete of entity records.
         /// </summary>
         /// <typeparam name="TEntity">Entity type</typeparam>
         /// <param name="connectionInfo">Connection info</param>
         /// <param name="data">Collection of entity records</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        public Task<bool> DeleteAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : IEntity
+        public async Task<bool> DeleteAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : IEntity
         {
-            throw new NotImplementedException();
+            await using var connection = connectionInfo.GetConnection<T>();
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                foreach (var entity in data)
+                {
+                    var command = connection.CreateCommand();
+                    command.Connection = connection;
+                    command.Transaction = transaction;
+                    command.CommandText = SqlCommandFormatter.FormatDeleteStatement<TEntity>(connectionInfo.Domain);
+                    command.ExecuteNonQuery();
+                }
+
+                transaction.Commit();
+                return true;
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    // ReSharper disable once PossibleIntendedRethrow
+                    throw ex;
+                }
+            }
         }
 
         /// <summary>
@@ -210,42 +200,21 @@ namespace CafeLib.Data.Sources
         {
             await using var connection = connectionInfo.GetConnection<T>();
             using var cmd = connection.CreateCommand();
-            cmd.Prepare();
 
-            var type = typeof(T);
-
-            if (type.IsArray)
-            {
-                type = type.GetElementType();
-            }
-            else if (type.IsGenericType)
-            {
-                var typeInfo = type.GetTypeInfo();
-                var implementsGenericIEnumerableOrIsGenericIEnumerable =
-                    typeInfo.ImplementedInterfaces.Any(ti => ti.IsGenericType && ti.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ||
-                    typeInfo.GetGenericTypeDefinition() == typeof(IEnumerable<>);
-
-                if (implementsGenericIEnumerableOrIsGenericIEnumerable)
-                {
-                    type = type.GetGenericArguments()[0];
-                }
-            }
-
+            var tableName = connectionInfo.Domain.TableCache.TableName<TEntity>();
             var keyProperties = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<TEntity>();
             if (!keyProperties.Any())
                 throw new ArgumentException("Entity must have at least one [Key] or [ExplicitKey] property");
 
-            var name = connectionInfo.Domain.TableCache.TableName(type);
-
-            var sb = new StringBuilder();
-            sb.Append($"UPDATE {name} SET ");
-
             var allProperties = connectionInfo.Domain.PropertyCache.TypePropertiesCache<TEntity>();
             var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<TEntity>();
             var computedProperties = connectionInfo.Domain.PropertyCache.ComputedPropertiesCache<TEntity>();
-            var nonIdProps = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
+            var nonKeyProps = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
 
-            nonIdProps.ForEach(x =>
+            var sb = new StringBuilder();
+            sb.Append($"UPDATE {tableName} SET ");
+
+            nonKeyProps.ForEach(x =>
             {
                 sb.Append($"{columns[x.Name]} = @{x.Name}");
                 sb.Append(", ");
