@@ -5,7 +5,6 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -98,28 +97,8 @@ namespace CafeLib.Data.Sources.SqlServer
         /// <returns></returns>
         public async Task<T> InsertAsync<T>(IConnectionInfo connectionInfo, T data, CancellationToken token = default) where T : IEntity
         {
-            var tableName = connectionInfo.Domain.TableCache.TableName<T>();
-            var allProperties = connectionInfo.Domain.PropertyCache.TypePropertiesCache<T>();
-            var keyProperties = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>();
-            var computedProperties = connectionInfo.Domain.PropertyCache.ComputedPropertiesCache<T>();
-            var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<T>();
-
-            var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
-            var allPropertiesExceptKeyAndComputedString = SqlCommandFormatter.FormatColumnsToString(allPropertiesExceptKeyAndComputed, columns);
-
-            var sbParameterList = new StringBuilder(null);
-            for (var i = 0; i < allPropertiesExceptKeyAndComputed.Count; i++)
-            {
-                var property = allPropertiesExceptKeyAndComputed[i];
-                sbParameterList.Append($"@{property.Name}");
-                if (i < allPropertiesExceptKeyAndComputed.Count - 1)
-                    sbParameterList.Append(", ");
-            }
-
-            var sql = $@"
-            INSERT INTO { FormatTableName(tableName)} ({ allPropertiesExceptKeyAndComputedString}) 
-            OUTPUT INSERTED.*
-            VALUES({sbParameterList})";
+            var sqlFormat = SqlCommandFormatter.FormatInsertStatement<T>(connectionInfo.Domain);
+            var sql = sqlFormat.Replace("-- Placeholder01 --", $"OUTPUT INSERTED.{connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>().First().Name}");
 
             await using var connection = connectionInfo.GetConnection<SqlConnection>();
             return await connection.QuerySingleOrDefaultAsync<T>(sql, data).ConfigureAwait(false);
@@ -146,8 +125,8 @@ namespace CafeLib.Data.Sources.SqlServer
             var allPropertiesExceptKeyAndComputedString = SqlCommandFormatter.FormatColumnsToString(allPropertiesExceptKeyAndComputed, columns);
             var tempToBeInserted = $"#TempInsert_{tableName}".Replace(".", string.Empty);
 
-            var properties = keyProperties.First().PropertyType == typeof(Guid) ? allProperties : allPropertiesExceptKeyAndComputed;
-            var propertiesString = keyProperties.First().PropertyType == typeof(Guid) ? allPropertiesString : allPropertiesExceptKeyAndComputedString;
+            var properties = keyProperties.First().PropertyType.IsPrimitive ? allPropertiesExceptKeyAndComputed : allProperties;
+            var propertiesString = ReferenceEquals(properties, allProperties) ? allPropertiesString : allPropertiesExceptKeyAndComputedString;
 
             // Open connection.
             await using var connection = connectionInfo.GetConnection<SqlConnection>();

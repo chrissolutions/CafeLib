@@ -32,6 +32,42 @@ namespace CafeLib.Data.Sources
             return sb.ToString();
         }
 
+        public static string FormatInsertStatement<T>(Domain domain) where T : IEntity
+        {
+            var tableName = domain.TableCache.TableName<T>();
+            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
+            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
+            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
+
+            var allPropertiesString = FormatColumnsToString(allProperties, columns);
+            var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
+            var allPropertiesExceptKeyAndComputedString = FormatColumnsToString(allPropertiesExceptKeyAndComputed, columns);
+
+            var properties = keyProperties.First().PropertyType.IsPrimitive ? allPropertiesExceptKeyAndComputed : allProperties;
+            var propertiesString = ReferenceEquals(properties, allProperties) ? allPropertiesString : allPropertiesExceptKeyAndComputedString;
+
+            var sbInsert = new StringBuilder()
+                .AppendLine($"INSERT INTO {tableName}")
+                .AppendLine($"    ({propertiesString})")
+                .AppendLine("-- Placeholder01 --");
+
+            var sbParameterList = new StringBuilder(null);
+            foreach (var property in properties)
+            {
+                sbParameterList.Append($"@{property.Name}, ");
+            }
+            sbParameterList.Remove(sbParameterList.Length - 1, 1);
+
+            sbInsert.AppendLine("VALUES")
+                .AppendLine($"    ({sbParameterList})");
+
+            sbInsert.AppendLine()
+                .AppendLine("-- Placeholder02 --");
+
+            return sbInsert.ToString();
+        }
+
         public static string FormatColumnsToString(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<string, string> columnNames, string tablePrefix = null)
         {
             var prefix = string.IsNullOrWhiteSpace(tablePrefix) 

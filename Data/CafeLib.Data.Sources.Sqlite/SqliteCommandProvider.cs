@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
@@ -97,29 +97,8 @@ namespace CafeLib.Data.Sources.Sqlite
         /// <returns></returns>
         public async Task<T> InsertAsync<T>(IConnectionInfo connectionInfo, T data, CancellationToken token = default) where T : IEntity
         {
-            var tableName = connectionInfo.Domain.TableCache.TableName<T>();
-            var allProperties = connectionInfo.Domain.PropertyCache.TypePropertiesCache<T>();
-            var keyProperties = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>();
-            var computedProperties = connectionInfo.Domain.PropertyCache.ComputedPropertiesCache<T>();
-            var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<T>();
-
-            var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
-            var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
-
-            var sbParameterList = new StringBuilder(null);
-            for (var i = 0; i < allPropertiesExceptKeyAndComputed.Count; i++)
-            {
-                var property = allPropertiesExceptKeyAndComputed[i];
-                sbParameterList.Append($"@{property.Name}");
-                if (i < allPropertiesExceptKeyAndComputed.Count - 1)
-                    sbParameterList.Append(", ");
-            }
-
-            var sql = $@"
-            INSERT INTO {FormatTableName(tableName)} ({allPropertiesExceptKeyAndComputedString}) 
-            OUTPUT INSERTED.*
-            VALUES({sbParameterList})";
-
+            var sqlFormat = SqlCommandFormatter.FormatInsertStatement<T>(connectionInfo.Domain);
+            var sql = sqlFormat.Replace("-- Placeholder02 --", $"select last_insert_rowid()");
             await using var connection = connectionInfo.GetConnection<SqliteConnection>();
             return await connection.QuerySingleOrDefaultAsync<T>(sql, data).ConfigureAwait(false);
         }
@@ -134,53 +113,41 @@ namespace CafeLib.Data.Sources.Sqlite
         /// <returns></returns>
         public async Task<int> InsertAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
         {
+            await using var connection = connectionInfo.GetConnection<SqliteConnection>();
+            await using var transaction = connection.BeginTransaction();
+            var count = 0;
+
             try
             {
-                await using var connection = connectionInfo.GetConnection<SqliteConnection>();
-                connection.Open();
-
-                await using var command = connection.CreateCommand();
-                await using var tranaction = connection.BeginTransaction();
-
                 foreach (var entity in data)
                 {
+                    var sqlFormat = SqlCommandFormatter.FormatInsertStatement<T>(connectionInfo.Domain);
+                    var sql = sqlFormat.Replace("-- Placeholder02 --", $"select last_insert_rowid()");
 
+                    var command = new CommandDefinition(sql, entity, transaction);
+                    var key = connection.QuerySingleOrDefaultAsync(command);
+
+                    var property = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>().First();
+                    property.SetValue(entity, key);
+                    ++count;
                 }
 
-                tranaction.Commit();
+                transaction.Commit();
+                return count;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine(e);
-                throw;
+                try
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    // ReSharper disable once PossibleIntendedRethrow
+                    throw ex;
+                }
             }
-
-
-
-            //await data.ForEachAsync(x =>
-            //{
-
-
-
-
-
-            //});
-
-            //        // 100,000 inserts
-            //        for (var i = 0; i < 1000000; i++)
-            //        {
-            //            cmd.CommandText =
-            //                "INSERT INTO Person (FirstName, LastName) VALUES ('John', 'Doe');";
-            //            cmd.ExecuteNonQuery();
-            //        }
-
-            //        transaction.Commit();
-            //    }
-            //}
-
-            //conn.Close();
-
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -236,40 +203,6 @@ namespace CafeLib.Data.Sources.Sqlite
         }
 
         #region Helpers
-
-        private static string BuildSqlInsertCommand<T>(Domain domain) where T : IEntity
-        {
-            var tableName = domain.TableCache.TableName<T>();
-            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
-            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
-            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
-            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
-
-            var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
-            var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
-
-            var sbParameterList = new StringBuilder(null);
-            for (var i = 0; i < allPropertiesExceptKeyAndComputed.Count; i++)
-            {
-                var property = allPropertiesExceptKeyAndComputed[i];
-                sbParameterList.Append($"@{property.Name}");
-                if (i < allPropertiesExceptKeyAndComputed.Count - 1)
-                    sbParameterList.Append(", ");
-            }
-
-            var sql = $@"
-            INSERT INTO {FormatTableName(tableName)} ({ allPropertiesExceptKeyAndComputedString}) 
-            OUTPUT INSERTED.*
-            VALUES({sbParameterList})";
-
-
-            return string.Empty;
-        }
-
-
-
-
-
 
         private static string GetColumnsStringSqlServer(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<string, string> columnNames, string tablePrefix = null)
         {
