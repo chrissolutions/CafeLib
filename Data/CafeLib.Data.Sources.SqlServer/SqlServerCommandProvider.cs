@@ -105,7 +105,7 @@ namespace CafeLib.Data.Sources.SqlServer
             var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<T>();
 
             var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
-            var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
+            var allPropertiesExceptKeyAndComputedString = SqlCommandFormatter.FormatColumnsToString(allPropertiesExceptKeyAndComputed, columns);
 
             var sbParameterList = new StringBuilder(null);
             for (var i = 0; i < allPropertiesExceptKeyAndComputed.Count; i++)
@@ -141,9 +141,9 @@ namespace CafeLib.Data.Sources.SqlServer
             var computedProperties = connectionInfo.Domain.PropertyCache.ComputedPropertiesCache<T>();
             var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<T>();
 
-            var allPropertiesString = GetColumnsStringSqlServer(allProperties, columns);
+            var allPropertiesString = SqlCommandFormatter.FormatColumnsToString(allProperties, columns);
             var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
-            var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
+            var allPropertiesExceptKeyAndComputedString = SqlCommandFormatter.FormatColumnsToString(allPropertiesExceptKeyAndComputed, columns);
             var tempToBeInserted = $"#TempInsert_{tableName}".Replace(".", string.Empty);
 
             var properties = keyProperties.First().PropertyType == typeof(Guid) ? allProperties : allPropertiesExceptKeyAndComputed;
@@ -267,9 +267,9 @@ namespace CafeLib.Data.Sources.SqlServer
             var computedProperties = connectionInfo.Domain.PropertyCache.ComputedPropertiesCache<T>();
             var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<T>();
 
-            var allPropertiesString = GetColumnsStringSqlServer(allProperties, columns);
+            var allPropertiesString = SqlCommandFormatter.FormatColumnsToString(allProperties, columns);
             var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
-            var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
+            var allPropertiesExceptKeyAndComputedString = SqlCommandFormatter.FormatColumnsToString(allPropertiesExceptKeyAndComputed, columns);
             var tempToBeInserted = $"#TempInsert_{tableName}".Replace(".", string.Empty);
 
             var propertiesString = keyProperties.First().PropertyType == typeof(Guid) ? allPropertiesString : allPropertiesExceptKeyAndComputedString;
@@ -328,16 +328,6 @@ namespace CafeLib.Data.Sources.SqlServer
         }
 
         #region Helpers
-
-        private static string GetColumnsStringSqlServer(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<string, string> columnNames, string tablePrefix = null)
-        {
-            if (tablePrefix == "target.")
-            {
-                return string.Join(", ", properties.Select(property => $"{tablePrefix}[{columnNames[property.Name]}] as [{property.Name}]"));
-            }
-
-            return string.Join(", ", properties.Select(property => $"{tablePrefix}[{columnNames[property.Name]}]"));
-        }
 
         private static DataTable ToDataTable<T>(IEnumerable<T> data, IReadOnlyList<PropertyInfo> properties)
         {

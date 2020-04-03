@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
@@ -117,7 +116,7 @@ namespace CafeLib.Data.Sources.Sqlite
             }
 
             var sql = $@"
-            INSERT INTO { FormatTableName(tableName)} ({ allPropertiesExceptKeyAndComputedString}) 
+            INSERT INTO {FormatTableName(tableName)} ({allPropertiesExceptKeyAndComputedString}) 
             OUTPUT INSERTED.*
             VALUES({sbParameterList})";
 
@@ -133,8 +132,54 @@ namespace CafeLib.Data.Sources.Sqlite
         /// <param name="data">Collection of entity records</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        public Task<int> InsertAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
+        public async Task<int> InsertAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
         {
+            try
+            {
+                await using var connection = connectionInfo.GetConnection<SqliteConnection>();
+                connection.Open();
+
+                await using var command = connection.CreateCommand();
+                await using var tranaction = connection.BeginTransaction();
+
+                foreach (var entity in data)
+                {
+
+                }
+
+                tranaction.Commit();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+
+
+            //await data.ForEachAsync(x =>
+            //{
+
+
+
+
+
+            //});
+
+            //        // 100,000 inserts
+            //        for (var i = 0; i < 1000000; i++)
+            //        {
+            //            cmd.CommandText =
+            //                "INSERT INTO Person (FirstName, LastName) VALUES ('John', 'Doe');";
+            //            cmd.ExecuteNonQuery();
+            //        }
+
+            //        transaction.Commit();
+            //    }
+            //}
+
+            //conn.Close();
+
             throw new NotImplementedException();
         }
 
@@ -191,6 +236,40 @@ namespace CafeLib.Data.Sources.Sqlite
         }
 
         #region Helpers
+
+        private static string BuildSqlInsertCommand<T>(Domain domain) where T : IEntity
+        {
+            var tableName = domain.TableCache.TableName<T>();
+            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
+            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
+            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
+
+            var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
+            var allPropertiesExceptKeyAndComputedString = GetColumnsStringSqlServer(allPropertiesExceptKeyAndComputed, columns);
+
+            var sbParameterList = new StringBuilder(null);
+            for (var i = 0; i < allPropertiesExceptKeyAndComputed.Count; i++)
+            {
+                var property = allPropertiesExceptKeyAndComputed[i];
+                sbParameterList.Append($"@{property.Name}");
+                if (i < allPropertiesExceptKeyAndComputed.Count - 1)
+                    sbParameterList.Append(", ");
+            }
+
+            var sql = $@"
+            INSERT INTO {FormatTableName(tableName)} ({ allPropertiesExceptKeyAndComputedString}) 
+            OUTPUT INSERTED.*
+            VALUES({sbParameterList})";
+
+
+            return string.Empty;
+        }
+
+
+
+
+
 
         private static string GetColumnsStringSqlServer(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<string, string> columnNames, string tablePrefix = null)
         {
