@@ -344,34 +344,15 @@ namespace CafeLib.Data.Persistence
         }
 
         /// <summary>
-        /// 
+        /// Execute sql command to save an entry.
         /// </summary>
-        /// <typeparam name="TU"></typeparam>
-        /// <param name="sql"></param>
-        /// <param name="parameters"></param>
+        /// <typeparam name="TKey">entity key type</typeparam>
+        /// <param name="sql">sql command text</param>
+        /// <param name="parameters">sql command parameters</param>
         /// <returns></returns>
-        public async Task<SaveResult<TU>> ExecuteSave<TU>(string sql, object? parameters)
+        public async Task<SaveResult<TKey>> ExecuteSave<TKey>(string sql, object? parameters)
         {
-            using var connection = _storage.GetConnection();
-            connection.Open();
-            var command = connection.CreateCommand();
-            command.CommandText = sql;
-            //if (parameters?.Any() ?? false)
-            //{
-            //    command.Parameters.AddRange(parameters.ToArray());
-            //}
-
-            var inserted = false;
-            var id = (TU) DefaultSqlId<TU>();
-
-            var result = await Task.FromResult(command.ExecuteScalar());
-            if (result != null)
-            {
-                id = (TU)result;
-                inserted = true;
-            }
-
-            return new SaveResult<TU>(id, inserted);
+            return await _storage.ConnectionInfo.ExecuteSave<TKey>(sql, parameters);
         }
 
         #region Helpers
@@ -395,26 +376,6 @@ namespace CafeLib.Data.Persistence
 
                 default:
                     return $"{id}";
-            }
-        }
-
-        /// <summary>
-        /// Check Sql Id type for requiring quotation.
-        /// </summary>
-        /// <typeparam name="TU">identifier type</typeparam>
-        /// <returns>return quoted id for certain types</returns>
-        private static object DefaultSqlId<TU>()
-        {
-            switch (typeof(TU).Name)
-            {
-                case "String":
-                    return string.Empty;
-
-                case "Guid":
-                    return Guid.Empty;
-
-                default:
-                    return 0;
             }
         }
 
