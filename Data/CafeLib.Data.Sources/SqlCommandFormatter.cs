@@ -57,10 +57,10 @@ namespace CafeLib.Data.Sources
             var sqlInsert = new StringBuilder()
                 .AppendLine($"INSERT INTO {tableName}")
                 .AppendLine($"({columnsString})")
-                .AppendLine("-- Placeholder01 --")
+                .AppendLine("{0}")
                 .AppendLine("VALUES")
                 .AppendLine($"({sqlParameterList})")
-                .AppendLine("-- Placeholder02 --");
+                .AppendLine("{1}");
 
             return sqlInsert.ToString();
         }

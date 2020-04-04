@@ -96,7 +96,7 @@ namespace CafeLib.Data.Sources.Sqlite
             var sqlFormat = SqlCommandFormatter.FormatInsertStatement<T>(connectionInfo.Domain);
             var tableName = connectionInfo.Domain.TableCache.TableName<T>();
             var keyName = connectionInfo.Domain.PropertyCache.PrimaryKeyName<T>();
-            var sql = sqlFormat.Replace("-- Placeholder02 --", $"select * from {tableName} where {keyName} = last_insert_rowid()");
+            var sql = string.Format(sqlFormat, string.Empty, $"select * from {tableName} where {keyName} = last_insert_rowid()");
             await using var connection = connectionInfo.GetConnection<SqliteConnection>();
             return await connection.QuerySingleOrDefaultAsync<T>(sql, data).ConfigureAwait(false);
         }
