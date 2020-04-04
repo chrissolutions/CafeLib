@@ -184,6 +184,23 @@ namespace CafeLib.Data.Sources.Sqlite
         /// <param name="token">Cancellation token</param>
         public Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
         {
+            /*
+                    // Create table
+                     CREATE TABLE phonebook2(
+                      name TEXT PRIMARY KEY,
+                      phonenumber TEXT,
+                      validDate DATE
+                    );
+
+                    // Upsert command (excluded is special table name that contains the value from the failed insert attempt).
+                    INSERT INTO phonebook2(name,phonenumber,validDate)
+                      VALUES('Alice','704-555-1212','2018-05-08')
+                      ON CONFLICT(name) DO UPDATE SET
+                        phonenumber=excluded.phonenumber,
+                        validDate=excluded.validDate
+                      WHERE excluded.validDate>phonebook2.validDate;
+             */
+
             throw new NotImplementedException();
         }
 
