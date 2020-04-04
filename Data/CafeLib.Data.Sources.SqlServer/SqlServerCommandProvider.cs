@@ -98,7 +98,7 @@ namespace CafeLib.Data.Sources.SqlServer
         public async Task<T> InsertAsync<T>(IConnectionInfo connectionInfo, T data, CancellationToken token = default) where T : IEntity
         {
             var sqlFormat = SqlCommandFormatter.FormatInsertStatement<T>(connectionInfo.Domain);
-            var sql = sqlFormat.Replace("-- Placeholder01 --", $"OUTPUT INSERTED.*");
+            var sql = sqlFormat.Replace("-- Placeholder01 --", "OUTPUT INSERTED.*");
 
             await using var connection = connectionInfo.GetConnection<SqlConnection>();
             return await connection.QuerySingleOrDefaultAsync<T>(sql, data).ConfigureAwait(false);
@@ -211,9 +211,9 @@ namespace CafeLib.Data.Sources.SqlServer
         /// <param name="data">Entity record</param>
         /// <param name="token">Cancellation token</param>
         /// <returns>true if updated, false if not found or not modified (tracked entities)</returns>
-        public Task<bool> UpdateAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
+        public async Task<bool> UpdateAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
         {
-            throw new NotImplementedException();
+            return await SqlCommandProvider.UpdateAsync(connectionInfo, data, token).ConfigureAwait(false);
         }
 
         /// <summary>

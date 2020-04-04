@@ -9,6 +9,9 @@ namespace CafeLib.Data.Sources
 {
     public static class SqlCommandFormatter
     {
+        private const string And = " AND ";
+        private const string Separator = ", ";
+
         public static string FormatDeleteStatement<T>(Domain domain) where T : IEntity
         {
             var tableName = domain.TableCache.TableName<T>();
@@ -16,20 +19,17 @@ namespace CafeLib.Data.Sources
             if (!keyProperties.Any())
                 throw new ArgumentException("Entity must have at least one [Key] or [ExplicitKey] property");
 
-            var sb = new StringBuilder();
-            sb.Append($"DELETE FROM {tableName} WHERE ");
+            var sqlDelete = new StringBuilder();
+            sqlDelete.AppendLine($"DELETE FROM {tableName} WHERE ");
 
-            for (var i = 0; i < keyProperties.Count; i++)
+            foreach (var property in keyProperties)
             {
-                var property = keyProperties[i];
-                sb.Append($"{property.Name} = @{property.Name}");
-                if (i < keyProperties.Count - 1)
-                {
-                    sb.Append(" AND ");
-                }
+                sqlDelete.AppendLine($"{property.Name} = @{property.Name}");
+                sqlDelete.Append(And);
             }
+            sqlDelete.Remove(sqlDelete.Length - And.Length, And.Length);
 
-            return sb.ToString();
+            return sqlDelete.ToString();
         }
 
         public static string FormatInsertStatement<T>(Domain domain) where T : IEntity
@@ -45,27 +45,57 @@ namespace CafeLib.Data.Sources
             var allPropertiesExceptKeyAndComputedString = FormatColumnsToString(allPropertiesExceptKeyAndComputed, columns);
 
             var properties = keyProperties.First().PropertyType.IsPrimitive ? allPropertiesExceptKeyAndComputed : allProperties;
-            var propertiesString = ReferenceEquals(properties, allProperties) ? allPropertiesString : allPropertiesExceptKeyAndComputedString;
+            var columnsString = ReferenceEquals(properties, allProperties) ? allPropertiesString : allPropertiesExceptKeyAndComputedString;
 
-            var sbInsert = new StringBuilder()
-                .AppendLine($"INSERT INTO {tableName}")
-                .AppendLine($"    ({propertiesString})")
-                .AppendLine("-- Placeholder01 --");
-
-            var sbParameterList = new StringBuilder(null);
+            var sqlParameterList = new StringBuilder(null);
             foreach (var property in properties)
             {
-                sbParameterList.Append($"@{property.Name}, ");
+                sqlParameterList.Append($"@{property.Name}{Separator}");
             }
-            sbParameterList.Remove(sbParameterList.Length - 1, 1);
+            sqlParameterList.Remove(sqlParameterList.Length - Separator.Length, Separator.Length);
 
-            sbInsert.AppendLine("VALUES")
-                .AppendLine($"    ({sbParameterList})");
-
-            sbInsert.AppendLine()
+            var sqlInsert = new StringBuilder()
+                .AppendLine($"INSERT INTO {tableName}")
+                .AppendLine($"({columnsString})")
+                .AppendLine("-- Placeholder01 --")
+                .AppendLine("VALUES")
+                .AppendLine($"({sqlParameterList})")
                 .AppendLine("-- Placeholder02 --");
 
-            return sbInsert.ToString();
+            return sqlInsert.ToString();
+        }
+
+        public static string FormatUpdateStatement<T>(Domain domain) where T : IEntity
+        {
+            var tableName = domain.TableCache.TableName<T>();
+            var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
+            if (!keyProperties.Any())
+                throw new ArgumentException("Entity must have at least one [Key] or [ExplicitKey] property");
+
+            var allProperties = domain.PropertyCache.TypePropertiesCache<T>();
+            var columns = domain.PropertyCache.GetColumnNamesCache<T>();
+            var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
+            var nonKeyProps = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
+
+            var sqlUpdate = new StringBuilder();
+            sqlUpdate.AppendLine($"UPDATE {tableName} SET");
+            foreach (var nonKey in nonKeyProps)
+            {
+                sqlUpdate.AppendLine($"{columns[nonKey.Name]} = @{nonKey.Name}");
+                sqlUpdate.Append(Separator);
+            }
+            sqlUpdate.Remove(sqlUpdate.Length - Separator.Length, Separator.Length);
+
+            sqlUpdate.AppendLine("WHERE");
+
+            foreach (var property in keyProperties)
+            {
+                sqlUpdate.AppendLine($"{property.Name} = @{property.Name}");
+                sqlUpdate.Append(And);
+            }
+            sqlUpdate.Remove(sqlUpdate.Length - And.Length, And.Length);
+
+            return sqlUpdate.ToString();
         }
 
         public static string FormatColumnsToString(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<string, string> columnNames, string tablePrefix = null)
@@ -76,7 +106,7 @@ namespace CafeLib.Data.Sources
                     ? tablePrefix
                     : tablePrefix + ".";
 
-            return string.Join(", ", 
+            return string.Join(Separator, 
                                 string.IsNullOrWhiteSpace(prefix) 
                                     ? properties.Select(property => $"{prefix}[{columnNames[property.Name]}]") 
                                     : properties.Select(property => $"{prefix}[{columnNames[property.Name]}] as [{property.Name}]"));

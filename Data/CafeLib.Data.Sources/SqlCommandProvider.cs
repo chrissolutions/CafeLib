@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
@@ -143,7 +141,7 @@ namespace CafeLib.Data.Sources
             var id = (TKey)DefaultSqlId<TKey>();
 
             var result = await connection.ExecuteScalarAsync(command).ConfigureAwait(false);
-            return result != null ? new SaveResult<TKey>((TKey)result, true) : new SaveResult<TKey>(id, false);
+            return result != null ? new SaveResult<TKey>((TKey)result, true) : new SaveResult<TKey>(id);
         }
 
         /// <summary>
@@ -156,12 +154,12 @@ namespace CafeLib.Data.Sources
         /// <returns></returns>
         public Task<TEntity> InsertAsync<TEntity>(IConnectionInfo connectionInfo, TEntity data, CancellationToken token = default) where TEntity : IEntity
         {
-            throw new NotImplementedException();
+            throw new InvalidOperationException($"{GetType().Name} does not implement {nameof(InsertAsync)}.");
         }
 
         public Task<int> InsertAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : IEntity
         {
-            throw new NotImplementedException();
+            throw new InvalidOperationException($"{GetType().Name} does not implement {nameof(InsertAsync)}.");
         }
 
         /// <summary>
@@ -175,39 +173,7 @@ namespace CafeLib.Data.Sources
         public async Task<bool> UpdateAsync<TEntity>(IConnectionInfo connectionInfo, TEntity data, CancellationToken token = default) where TEntity : IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            using var cmd = connection.CreateCommand();
-
-            var tableName = connectionInfo.Domain.TableCache.TableName<TEntity>();
-            var keyProperties = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<TEntity>();
-            if (!keyProperties.Any())
-                throw new ArgumentException("Entity must have at least one [Key] or [ExplicitKey] property");
-
-            var allProperties = connectionInfo.Domain.PropertyCache.TypePropertiesCache<TEntity>();
-            var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<TEntity>();
-            var computedProperties = connectionInfo.Domain.PropertyCache.ComputedPropertiesCache<TEntity>();
-            var nonKeyProps = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
-
-            var sb = new StringBuilder();
-            sb.Append($"UPDATE {tableName} SET ");
-
-            nonKeyProps.ForEach(x =>
-            {
-                sb.Append($"{columns[x.Name]} = @{x.Name}");
-                sb.Append(", ");
-            });
-            sb.Remove(sb.Length - ", ".Length, ", ".Length);
-
-            sb.Append(" WHERE ");
-
-            for (var i = 0; i < keyProperties.Count; i++)
-            {
-                var property = keyProperties[i];
-                sb.Append($"{property.Name} = @{property.Name}");
-                if (i < keyProperties.Count - 1)
-                    sb.Append(" AND ");
-            }
-
-            var updated = await connection.ExecuteAsync(sb.ToString(), data).ConfigureAwait(false);
+            var updated = await connection.ExecuteAsync(SqlCommandFormatter.FormatUpdateStatement<TEntity>(connectionInfo.Domain), data).ConfigureAwait(false);
             return updated > 0;
         }
 
@@ -219,9 +185,35 @@ namespace CafeLib.Data.Sources
         /// <param name="data">Entity record</param>
         /// <param name="token">Cancellation token</param>
         /// <returns>true if updated, false if not found or not modified (tracked entities)</returns>
-        public Task<bool> UpdateAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : IEntity
+        public async Task<bool> UpdateAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : IEntity
         {
-            throw new NotImplementedException();
+            await using var connection = connectionInfo.GetConnection<T>();
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                foreach (var entity in data)
+                {
+                    var command = new CommandDefinition(SqlCommandFormatter.FormatUpdateStatement<TEntity>(connectionInfo.Domain), entity, transaction);
+                    await connection.ExecuteAsync(command).ConfigureAwait(false);
+                }
+
+                transaction.Commit();
+                return true;
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    // ReSharper disable once PossibleIntendedRethrow
+                    throw ex;
+                }
+            }
         }
 
         /// <summary>
@@ -235,7 +227,7 @@ namespace CafeLib.Data.Sources
         /// <returns></returns>
         public Task<int> UpsertAsync<TEntity>(IConnectionInfo connectionInfo, TEntity data, Expression<Func<TEntity, object>>[] expressions, CancellationToken token = default) where TEntity : IEntity
         {
-            throw new NotImplementedException();
+            throw new InvalidOperationException($"{GetType().Name} does not implement {nameof(UpdateAsync)}.");
         }
 
         /// <summary>
@@ -249,7 +241,7 @@ namespace CafeLib.Data.Sources
         /// <returns></returns>
         public Task<int> UpsertAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, Expression<Func<TEntity, object>>[] expressions, CancellationToken token = default) where TEntity : IEntity
         {
-            throw new NotImplementedException();
+            throw new InvalidOperationException($"{GetType().Name} does not implement {nameof(UpdateAsync)}.");
         }
 
         #region Helpers

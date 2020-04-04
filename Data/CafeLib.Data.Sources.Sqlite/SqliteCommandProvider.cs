@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
-using CafeLib.Core.Extensions;
 using CafeLib.Core.Support;
 using CafeLib.Data.Sources.Extensions;
 using Dapper;
@@ -124,7 +120,7 @@ namespace CafeLib.Data.Sources.Sqlite
                 foreach (var entity in data)
                 {
                     var sqlFormat = SqlCommandFormatter.FormatInsertStatement<T>(connectionInfo.Domain);
-                    var sql = sqlFormat.Replace("-- Placeholder02 --", $"select last_insert_rowid()");
+                    var sql = sqlFormat.Replace("-- Placeholder02 --", "select last_insert_rowid()");
 
                     var command = new CommandDefinition(sql, entity, transaction);
                     var key = connection.QuerySingleOrDefaultAsync(command);
@@ -173,9 +169,9 @@ namespace CafeLib.Data.Sources.Sqlite
         /// <param name="data">Entity record</param>
         /// <param name="token">Cancellation token</param>
         /// <returns>true if updated, false if not found or not modified (tracked entities)</returns>
-        public Task<bool> UpdateAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
+        public async Task<bool> UpdateAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, CancellationToken token = default) where T : IEntity
         {
-            throw new NotImplementedException();
+            return await SqlCommandProvider.UpdateAsync(connectionInfo, data, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -203,103 +199,5 @@ namespace CafeLib.Data.Sources.Sqlite
         {
             throw new NotImplementedException();
         }
-
-        #region Helpers
-
-        private static string GetColumnsStringSqlServer(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<string, string> columnNames, string tablePrefix = null)
-        {
-            if (tablePrefix == "target.")
-            {
-                return string.Join(", ", properties.Select(property => $"{tablePrefix}[{columnNames[property.Name]}] as [{property.Name}]"));
-            }
-
-            return string.Join(", ", properties.Select(property => $"{tablePrefix}[{columnNames[property.Name]}]"));
-        }
-
-        private static DataTable ToDataTable<T>(IEnumerable<T> data, IReadOnlyList<PropertyInfo> properties)
-        {
-            var typeCasts = new Type[properties.Count];
-            for (var i = 0; i < properties.Count; i++)
-            {
-                if (properties[i].PropertyType.IsEnum)
-                {
-                    typeCasts[i] = Enum.GetUnderlyingType(properties[i].PropertyType);
-                }
-                else
-                {
-                    typeCasts[i] = null;
-                }
-            }
-
-            var dataTable = new DataTable();
-            for (var i = 0; i < properties.Count; i++)
-            {
-                // Nullable types are not supported.
-                var propertyNonNullType = Nullable.GetUnderlyingType(properties[i].PropertyType) ?? properties[i].PropertyType;
-                dataTable.Columns.Add(properties[i].Name, typeCasts[i] ?? propertyNonNullType);
-            }
-
-            foreach (var item in data)
-            {
-                var values = new object[properties.Count];
-                for (var i = 0; i < properties.Count; i++)
-                {
-                    var value = properties[i].GetValue(item, null);
-                    values[i] = typeCasts[i] == null ? value : Convert.ChangeType(value, typeCasts[i]);
-                }
-
-                dataTable.Rows.Add(values);
-            }
-
-            return dataTable;
-        }
-
-        private static string FormatTableName(string table)
-        {
-            if (string.IsNullOrEmpty(table))
-            {
-                return table;
-            }
-
-            var parts = table.Split('.');
-
-            if (parts.Length == 1)
-            {
-                return $"[{table}]";
-            }
-
-            return $"[{parts[0]}].[{parts[1]}]";
-        }
-
-        private static IEnumerable<string> FormatColumnNames(string columnsString, string prefix)
-        {
-            return columnsString.Split(',').Select(x => $"[{prefix}].{x.Trim()}");
-        }
-
-        private static IEnumerable<string> FormatUpdateList(string columnsString, string source = "src", string target = "tgt")
-        {
-            return columnsString.Split(',').Select(x => $"[{target}].{x.Trim()} = [{source}].{x.Trim()}");
-        }
-
-        private static IEnumerable<string> FormatMergeOnMatchList<T>(Domain domain, PropertyExpressionList<T> expressionList, string source = "src", string target = "tgt") where T : IEntity
-        {
-            const string template = "[{target}].{targetKey}=[{source}].{sourceKey}";
-            var results = new List<string>();
-
-            if (expressionList != null && expressionList.Any())
-            {
-                var columnNames = expressionList.GetColumnNames();
-                columnNames.ForEach(x => results.Add(template.Render(new { target, targetKey = x, source, sourceKey = x })));
-            }
-            else
-            {
-                var keyName = domain.PropertyCache.KeyPropertiesCache<T>().First().Name;
-                results.Add(template.Render(new { target, targetKey = keyName, source, sourceKey = keyName }));
-            }
-
-            return results;
-        }
-
-        #endregion
     }
 }
