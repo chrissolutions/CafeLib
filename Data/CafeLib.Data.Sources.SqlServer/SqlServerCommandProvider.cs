@@ -98,7 +98,7 @@ namespace CafeLib.Data.Sources.SqlServer
         public async Task<T> InsertAsync<T>(IConnectionInfo connectionInfo, T data, CancellationToken token = default) where T : IEntity
         {
             var sqlFormat = SqlCommandFormatter.FormatInsertStatement<T>(connectionInfo.Domain);
-            var sql = sqlFormat.Replace("-- Placeholder01 --", $"OUTPUT INSERTED.{connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>().First().Name}");
+            var sql = sqlFormat.Replace("-- Placeholder01 --", $"OUTPUT INSERTED.*");
 
             await using var connection = connectionInfo.GetConnection<SqlConnection>();
             return await connection.QuerySingleOrDefaultAsync<T>(sql, data).ConfigureAwait(false);

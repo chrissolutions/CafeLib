@@ -98,7 +98,9 @@ namespace CafeLib.Data.Sources.Sqlite
         public async Task<T> InsertAsync<T>(IConnectionInfo connectionInfo, T data, CancellationToken token = default) where T : IEntity
         {
             var sqlFormat = SqlCommandFormatter.FormatInsertStatement<T>(connectionInfo.Domain);
-            var sql = sqlFormat.Replace("-- Placeholder02 --", $"select last_insert_rowid()");
+            var tableName = connectionInfo.Domain.TableCache.TableName<T>();
+            var keyName = connectionInfo.Domain.PropertyCache.PrimaryKeyName<T>();
+            var sql = sqlFormat.Replace("-- Placeholder02 --", $"select * from {tableName} where {keyName} = last_insert_rowid()");
             await using var connection = connectionInfo.GetConnection<SqliteConnection>();
             return await connection.QuerySingleOrDefaultAsync<T>(sql, data).ConfigureAwait(false);
         }
