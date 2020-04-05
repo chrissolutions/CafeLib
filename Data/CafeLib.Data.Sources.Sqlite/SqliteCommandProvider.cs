@@ -182,8 +182,10 @@ namespace CafeLib.Data.Sources.Sqlite
         /// <param name="data">Entity record</param>
         /// <param name="expressions"></param>
         /// <param name="token">Cancellation token</param>
-        public Task<T> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
+        public async Task<T> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
         {
+            return await SqlCommandProvider.UpsertAsync(connectionInfo, data, expressions, token).ConfigureAwait(false);
+
             /*
                     // Create table
                      CREATE TABLE phonebook2(
@@ -200,8 +202,6 @@ namespace CafeLib.Data.Sources.Sqlite
                         validDate=excluded.validDate
                       WHERE excluded.validDate>phonebook2.validDate;
              */
-
-            throw new NotImplementedException();
         }
 
         /// <summary>

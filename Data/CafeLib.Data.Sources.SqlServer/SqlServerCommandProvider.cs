@@ -224,9 +224,9 @@ namespace CafeLib.Data.Sources.SqlServer
         /// <param name="data">Entity record</param>
         /// <param name="expressions"></param>
         /// <param name="token">Cancellation token</param>
-        public Task<T> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
+        public async Task<T> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions = null, CancellationToken token = default) where T : IEntity
         {
-            throw new NotImplementedException();
+            return await SqlCommandProvider.UpsertAsync(connectionInfo, data, expressions, token).ConfigureAwait(false);
         }
 
         /// <summary>
