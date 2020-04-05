@@ -53,7 +53,7 @@ namespace CafeLib.Data.Sources
             var sqlParameterList = new StringBuilder(null);
             foreach (var property in properties)
             {
-                sqlParameterList.Append($"@{property.Name}{Separator}");
+                sqlParameterList.Append($"@{columns[property.Name]}{Separator}");
             }
             sqlParameterList.Remove(sqlParameterList.Length - Separator.Length, Separator.Length);
 
