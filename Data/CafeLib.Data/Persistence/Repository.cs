@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
-using CafeLib.Core.Extensions;
 using CafeLib.Data.Sources;
 using CafeLib.Data.Sources.Extensions;
 using CafeLib.Data.SqlGenerator;
@@ -320,9 +319,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<bool> Update(IEnumerable<T> entities)
         {
-            var result = true;
-            await entities.ForEachAsync(async x => result &= await Update(x));
-            return result;
+            return await _storage.ConnectionInfo.UpdateAsync(entities);
         }
 
         /// <summary>
