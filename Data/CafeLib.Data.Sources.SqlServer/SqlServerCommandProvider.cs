@@ -224,7 +224,7 @@ namespace CafeLib.Data.Sources.SqlServer
         /// <param name="data">Entity record</param>
         /// <param name="expressions"></param>
         /// <param name="token">Cancellation token</param>
-        public Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
+        public Task<T> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
         {
             throw new NotImplementedException();
         }
@@ -260,7 +260,7 @@ namespace CafeLib.Data.Sources.SqlServer
 
             // Create temporary table to cache resultant bulk copy.
             await connection.ExecuteAsync($@"SELECT TOP 0 {allPropertiesExceptKeyAndComputedString} INTO {tempToBeInserted} FROM {FormatTableName(tableName)} target WITH(NOLOCK);").ConfigureAwait(false);
-            await connection.ExecuteAsync($@"ALTER TABLE {tempToBeInserted} ADD {keyProperties.First().Name} {PropertyCache.GetSqlType(keyProperties.First().PropertyType)}").ConfigureAwait(false);
+            await connection.ExecuteAsync($@"ALTER TABLE {tempToBeInserted} ADD {keyProperties.First().Name} {GetSqlType(keyProperties.First().PropertyType)}").ConfigureAwait(false);
 
             try
             {
@@ -390,6 +390,20 @@ namespace CafeLib.Data.Sources.SqlServer
             }
 
             return results;
+        }
+
+        public static string GetSqlType(Type type)
+        {
+            return type switch
+            {
+                { } when type == typeof(int) => "INT",
+
+                { } when type == typeof(long) => "BIGINT",
+
+                { } when type == typeof(Guid) => "UNIQUEIDENTIFER",
+
+                _ => string.Empty,
+            };
         }
 
         #endregion

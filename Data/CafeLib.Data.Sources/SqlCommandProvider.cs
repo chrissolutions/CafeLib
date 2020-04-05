@@ -225,9 +225,15 @@ namespace CafeLib.Data.Sources
         /// <param name="expressions"></param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        public Task<int> UpsertAsync<TEntity>(IConnectionInfo connectionInfo, TEntity data, Expression<Func<TEntity, object>>[] expressions, CancellationToken token = default) where TEntity : IEntity
+        public async Task<TEntity> UpsertAsync<TEntity>(IConnectionInfo connectionInfo, TEntity data, Expression<Func<TEntity, object>>[] expressions = null, CancellationToken token = default) where TEntity : IEntity
         {
-            throw new InvalidOperationException($"{GetType().Name} does not implement {nameof(UpdateAsync)}.");
+            if (data.IsKeyGenerated() && data.KeyValue() == data.KeyDefaultValue())
+            {
+                return await connectionInfo.InsertAsync(data, token);
+            }
+
+            await connectionInfo.UpdateAsync(data, token);
+            return data;
         }
 
         /// <summary>

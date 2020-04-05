@@ -182,7 +182,7 @@ namespace CafeLib.Data.Sources.Sqlite
         /// <param name="data">Entity record</param>
         /// <param name="expressions"></param>
         /// <param name="token">Cancellation token</param>
-        public Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
+        public Task<T> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
         {
             /*
                     // Create table

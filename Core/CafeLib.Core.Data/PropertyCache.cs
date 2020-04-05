@@ -74,26 +74,19 @@ namespace CafeLib.Core.Data
         /// <returns>cached map of SQL column names</returns>
         public IReadOnlyDictionary<string, string> GetColumnNamesCache(Type type) => _columnNames[type];
 
-        public static string GetSqlType(Type type)
-        {
-            return type switch
-            {
-                { } when type == typeof(int) => "INT",
-
-                { } when type == typeof(long) => "BIGINT",
-
-                { } when type == typeof(Guid) => "UNIQUEIDENTIFER",
-
-                _ => string.Empty,
-            };
-        }
+        /// <summary>
+        /// Get the primary key property info.
+        /// </summary>
+        /// <typeparam name="T">entity type</typeparam>
+        /// <returns>name of the primary key</returns>
+        public PropertyInfo PrimaryKey<T>() where T : IEntity => KeyPropertiesCache<T>().First();
 
         /// <summary>
         /// Get the primary key name.
         /// </summary>
         /// <typeparam name="T">entity type</typeparam>
         /// <returns>name of the primary key</returns>
-        public string PrimaryKeyName<T>() where T : IEntity => KeyPropertiesCache<T>().First().Name;
+        public string PrimaryKeyName<T>() where T : IEntity => PrimaryKey<T>().Name;
 
         /// <summary>
         /// 

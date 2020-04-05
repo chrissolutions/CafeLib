@@ -60,12 +60,12 @@ namespace CafeLib.Data.Sources.Extensions
             return await connectionInfo.Options.CommandProcessor.UpdateAsync(connectionInfo, data, token);
         }
 
-        public static async Task<int> UpsertAsync<T>(this IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
+        public static async Task<T> UpsertAsync<T>(this IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions = null, CancellationToken token = default) where T : IEntity
         {
             return await connectionInfo.Options.CommandProcessor.UpsertAsync(connectionInfo, data, expressions, token);
         }
 
-        public static async Task<int> UpsertAsync<T>(this IConnectionInfo connectionInfo, IEnumerable<T> data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
+        public static async Task<int> UpsertAsync<T>(this IConnectionInfo connectionInfo, IEnumerable<T> data, Expression<Func<T, object>>[] expressions = null, CancellationToken token = default) where T : IEntity
         {
             return await connectionInfo.Options.CommandProcessor.UpsertAsync(connectionInfo, data, expressions, token);
         }

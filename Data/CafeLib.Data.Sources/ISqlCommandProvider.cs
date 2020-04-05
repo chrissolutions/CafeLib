@@ -10,6 +10,7 @@ namespace CafeLib.Data.Sources
 {
     public interface ISqlCommandProvider
     {
+
         /// <summary>
         /// Delete entity from table.
         /// </summary>
@@ -111,7 +112,7 @@ namespace CafeLib.Data.Sources
         /// <param name="expressions"></param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity;
+        Task<T> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions = null, CancellationToken token = default) where T : IEntity;
 
         /// <summary>
         /// Insert or update entities.
@@ -122,6 +123,6 @@ namespace CafeLib.Data.Sources
         /// <param name="expressions"></param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity;
+        Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, Expression<Func<T, object>>[] expressions = null, CancellationToken token = default) where T : IEntity;
     }
 }

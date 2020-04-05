@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
-using CafeLib.Data.Extensions;
 using CafeLib.Data.Sources;
 using CafeLib.Data.Sources.Extensions;
 using CafeLib.Data.SqlGenerator;
@@ -290,13 +289,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<T> Save(T entity)
         {
-            if (entity.IsKeyGenerated() && entity.KeyValue() == default(T) || !await Any(entity.KeyValue()))
-            {
-                return await Add(entity);
-            }
-
-            await Update(entity);
-            return entity;
+            return await _storage.ConnectionInfo.UpsertAsync(entity);
         }
 
         /// <summary>
