@@ -39,12 +39,13 @@ namespace CafeLib.Data.Sources
             var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
             var computedProperties = domain.PropertyCache.ComputedPropertiesCache<T>();
             var columns = domain.PropertyCache.GetColumnNamesCache<T>();
+            var primaryKey = domain.PropertyCache.PrimaryKey<T>();
 
             var allPropertiesString = FormatColumnsToString(allProperties, columns);
             var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
             var allPropertiesExceptKeyAndComputedString = FormatColumnsToString(allPropertiesExceptKeyAndComputed, columns);
 
-            var properties = keyProperties.First().PropertyType.IsPrimitive ? allPropertiesExceptKeyAndComputed : allProperties;
+            var properties = primaryKey.PropertyType.IsPrimitive ? allPropertiesExceptKeyAndComputed : allProperties;
             var columnsString = ReferenceEquals(properties, allProperties) ? allPropertiesString : allPropertiesExceptKeyAndComputedString;
 
             var sqlParameterList = new StringBuilder(null);

@@ -226,6 +226,27 @@ namespace CafeLib.Data.Sources.SqlServer
         /// <param name="token">Cancellation token</param>
         public async Task<T> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions = null, CancellationToken token = default) where T : IEntity
         {
+            //var tableName = connectionInfo.Domain.TableCache.TableName<T>();
+            //var allProperties = connectionInfo.Domain.PropertyCache.TypePropertiesCache<T>();
+            //var keyProperties = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>();
+            //var computedProperties = connectionInfo.Domain.PropertyCache.ComputedPropertiesCache<T>();
+            //var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<T>();
+            //var primaryKey = connectionInfo.Domain.PropertyCache.PrimaryKey<T>();
+
+            ////Now use the merge command to upsert from the temp table to the production table
+            //var sql = $@"MERGE INTO {FormatTableName(tableName)} WITH (HOLDLOCK) AS tgt  
+            //                USING {tempToBeInserted} AS src
+            //                ON 
+            //                    {string.Join(" AND ", FormatMergeOnMatchList(connectionInfo.Domain, expressionList))}
+            //                WHEN MATCHED THEN
+            //                    UPDATE SET
+            //                        {string.Join(", ", FormatUpdateList(propertiesString))}
+            //                WHEN NOT MATCHED THEN
+            //                    INSERT 
+            //                        ({propertiesString}) 
+            //                    VALUES
+            //                        ({string.Join(", ", FormatColumnNames(propertiesString, "src"))});";
+
             return await SqlCommandProvider.UpsertAsync(connectionInfo, data, expressions, token).ConfigureAwait(false);
         }
 
@@ -238,20 +259,21 @@ namespace CafeLib.Data.Sources.SqlServer
         /// <param name="expressions"></param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        public async Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
+        public async Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, Expression<Func<T, object>>[] expressions = null, CancellationToken token = default) where T : IEntity
         {
             var tableName = connectionInfo.Domain.TableCache.TableName<T>();
             var allProperties = connectionInfo.Domain.PropertyCache.TypePropertiesCache<T>();
             var keyProperties = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>();
             var computedProperties = connectionInfo.Domain.PropertyCache.ComputedPropertiesCache<T>();
             var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<T>();
+            var primaryKey = connectionInfo.Domain.PropertyCache.PrimaryKey<T>();
 
             var allPropertiesString = SqlCommandFormatter.FormatColumnsToString(allProperties, columns);
             var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
             var allPropertiesExceptKeyAndComputedString = SqlCommandFormatter.FormatColumnsToString(allPropertiesExceptKeyAndComputed, columns);
             var tempToBeInserted = $"#TempInsert_{tableName}".Replace(".", string.Empty);
 
-            var propertiesString = keyProperties.First().PropertyType == typeof(Guid) ? allPropertiesString : allPropertiesExceptKeyAndComputedString;
+            var propertiesString = primaryKey.PropertyType.IsPrimitive ? allPropertiesExceptKeyAndComputedString : allPropertiesString;
             var expressionList = new PropertyExpressionList<T>(connectionInfo.Domain, expressions);
 
             // Open connection.
@@ -279,17 +301,17 @@ namespace CafeLib.Data.Sources.SqlServer
 
                 //Now use the merge command to upsert from the temp table to the production table
                 var sql = $@"MERGE INTO {FormatTableName(tableName)} as tgt  
-                                    USING {tempToBeInserted} as src
-                                    ON 
-                                        {string.Join(" AND ", FormatMergeOnMatchList(connectionInfo.Domain, expressionList))}
-                                    WHEN MATCHED THEN
-                                        UPDATE SET
-                                            {string.Join(", ", FormatUpdateList(propertiesString))}
-                                    WHEN NOT MATCHED THEN
-                                        INSERT 
-                                            ({propertiesString}) 
-                                        VALUES
-                                            ({string.Join(", ", FormatColumnNames(propertiesString, "src"))});";
+                                USING {tempToBeInserted} as src
+                                ON 
+                                    {string.Join(" AND ", FormatMergeOnMatchList(connectionInfo.Domain, expressionList))}
+                                WHEN MATCHED THEN
+                                    UPDATE SET
+                                        {string.Join(", ", FormatUpdateList(propertiesString))}
+                                WHEN NOT MATCHED THEN
+                                    INSERT 
+                                        ({propertiesString}) 
+                                    VALUES
+                                        ({string.Join(", ", FormatColumnNames(propertiesString, "src"))});";
 
 
                 // Merge from temporary table to actual table.
