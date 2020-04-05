@@ -14,7 +14,10 @@ namespace CafeLib.Data.Sources
         public PropertyExpressionList(Domain domain, IEnumerable<Expression<Func<T, object>>> expressions)
         {
             _domain = domain;
-            AddRange(expressions);
+            if (expressions != null)
+            {
+                AddRange(expressions);
+            }
         }
 
         internal IEnumerable<string> GetPropertyNames()

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using CafeLib.Core.Data;
+using CafeLib.Core.Extensions;
 
 namespace CafeLib.Data.Sources
 {
@@ -66,7 +68,7 @@ namespace CafeLib.Data.Sources
             return sqlInsert.ToString();
         }
 
-        public static string FormatUpdateStatement<T>(Domain domain) where T : IEntity
+        public static string FormatUpdateStatement<T>(Domain domain, Expression<Func<T, object>>[] expressions = null) where T : IEntity
         {
             var tableName = domain.TableCache.TableName<T>();
             var keyProperties = domain.PropertyCache.KeyPropertiesCache<T>();
@@ -88,11 +90,16 @@ namespace CafeLib.Data.Sources
             sqlUpdate.Remove(sqlUpdate.Length - Separator.Length, Separator.Length);
 
             sqlUpdate.AppendLine("WHERE");
+            var expressionList = new PropertyExpressionList<T>(domain, expressions);
 
-            foreach (var property in keyProperties)
+            if (expressionList.Any())
             {
-                sqlUpdate.AppendLine($"{property.Name} = @{property.Name}");
-                sqlUpdate.Append(And);
+                // ReSharper disable once ImplicitlyCapturedClosure
+                expressionList.GetColumnNames().ForEach(x => sqlUpdate.AppendLine($"{x} = @{x}").Append(And));
+            }
+            else
+            {
+                keyProperties.ForEach(x => sqlUpdate.AppendLine($"{columns[x.Name]} = @{columns[x.Name]}").Append(And));
             }
             sqlUpdate.Remove(sqlUpdate.Length - And.Length, And.Length);
 

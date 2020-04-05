@@ -233,6 +233,32 @@ namespace CafeLib.Data.Sources.SqlServer
             //var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<T>();
             //var primaryKey = connectionInfo.Domain.PropertyCache.PrimaryKey<T>();
 
+            //var allPropertiesString = SqlCommandFormatter.FormatColumnsToString(allProperties, columns);
+            //var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
+            //var allPropertiesExceptKeyAndComputedString = SqlCommandFormatter.FormatColumnsToString(allPropertiesExceptKeyAndComputed, columns);
+            //var propertiesString = primaryKey.PropertyType.IsPrimitive ? allPropertiesExceptKeyAndComputedString : allPropertiesString;
+
+            //var sqlTemplate = $@"SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+            //                    BEGIN TRAN
+
+            //                        UPDATE {tableName} SET
+            //                            {updateList}
+            //                        WHERE {onCondition}
+
+            //                        INSERT {tableName} ({insertList})
+            //                        SELECT {valueList}
+            //                        WHERE @@ROWCOUNT=0
+
+            //                    COMMIT";
+
+
+            //var tableName = connectionInfo.Domain.TableCache.TableName<T>();
+            //var allProperties = connectionInfo.Domain.PropertyCache.TypePropertiesCache<T>();
+            //var keyProperties = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>();
+            //var computedProperties = connectionInfo.Domain.PropertyCache.ComputedPropertiesCache<T>();
+            //var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<T>();
+            //var primaryKey = connectionInfo.Domain.PropertyCache.PrimaryKey<T>();
+
             ////Now use the merge command to upsert from the temp table to the production table
             //var sql = $@"MERGE INTO {FormatTableName(tableName)} WITH (HOLDLOCK) AS tgt  
             //                USING {tempToBeInserted} AS src
@@ -306,7 +332,7 @@ namespace CafeLib.Data.Sources.SqlServer
                                     {string.Join(" AND ", FormatMergeOnMatchList(connectionInfo.Domain, expressionList))}
                                 WHEN MATCHED THEN
                                     UPDATE SET
-                                        {string.Join(", ", FormatUpdateList(propertiesString))}
+                                        {string.Join(", ", FormatUpdateList(allPropertiesExceptKeyAndComputedString))}
                                 WHEN NOT MATCHED THEN
                                     INSERT 
                                         ({propertiesString}) 
@@ -400,7 +426,7 @@ namespace CafeLib.Data.Sources.SqlServer
             const string template = "[{target}].{targetKey}=[{source}].{sourceKey}";
             var results = new List<string>();
 
-            if (expressionList != null && expressionList.Any())
+            if (expressionList.Any())
             {
                 var columnNames = expressionList.GetColumnNames();
                 columnNames.ForEach(x => results.Add(template.Render(new { target, targetKey = x, source, sourceKey = x })));
