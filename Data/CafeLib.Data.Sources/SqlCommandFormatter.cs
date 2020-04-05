@@ -84,7 +84,7 @@ namespace CafeLib.Data.Sources
             sqlUpdate.AppendLine($"UPDATE {tableName} SET");
             foreach (var nonKey in nonKeyProps)
             {
-                sqlUpdate.AppendLine($"{columns[nonKey.Name]} = @{nonKey.Name}");
+                sqlUpdate.AppendLine($"{columns[nonKey.Name]} = @{columns[nonKey.Name]}");
                 sqlUpdate.Append(Separator);
             }
             sqlUpdate.Remove(sqlUpdate.Length - Separator.Length, Separator.Length);
