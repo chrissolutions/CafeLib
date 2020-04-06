@@ -188,38 +188,6 @@ namespace CafeLib.Data.Sources.Sqlite
         public async Task<T> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
         {
             return await SqlCommandProvider.UpsertAsync(connectionInfo, data, expressions, token).ConfigureAwait(false);
-
-            /*
-                    // Create table
-                     CREATE TABLE phonebook2(
-                      name TEXT PRIMARY KEY,
-                      phonenumber TEXT,
-                      validDate DATE
-                    );
-
-                    // Upsert command (excluded is special table name that contains the value from the failed insert attempt).
-                    INSERT INTO phonebook2(name,phonenumber,validDate)
-                      VALUES('Alice','704-555-1212','2018-05-08')
-                      ON CONFLICT(name) DO UPDATE SET
-                        phonenumber=excluded.phonenumber,
-                        validDate=excluded.validDate
-                      WHERE excluded.validDate>phonebook2.validDate;
-
-
-                    Just do it the standard SQL way:
-
-                    select exists(
-                        select 1
-                        from tbl_stats_assigned
-                        where username = 'abc'
-                    );
-
-                    WITH const AS (SELECT 'name' AS name, 10 AS more)
-                    SELECT table.cost, (table.cost + const.more) AS newCost
-                    FROM table, const 
-                    WHERE table.name = const.name
-
-             */
         }
 
         /// <summary>
@@ -230,9 +198,53 @@ namespace CafeLib.Data.Sources.Sqlite
         /// <param name="data">Collection of entity records</param>
         /// <param name="expressions"></param>
         /// <param name="token">Cancellation token</param>
-        public Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
+        public async Task<int> UpsertAsync<T>(IConnectionInfo connectionInfo, IEnumerable<T> data, Expression<Func<T, object>>[] expressions, CancellationToken token = default) where T : IEntity
         {
-            throw new NotImplementedException();
+            await using var connection = connectionInfo.GetConnection<SqliteConnection>();
+            await using var transaction = connection.BeginTransaction();
+            var count = 0;
+
+            try
+            {
+                foreach (var entity in data)
+                {
+                    if (entity.IsKeyGenerated() && entity.KeyValue() == entity.KeyDefaultValue())
+                    {
+                        var sql = new StringBuilder()
+                            .AppendLine(SqlCommandFormatter.FormatInsertStatement<T>(connectionInfo.Domain))
+                            .AppendLine("select last_insert_rowid()")
+                            .ToString();
+
+                        var insertCommand = new CommandDefinition(sql, entity, transaction);
+                        var key = connection.QuerySingleOrDefaultAsync(insertCommand);
+                        var property = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>().First();
+                        property.SetValue(entity, key);
+                    }
+                    else
+                    {
+                        var updateCommand = new CommandDefinition(SqlCommandFormatter.FormatUpdateStatement(connectionInfo.Domain, expressions), data, transaction);
+                        await connection.ExecuteAsync(updateCommand).ConfigureAwait(false);
+                    }
+
+                    ++count;
+                }
+
+                transaction.Commit();
+                return count;
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    // ReSharper disable once PossibleIntendedRethrow
+                    throw ex;
+                }
+            }
         }
     }
 }
