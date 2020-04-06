@@ -237,7 +237,7 @@ namespace CafeLib.Data.Sources
         }
 
         /// <summary>
-        /// Insert or update entities.
+        /// Bulk Insert or update of entities.
         /// </summary>
         /// <typeparam name="TEntity">The type being inserted.</typeparam>
         /// <param name="connectionInfo">Connection info</param>
@@ -247,7 +247,7 @@ namespace CafeLib.Data.Sources
         /// <returns></returns>
         public Task<int> UpsertAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, Expression<Func<TEntity, object>>[] expressions, CancellationToken token = default) where TEntity : IEntity
         {
-            throw new InvalidOperationException($"{GetType().Name} does not implement {nameof(UpdateAsync)}.");
+            throw new InvalidOperationException($"{GetType().Name} does not implement bulk {nameof(UpdateAsync)}.");
         }
 
         #region Helpers
