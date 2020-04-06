@@ -97,9 +97,7 @@ namespace CafeLib.Data.Sources.SqlServer
         /// <returns></returns>
         public async Task<T> InsertAsync<T>(IConnectionInfo connectionInfo, T data, CancellationToken token = default) where T : IEntity
         {
-            var sqlFormat = SqlCommandFormatter.FormatInsertStatement<T>(connectionInfo.Domain);
-            var sql = string.Format(sqlFormat, "OUTPUT INSERTED.*", string.Empty);
-
+            var sql = SqlCommandFormatter.FormatInsertStatement<T>(connectionInfo.Domain).Replace("VALUES", "OUTPUT INSERTED.* VALUES");
             await using var connection = connectionInfo.GetConnection<SqlConnection>();
             return await connection.QuerySingleOrDefaultAsync<T>(sql, data).ConfigureAwait(false);
         }
@@ -226,54 +224,23 @@ namespace CafeLib.Data.Sources.SqlServer
         /// <param name="token">Cancellation token</param>
         public async Task<T> UpsertAsync<T>(IConnectionInfo connectionInfo, T data, Expression<Func<T, object>>[] expressions = null, CancellationToken token = default) where T : IEntity
         {
-            //var tableName = connectionInfo.Domain.TableCache.TableName<T>();
-            //var allProperties = connectionInfo.Domain.PropertyCache.TypePropertiesCache<T>();
-            //var keyProperties = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>();
-            //var computedProperties = connectionInfo.Domain.PropertyCache.ComputedPropertiesCache<T>();
-            //var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<T>();
-            //var primaryKey = connectionInfo.Domain.PropertyCache.PrimaryKey<T>();
+            var tableName = connectionInfo.Domain.TableCache.TableName<T>();
+            var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<T>();
+            var primaryKey = connectionInfo.Domain.PropertyCache.PrimaryKey<T>();
 
-            //var allPropertiesString = SqlCommandFormatter.FormatColumnsToString(allProperties, columns);
-            //var allPropertiesExceptKeyAndComputed = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
-            //var allPropertiesExceptKeyAndComputedString = SqlCommandFormatter.FormatColumnsToString(allPropertiesExceptKeyAndComputed, columns);
-            //var propertiesString = primaryKey.PropertyType.IsPrimitive ? allPropertiesExceptKeyAndComputedString : allPropertiesString;
+            var updateStatement = SqlCommandFormatter.FormatUpdateStatement(connectionInfo.Domain, expressions).Replace("WHERE", "OUTPUT INSERTED.* WHERE");
+            var inputStatement = SqlCommandFormatter.FormatInsertStatement<T>(connectionInfo.Domain).Replace("VALUES", "OUTPUT INSERTED.* VALUES");
 
-            //var sqlTemplate = $@"SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
-            //                    BEGIN TRAN
+            var sql = $@"SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+                        BEGIN TRAN
+                         IF EXISTS (SELECT * FROM {tableName} WHERE {columns[primaryKey.Name]} = @{columns[primaryKey.Name]})
+                            {updateStatement}
+                         ELSE	
+                            {inputStatement}
+                        COMMIT";
 
-            //                        UPDATE {tableName} SET
-            //                            {updateList}
-            //                        WHERE {onCondition}
-
-            //                        INSERT {tableName} ({insertList})
-            //                        SELECT {valueList}
-            //                        WHERE @@ROWCOUNT=0
-
-            //                    COMMIT";
-
-
-            //var tableName = connectionInfo.Domain.TableCache.TableName<T>();
-            //var allProperties = connectionInfo.Domain.PropertyCache.TypePropertiesCache<T>();
-            //var keyProperties = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<T>();
-            //var computedProperties = connectionInfo.Domain.PropertyCache.ComputedPropertiesCache<T>();
-            //var columns = connectionInfo.Domain.PropertyCache.GetColumnNamesCache<T>();
-            //var primaryKey = connectionInfo.Domain.PropertyCache.PrimaryKey<T>();
-
-            ////Now use the merge command to upsert from the temp table to the production table
-            //var sql = $@"MERGE INTO {FormatTableName(tableName)} WITH (HOLDLOCK) AS tgt  
-            //                USING {tempToBeInserted} AS src
-            //                ON 
-            //                    {string.Join(" AND ", FormatMergeOnMatchList(connectionInfo.Domain, expressionList))}
-            //                WHEN MATCHED THEN
-            //                    UPDATE SET
-            //                        {string.Join(", ", FormatUpdateList(propertiesString))}
-            //                WHEN NOT MATCHED THEN
-            //                    INSERT 
-            //                        ({propertiesString}) 
-            //                    VALUES
-            //                        ({string.Join(", ", FormatColumnNames(propertiesString, "src"))});";
-
-            return await SqlCommandProvider.UpsertAsync(connectionInfo, data, expressions, token).ConfigureAwait(false);
+            await using var connection = connectionInfo.GetConnection<SqlConnection>();
+            return await connection.QuerySingleOrDefaultAsync<T>(sql, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -301,7 +268,6 @@ namespace CafeLib.Data.Sources.SqlServer
 
             var propertiesString = primaryKey.PropertyType.IsPrimitive ? allPropertiesExceptKeyAndComputedString : allPropertiesString;
             var expressionList = new PropertyExpressionList<T>(connectionInfo.Domain, expressions);
-
             // Open connection.
             await using var connection = connectionInfo.GetConnection<SqlConnection>();
             connection.Open();
