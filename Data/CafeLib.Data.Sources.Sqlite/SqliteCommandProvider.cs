@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
@@ -119,9 +120,11 @@ namespace CafeLib.Data.Sources.Sqlite
             {
                 foreach (var entity in data)
                 {
-                    var sqlFormat = SqlCommandFormatter.FormatInsertStatement<T>(connectionInfo.Domain);
-                    var sql = sqlFormat.Replace("-- Placeholder02 --", "select last_insert_rowid()");
-
+                    var sql = new StringBuilder()
+                        .AppendLine(SqlCommandFormatter.FormatInsertStatement<T>(connectionInfo.Domain))
+                        .AppendLine("select last_insert_rowid()")
+                        .ToString();
+                        
                     var command = new CommandDefinition(sql, entity, transaction);
                     var key = connection.QuerySingleOrDefaultAsync(command);
 
