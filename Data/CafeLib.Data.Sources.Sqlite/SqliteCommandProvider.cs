@@ -204,6 +204,21 @@ namespace CafeLib.Data.Sources.Sqlite
                         phonenumber=excluded.phonenumber,
                         validDate=excluded.validDate
                       WHERE excluded.validDate>phonebook2.validDate;
+
+
+                    Just do it the standard SQL way:
+
+                    select exists(
+                        select 1
+                        from tbl_stats_assigned
+                        where username = 'abc'
+                    );
+
+                    WITH const AS (SELECT 'name' AS name, 10 AS more)
+                    SELECT table.cost, (table.cost + const.more) AS newCost
+                    FROM table, const 
+                    WHERE table.name = const.name
+
              */
         }
 
