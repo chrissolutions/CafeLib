@@ -233,7 +233,7 @@ namespace CafeLib.Data.Sources.SqlServer
 
             var sql = $@"SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
                         BEGIN TRAN
-                         IF EXISTS (SELECT * FROM {tableName} WHERE {columns[primaryKey.Name]} = @{columns[primaryKey.Name]})
+                         IF EXISTS (SELECT 1 FROM {tableName} WHERE {columns[primaryKey.Name]} = @{columns[primaryKey.Name]})
                             {updateStatement}
                          ELSE	
                             {inputStatement}
