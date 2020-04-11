@@ -31,5 +31,24 @@ group by p0.BlogId";
 
             TestUtils.AssertStringEqual(expected, sql);
         }
+
+        [Fact]
+        public void Test2()
+        {
+            var domain = new TestDomain.TestDomain();
+
+            var query = new List<Post>().AsQueryable()
+                .Where(p => p.Content != null);
+
+            var script = QueryTranslator.Translate(query.Expression, new EntityModelInfoProvider(domain), new SqliteObjectFactory());
+            var sql = script.ToString();
+
+            const string expected = @"
+select p0.* from Post p0
+where p0.Content is not null";
+
+            TestUtils.AssertStringEqual(expected, sql);
+        }
+
     }
 }

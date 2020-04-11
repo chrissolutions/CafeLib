@@ -20,9 +20,9 @@ namespace CafeLib.Core.IoC
         /// </summary>
         /// <param name="serviceRegistry"></param>
         /// <returns></returns>
-        public static IServiceRegistry AddPropertyService(this IServiceRegistry serviceRegistry)
+        public static IServiceRegistry AddDictionaryService(this IServiceRegistry serviceRegistry)
         {
-            serviceRegistry.AddSingleton<IPropertyService, PropertyService>();
+            serviceRegistry.AddSingleton<IDictionaryService, DictionaryService>();
             return serviceRegistry;
         }
     }

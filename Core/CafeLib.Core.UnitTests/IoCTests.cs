@@ -31,15 +31,15 @@ namespace CafeLib.Core.UnitTests
         public void ServiceProviderTest()
         {
             var resolver = IocFactory.CreateRegistry()
-                .AddPropertyService()
+                .AddDictionaryService()
                 .AddSingleton<ITestService>(x => new TestService())
                 .GetResolver();
 
-            var propertyService = resolver.Resolve<IPropertyService>();
+            var propertyService = resolver.Resolve<IDictionaryService>();
             Assert.NotNull(propertyService);
 
-            propertyService.SetProperty("name", "Kilroy");
-            Assert.Equal("Kilroy", propertyService.GetProperty<string>("name"));
+            propertyService.SetEntry("name", "Kilroy");
+            Assert.Equal("Kilroy", propertyService.GetEntry<string>("name"));
 
             var testService = resolver.Resolve<ITestService>();
             Assert.Equal("Kilroy is here!", testService.Test());

@@ -4,88 +4,88 @@ using CafeLib.Core.Extensions;
 
 namespace CafeLib.Core.IoC
 {
-    internal class PropertyService : IPropertyService
+    internal class DictionaryService : IDictionaryService
     {
         private readonly ConcurrentDictionary<string, object> _dictionary;
 
         /// <summary>
         /// PropertyService constructor.
         /// </summary>
-        public PropertyService()
+        public DictionaryService()
         {
             _dictionary = new ConcurrentDictionary<string, object>();
         }
 
         /// <inheritdoc />
-        public bool HasProperty<T>()
+        public bool HasEntry<T>()
         {
-            return HasProperty(typeof(T).FullName ?? throw new ArgumentNullException(typeof(T).Name));
+            return HasEntry(typeof(T).FullName ?? throw new ArgumentNullException(typeof(T).Name));
         }
 
         /// <inheritdoc />
-        public T GetProperty<T>()
+        public T GetEntry<T>()
         {
-            return GetProperty<T>(typeof(T).FullName ?? throw new ArgumentNullException(typeof(T).Name));
+            return GetEntry<T>(typeof(T).FullName ?? throw new ArgumentNullException(typeof(T).Name));
         }
 
         /// <inheritdoc />
-        public void SetProperty<T>(T value)
+        public void SetEntry<T>(T value)
         {
-            SetProperty(typeof(T).FullName ?? throw new ArgumentNullException(typeof(T).Name), value);
+            SetEntry(typeof(T).FullName ?? throw new ArgumentNullException(typeof(T).Name), value);
         }
 
         /// <inheritdoc />
-        public bool RemoveProperty<T>()
+        public bool RemoveEntry<T>()
         {
-            return RemoveProperty(typeof(T).FullName);
+            return RemoveEntry(typeof(T).FullName);
         }
 
         /// <inheritdoc />
-        public bool HasProperty(string key)
+        public bool HasEntry(string key)
         {
             return _dictionary.ContainsKey(key);
         }
 
         /// <inheritdoc />
-        public T GetProperty<T>(string key)
+        public T GetEntry<T>(string key)
         {
             return _dictionary.TryGetValue(key, out var value) ? (T)value : default;
         }
 
         /// <inheritdoc />
-        public void SetProperty<T>(string key, T value)
+        public void SetEntry<T>(string key, T value)
         {
             _dictionary.AddOrUpdate(key, value, (k, v) => value);
         }
 
         /// <inheritdoc />
-        public bool RemoveProperty(string key)
+        public bool RemoveEntry(string key)
         {
             return _dictionary.TryRemove(key, out _);
         }
 
         /// <inheritdoc />
-        public bool HasProperty(Guid guid)
+        public bool HasEntry(Guid guid)
         {
-            return HasProperty(guid.ToString("B"));
+            return HasEntry(guid.ToString("B"));
         }
 
         /// <inheritdoc />
-        public T GetProperty<T>(Guid guid)
+        public T GetEntry<T>(Guid guid)
         {
-            return GetProperty<T>(guid.ToString("B"));
+            return GetEntry<T>(guid.ToString("B"));
         }
 
         /// <inheritdoc />
-        public void SetProperty<T>(Guid guid, T value)
+        public void SetEntry<T>(Guid guid, T value)
         {
-            SetProperty(guid.ToString("B"), value);
+            SetEntry(guid.ToString("B"), value);
         }
 
         /// <inheritdoc />
-        public bool RemoveProperty(Guid guid)
+        public bool RemoveEntry(Guid guid)
         {
-            return RemoveProperty(guid.ToString("B"));
+            return RemoveEntry(guid.ToString("B"));
         }
 
         /// <inheritdoc />
