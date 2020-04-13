@@ -16,8 +16,13 @@ namespace CafeLib.Data.Mapping
             typeof(T).GetProperties().ForEach(EntityMap.Map);
         }
 
-        ///
-        public IMapper Map<TU>(Expression<Func<T, TU>> expression)
+        /// <summary>
+        /// Map property by expression.
+        /// </summary>
+        /// <typeparam name="TProperty">type of the property</typeparam>
+        /// <param name="expression">mapping expression</param>
+        /// <returns>mapper</returns>
+        public IMapper Map<TProperty>(Expression<Func<T, TProperty>> expression)
         {
             return EntityMap.Map(expression);
         }

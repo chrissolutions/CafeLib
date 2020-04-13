@@ -70,19 +70,13 @@ namespace CafeLib.Data.Mapping
             return sqlProperty;
         }
 
-        public IMapper Map<TMap>(Expression<Func<T, TMap>> expression)
-        {
-            var info = (PropertyInfo)GetMemberInfo(expression);
-            return Map(info);
-        }
-
         /// <summary>
-        /// Map entity expression.
+        /// Map property by expression.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        public IMapper Map(Expression<Func<T, object>> expression)
+        /// <typeparam name="TProperty">type of the property</typeparam>
+        /// <param name="expression">mapping expression</param>
+        /// <returns>mapper</returns>
+        public IMapper Map<TProperty>(Expression<Func<T, TProperty>> expression)
         {
             var info = (PropertyInfo)GetMemberInfo(expression);
             return Map(info);
