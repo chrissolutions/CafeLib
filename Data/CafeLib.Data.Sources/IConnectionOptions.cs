@@ -5,7 +5,7 @@ namespace CafeLib.Data.Sources
 {
     public interface IConnectionOptions
     {
-        ISqlCommandProvider CommandProcessor { get; }
+        ISqlCommandProvider CommandProvider { get; }
         IDbObjectFactory DbObjectFactory { get; }
         IDbConnection GetConnection(string connectionString);
     }
