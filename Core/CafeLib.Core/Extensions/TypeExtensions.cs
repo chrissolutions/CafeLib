@@ -193,7 +193,6 @@ namespace CafeLib.Core.Extensions
         /// <summary>
         /// Convert object properties to an object map.
         /// </summary>
-        /// <param name="_"></param>
         /// <param name="instance"></param>
         /// <returns>object map</returns>
         public static IDictionary<string, object> ToObjectMap<T>(this T instance)
