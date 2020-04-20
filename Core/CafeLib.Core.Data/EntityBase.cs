@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CafeLib.Core.Data
 {
-    public class EntityBase<T> : IEntity
+    public class EntityBase<TKey> : IEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public T Id { get; set; }
+        public TKey Id { get; set; }
         public DateTime CreationDate { get; set; } = DateTime.UtcNow;
         public DateTime LastUpdateDate { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; } = false;
