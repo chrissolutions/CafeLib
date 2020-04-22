@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
 using CafeLib.Core.Support;
-using CafeLib.Data.Sources.Extensions;
-using Dapper;
 using Microsoft.Data.Sqlite;
 
 namespace CafeLib.Data.Sources.Sqlite
@@ -134,12 +130,7 @@ namespace CafeLib.Data.Sources.Sqlite
         /// <returns></returns>
         public async Task<TEntity> InsertAsync<TEntity>(IConnectionInfo connectionInfo, TEntity data, CancellationToken token = default) where TEntity : class, IEntity
         {
-            var sqlFormat = SqlCommandFormatter.FormatInsertStatement<TEntity>(connectionInfo.Domain);
-            var tableName = connectionInfo.Domain.TableCache.TableName<TEntity>();
-            var keyName = connectionInfo.Domain.PropertyCache.PrimaryKeyName<TEntity>();
-            var sql = string.Format(sqlFormat, string.Empty, $"select * from {tableName} where {keyName} = last_insert_rowid()");
-            await using var connection = connectionInfo.GetConnection<SqliteConnection>();
-            return await connection.QuerySingleOrDefaultAsync<TEntity>(sql, data).ConfigureAwait(false);
+            return await SqlCommandProvider.InsertAsync(connectionInfo, data, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -152,43 +143,7 @@ namespace CafeLib.Data.Sources.Sqlite
         /// <returns></returns>
         public async Task<int> InsertAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : class, IEntity
         {
-            await using var connection = connectionInfo.GetConnection<SqliteConnection>();
-            await using var transaction = connection.BeginTransaction();
-            var count = 0;
-
-            try
-            {
-                foreach (var entity in data)
-                {
-                    var sql = new StringBuilder()
-                        .AppendLine(SqlCommandFormatter.FormatInsertStatement<TEntity>(connectionInfo.Domain))
-                        .AppendLine("select last_insert_rowid()")
-                        .ToString();
-                        
-                    var command = new CommandDefinition(sql, entity, transaction);
-                    var key = connection.QuerySingleOrDefaultAsync(command);
-
-                    var property = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<TEntity>().First();
-                    property.SetValue(entity, key);
-                    ++count;
-                }
-
-                transaction.Commit();
-                return count;
-            }
-            catch (Exception)
-            {
-                try
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    // ReSharper disable once PossibleIntendedRethrow
-                    throw ex;
-                }
-            }
+            return await SqlCommandProvider.InsertAsync(connectionInfo, data, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -359,51 +314,7 @@ namespace CafeLib.Data.Sources.Sqlite
         /// <param name="token">Cancellation token</param>
         public async Task<int> UpsertAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, Expression<Func<TEntity, object>>[] expressions, CancellationToken token = default) where TEntity : class, IEntity
         {
-            await using var connection = connectionInfo.GetConnection<SqliteConnection>();
-            await using var transaction = connection.BeginTransaction();
-            var count = 0;
-
-            try
-            {
-                foreach (var entity in data)
-                {
-                    if (entity.IsKeyGenerated() && entity.KeyValue() == entity.KeyDefaultValue())
-                    {
-                        var sql = new StringBuilder()
-                            .AppendLine(SqlCommandFormatter.FormatInsertStatement<TEntity>(connectionInfo.Domain))
-                            .AppendLine("select last_insert_rowid()")
-                            .ToString();
-
-                        var insertCommand = new CommandDefinition(sql, entity, transaction);
-                        var key = connection.QuerySingleOrDefaultAsync(insertCommand);
-                        var property = connectionInfo.Domain.PropertyCache.KeyPropertiesCache<TEntity>().First();
-                        property.SetValue(entity, key);
-                    }
-                    else
-                    {
-                        var updateCommand = new CommandDefinition(SqlCommandFormatter.FormatUpdateStatement(connectionInfo.Domain, expressions), data, transaction);
-                        await connection.ExecuteAsync(updateCommand).ConfigureAwait(false);
-                    }
-
-                    ++count;
-                }
-
-                transaction.Commit();
-                return count;
-            }
-            catch (Exception)
-            {
-                try
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    // ReSharper disable once PossibleIntendedRethrow
-                    throw ex;
-                }
-            }
+            return await SqlCommandProvider.UpsertAsync(connectionInfo, data, expressions, token);
         }
     }
 }

@@ -9,16 +9,11 @@
 
   <ItemGroup>
     <PackageReference Include="CafeLib.Core.Data" Version="0.7.0" />
+    <PackageReference Include="RepoDb" Version="1.10.11" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CafeLib.Data.SqlGenerator\CafeLib.Data.SqlGenerator.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="RepoDb">
-      <HintPath>..\..\..\RepoDb\RepoDb.Core\RepoDb\bin\Debug\netstandard2.0\RepoDb.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
