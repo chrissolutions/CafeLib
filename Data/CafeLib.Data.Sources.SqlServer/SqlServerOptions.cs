@@ -9,11 +9,6 @@ namespace CafeLib.Data.Sources.SqlServer
 {
     public class SqlServerOptions : IConnectionOptions
     {
-        public SqlServerOptions()
-        {
-            SqlServerBootstrap.Initialize();
-        }
-
         public ISqlCommandProvider CommandProvider { get; } = SqlServerCommandProvider.Current;
         public IDbObjectFactory DbObjectFactory { get; } = new SqlObjectFactory();
         public IDbConnection GetConnection(string connectionString) => new SqlConnection(connectionString);

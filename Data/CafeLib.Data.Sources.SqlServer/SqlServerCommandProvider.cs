@@ -13,12 +13,21 @@ using CafeLib.Core.Extensions;
 using CafeLib.Core.Support;
 using CafeLib.Data.Sources.Extensions;
 using Dapper;
+using RepoDb;
 
 namespace CafeLib.Data.Sources.SqlServer
 {
     internal class SqlServerCommandProvider : SingletonBase<SqlServerCommandProvider>, ISqlCommandProvider
     {
         private static readonly SqlCommandProvider<SqlConnection> SqlCommandProvider = new SqlCommandProvider<SqlConnection>();
+
+        /// <summary>
+        /// SqlServerCommandProvider constructor.
+        /// </summary>
+        public SqlServerCommandProvider()
+        {
+            SqlServerBootstrap.Initialize();
+        }
 
         /// <summary>
         /// Delete entity from table.

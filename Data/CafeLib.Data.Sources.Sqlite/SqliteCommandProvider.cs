@@ -6,12 +6,21 @@ using System.Threading.Tasks;
 using CafeLib.Core.Data;
 using CafeLib.Core.Support;
 using Microsoft.Data.Sqlite;
+using RepoDb;
 
 namespace CafeLib.Data.Sources.Sqlite
 {
     internal class SqliteCommandProvider : SingletonBase<SqliteCommandProvider>, ISqlCommandProvider
     {
         private static readonly SqlCommandProvider<SqliteConnection> SqlCommandProvider = new SqlCommandProvider<SqliteConnection>();
+
+        /// <summary>
+        /// SqliteCommandProvider constructor.
+        /// </summary>
+        public SqliteCommandProvider()
+        {
+            SqLiteBootstrap.Initialize();
+        }
 
         /// <summary>
         /// Delete entity from table.
