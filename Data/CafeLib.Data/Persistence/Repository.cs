@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
@@ -13,8 +12,6 @@ namespace CafeLib.Data.Persistence
     public class Repository<T> : IRepository<T> where T : class, IEntity
     {
         private readonly StorageBase _storage;
-        private readonly string _tableName;
-        private readonly PropertyCache _propertyCache;
 
         /// <summary>
         /// Repository constructor.
@@ -23,8 +20,6 @@ namespace CafeLib.Data.Persistence
         internal Repository(IStorage storage)
         {
             _storage = (StorageBase)storage;
-            _tableName = _storage.ConnectionInfo.Domain.TableCache.TableName<T>();
-            _propertyCache = _storage.ConnectionInfo.Domain.PropertyCache;
         }
 
         /// <summary>
@@ -48,9 +43,7 @@ namespace CafeLib.Data.Persistence
         /// <returns></returns>
         public async Task<bool> Any<TKey>(TKey key)
         {
-            var keyColumnName = _propertyCache.PrimaryKeyName<T>();
-            var result = await ExecuteCommand($@"SELECT TOP 1 {keyColumnName} FROM {_tableName} WHERE {keyColumnName} = {CheckSqlKey(key)}");
-            return result == 1;
+            return await _storage.ConnectionInfo.QueryCountAsync<T, TKey>(key).ConfigureAwait(false) > 0;
         }
 
         /// <summary>
@@ -203,10 +196,9 @@ namespace CafeLib.Data.Persistence
         /// <typeparam name="TKey">key type</typeparam>
         /// <param name="keys">collection of keys</param>
         /// <returns></returns>
-        public async Task<bool> RemoveByKey<TKey>(IEnumerable<TKey> keys)
+        public async Task<int> RemoveByKey<TKey>(IEnumerable<TKey> keys)
         {
-            var enumerable = keys as TKey[] ?? keys.ToArray();
-            return await _storage.ConnectionInfo.DeleteByKeyAsync<T, TKey>(enumerable) == enumerable.Length;
+            return await _storage.ConnectionInfo.DeleteByKeyAsync<T, TKey>(keys);
         }
 
         /// <summary>
@@ -303,31 +295,5 @@ namespace CafeLib.Data.Persistence
         {
             return await _storage.ConnectionInfo.ExecuteSaveAsync<TKey>(sql, parameters);
         }
-
-        #region Helpers
-
-        /// <summary>
-        /// Check Sql key type for requiring quotation.
-        /// </summary>
-        /// <typeparam name="TKey">key type</typeparam>
-        /// <param name="id"></param>
-        /// <returns>return quoted id for certain types</returns>
-        private static string CheckSqlKey<TKey>(TKey id)
-        {
-            switch (id?.GetType().Name)
-            {
-                case "String":
-                case "Guid":
-                    return $"'{id}'";
-
-                case null:
-                    return @"NULL";
-
-                default:
-                    return $"{id}";
-            }
-        }
-
-        #endregion
     }
 }

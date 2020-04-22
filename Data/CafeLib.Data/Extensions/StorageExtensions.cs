@@ -169,7 +169,7 @@ namespace CafeLib.Data.Extensions
         /// <param name="storage">storage</param>
         /// <param name="keys">collection of primary keys</param>
         /// <returns></returns>
-        public static Task<bool> RemoveById<T, TKey>(this IStorage storage, IEnumerable<TKey> keys) where T : class, IEntity
+        public static Task<int> RemoveById<T, TKey>(this IStorage storage, IEnumerable<TKey> keys) where T : class, IEntity
             => ((StorageBase)storage).Repositories.Find<T>().RemoveByKey(keys);
 
         /// <summary>

@@ -42,7 +42,7 @@ namespace CafeLib.Data
 
         Task<bool> RemoveByKey<TKey>(TKey key);
 
-        Task<bool> RemoveByKey<TKey>(IEnumerable<TKey> keys);
+        Task<int> RemoveByKey<TKey>(IEnumerable<TKey> keys);
 
         Task<bool> Remove(TDataModel entity);
 

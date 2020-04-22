@@ -121,7 +121,7 @@ namespace CafeLib.Data.Persistence
             return _repository.RemoveByKey(key);
         }
 
-        public Task<bool> RemoveByKey<TKey>(IEnumerable<TKey> keys)
+        public Task<int> RemoveByKey<TKey>(IEnumerable<TKey> keys)
         {
             return _repository.RemoveByKey(keys);
         }

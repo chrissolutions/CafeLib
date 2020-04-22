@@ -153,9 +153,8 @@ namespace CafeLib.Data.Sources
         public async Task<SaveResult<TKey>> ExecuteSaveAsync<TKey>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default)
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            var id = (TKey)DefaultSqlId<TKey>();
             var result = await connection.ExecuteScalarAsync(sql, parameters).ConfigureAwait(false);
-            return result != null ? new SaveResult<TKey>((TKey)result, true) : new SaveResult<TKey>(id);
+            return result != null ? new SaveResult<TKey>((TKey)result, true) : new SaveResult<TKey>((TKey)DefaultSqlId<TKey>());
         }
 
         /// <summary>
@@ -299,6 +298,23 @@ namespace CafeLib.Data.Sources
             return (int)await connection.CountAllAsync<TEntity>();
         }
 
+        /// <summary>
+        /// Query count based on the entity key.
+        /// </summary>
+        /// <typeparam name="TEntity">Entity type</typeparam>
+        /// <typeparam name="TKey">Key type</typeparam>
+        /// <param name="connectionInfo">Connection info</param>
+        /// <param name="key">entity key</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Query result</returns>
+        public async Task<int> QueryCountAsync<TEntity, TKey>(IConnectionInfo connectionInfo, TKey key, CancellationToken token = default) where TEntity : class, IEntity
+        {
+            var keyColumnName = PrimaryCache.Get<TEntity>().GetMappedName();
+            var tableName = ClassMappedNameCache.Get<TEntity>();
+            var result = await ExecuteAsync(connectionInfo, $@"SELECT TOP 1 {keyColumnName} FROM {tableName} WHERE {keyColumnName} = {CheckSqlKey(key)}", null, token);
+            return result;
+        }
+
         public async Task<int> QueryCountAsync<TEntity>(IConnectionInfo connectionInfo, Expression<Func<TEntity, bool>> predicate, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
@@ -381,6 +397,28 @@ namespace CafeLib.Data.Sources
         }
 
         #region Helpers
+
+        /// <summary>
+        /// Check Sql key type for requiring quotation.
+        /// </summary>
+        /// <typeparam name="TKey">key type</typeparam>
+        /// <param name="id"></param>
+        /// <returns>return quoted id for certain types</returns>
+        private static string CheckSqlKey<TKey>(TKey id)
+        {
+            switch (id?.GetType().Name)
+            {
+                case "String":
+                case "Guid":
+                    return $"'{id}'";
+
+                case null:
+                    return @"NULL";
+
+                default:
+                    return $"{id}";
+            }
+        }
 
         /// <summary>
         /// Check Sql key type for requiring quotation.

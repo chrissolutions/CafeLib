@@ -317,6 +317,20 @@ namespace CafeLib.Data.Sources.SqlServer
         }
 
         /// <summary>
+        /// Query count based on the entity key.
+        /// </summary>
+        /// <typeparam name="TEntity">Entity type</typeparam>
+        /// <typeparam name="TKey">Key type</typeparam>
+        /// <param name="connectionInfo">Connection info</param>
+        /// <param name="key">entity key</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Query result</returns>
+        public async Task<int> QueryCountAsync<TEntity, TKey>(IConnectionInfo connectionInfo, TKey key, CancellationToken token = default) where TEntity : class, IEntity
+        {
+            return await SqlCommandProvider.QueryCountAsync<TEntity, TKey>(connectionInfo, key, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>

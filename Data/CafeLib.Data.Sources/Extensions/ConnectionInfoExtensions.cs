@@ -61,6 +61,9 @@ namespace CafeLib.Data.Sources.Extensions
         public static async Task<int> QueryCountAsync<TEntity>(this IConnectionInfo connectionInfo, CancellationToken token = default) where TEntity : class, IEntity =>
             await connectionInfo.Options.CommandProvider.QueryCountAsync<TEntity>(connectionInfo, token);
 
+        public static async Task<int> QueryCountAsync<TEntity, TKey>(this IConnectionInfo connectionInfo, TKey key, CancellationToken token = default) where TEntity : class, IEntity =>
+            await connectionInfo.Options.CommandProvider.QueryCountAsync<TEntity, TKey>(connectionInfo, key, token);
+
         public static async Task<int> QueryCountAsync<TEntity>(this IConnectionInfo connectionInfo, Expression<Func<TEntity, bool>> predicate, CancellationToken token = default) where TEntity : class, IEntity =>
             await connectionInfo.Options.CommandProvider.QueryCountAsync(connectionInfo, predicate, token);
 

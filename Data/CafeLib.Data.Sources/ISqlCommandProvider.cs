@@ -155,24 +155,35 @@ namespace CafeLib.Data.Sources
         Task<TEntity> QueryByKeyAsync<TEntity, TKey>(IConnectionInfo connectionInfo, TKey key, CancellationToken token = default) where TEntity : class, IEntity;
 
         /// <summary>
-        /// Execute sql query
+        /// Query entities from a collection of keys.
         /// </summary>
         /// <typeparam name="TEntity">Entity type</typeparam>
-        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TKey">Key type</typeparam>
         /// <param name="connectionInfo">Connection info</param>
-        /// <param name="keys"></param>
+        /// <param name="keys">keys</param>
         /// <param name="token">Cancellation token</param>
         /// <returns>Query result</returns>
         Task<IEnumerable<TEntity>> QueryByKeyAsync<TEntity, TKey>(IConnectionInfo connectionInfo, IEnumerable<TKey> keys, CancellationToken token = default) where TEntity : class, IEntity;
 
         /// <summary>
-        /// Execute sql query
+        /// Query entity count.
         /// </summary>
         /// <typeparam name="TEntity">Entity type</typeparam>
         /// <param name="connectionInfo">Connection info</param>
         /// <param name="token">Cancellation token</param>
         /// <returns>Query result</returns>
         Task<int> QueryCountAsync<TEntity>(IConnectionInfo connectionInfo, CancellationToken token = default) where TEntity : class, IEntity;
+
+        /// <summary>
+        /// Query count based on the entity key.
+        /// </summary>
+        /// <typeparam name="TEntity">Entity type</typeparam>
+        /// <typeparam name="TKey">Key type</typeparam>
+        /// <param name="connectionInfo">Connection info</param>
+        /// <param name="key">entity key</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Query result</returns>
+        Task<int> QueryCountAsync<TEntity, TKey>(IConnectionInfo connectionInfo, TKey key, CancellationToken token = default) where TEntity : class, IEntity;
 
         /// <summary>
         /// Execute sql query
