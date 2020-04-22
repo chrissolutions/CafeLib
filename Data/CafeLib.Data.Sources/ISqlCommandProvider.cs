@@ -233,8 +233,8 @@ namespace CafeLib.Data.Sources
         /// <param name="connectionInfo">Connection info</param>
         /// <param name="data">Entity record</param>
         /// <param name="token">Cancellation token</param>
-        /// <returns>true if updated, false if not found or not modified (tracked entities)</returns>
-        Task<bool> UpdateAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : class, IEntity;
+        /// <returns>number of records updated.</returns>
+        Task<int> UpdateAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : class, IEntity;
 
         /// <summary>
         /// Insert or update an entity record.

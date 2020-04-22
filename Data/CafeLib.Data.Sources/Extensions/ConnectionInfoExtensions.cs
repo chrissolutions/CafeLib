@@ -76,7 +76,7 @@ namespace CafeLib.Data.Sources.Extensions
         public static async Task<bool> UpdateAsync<TEntity>(this IConnectionInfo connectionInfo, TEntity data, CancellationToken token = default) where TEntity : class, IEntity =>
             await connectionInfo.Options.CommandProvider.UpdateAsync(connectionInfo, data, token);
 
-        public static async Task<bool> UpdateAsync<TEntity>(this IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : class, IEntity =>
+        public static async Task<int> UpdateAsync<TEntity>(this IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : class, IEntity =>
             await connectionInfo.Options.CommandProvider.UpdateAsync(connectionInfo, data, token);
 
         public static async Task<TEntity> UpsertAsync<TEntity>(this IConnectionInfo connectionInfo, TEntity data, Expression<Func<TEntity, object>>[] expressions = null, CancellationToken token = default) where TEntity : class, IEntity =>

@@ -56,7 +56,7 @@ namespace CafeLib.Data
 
         Task<bool> Update(TDataModel entity);
 
-        Task<bool> Update(IEnumerable<TDataModel> entities);
+        Task<int> Update(IEnumerable<TDataModel> entities);
 
         Task<SaveResult<TU>> ExecuteSave<TU>(string sql, params object[]? parameters);
 

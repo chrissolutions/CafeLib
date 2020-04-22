@@ -208,7 +208,7 @@ namespace CafeLib.Data.Extensions
         /// <typeparam name="T">IEntity type</typeparam>
         /// <param name="storage">storage</param>
         /// <param name="entities">collection of IEntity</param>
-        public static Task<bool> Update<T>(this IStorage storage, IEnumerable<T> entities) where T : class, IEntity
+        public static Task<int> Update<T>(this IStorage storage, IEnumerable<T> entities) where T : class, IEntity
             => ((StorageBase)storage).Repositories.Find<T>().Update(entities);
 
         /// <summary>

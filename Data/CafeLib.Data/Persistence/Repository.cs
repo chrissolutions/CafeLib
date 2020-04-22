@@ -267,8 +267,8 @@ namespace CafeLib.Data.Persistence
         /// Bulk Update
         /// </summary>
         /// <param name="entities"></param>
-        /// <returns></returns>
-        public async Task<bool> Update(IEnumerable<T> entities)
+        /// <returns>number of records updated.</returns>
+        public async Task<int> Update(IEnumerable<T> entities)
         {
             return await _storage.ConnectionInfo.UpdateAsync(entities);
         }

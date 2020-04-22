@@ -308,8 +308,8 @@ namespace CafeLib.Data.Sources.Sqlite
         /// <param name="connectionInfo">Connection info</param>
         /// <param name="data">Entity record</param>
         /// <param name="token">Cancellation token</param>
-        /// <returns>true if updated, false if not found or not modified (tracked entities)</returns>
-        public async Task<bool> UpdateAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : class, IEntity
+        /// <returns>number of records updated.</returns>
+        public async Task<int> UpdateAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : class, IEntity
         {
             return await SqlCommandProvider.UpdateAsync(connectionInfo, data, token).ConfigureAwait(false);
         }

@@ -30,7 +30,7 @@ namespace CafeLib.Data
 
         Task<bool> Update(T entity);
 
-        Task<bool> Update(IEnumerable<T> entities);
+        Task<int> Update(IEnumerable<T> entities);
 
         Task<SaveResult<TU>> ExecuteSave<TU>(string sql, object? parameters);
     }

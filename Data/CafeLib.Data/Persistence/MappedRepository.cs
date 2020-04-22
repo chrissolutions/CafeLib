@@ -166,7 +166,7 @@ namespace CafeLib.Data.Persistence
             return await _repository.Update(dto);
         }
 
-        public async Task<bool> Update(IEnumerable<TDataModel> entities)
+        public async Task<int> Update(IEnumerable<TDataModel> entities)
         {
             var results = entities.Select(Activator.CreateInstance<TDto>().FromModel).Cast<TDto>();
             return await _repository.Update(results);

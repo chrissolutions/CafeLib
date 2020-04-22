@@ -356,11 +356,10 @@ namespace CafeLib.Data.Sources
         /// <param name="data">Entity record</param>
         /// <param name="token">Cancellation token</param>
         /// <returns>true if updated, false if not found or not modified (tracked entities)</returns>
-        public async Task<bool> UpdateAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : class, IEntity
+        public async Task<int> UpdateAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            var updated = await connection.UpdateAllAsync(data);
-            return updated > 0;
+            return await connection.UpdateAllAsync(data);
         }
 
         /// <summary>
