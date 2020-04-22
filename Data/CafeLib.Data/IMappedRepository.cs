@@ -46,7 +46,7 @@ namespace CafeLib.Data
 
         Task<bool> Remove(TDataModel entity);
 
-        Task<bool> Remove(IEnumerable<TDataModel> entities);
+        Task<int> Remove(IEnumerable<TDataModel> entities);
 
         Task<int> Remove(Expression<Func<TDataModel, bool>> predicate, params object[]? parameters);
 

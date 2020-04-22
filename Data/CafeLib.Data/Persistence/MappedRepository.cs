@@ -132,7 +132,7 @@ namespace CafeLib.Data.Persistence
             return await _repository.Remove(dto);
         }
 
-        public async Task<bool> Remove(IEnumerable<TDataModel> entities)
+        public async Task<int> Remove(IEnumerable<TDataModel> entities)
         {
             var results = entities.Select(Activator.CreateInstance<TDto>().FromModel).Cast<TDto>();
             return await _repository.Remove(results);

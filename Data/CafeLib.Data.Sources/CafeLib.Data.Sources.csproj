@@ -15,4 +15,10 @@
     <ProjectReference Include="..\CafeLib.Data.SqlGenerator\CafeLib.Data.SqlGenerator.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="RepoDb">
+      <HintPath>..\..\..\RepoDb\RepoDb.Core\RepoDb\bin\Debug\netstandard2.0\RepoDb.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
