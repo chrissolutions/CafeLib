@@ -5,10 +5,11 @@
     <Copyright></Copyright>
     <Description>Provides producer-consumer support.</Description>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <Version>0.7.0</Version>
+    <Version>0.7.5</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIconUrl></PackageIconUrl>
-    <PackageIcon>favicon.ico</PackageIcon>
+    <PackageIcon>cafelib.png</PackageIcon>
+    <Authors>Chris Solutions</Authors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\favicon.ico">
+    <None Include="..\..\cafelib.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

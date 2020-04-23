@@ -2,9 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>0.7.0</Version>
+    <Version>0.7.5</Version>
     <Description>Core data source package</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIcon>cafelib.png</PackageIcon>
+    <Authors>Chris Solutions</Authors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +16,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CafeLib.Data.SqlGenerator\CafeLib.Data.SqlGenerator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\cafelib.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

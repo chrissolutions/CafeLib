@@ -2,14 +2,23 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>0.7.0</Version>
+    <Version>0.7.5</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>CafeLib data mapping package.</Description>
+    <PackageIcon>cafelib.png</PackageIcon>
+    <Authors>Chris Solutions</Authors>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CafeLib.Core" Version="0.7.0" />
     <PackageReference Include="CafeLib.Core.Data" Version="0.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\cafelib.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

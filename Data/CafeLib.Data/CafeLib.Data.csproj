@@ -4,15 +4,21 @@
     <TargetFramework>netstandard2.1</TargetFramework>
 	<LangVersion>8.0</LangVersion>
 	<Nullable>enable</Nullable>
-	<Version>0.7.0</Version>
+	<Version>0.7.5</Version>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	<Description>Cafelib sql repository persistence package.</Description>		
+	<Description>Cafelib sql repository persistence package.</Description>
+	<Authors>Chris Solutions</Authors>
+	<PackageIcon>cafelib.png</PackageIcon>		
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Cache\**" />
     <EmbeddedResource Remove="Cache\**" />
     <None Remove="Cache\**" />
+    <None Include="..\..\cafelib.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -22,7 +28,6 @@
   <ItemGroup>
     <ProjectReference Include="..\CafeLib.Data.Mapping\CafeLib.Data.Mapping.csproj" />
     <ProjectReference Include="..\CafeLib.Data.Sources\CafeLib.Data.Sources.csproj" />
-    <ProjectReference Include="..\CafeLib.Data.SqlGenerator\CafeLib.Data.SqlGenerator.csproj" />
   </ItemGroup>
 
   <ItemGroup>

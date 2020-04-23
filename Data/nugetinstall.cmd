@@ -3,7 +3,7 @@ setlocal
 
 :: Configuration
 set lib=Data
-set version=0.7.0
+set version=0.7.5
 
 :: Settings
 set nuget=nuget.exe

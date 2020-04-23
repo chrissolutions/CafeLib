@@ -5,14 +5,23 @@
     <Copyright></Copyright>
     <Description>Provides runloop support.</Description>
     <PackageReleaseNotes>Provides runloop support for a background task.</PackageReleaseNotes>
-    <Version>0.7.0</Version>
+    <Version>0.7.5</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIconUrl></PackageIconUrl>
+    <PackageIcon>cafelib.png</PackageIcon>
+    <Authors>Chris Solutions</Authors>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CafeLib.Core.Eventing\CafeLib.Core.Eventing.csproj" />
     <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\cafelib.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

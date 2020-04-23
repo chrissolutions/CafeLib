@@ -3,7 +3,7 @@ setlocal
 
 :: Configuration
 set lib=Core
-set version=0.7.0
+set version=0.7.5
 
 :: Settings
 set nuget=nuget.exe

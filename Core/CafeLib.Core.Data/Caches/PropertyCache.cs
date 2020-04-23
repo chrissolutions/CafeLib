@@ -1,13 +1,13 @@
-﻿using CafeLib.Core.Extensions;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
+using CafeLib.Core.Extensions;
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Core.Data
+namespace CafeLib.Core.Data.Caches
 {
     public class PropertyCache
     {

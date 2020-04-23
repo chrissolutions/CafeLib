@@ -5,7 +5,7 @@ using System.Reflection;
 using CafeLib.Core.Extensions;
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Core.Data
+namespace CafeLib.Core.Data.Caches
 {
     /// <summary>
     /// Used to store table names
