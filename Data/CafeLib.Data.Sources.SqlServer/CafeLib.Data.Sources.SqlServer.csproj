@@ -10,8 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Core.Data" Version="0.7.0" />
-    <PackageReference Include="Dapper" Version="2.0.30" />
     <PackageReference Include="RepoDb.SqlServer" Version="1.0.6" />
     <PackageReference Include="RepoDb.SqlServer.BulkOperations" Version="1.0.6" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />

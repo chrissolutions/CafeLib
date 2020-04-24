@@ -8,7 +8,7 @@ using CafeLib.Core.Data;
 
 namespace CafeLib.Data.Mapping
 {
-    public class ExpressionConverter<TModel, TEntity> : ExpressionVisitor where TModel : MappedClass<TModel, TEntity> where TEntity : class, IEntity
+    public class ExpressionConverter<TModel, TEntity> : ExpressionVisitor where TModel : MappedEntity<TModel, TEntity> where TEntity : class, IEntity
     {
         private ParameterExpression _fromParameter;
         private ParameterExpression _toParameter;
@@ -16,7 +16,7 @@ namespace CafeLib.Data.Mapping
 
         public ExpressionConverter()
         {
-            _propertyMap = MappedClass<TModel, TEntity>.PropertyMap.Cast<PropertyConverter>().ToDictionary(x => x.PropertyInfo.Name, x => x);
+            _propertyMap = MappedEntity<TModel, TEntity>.PropertyMap.Cast<PropertyConverter>().ToDictionary(x => x.PropertyInfo.Name, x => x);
         }
 
         public override Expression Visit(Expression node)

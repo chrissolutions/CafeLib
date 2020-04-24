@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Core.IoC" Version="0.7.0" />
+    <PackageReference Include="CafeLib.Core.IoC" Version="0.7.5" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,7 +10,7 @@ using CafeLib.Data.Sources;
 
 namespace CafeLib.Data.Persistence
 {
-    public class MappedRepository<TModel, TEntity> : IMappedRepository<TModel, TEntity> where TModel : MappedClass<TModel, TEntity>, new() where TEntity : class, IEntity
+    public class MappedRepository<TModel, TEntity> : IMappedRepository<TModel, TEntity> where TModel : MappedEntity<TModel, TEntity>, new() where TEntity : class, IEntity
     {
         private readonly IRepository<TEntity> _repository;
         private readonly ExpressionConverter<TModel, TEntity> _expressionConverter;

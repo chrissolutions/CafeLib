@@ -12,7 +12,6 @@ namespace CafeLib.Data.Persistence
     {
         #region Member Variables
 
-        private const int DefaultConnectionTimeout = 15; // seconds
         private bool _disposed;
 
         #endregion
@@ -21,13 +20,7 @@ namespace CafeLib.Data.Persistence
 
         public IConnectionInfo ConnectionInfo { get; }
 
-        public int ConnectionTimeout { get; set; }
-
-        //public string DatabaseName => ConnectionInfo.ConnectionName;
-
         public IDbConnection GetConnection() => ConnectionInfo.Options.GetConnection(ConnectionInfo.ConnectionString);
-
-        //protected internal Domain Domain { get; }
 
         internal EntityRegistry Repositories { get; set; }
 
@@ -38,7 +31,6 @@ namespace CafeLib.Data.Persistence
         protected StorageBase(IConnectionInfo connectionInfo)
         {
             ConnectionInfo = connectionInfo;
-            //ConnectionTimeout = connectionInfo.ConnectionTimeout > 0 ? connectionInfo.ConnectionTimeout : DefaultConnectionTimeout;
             Repositories = new EntityRegistry(this);
         }
 

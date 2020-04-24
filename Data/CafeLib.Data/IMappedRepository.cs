@@ -10,7 +10,7 @@ using CafeLib.Data.Sources;
 
 namespace CafeLib.Data
 {
-    public interface IMappedRepository<TModel, TEntity> where TModel : MappedClass<TModel, TEntity> where TEntity : class, IEntity
+    public interface IMappedRepository<TModel, TEntity> where TModel : MappedEntity<TModel, TEntity> where TEntity : class, IEntity
     {
         Task<bool> Any();
 

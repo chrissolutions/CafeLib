@@ -5,24 +5,23 @@ using System.Linq.Expressions;
 using System.Reflection;
 using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Mapping
 {
-    public abstract class MappedClass<TModel, TEntity> where TModel : class where TEntity : class, IEntity
+    public abstract class MappedEntity<TModel, TEntity> : IEntity where TModel : class where TEntity : class, IEntity
     {
         public static readonly IPropertyMap<TModel> PropertyMap = new PropertyMap<TModel>();
 
         private readonly IDictionary<string, PropertyInfo> _entityProperties;
         private readonly IDictionary<string, PropertyConverter> _propertyConverters;
 
-        static MappedClass()
+        static MappedEntity()
         {
             typeof(TModel).GetProperties().ForEach(PropertyMap.Map);
         }
 
-        protected MappedClass()
+        protected MappedEntity()
         {
             _entityProperties = typeof(TEntity).GetProperties().ToDictionary(p => p.Name);
             _propertyConverters = PropertyMap.Cast<PropertyConverter>().ToDictionary(p => p.PropertyInfo.Name);

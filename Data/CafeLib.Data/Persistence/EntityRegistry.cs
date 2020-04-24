@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.IoC;
+using CafeLib.Data.Mapping;
 
 namespace CafeLib.Data.Persistence
 {
@@ -38,10 +39,10 @@ namespace CafeLib.Data.Persistence
         /// <summary>
         /// Add repository to registry.
         /// </summary>
-        /// <typeparam name="T">IEntity type</typeparam>
+        /// <typeparam name="TEntity">IEntity type</typeparam>
         /// <param name="repository">repository</param>
         //public T Add<T, TU>(T repository) where T : class, IRepository<TU> where TU : class, IEntity
-        public IRepository<T> Add<T>(IRepository<T> repository) where T : class, IEntity
+        public IRepository<TEntity> Add<TEntity>(IRepository<TEntity> repository) where TEntity : class, IEntity
         {
             if (repository == null) throw new ArgumentNullException(nameof(repository));
             _container.AddSingleton(x => repository);
@@ -86,11 +87,22 @@ namespace CafeLib.Data.Persistence
 
             ((StorageBase)storage).ConnectionInfo.Domain.GetEntityTypes().ForEach(x =>
             {
-                var repoInterface = typeof(IRepository<>).MakeGenericType(x);
-                var repoType = typeof(Repository<>).MakeGenericType(x);
-                var repo = repoType.CreateInstance(storage);
-                var method = registerMethod.MakeGenericMethod(repoInterface);
-                method.Invoke(_container, new[] { BuildFactory(repoInterface, repo) });
+                if (x.IsSubclassOf(typeof(MappedEntity<,>)))
+                {
+                    var repoInterface = typeof(IMappedRepository<,>).MakeGenericType(x);
+                    var repoType = typeof(MappedRepository<,>).MakeGenericType(x);
+                    var repo = repoType.CreateInstance(storage);
+                    var method = registerMethod.MakeGenericMethod(repoInterface);
+                    method.Invoke(_container, new[] { BuildFactory(repoInterface, repo) });
+                }
+                else
+                {
+                    var repoInterface = typeof(IRepository<>).MakeGenericType(x);
+                    var repoType = typeof(Repository<>).MakeGenericType(x);
+                    var repo = repoType.CreateInstance(storage);
+                    var method = registerMethod.MakeGenericMethod(repoInterface);
+                    method.Invoke(_container, new[] { BuildFactory(repoInterface, repo) });
+                }
             });
         }
 
