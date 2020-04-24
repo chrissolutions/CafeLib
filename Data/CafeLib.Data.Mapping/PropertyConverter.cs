@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace CafeLib.Data.Mapping2
+namespace CafeLib.Data.Mapping
 {
     internal class PropertyConverter : IMapper
     {

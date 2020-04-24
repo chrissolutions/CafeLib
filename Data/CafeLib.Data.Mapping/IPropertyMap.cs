@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace CafeLib.Data.Mapping2
+namespace CafeLib.Data.Mapping
 {
     /// <summary>
     /// An interface used to map a property converter.

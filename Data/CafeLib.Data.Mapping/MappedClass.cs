@@ -5,9 +5,10 @@ using System.Linq.Expressions;
 using System.Reflection;
 using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
+
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Data.Mapping2
+namespace CafeLib.Data.Mapping
 {
     public abstract class MappedClass<TModel, TEntity> where TModel : class where TEntity : class, IEntity
     {
