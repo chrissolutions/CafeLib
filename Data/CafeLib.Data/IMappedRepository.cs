@@ -10,53 +10,53 @@ using CafeLib.Data.Sources;
 
 namespace CafeLib.Data
 {
-    public interface IMappedRepository<TDataModel, TDto> where TDataModel : class, IDataModel where TDto : MappedEntity<TDto>
+    public interface IMappedRepository<TModel, TEntity> where TModel : MappedClass<TModel, TEntity> where TEntity : class, IEntity
     {
         Task<bool> Any();
 
         Task<bool> Any<TU>(TU id);
 
-        Task<bool> Any(Expression<Func<TDataModel, bool>> predicate, params object[]? parameters);
+        Task<bool> Any(Expression<Func<TModel, bool>> predicate, params object[]? parameters);
 
         Task<int> Count();
 
-        Task<int> Count(Expression<Func<TDataModel, bool>> predicate, params object[]? parameters);
+        Task<int> Count(Expression<Func<TModel, bool>> predicate, params object[]? parameters);
 
-        Task<IEnumerable<TDataModel>> Find(Expression<Func<TDataModel, bool>> predicate, params object[]? parameters);
+        Task<IEnumerable<TModel>> Find(Expression<Func<TModel, bool>> predicate, params object[]? parameters);
 
-        Task<IEnumerable<TDataModel>> FindAll();
+        Task<IEnumerable<TModel>> FindAll();
 
-        Task<TDataModel> FindOne(Expression<Func<TDataModel, bool>> predicate, params object[]? parameters);
+        Task<TModel> FindOne(Expression<Func<TModel, bool>> predicate, params object[]? parameters);
 
-        Task<TDataModel> FindByKey<TKey>(TKey id);
+        Task<TModel> FindByKey<TKey>(TKey id);
 
-        Task<IEnumerable<TDataModel>> FindByKey<TKey>(IEnumerable<TKey> keys);
+        Task<IEnumerable<TModel>> FindByKey<TKey>(IEnumerable<TKey> keys);
 
-        Task<IEnumerable<TDataModel>> FindBySqlQuery(string sql, params object[]? parameters);
+        Task<IEnumerable<TModel>> FindBySqlQuery(string sql, params object[]? parameters);
 
-        Task<QueryResult<TDataModel>> ExecuteQuery(string sql, params object[]? parameters);
+        Task<QueryResult<TModel>> ExecuteQuery(string sql, params object[]? parameters);
 
-        Task<TDataModel> Add(TDataModel entity);
+        Task<TModel> Add(TModel entity);
 
-        Task<bool> Add(IEnumerable<TDataModel> entities);
+        Task<bool> Add(IEnumerable<TModel> entities);
 
         Task<bool> RemoveByKey<TKey>(TKey key);
 
         Task<int> RemoveByKey<TKey>(IEnumerable<TKey> keys);
 
-        Task<bool> Remove(TDataModel entity);
+        Task<bool> Remove(TModel entity);
 
-        Task<int> Remove(IEnumerable<TDataModel> entities);
+        Task<int> Remove(IEnumerable<TModel> entities);
 
-        Task<int> Remove(Expression<Func<TDataModel, bool>> predicate, params object[]? parameters);
+        Task<int> Remove(Expression<Func<TModel, bool>> predicate, params object[]? parameters);
 
-        Task<TDataModel> Save(TDataModel entity);
+        Task<TModel> Save(TModel entity);
 
-        Task<int> Save(IEnumerable<TDataModel> entities, params Expression<Func<TDataModel, object>>[]? expressions);
+        Task<int> Save(IEnumerable<TModel> entities, params Expression<Func<TModel, object>>[]? expressions);
 
-        Task<bool> Update(TDataModel entity);
+        Task<bool> Update(TModel entity);
 
-        Task<int> Update(IEnumerable<TDataModel> entities);
+        Task<int> Update(IEnumerable<TModel> entities);
 
         Task<SaveResult<TU>> ExecuteSave<TU>(string sql, params object[]? parameters);
 
