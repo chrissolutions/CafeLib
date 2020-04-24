@@ -23,24 +23,24 @@ namespace CafeLib.Data
         ///     true: if the entity has entries.
         ///     false: if the entity is empty.
         /// </returns>
-        Task<bool> Any(Expression<Func<T, bool>> predicate, object? parameters);
+        Task<bool> Any(Expression<Func<T, bool>> predicate, object parameters);
 
         Task<int> Count();
 
-        Task<int> Count(Expression<Func<T, bool>> predicate, object? parameters);
+        Task<int> Count(Expression<Func<T, bool>> predicate, object parameters);
 
-        Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate, object? parameters);
+        Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate, object parameters);
 
         Task<IEnumerable<T>> FindAll();
 
-        Task<T> FindOne(Expression<Func<T, bool>> predicate, object? parameters);
+        Task<T> FindOne(Expression<Func<T, bool>> predicate, object parameters);
 
         Task<T> FindByKey<TKey>(TKey id);
 
         Task<IEnumerable<T>> FindByKey<TKey>(IEnumerable<TKey> ids);
 
-        Task<IEnumerable<T>> FindBySqlQuery(string sql, object? parameters);
+        Task<IEnumerable<T>> FindBySqlQuery(string sql, object parameters);
 
-        Task<QueryResult<T>> ExecuteQuery(string sql, object? parameters);
+        Task<QueryResult<T>> ExecuteQuery(string sql, object parameters);
     }
 }

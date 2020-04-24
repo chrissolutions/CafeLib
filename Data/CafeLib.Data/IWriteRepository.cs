@@ -22,16 +22,16 @@ namespace CafeLib.Data
 
         Task<int> Remove(IEnumerable<T> entities);
 
-        Task<int> Remove(Expression<Func<T, bool>> predicate, object? parameters);
+        Task<int> Remove(Expression<Func<T, bool>> predicate, object parameters);
 
         Task<T> Save(T entity);
 
-        Task<int> Save(IEnumerable<T> entities, params Expression<Func<T, object>>[]? expressions);
+        Task<int> Save(IEnumerable<T> entities, params Expression<Func<T, object>>[] expressions);
 
         Task<bool> Update(T entity);
 
         Task<int> Update(IEnumerable<T> entities);
 
-        Task<SaveResult<TU>> ExecuteSave<TU>(string sql, object? parameters);
+        Task<SaveResult<TU>> ExecuteSave<TU>(string sql, object parameters);
     }
 }

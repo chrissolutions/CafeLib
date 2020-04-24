@@ -15,7 +15,7 @@ namespace CafeLib.Data.Persistence
         /// <param name="connectionString">connection string</param>
         /// <param name="domain">entity domain</param>
         /// <param name="options">connection options</param>
-        public StorageConnectionInfo(string connectionString, Domain domain, IConnectionOptions? options = null)
+        public StorageConnectionInfo(string connectionString, Domain domain, IConnectionOptions options = null)
         {
             ConnectionString = connectionString;
             Domain = domain;

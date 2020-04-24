@@ -56,7 +56,7 @@ namespace CafeLib.Data.Persistence
         ///     true: if the entity has entries.
         ///     false: if the entity is empty.
         /// </returns>
-        public async Task<bool> Any(Expression<Func<T, bool>> predicate, object? parameters)
+        public async Task<bool> Any(Expression<Func<T, bool>> predicate, object parameters)
         {
             return await Count(predicate, parameters) > 0;
         }
@@ -76,7 +76,7 @@ namespace CafeLib.Data.Persistence
         /// <param name="predicate"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<int> Count(Expression<Func<T, bool>> predicate, object? parameters)
+        public async Task<int> Count(Expression<Func<T, bool>> predicate, object parameters)
         {
             return await _storage.ConnectionInfo.QueryCountAsync(predicate);
         }
@@ -87,7 +87,7 @@ namespace CafeLib.Data.Persistence
         /// <param name="predicate">predicate used to filter the query</param>
         /// <param name="parameters">predicate parameters</param>
         /// <returns>collection matching the predicate</returns>
-        public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate, object? parameters)
+        public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate, object parameters)
         {
             var results = await _storage.ConnectionInfo.QueryAsync(predicate);
             return results.Records;
@@ -109,7 +109,7 @@ namespace CafeLib.Data.Persistence
         /// <param name="predicate">predicate used to filter the query</param>
         /// <param name="parameters">predicate parameters</param>
         /// <returns></returns>
-        public async Task<T> FindOne(Expression<Func<T, bool>> predicate, object? parameters)
+        public async Task<T> FindOne(Expression<Func<T, bool>> predicate, object parameters)
         {
             return await _storage.ConnectionInfo.QueryOneAsync(predicate);
         }
@@ -142,7 +142,7 @@ namespace CafeLib.Data.Persistence
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<T>> FindBySqlQuery(string sql, object? parameters)
+        public async Task<IEnumerable<T>> FindBySqlQuery(string sql, object parameters)
         {
             var result = await ExecuteQuery(sql, parameters);
             return result.Records;
@@ -154,7 +154,7 @@ namespace CafeLib.Data.Persistence
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<QueryResult<T>> ExecuteQuery(string sql, object? parameters)
+        public async Task<QueryResult<T>> ExecuteQuery(string sql, object parameters)
         {
             return await _storage.ConnectionInfo.QueryAsync<T>(sql, parameters);
         }
@@ -227,7 +227,7 @@ namespace CafeLib.Data.Persistence
         /// <param name="predicate"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<int> Remove(Expression<Func<T, bool>> predicate, object? parameters)
+        public async Task<int> Remove(Expression<Func<T, bool>> predicate, object parameters)
         {
             return await _storage.ConnectionInfo.DeleteAsync(predicate);
         }
@@ -248,7 +248,7 @@ namespace CafeLib.Data.Persistence
         /// <param name="entities"></param>
         /// <param name="expressions"></param>
         /// <returns></returns>
-        public async Task<int> Save(IEnumerable<T> entities, params Expression<Func<T, object>>[]? expressions)
+        public async Task<int> Save(IEnumerable<T> entities, params Expression<Func<T, object>>[] expressions)
         {
             return await _storage.ConnectionInfo.UpsertAsync(entities, expressions);
         }
@@ -279,7 +279,7 @@ namespace CafeLib.Data.Persistence
         /// <param name="sql">sql command text</param>
         /// <param name="parameters">sql command parameters</param>
         /// <returns></returns>
-        public async Task<int> ExecuteCommand(string sql, object? parameters = null)
+        public async Task<int> ExecuteCommand(string sql, object parameters = null)
         {
             return await _storage.ConnectionInfo.ExecuteAsync(sql, parameters);
         }
@@ -291,7 +291,7 @@ namespace CafeLib.Data.Persistence
         /// <param name="sql">sql command text</param>
         /// <param name="parameters">sql command parameters</param>
         /// <returns></returns>
-        public async Task<SaveResult<TKey>> ExecuteSave<TKey>(string sql, object? parameters)
+        public async Task<SaveResult<TKey>> ExecuteSave<TKey>(string sql, object parameters)
         {
             return await _storage.ConnectionInfo.ExecuteSaveAsync<TKey>(sql, parameters);
         }

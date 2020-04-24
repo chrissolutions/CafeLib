@@ -68,7 +68,7 @@ namespace CafeLib.Data.Mapping
         /// </summary>
         /// <param name="entity"></param>
         /// <returns>data model</returns>
-        public void Populate(TEntity entity)
+        public TModel Populate(TEntity entity)
         {
             var dto = entity ?? throw new ArgumentNullException(nameof(entity));
 
@@ -84,6 +84,8 @@ namespace CafeLib.Data.Mapping
 
                 modelProperty.SetValue(this, value);
             }
+
+            return (TModel) (object) this;
         }
     }
 }

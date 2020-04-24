@@ -76,7 +76,7 @@ namespace CafeLib.Data.Extensions
         /// <param name="predicate">predicate condition</param>
         /// <param name="parameters">expression parameters</param>
         /// <returns>The count of items the T collection</returns>
-        public static Task<int> Count<T>(this IStorage storage, Expression<Func<T, bool>> predicate, object? parameters) where T : class, IEntity
+        public static Task<int> Count<T>(this IStorage storage, Expression<Func<T, bool>> predicate, object parameters) where T : class, IEntity
             => ((StorageBase)storage).Repositories.Find<T>().Count(predicate, parameters);
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace CafeLib.Data.Extensions
         /// <param name="predicate">predicate condition</param>
         /// <param name="parameters">expression parameters</param>
         /// <returns>return collection of IEntity</returns>
-        public static Task<IEnumerable<T>> Find<T>(this IStorage storage, Expression<Func<T, bool>> predicate, object? parameters = null) where T : class, IEntity
+        public static Task<IEnumerable<T>> Find<T>(this IStorage storage, Expression<Func<T, bool>> predicate, object parameters = null) where T : class, IEntity
             => ((StorageBase)storage).Repositories.Find<T>().Find(predicate, parameters);
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace CafeLib.Data.Extensions
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public static Task<IEnumerable<T>> FindBySql<T>(this IStorage storage, string sql, object? parameters) where T : class, IEntity
+        public static Task<IEnumerable<T>> FindBySql<T>(this IStorage storage, string sql, object parameters) where T : class, IEntity
             => ((StorageBase)storage).Repositories.Find<T>().FindBySqlQuery(sql, parameters);
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace CafeLib.Data.Extensions
         /// <param name="predicate">predicate condition</param>
         /// <param name="parameters">query parameters</param>
         /// <returns>returns an entity</returns>
-        public static Task<T> FindOne<T>(this IStorage storage, Expression<Func<T, bool>> predicate, object? parameters) where T : class, IEntity
+        public static Task<T> FindOne<T>(this IStorage storage, Expression<Func<T, bool>> predicate, object parameters) where T : class, IEntity
             => ((StorageBase)storage).Repositories.Find<T>().FindOne(predicate, parameters);
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace CafeLib.Data.Extensions
         /// <param name="storage">storage</param>
         /// <param name="predicate">predicate condition</param>
         /// <param name="parameters">sql parameters</param>
-        public static Task<int> Remove<T>(this IStorage storage, Expression<Func<T, bool>> predicate, object? parameters) where T : class, IEntity
+        public static Task<int> Remove<T>(this IStorage storage, Expression<Func<T, bool>> predicate, object parameters) where T : class, IEntity
             => ((StorageBase)storage).Repositories.Find<T>().Remove(predicate, parameters);
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace CafeLib.Data.Extensions
         /// <param name="entities">collection of IEntity</param>
         /// <param name="expressions"></param>
         /// <returns></returns>
-        public static Task<int> Save<T>(this IStorage storage, IEnumerable<T> entities, params Expression<Func<T, object>>[]? expressions) where T : class, IEntity
+        public static Task<int> Save<T>(this IStorage storage, IEnumerable<T> entities, params Expression<Func<T, object>>[] expressions) where T : class, IEntity
             => ((StorageBase)storage).Repositories.Find<T>().Save(entities, expressions);
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace CafeLib.Data.Extensions
         /// <param name="sql">sql command</param>
         /// <param name="parameters">command parameters</param>
         /// <returns>execution result</returns>
-        public static Task<int> Execute(this IStorage storage, string sql, object? parameters = null)
+        public static Task<int> Execute(this IStorage storage, string sql, object parameters = null)
             => ((StorageBase)storage).GetConnection().ExecuteAsync(sql, parameters);
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace CafeLib.Data.Extensions
         /// <param name="sql">sql command</param>
         /// <param name="parameters">command parameters</param>
         /// <returns>query result</returns>
-        public static Task<QueryResult<T>> ExecuteQuery<T>(this IStorage storage, string sql, object? parameters = null) where T : class, IEntity
+        public static Task<QueryResult<T>> ExecuteQuery<T>(this IStorage storage, string sql, object parameters = null) where T : class, IEntity
             => ((StorageBase)storage).Repositories.Find<T>().ExecuteQuery(sql, parameters);
 
         /// <summary>
@@ -238,7 +238,7 @@ namespace CafeLib.Data.Extensions
         /// <param name="sql">sql command</param>
         /// <param name="parameters">command parameters</param>
         /// <returns>save result</returns>
-        public static Task<SaveResult<TU>> ExecuteSave<T, TU>(this IStorage storage, string sql, object? parameters = null) where T : class, IEntity
+        public static Task<SaveResult<TU>> ExecuteSave<T, TU>(this IStorage storage, string sql, object parameters = null) where T : class, IEntity
             => ((StorageBase)storage).Repositories.Find<T>().ExecuteSave<TU>(sql, parameters);
     }
 }
