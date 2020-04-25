@@ -10,7 +10,7 @@ using CafeLib.Data.Sources;
 
 namespace CafeLib.Data.Persistence
 {
-    public class MappedRepository<TModel, TEntity> : IMappedRepository<TModel, TEntity> where TModel : MappedEntity<TModel, TEntity>, new() where TEntity : class, IEntity
+    public class MappedRepository<TModel, TEntity> : IMappedRepository<TModel, TEntity> where TModel : class, IMappedEntity<TModel, TEntity>, new() where TEntity : class, IEntity
     {
         private readonly IRepository<TEntity> _repository;
         private readonly ExpressionConverter<TModel, TEntity> _expressionConverter;
@@ -35,10 +35,10 @@ namespace CafeLib.Data.Persistence
             return _repository.Any(id);
         }
 
-        public Task<bool> Any(Expression<Func<TModel, bool>> predicate, params object[] parameters)
+        public Task<bool> Any(Expression<Func<TModel, bool>> predicate)
         {
             var expr = (Expression<Func<TEntity, bool>>) _expressionConverter.Visit(predicate);
-            return _repository.Any(expr, parameters);
+            return _repository.Any(expr);
         }
 
         public Task<int> Count()
@@ -46,16 +46,16 @@ namespace CafeLib.Data.Persistence
             return _repository.Count();
         }
 
-        public Task<int> Count(Expression<Func<TModel, bool>> predicate, params object[] parameters)
+        public Task<int> Count(Expression<Func<TModel, bool>> predicate)
         {
             var expr = (Expression<Func<TEntity, bool>>) _expressionConverter.Visit(predicate);
-            return _repository.Count(expr, parameters);
+            return _repository.Count(expr);
         }
 
-        public async Task<IEnumerable<TModel>> Find(Expression<Func<TModel, bool>> predicate, params object[] parameters)
+        public async Task<IEnumerable<TModel>> Find(Expression<Func<TModel, bool>> predicate)
         {
             var expr = (Expression<Func<TEntity, bool>>) _expressionConverter.Visit(predicate);
-            var results = await _repository.Find(expr, parameters);
+            var results = await _repository.Find(expr);
             return results.Select(x => new TModel().Populate(x));
         }
 
@@ -65,10 +65,10 @@ namespace CafeLib.Data.Persistence
             return results.Select(x => new TModel().Populate(x));
         }
 
-        public async Task<TModel> FindOne(Expression<Func<TModel, bool>> predicate, params object[] parameters)
+        public async Task<TModel> FindOne(Expression<Func<TModel, bool>> predicate)
         {
             var expr = (Expression<Func<TEntity, bool>>) _expressionConverter.Visit(predicate);
-            var entity = await _repository.FindOne(expr, parameters);
+            var entity = await _repository.FindOne(expr);
             return entity != null ? new TModel().Populate(entity) : null;
         }
 
@@ -135,10 +135,10 @@ namespace CafeLib.Data.Persistence
             return await _repository.Remove(entities);
         }
 
-        public async Task<int> Remove(Expression<Func<TModel, bool>> predicate, params object[] parameters)
+        public async Task<int> Remove(Expression<Func<TModel, bool>> predicate)
         {
             var expr = (Expression<Func<TEntity, bool>>) _expressionConverter.Visit(predicate);
-            return await _repository.Remove(expr, parameters);
+            return await _repository.Remove(expr);
         }
 
         public async Task<TModel> Save(TModel model)

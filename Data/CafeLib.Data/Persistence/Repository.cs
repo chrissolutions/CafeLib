@@ -51,14 +51,13 @@ namespace CafeLib.Data.Persistence
         /// </summary>
         /// <typeparam name="T">entity type</typeparam>
         /// <param name="predicate">query condition</param>
-        /// <param name="parameters"></param>
         /// <returns>
         ///     true: if the entity has entries.
         ///     false: if the entity is empty.
         /// </returns>
-        public async Task<bool> Any(Expression<Func<T, bool>> predicate, object parameters)
+        public async Task<bool> Any(Expression<Func<T, bool>> predicate)
         {
-            return await Count(predicate, parameters) > 0;
+            return await Count(predicate) > 0;
         }
 
         /// <summary>
@@ -74,9 +73,8 @@ namespace CafeLib.Data.Persistence
         /// 
         /// </summary>
         /// <param name="predicate"></param>
-        /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<int> Count(Expression<Func<T, bool>> predicate, object parameters)
+        public async Task<int> Count(Expression<Func<T, bool>> predicate)
         {
             return await _storage.ConnectionInfo.QueryCountAsync(predicate);
         }
@@ -85,9 +83,8 @@ namespace CafeLib.Data.Persistence
         /// Find collection matching the predicate.
         /// </summary>
         /// <param name="predicate">predicate used to filter the query</param>
-        /// <param name="parameters">predicate parameters</param>
         /// <returns>collection matching the predicate</returns>
-        public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate, object parameters)
+        public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate)
         {
             var results = await _storage.ConnectionInfo.QueryAsync(predicate);
             return results.Records;
@@ -107,9 +104,8 @@ namespace CafeLib.Data.Persistence
         /// Find first record matching the predicate.
         /// </summary>
         /// <param name="predicate">predicate used to filter the query</param>
-        /// <param name="parameters">predicate parameters</param>
         /// <returns></returns>
-        public async Task<T> FindOne(Expression<Func<T, bool>> predicate, object parameters)
+        public async Task<T> FindOne(Expression<Func<T, bool>> predicate)
         {
             return await _storage.ConnectionInfo.QueryOneAsync(predicate);
         }
@@ -225,9 +221,8 @@ namespace CafeLib.Data.Persistence
         /// 
         /// </summary>
         /// <param name="predicate"></param>
-        /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<int> Remove(Expression<Func<T, bool>> predicate, object parameters)
+        public async Task<int> Remove(Expression<Func<T, bool>> predicate)
         {
             return await _storage.ConnectionInfo.DeleteAsync(predicate);
         }
@@ -291,7 +286,7 @@ namespace CafeLib.Data.Persistence
         /// <param name="sql">sql command text</param>
         /// <param name="parameters">sql command parameters</param>
         /// <returns></returns>
-        public async Task<SaveResult<TKey>> ExecuteSave<TKey>(string sql, object parameters)
+        public async Task<SaveResult<TKey>> ExecuteSave<TKey>(string sql, object parameters = null)
         {
             return await _storage.ConnectionInfo.ExecuteSaveAsync<TKey>(sql, parameters);
         }

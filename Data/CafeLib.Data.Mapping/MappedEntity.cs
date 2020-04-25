@@ -9,7 +9,7 @@ using CafeLib.Core.Extensions;
 
 namespace CafeLib.Data.Mapping
 {
-    public abstract class MappedEntity<TModel, TEntity> : IEntity where TModel : class where TEntity : class, IEntity
+    public abstract class MappedEntity<TModel, TEntity> : IMappedEntity<TModel, TEntity> where TModel : class, IMappedEntity<TModel, TEntity> where TEntity : class, IEntity
     {
         public static readonly IPropertyMap<TModel> PropertyMap = new PropertyMap<TModel>();
 
@@ -33,7 +33,7 @@ namespace CafeLib.Data.Mapping
         /// <typeparam name="TProperty">type of the property</typeparam>
         /// <param name="expression">mapping expression</param>
         /// <returns>mapper</returns>
-        public IMapper Map<TProperty>(Expression<Func<TModel, TProperty>> expression)
+        protected IMapper Map<TProperty>(Expression<Func<TModel, TProperty>> expression)
         {
             return PropertyMap.Map(expression);
         }
@@ -84,7 +84,7 @@ namespace CafeLib.Data.Mapping
                 modelProperty.SetValue(this, value);
             }
 
-            return (TModel) (object) this;
+            return (TModel)(object)this;
         }
     }
 }

@@ -18,22 +18,21 @@ namespace CafeLib.Data
         /// </summary>
         /// <typeparam name="T">entity type</typeparam>
         /// <param name="predicate">query condition</param>
-        /// <param name="parameters"></param>
         /// <returns>
         ///     true: if the entity has entries.
         ///     false: if the entity is empty.
         /// </returns>
-        Task<bool> Any(Expression<Func<T, bool>> predicate, object parameters);
+        Task<bool> Any(Expression<Func<T, bool>> predicate);
 
         Task<int> Count();
 
-        Task<int> Count(Expression<Func<T, bool>> predicate, object parameters);
+        Task<int> Count(Expression<Func<T, bool>> predicate);
 
-        Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate, object parameters);
+        Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate);
 
         Task<IEnumerable<T>> FindAll();
 
-        Task<T> FindOne(Expression<Func<T, bool>> predicate, object parameters);
+        Task<T> FindOne(Expression<Func<T, bool>> predicate);
 
         Task<T> FindByKey<TKey>(TKey id);
 

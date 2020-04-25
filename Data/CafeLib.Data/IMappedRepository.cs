@@ -10,23 +10,23 @@ using CafeLib.Data.Sources;
 
 namespace CafeLib.Data
 {
-    public interface IMappedRepository<TModel, TEntity> where TModel : MappedEntity<TModel, TEntity> where TEntity : class, IEntity
+    public interface IMappedRepository<TModel, TEntity> where TModel : class, IMappedEntity<TModel, TEntity> where TEntity : class, IEntity
     {
         Task<bool> Any();
 
         Task<bool> Any<TU>(TU id);
 
-        Task<bool> Any(Expression<Func<TModel, bool>> predicate, params object[] parameters);
+        Task<bool> Any(Expression<Func<TModel, bool>> predicate);
 
         Task<int> Count();
 
-        Task<int> Count(Expression<Func<TModel, bool>> predicate, params object[] parameters);
+        Task<int> Count(Expression<Func<TModel, bool>> predicate);
 
-        Task<IEnumerable<TModel>> Find(Expression<Func<TModel, bool>> predicate, params object[] parameters);
+        Task<IEnumerable<TModel>> Find(Expression<Func<TModel, bool>> predicate);
 
         Task<IEnumerable<TModel>> FindAll();
 
-        Task<TModel> FindOne(Expression<Func<TModel, bool>> predicate, params object[] parameters);
+        Task<TModel> FindOne(Expression<Func<TModel, bool>> predicate);
 
         Task<TModel> FindByKey<TKey>(TKey id);
 
@@ -48,7 +48,7 @@ namespace CafeLib.Data
 
         Task<int> Remove(IEnumerable<TModel> models);
 
-        Task<int> Remove(Expression<Func<TModel, bool>> predicate, params object[] parameters);
+        Task<int> Remove(Expression<Func<TModel, bool>> predicate);
 
         Task<TModel> Save(TModel model);
 

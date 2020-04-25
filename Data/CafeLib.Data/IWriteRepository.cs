@@ -22,7 +22,7 @@ namespace CafeLib.Data
 
         Task<int> Remove(IEnumerable<T> entities);
 
-        Task<int> Remove(Expression<Func<T, bool>> predicate, object parameters);
+        Task<int> Remove(Expression<Func<T, bool>> predicate);
 
         Task<T> Save(T entity);
 

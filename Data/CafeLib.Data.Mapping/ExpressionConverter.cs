@@ -8,7 +8,7 @@ using CafeLib.Core.Data;
 
 namespace CafeLib.Data.Mapping
 {
-    public class ExpressionConverter<TModel, TEntity> : ExpressionVisitor where TModel : MappedEntity<TModel, TEntity> where TEntity : class, IEntity
+    public class ExpressionConverter<TModel, TEntity> : ExpressionVisitor where TModel : class, IMappedEntity<TModel, TEntity> where TEntity : class, IEntity
     {
         private ParameterExpression _fromParameter;
         private ParameterExpression _toParameter;

@@ -74,10 +74,9 @@ namespace CafeLib.Data.Extensions
         /// <typeparam name="T">IEntity type</typeparam>
         /// <param name="storage">storage</param>
         /// <param name="predicate">predicate condition</param>
-        /// <param name="parameters">expression parameters</param>
         /// <returns>The count of items the T collection</returns>
-        public static Task<int> Count<T>(this IStorage storage, Expression<Func<T, bool>> predicate, object parameters) where T : class, IEntity
-            => ((StorageBase)storage).Repositories.Find<T>().Count(predicate, parameters);
+        public static Task<int> Count<T>(this IStorage storage, Expression<Func<T, bool>> predicate) where T : class, IEntity
+            => ((StorageBase)storage).Repositories.Find<T>().Count(predicate);
 
         /// <summary>
         /// Find all entities in a collection
@@ -94,10 +93,9 @@ namespace CafeLib.Data.Extensions
         /// <typeparam name="T">IEntity type</typeparam>
         /// <param name="storage">storage</param>
         /// <param name="predicate">predicate condition</param>
-        /// <param name="parameters">expression parameters</param>
         /// <returns>return collection of IEntity</returns>
-        public static Task<IEnumerable<T>> Find<T>(this IStorage storage, Expression<Func<T, bool>> predicate, object parameters = null) where T : class, IEntity
-            => ((StorageBase)storage).Repositories.Find<T>().Find(predicate, parameters);
+        public static Task<IEnumerable<T>> Find<T>(this IStorage storage, Expression<Func<T, bool>> predicate) where T : class, IEntity
+            => ((StorageBase)storage).Repositories.Find<T>().Find(predicate);
 
         /// <summary>
         /// Find entity by its key identifier.
@@ -126,13 +124,12 @@ namespace CafeLib.Data.Extensions
         /// <typeparam name="T">IEntity type</typeparam>
         /// <param name="storage">storage</param>
         /// <param name="predicate">predicate condition</param>
-        /// <param name="parameters">query parameters</param>
         /// <returns>returns an entity</returns>
-        public static Task<T> FindOne<T>(this IStorage storage, Expression<Func<T, bool>> predicate, object parameters) where T : class, IEntity
-            => ((StorageBase)storage).Repositories.Find<T>().FindOne(predicate, parameters);
+        public static Task<T> FindOne<T>(this IStorage storage, Expression<Func<T, bool>> predicate) where T : class, IEntity
+            => ((StorageBase)storage).Repositories.Find<T>().FindOne(predicate);
 
         /// <summary>
-        /// Removes an entity from a collection
+        /// Remove an entity from storage.
         /// </summary>
         /// <typeparam name="T">IEntity type</typeparam>
         /// <param name="storage">storage</param>
@@ -141,14 +138,23 @@ namespace CafeLib.Data.Extensions
             => ((StorageBase)storage).Repositories.Find<T>().Remove(entity);
 
         /// <summary>
+        /// Remove an entity from storage.
+        /// </summary>
+        /// <typeparam name="T">IEntity type</typeparam>
+        /// <param name="storage">storage</param>
+        /// <param name="entities">entities to be deleted from storage</param>
+        /// <returns>number of entities removed from storage</returns>
+        public static Task<int> Remove<T>(this IStorage storage, IEnumerable<T> entities) where T : class, IEntity
+            => ((StorageBase)storage).Repositories.Find<T>().Remove(entities);
+
+        /// <summary>
         /// Removes an entity from a collection if the predicate is true.
         /// </summary>
         /// <typeparam name="T">IEntity type</typeparam>
         /// <param name="storage">storage</param>
         /// <param name="predicate">predicate condition</param>
-        /// <param name="parameters">sql parameters</param>
-        public static Task<int> Remove<T>(this IStorage storage, Expression<Func<T, bool>> predicate, object parameters) where T : class, IEntity
-            => ((StorageBase)storage).Repositories.Find<T>().Remove(predicate, parameters);
+        public static Task<int> Remove<T>(this IStorage storage, Expression<Func<T, bool>> predicate) where T : class, IEntity
+            => ((StorageBase)storage).Repositories.Find<T>().Remove(predicate);
 
         /// <summary>
         /// Remove entity from storage using entity primary key.
