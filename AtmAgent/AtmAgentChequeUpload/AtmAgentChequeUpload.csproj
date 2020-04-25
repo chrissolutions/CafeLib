@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Builder\" />
+    <Folder Include="Logging\" />
+    <Folder Include="Maintenance\" />
+    <Folder Include="Controller\" />
+    <Folder Include="Scripts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CafeLib.Core.Queueing" Version="0.7.5" />
+    <PackageReference Include="CafeLib.Core.Runnable" Version="0.7.5" />
+    <PackageReference Include="CafeLib.Data" Version="0.7.5" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.21" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AtmAgent.Cheques\AtmAgent.Cheques.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AtmAgent": {
+      "commandName": "Project",
+      "commandLineArgs": "/debug"
+    }
+  }
+}
