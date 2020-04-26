@@ -1,8 +1,8 @@
 ﻿using System;
-using AtmAgent.Cheques;
 using AtmAgentChequeUpload.Builder;
 using AtmAgentChequeUpload.Config;
 using AtmAgentChequeUpload.Controller;
+using AtmAgentChequeUpload.Data;
 using AtmAgentChequeUpload.Files;
 using AtmAgentChequeUpload.Logging;
 using CafeLib.Core.IoC;
@@ -26,7 +26,7 @@ namespace AtmAgent
             serviceRegistry.AddSingleton(x => GetLogger());
             serviceRegistry.AddSingleton<IChequeFileManager, ChequeFileManager>();
             serviceRegistry.AddSingleton<IChequeParser, ChequeParser>();
-            serviceRegistry.AddSingleton<IStorage, ChequeStorage>();
+            serviceRegistry.AddSingleton<IDatabase, ChequeDatabase>();
             serviceRegistry.AddSingleton<T>();
             return serviceRegistry;
         }

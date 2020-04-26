@@ -1,12 +1,12 @@
 ﻿using CafeLib.Data.Persistence;
-using CafeLib.Data.Sources.Sqlite;
+using CafeLib.Data.Sources;
 
 namespace AtmAgent.Cheques
 {
     public class ChequeStorage : Storage<ChequeDomain>
     {
-        public ChequeStorage(string connectionUri)
-            : base(connectionUri, new SqliteOptions())
+        public ChequeStorage(string connectionUri, IConnectionOptions options)
+            : base(connectionUri, options)
         {
         }
     }

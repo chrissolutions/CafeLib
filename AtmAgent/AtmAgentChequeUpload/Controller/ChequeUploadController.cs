@@ -42,11 +42,11 @@ namespace AtmAgentChequeUpload.Controller
             IEventService eventService,
             IChequeFileManager fileManager,
             IChequeParser parser,
-            IStorage storage,
+            IDatabase database,
             ILogger logger)
         {
             _fileManager = fileManager;
-            _storage = storage;
+            _storage = database.GetStorage();
             _logger = logger;
             _fileMonitor = new ChequeFileMonitor(eventService, fileManager, logger);
             _chequeBuilder = new ChequeBuilder(config, eventService, fileManager, parser, logger);

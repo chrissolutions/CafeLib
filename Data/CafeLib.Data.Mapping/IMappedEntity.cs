@@ -3,7 +3,12 @@
 
 namespace CafeLib.Data.Mapping
 {
-    public interface IMappedEntity<out TModel, TEntity> : IEntity where TModel : class, IMappedEntity<TModel, TEntity> where TEntity : class, IEntity
+    public interface IMappedEntity : IEntity
+    {
+
+    }
+
+    public interface IMappedEntity<out TModel, TEntity> : IMappedEntity where TModel : class, IMappedEntity<TModel, TEntity> where TEntity : class, IEntity
     {
         /// <summary>
         /// Copy values from data model to mapped entity.

@@ -87,10 +87,11 @@ namespace CafeLib.Data.Persistence
 
             ((StorageBase)storage).ConnectionInfo.Domain.GetEntityTypes().ForEach(x =>
             {
-                if (x.IsSubclassOf(typeof(MappedEntity<,>)))
+                if (typeof(IMappedEntity).IsAssignableFrom(x))
                 {
-                    var repoInterface = typeof(IMappedRepository<,>).MakeGenericType(x);
-                    var repoType = typeof(MappedRepository<,>).MakeGenericType(x);
+                    var t = x.Seek(typeof(MappedEntity<,>));
+                    var repoInterface = typeof(IMappedRepository<,>).MakeGenericType(t.GenericTypeArguments);
+                    var repoType = typeof(MappedRepository<,>).MakeGenericType(t.GenericTypeArguments);
                     var repo = repoType.CreateInstance(storage);
                     var method = registerMethod.MakeGenericMethod(repoInterface);
                     method.Invoke(_container, new[] { BuildFactory(repoInterface, repo) });

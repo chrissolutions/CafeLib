@@ -225,5 +225,22 @@ namespace CafeLib.Core.Extensions
             var call = Expression.Call(Expression.Constant(instance), method, expressions);
             return Expression.Lambda(call, parameters).Compile();
         }
+
+        /// <summary>
+        /// Seek the type class graph for search type
+        /// </summary>
+        /// <param name="type">initial type</param>
+        /// <param name="search">type to search for</param>
+        /// <returns>search type if found; otherwise null</returns>
+        public static Type Seek(this Type type, Type search)
+        {
+            for (var seek = type; seek != null; seek = seek.BaseType)
+            {
+                if (seek == search || seek.IsGenericType && seek.GetGenericTypeDefinition() == search)
+                    return seek;
+            }
+
+            return null;
+        }
     }
 }
