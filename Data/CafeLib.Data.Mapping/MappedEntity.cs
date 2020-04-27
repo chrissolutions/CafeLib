@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
 // ReSharper disable UnusedMember.Global
@@ -12,8 +11,8 @@ namespace CafeLib.Data.Mapping
     public abstract class MappedEntity<TModel, TEntity> : IMappedEntity<TModel, TEntity> where TModel : class, IMappedEntity<TModel, TEntity> where TEntity : class, IEntity
     {
         public static readonly IPropertyMap<TModel> PropertyMap = new PropertyMap<TModel>();
+        internal static readonly PropertyDictionary<TEntity> EntityProperties = new PropertyDictionary<TEntity>();
 
-        private readonly IDictionary<string, PropertyInfo> _entityProperties;
         private readonly IDictionary<string, PropertyConverter> _propertyConverters;
 
         static MappedEntity()
@@ -23,7 +22,6 @@ namespace CafeLib.Data.Mapping
 
         protected MappedEntity()
         {
-            _entityProperties = typeof(TEntity).GetProperties().ToDictionary(p => p.Name);
             _propertyConverters = PropertyMap.Cast<PropertyConverter>().ToDictionary(p => p.PropertyInfo.Name);
         }
 
@@ -49,12 +47,11 @@ namespace CafeLib.Data.Mapping
 
             foreach (var (_, propertyConverter) in _propertyConverters)
             {
-                var entityProperty = _entityProperties[propertyConverter.PropertyInfo.Name];
+                var entityProperty = EntityProperties[propertyConverter.PropertyInfo.Name];
                 if (entityProperty == null || !entityProperty.CanRead || entityProperty.GetGetMethod() == null) continue;
-
                 var value = propertyConverter.ToObject != null
-                    ? ((Delegate) propertyConverter.ToObject).Method.Invoke(this, new[] { propertyConverter.PropertyInfo.GetValue(this)})
-                    : propertyConverter.PropertyInfo.GetValue(this);
+                            ? ((Delegate) propertyConverter.ToObject).DynamicInvoke(propertyConverter.PropertyInfo.GetValue(this))
+                            : propertyConverter.PropertyInfo.GetValue(this);
 
                 entityProperty.SetValue(dto, value);
             }
@@ -71,7 +68,7 @@ namespace CafeLib.Data.Mapping
         {
             var dto = entity ?? throw new ArgumentNullException(nameof(entity));
 
-            foreach (var entityProperty in _entityProperties.Values)
+            foreach (var entityProperty in EntityProperties.Values)
             {
                 var propertyConverter = _propertyConverters[entityProperty.Name];
                 var modelProperty = propertyConverter?.PropertyInfo;

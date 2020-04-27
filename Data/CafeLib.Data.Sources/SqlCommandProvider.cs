@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
+using CafeLib.Core.Extensions;
 using CafeLib.Data.Sources.Extensions;
 using RepoDb;
 
@@ -375,9 +376,18 @@ namespace CafeLib.Data.Sources
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             await using var connection = connectionInfo.GetConnection<T>();
-            var id = await connection.MergeAsync(data);
-            var propertyInfo = PrimaryCache.Get<TEntity>().PropertyInfo;
-            propertyInfo.SetValue(data, id);
+            var keyProperty = PrimaryCache.Get<TEntity>().PropertyInfo;
+            var keyValue = keyProperty.GetValue(data);
+            if (keyProperty.PropertyType.IsDefault(keyValue))
+            {
+                var newKey = await connection.InsertAsync(data);
+                keyProperty.SetValue(data, newKey.GetType() == keyProperty.PropertyType ? newKey : Convert.ChangeType(newKey, keyProperty.PropertyType));
+            }
+            else
+            {
+                await connection.UpdateAsync(data);
+            }
+
             return data;
         }
 

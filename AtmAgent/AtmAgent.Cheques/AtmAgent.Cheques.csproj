@@ -7,7 +7,6 @@
   <ItemGroup>
     <PackageReference Include="CafeLib.Data" Version="0.7.5" />
     <PackageReference Include="CafeLib.Data.Mapping" Version="0.7.5" />
-    <PackageReference Include="CafeLib.Data.Sources.Sqlite" Version="0.7.5" />
   </ItemGroup>
 
 </Project>

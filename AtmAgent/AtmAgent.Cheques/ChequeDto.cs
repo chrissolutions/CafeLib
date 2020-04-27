@@ -8,6 +8,7 @@ namespace AtmAgent.Cheques
     [Map("Cheque")]
     public class ChequeDto : IEntity
     {
+        [Identity]
         public int Id { get; set; }
 
         public string ChequeId { get; set; }

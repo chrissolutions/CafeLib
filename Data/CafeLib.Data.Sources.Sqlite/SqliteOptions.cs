@@ -1,9 +1,7 @@
 ﻿using System.Data;
+using System.Data.SQLite;
 using CafeLib.Data.SqlGenerator.DbObjects;
 using CafeLib.Data.SqlGenerator.DbObjects.SqlObjects;
-using Microsoft.Data.Sqlite;
-using RepoDb;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Sources.Sqlite
@@ -12,6 +10,6 @@ namespace CafeLib.Data.Sources.Sqlite
     {
         public ISqlCommandProvider CommandProvider { get; } = SqliteCommandProvider.Current;
         public IDbObjectFactory DbObjectFactory { get; } = new SqlObjectFactory();
-        public IDbConnection GetConnection(string connectionString) => new SqliteConnection(connectionString);
+        public IDbConnection GetConnection(string connectionString) => new SQLiteConnection(connectionString);
     }
 }

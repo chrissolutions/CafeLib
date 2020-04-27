@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
 using CafeLib.Core.Support;
-using Microsoft.Data.Sqlite;
 using RepoDb;
 
 namespace CafeLib.Data.Sources.Sqlite
 {
     internal class SqliteCommandProvider : SingletonBase<SqliteCommandProvider>, ISqlCommandProvider
     {
-        private static readonly SqlCommandProvider<SqliteConnection> SqlCommandProvider = new SqlCommandProvider<SqliteConnection>();
+        private static readonly SqlCommandProvider<SQLiteConnection> SqlCommandProvider = new SqlCommandProvider<SQLiteConnection>();
 
         /// <summary>
         /// SqliteCommandProvider constructor.

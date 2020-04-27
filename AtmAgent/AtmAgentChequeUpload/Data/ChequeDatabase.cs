@@ -1,5 +1,4 @@
-﻿using System.Data.SQLite;
-using System.IO;
+﻿using System.IO;
 using AtmAgent.Cheques;
 using AtmAgentChequeUpload.Config;
 using AtmAgentChequeUpload.Files;
@@ -7,7 +6,7 @@ using AtmAgentChequeUpload.Logging;
 using CafeLib.Data;
 using CafeLib.Data.Scripts;
 using CafeLib.Data.Sources.Sqlite;
-using Dapper;
+using RepoDb;
 
 namespace AtmAgentChequeUpload.Data
 {
@@ -51,10 +50,10 @@ namespace AtmAgentChequeUpload.Data
             var createTable = Script.GetScript("AtmChequeTable.sql");
             var createIndex = Script.GetScript("AtmChequeIndex.sql");
 
-            using var connection = new SQLiteConnection(ConnectionString);
+            using var connection = new SqliteOptions().GetConnection(ConnectionString);
             connection.Open();
-            connection.Execute(createTable);
-            connection.Execute(createIndex);
+            connection.ExecuteNonQuery(createTable);
+            connection.ExecuteNonQuery(createIndex);
         }
 
         #endregion

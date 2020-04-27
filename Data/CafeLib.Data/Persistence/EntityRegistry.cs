@@ -87,23 +87,23 @@ namespace CafeLib.Data.Persistence
 
             ((StorageBase)storage).ConnectionInfo.Domain.GetEntityTypes().ForEach(x =>
             {
+                Type repoType;
+                object repo;
+
                 if (typeof(IMappedEntity).IsAssignableFrom(x))
                 {
-                    var t = x.Seek(typeof(MappedEntity<,>));
-                    var repoInterface = typeof(IMappedRepository<,>).MakeGenericType(t.GenericTypeArguments);
-                    var repoType = typeof(MappedRepository<,>).MakeGenericType(t.GenericTypeArguments);
-                    var repo = repoType.CreateInstance(storage);
-                    var method = registerMethod.MakeGenericMethod(repoInterface);
-                    method.Invoke(_container, new[] { BuildFactory(repoInterface, repo) });
+                    repoType = typeof(MappedRepository<,>).MakeGenericType(x.Seek(typeof(MappedEntity<,>)).GenericTypeArguments);
+                    repo = repoType.CreateInstance(storage);
                 }
                 else
                 {
-                    var repoInterface = typeof(IRepository<>).MakeGenericType(x);
-                    var repoType = typeof(Repository<>).MakeGenericType(x);
-                    var repo = repoType.CreateInstance(storage);
-                    var method = registerMethod.MakeGenericMethod(repoInterface);
-                    method.Invoke(_container, new[] { BuildFactory(repoInterface, repo) });
+                    repoType = typeof(Repository<>).MakeGenericType(x);
+                    repo = repoType.CreateInstance(storage);
                 }
+
+                var repoInterface = typeof(IRepository<>).MakeGenericType(x);
+                var method = registerMethod.MakeGenericMethod(repoInterface);
+                method.Invoke(_container, new[] { BuildFactory(repoInterface, repo) });
             });
         }
 
