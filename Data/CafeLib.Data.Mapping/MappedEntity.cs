@@ -75,7 +75,7 @@ namespace CafeLib.Data.Mapping
                 if (modelProperty == null || !modelProperty.CanWrite || modelProperty.GetSetMethod() == null) continue;
 
                 var value = propertyConverter.ToProperty != null
-                    ? ((Delegate)propertyConverter.ToProperty).Method.Invoke(this, new[] { entityProperty.GetValue(dto) })
+                    ? ((Delegate)propertyConverter.ToProperty).DynamicInvoke(entityProperty.GetValue(dto))
                     : entityProperty.GetValue(dto);
 
                 modelProperty.SetValue(this, value);
