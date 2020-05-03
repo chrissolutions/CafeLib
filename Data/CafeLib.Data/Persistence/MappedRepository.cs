@@ -22,6 +22,7 @@ namespace CafeLib.Data.Persistence
         /// <param name="storage"></param>
         internal MappedRepository(IStorage storage)
         {
+            var _ = new TModel();
             _expressionConverter = new ExpressionConverter<TModel, TEntity>();
             _repository = new Lazy<IRepository<TEntity>>(() => ((StorageBase) storage).Repositories.Find<TEntity>());
         }

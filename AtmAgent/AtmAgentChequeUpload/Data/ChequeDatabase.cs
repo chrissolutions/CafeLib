@@ -57,7 +57,5 @@ namespace AtmAgentChequeUpload.Data
         }
 
         #endregion
-
-
     }
 }
