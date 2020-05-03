@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using CafeLib.Core.Data;
 // ReSharper disable UnusedMember.Global
 
@@ -14,18 +13,21 @@ namespace CafeLib.Data.Mapping
         private ParameterExpression _entityParameter;
         private readonly IDictionary<string, PropertyConverter> _propertyMap;
         private readonly PropertyDictionary<TEntity> _entityProperties;
+        private readonly ParameterExpressionVisitor _parameterVisitor;
 
         public ExpressionConverter()
         {
+            _entityProperties = MappedEntity<TModel, TEntity>.EntityProperties;
+
             _propertyMap = MappedEntity<TModel, TEntity>.PropertyMap.Cast<PropertyConverter>()
                 .ToDictionary(x => x.PropertyInfo.Name, x => x);
 
-            _entityProperties = MappedEntity<TModel, TEntity>.EntityProperties;
+            _parameterVisitor = new ParameterExpressionVisitor(_propertyMap);
         }
 
         public Expression<Func<TEntity, bool>> Convert(Expression<Func<TModel, bool>> expression)
         {
-            return (Expression<Func<TEntity, bool>>) Visit(expression);
+            return (Expression<Func<TEntity, bool>>)Visit(expression);
         }
 
         protected override Expression VisitLambda<T>(Expression<T> node)
@@ -33,35 +35,28 @@ namespace CafeLib.Data.Mapping
             if (typeof(T) != typeof(Func<TModel, bool>)) return base.VisitLambda(node);
 
             _entityParameter = Expression.Parameter(typeof(TEntity), node.Parameters.First().Name);
-            return Expression.Lambda<Func<TEntity, bool>>(Visit(node.Body) ?? throw new InvalidOperationException(), _entityParameter);
+            var bodyExpression = Visit(node.Body);
+            return Expression.Lambda<Func<TEntity, bool>>(bodyExpression ?? throw new InvalidOperationException(), _entityParameter);
+        }
+
+        protected override Expression VisitBinary(BinaryExpression node)
+        {
+            var leftExpression = Visit(node.Left) ?? throw new ArgumentNullException(nameof(node.Left));
+            var rightExpression = VisitRight(node.Right, _parameterVisitor.FindParameter(node.Left)) ?? throw new ArgumentNullException(nameof(node.Right));
+            var binaryExpression = Expression.MakeBinary(node.NodeType, leftExpression, rightExpression);
+            return binaryExpression;
+        }
+
+        protected override Expression VisitUnary(UnaryExpression node)
+        {
+            var operand = Visit(node.Operand) ?? throw new ArgumentNullException(nameof(node.Operand));
+            return operand;
         }
 
         protected override Expression VisitParameter(ParameterExpression node)
         {
             return node.Type == typeof(TModel) ? _entityParameter : base.VisitParameter(node);
         }
-
-        //public override Expression Visit(Expression node)
-        //{
-        //    if (_fromParameter == null)
-        //    {
-        //        if (node.NodeType != ExpressionType.Lambda)
-        //        {
-        //            throw new ArgumentException("Expression must be a lambda");
-        //        }
-
-        //        var lambda = (LambdaExpression)node;
-        //        if (lambda.ReturnType != typeof(bool) || lambda.Parameters.Count != 1 || lambda.Parameters[0].Type != typeof(TModel))
-        //        {
-        //            throw new ArgumentException("Expression must be a predicate of type Func<TModel, bool>");
-        //        }
-
-        //        _fromParameter = lambda.Parameters[0];
-        //        _toParameter = Expression.Parameter(typeof(TEntity), _fromParameter.Name);
-        //    }
-
-        //    return base.Visit(node);
-        //}
 
         protected override Expression VisitMember(MemberExpression node)
         {
@@ -71,66 +66,48 @@ namespace CafeLib.Data.Mapping
                 switch (expr.NodeType)
                 {
                     case ExpressionType.Parameter:
-                        return Expression.MakeMemberAccess(Visit(node.Expression), _entityProperties[node.Member.Name]);
+                        var parameter = Expression.MakeMemberAccess(Visit(node.Expression), _entityProperties[node.Member.Name]);
+                        return parameter;
 
+                    case ExpressionType.Convert:
+                        var unaryExpression = (UnaryExpression)expr;
+                        var operand = Visit(unaryExpression.Operand) ?? throw new ArgumentNullException(nameof(unaryExpression.Operand));
+                        return operand;
 
+                    case ExpressionType.Constant:
+                        var lambdaExpression = Expression.Lambda(node).Compile();
+                        var value = lambdaExpression.DynamicInvoke();
+                        var converter = _propertyMap[node.Member.Name];
+                        if (converter.ToObject == null) return Expression.Constant(value);
+                        var converterMethod = (Delegate)converter.ToObject;
+                        return Expression.Constant(converterMethod.DynamicInvoke(value));
 
-                    //case ExpressionType.Constant:
-                    //    return base.VisitConstant((ConstantExpression)expr);
                     case ExpressionType.MemberAccess:
                         expr = ((MemberExpression)expr).Expression;
                         break;
+
                     default:
                         return base.VisitMember(node);
                 }
             }
-
-            //if (node.Member.DeclaringType == typeof(TModel))
-            //{
-            //    var member = typeof(TEntity).GetMember(node.Member.Name, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).FirstOrDefault();
-            //    if (member == null)
-            //        throw new InvalidOperationException("Cannot identify corresponding member of DataObject");
-            //    return Expression.MakeMemberAccess(Visit(node.Expression), member);
-            //}
-            //return base.VisitMember(node);
         }
 
-        protected override Expression VisitRuntimeVariables(RuntimeVariablesExpression node)
+        private Expression VisitRight(Expression node, MemberExpression leftNode)
         {
-            //this.expressions.Add(node);
-            return base.VisitRuntimeVariables(node);
+            var expr = node;
+
+            switch (expr.NodeType)
+            {
+                case ExpressionType.Constant:
+                    var constantExpression = (ConstantExpression)expr;
+                    var value = leftNode.Type.IsEnum ? Enum.ToObject(leftNode.Type, constantExpression.Value) : constantExpression.Value;
+                    var converter = _propertyMap[leftNode.Member.Name];
+                    if (converter.ToObject == null) return Expression.Constant(value);
+                    var converterMethod = (Delegate)converter.ToObject;
+                    return Expression.Constant(converterMethod.DynamicInvoke(value));
+            }
+
+            return Visit(expr);
         }
-
-        //protected override Expression VisitMember(MemberExpression node)
-        //{
-        //    if (node.Member.DeclaringType != typeof(TModel)) return base.VisitMember(node);
-
-        //    Expression expr = node;
-        //    while (true)
-        //    {
-        //        switch (expr.NodeType)
-        //        {
-        //            case ExpressionType.Parameter:
-        //                if (!_propertyMap.TryGetValue(node.Member.Name, out var member)) throw new InvalidOperationException(nameof(TEntity));
-        //                return Expression.Property(_entityParameter, MappedEntity<TModel, TEntity>.EntityProperties[member.PropertyInfo.Name]);
-
-        //            case ExpressionType.MemberAccess:
-        //                expr = ((MemberExpression)expr).Expression;
-        //                break;
-
-        //            default:
-        //                return base.VisitMember(node);
-        //        }
-        //    }
-
-
-        //if (node.Expression == _fromParameter && _propertyMap.TryGetValue(node.Member.Name, out var member))
-        //{
-        //    var property = Expression.Property(_toParameter, MappedEntity<TModel, TEntity>.EntityProperties[member.PropertyInfo.Name]);
-        //    return property;
-        //    //return Expression.Property(_toParameter, member.PropertyInfo);
-        //}
-
-        //return base.VisitMember(node);
     }
 }
