@@ -8,13 +8,9 @@ namespace AtmAgentChequeUpload.Maintenance
 {
     public class MaintenanceTask : RecurrentTask
     {
-        private Func<Task> Callback { get; }
-
         public MaintenanceTask(IAppConfig config, IChequeFileManager fileManager, Func<Task> task)
-            : base(task, GetMaintenanceInterval(config, fileManager), GetMaintenanceStartTime(config, fileManager))
+            : base(async () => await RunMaintenance(config, fileManager, task), GetMaintenanceInterval(config, fileManager), GetMaintenanceStartTime(config, fileManager))
         {
-            Callback = task;
-            Task = async () => await RunMaintenance(config, fileManager);
         }
 
         private static TimeSpan GetMaintenanceInterval(IAppConfig config, IChequeFileManager fileManager)
@@ -29,9 +25,9 @@ namespace AtmAgentChequeUpload.Maintenance
             return file.MaintenanceDate > DateTime.Now ? file.MaintenanceDate : default;
         }
 
-        private async Task RunMaintenance(IAppConfig config, IChequeFileManager fileManager)
+        private static async Task RunMaintenance(IAppConfig config, IChequeFileManager fileManager, Func<Task> task)
         {
-            await Callback();
+            await task();
             var file = new MaintenanceFile(config, fileManager);
             file.SetNextMaintenanceDate();
         }
