@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
 using CafeLib.Core.Support;
-using RepoDb;
 
 namespace CafeLib.Data.Sources.Sqlite
 {
@@ -19,7 +18,7 @@ namespace CafeLib.Data.Sources.Sqlite
         /// </summary>
         public SqliteCommandProvider()
         {
-            SqLiteBootstrap.Initialize();
+            SqliteBootstrap.Initialize(new SqlDbSetting());
         }
 
         /// <summary>
