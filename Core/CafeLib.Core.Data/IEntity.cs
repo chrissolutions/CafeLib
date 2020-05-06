@@ -1,6 +1,6 @@
 ﻿namespace CafeLib.Core.Data
 {
-    public interface IEntity : IDataModel
+    public interface IEntity
     {
     }
 }

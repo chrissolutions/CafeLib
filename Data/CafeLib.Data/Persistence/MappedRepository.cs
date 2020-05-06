@@ -39,7 +39,7 @@ namespace CafeLib.Data.Persistence
 
         public Task<bool> Any(Expression<Func<TModel, bool>> predicate)
         {
-            var expr = (Expression<Func<TEntity, bool>>) _expressionConverter.Convert(predicate);
+            var expr = _expressionConverter.Convert(predicate);
             return _repository.Value.Any(expr);
         }
 
@@ -50,13 +50,13 @@ namespace CafeLib.Data.Persistence
 
         public Task<int> Count(Expression<Func<TModel, bool>> predicate)
         {
-            var expr = (Expression<Func<TEntity, bool>>) _expressionConverter.Convert(predicate);
+            var expr = _expressionConverter.Convert(predicate);
             return _repository.Value.Count(expr);
         }
 
         public async Task<IEnumerable<TModel>> Find(Expression<Func<TModel, bool>> predicate)
         {
-            var expr = (Expression<Func<TEntity, bool>>) _expressionConverter.Convert(predicate);
+            var expr = _expressionConverter.Convert(predicate);
             var results = await _repository.Value.Find(expr);
             return results.Select(x => new TModel().Populate(x));
         }
@@ -69,7 +69,7 @@ namespace CafeLib.Data.Persistence
 
         public async Task<TModel> FindOne(Expression<Func<TModel, bool>> predicate)
         {
-            var expr = (Expression<Func<TEntity, bool>>) _expressionConverter.Convert(predicate);
+            var expr = _expressionConverter.Convert(predicate);
             var entity = await _repository.Value.FindOne(expr);
             return entity != null ? new TModel().Populate(entity) : null;
         }
@@ -139,7 +139,7 @@ namespace CafeLib.Data.Persistence
 
         public async Task<int> Remove(Expression<Func<TModel, bool>> predicate)
         {
-            var expr = (Expression<Func<TEntity, bool>>) _expressionConverter.Convert(predicate);
+            var expr = _expressionConverter.Convert(predicate);
             return await _repository.Value.Remove(expr);
         }
 

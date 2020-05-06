@@ -76,7 +76,6 @@ namespace CafeLib.Core.Data
         private IEnumerable<Type> InitEntityTypes()
         {
             return FindEntityTypes(x => x != typeof(IEntity)
-                                        && x != typeof(IQuery)
                                         && typeof(IEntity).IsAssignableFrom(x));
         }
 
