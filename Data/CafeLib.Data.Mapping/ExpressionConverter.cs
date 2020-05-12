@@ -33,10 +33,49 @@ namespace CafeLib.Data.Mapping
         protected override Expression VisitLambda<T>(Expression<T> node)
         {
             if (typeof(T) != typeof(Func<TModel, bool>)) return base.VisitLambda(node);
-
             _entityParameter = Expression.Parameter(typeof(TEntity), node.Parameters.First().Name);
-            var bodyExpression = Visit(node.Body);
-            return Expression.Lambda<Func<TEntity, bool>>(bodyExpression ?? throw new InvalidOperationException(), _entityParameter);
+            var expr = node.Body;
+            var @true = true;
+
+            while (true)
+            {
+                switch (expr)
+                {
+                    case MemberExpression member:
+                        {
+                            var parameterExpression = _parameterVisitor.FindParameter(member);
+                            var constantExpression = Expression.Constant(@true);
+                            var binaryExpression = Expression.MakeBinary(ExpressionType.Equal, parameterExpression, constantExpression);
+                            expr = binaryExpression;
+                            break;
+                        }
+
+                    case UnaryExpression unary:
+                        {
+                            switch (expr.NodeType)
+                            {
+                                case ExpressionType.Not:
+                                    @true ^= true;
+                                    expr = unary.Operand;
+                                    break;
+
+                                default:
+                                    throw new NotSupportedException(nameof(expr.NodeType));
+                            }
+
+                            break;
+                        }
+
+                    case BinaryExpression binary:
+                        {
+                            var binaryExpression = Visit(binary);
+                            return Expression.Lambda<Func<TEntity, bool>>(binaryExpression ?? throw new InvalidOperationException(), _entityParameter);
+                        }
+
+                    default:
+                        throw new NotSupportedException(nameof(node.Body));
+                }
+            }
         }
 
         protected override Expression VisitBinary(BinaryExpression node)
