@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using CafeLib.Core.Data;
+using CafeLib.Data.Mapping.Visitors;
+
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Mapping
@@ -14,6 +16,7 @@ namespace CafeLib.Data.Mapping
         private readonly IDictionary<string, PropertyConverter> _propertyMap;
         private readonly PropertyDictionary<TEntity> _entityProperties;
         private readonly ParameterExpressionVisitor _parameterVisitor;
+        private readonly DefaultExpressionVisitor _defaultVisitor;
 
         public ExpressionConverter()
         {
@@ -22,6 +25,7 @@ namespace CafeLib.Data.Mapping
             _propertyMap = MappedEntity<TModel, TEntity>.PropertyMap.Cast<PropertyConverter>()
                 .ToDictionary(x => x.PropertyInfo.Name, x => x);
 
+            _defaultVisitor = new DefaultExpressionVisitor();
             _parameterVisitor = new ParameterExpressionVisitor(_propertyMap);
         }
 
@@ -67,9 +71,19 @@ namespace CafeLib.Data.Mapping
                         }
 
                     case BinaryExpression binary:
+                        switch (expr.NodeType)
                         {
-                            var binaryExpression = Visit(binary);
-                            return Expression.Lambda<Func<TEntity, bool>>(binaryExpression ?? throw new InvalidOperationException(), _entityParameter);
+                            case ExpressionType.AndAlso:
+                            case ExpressionType.OrElse:
+                                var lambda = Expression.Lambda(_defaultVisitor.Visit(binary.Left) ?? throw new InvalidOperationException(), node.Parameters.First());
+                                var left = (LambdaExpression)Visit(lambda) ?? throw new InvalidOperationException();
+                                lambda = Expression.Lambda(_defaultVisitor.Visit(binary.Right) ?? throw new InvalidOperationException(), node.Parameters.First());
+                                var right = (LambdaExpression)Visit(lambda) ?? throw new InvalidOperationException();
+                                return Expression.Lambda<Func<TEntity, bool>>(Expression.MakeBinary(expr.NodeType, left.Body, right.Body), _entityParameter);
+
+                            default:
+                                var binaryExpression = Visit(binary);
+                                return Expression.Lambda<Func<TEntity, bool>>(binaryExpression ?? throw new InvalidOperationException(), _entityParameter);
                         }
 
                     default:

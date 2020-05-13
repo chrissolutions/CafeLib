@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Data.Mapping
+namespace CafeLib.Data.Mapping.Visitors
 {
     internal class ParameterExpressionVisitor : ExpressionVisitor
     {
