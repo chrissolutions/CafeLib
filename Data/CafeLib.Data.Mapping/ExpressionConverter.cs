@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using CafeLib.Core.Data;
 using CafeLib.Data.Mapping.Visitors;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Mapping
