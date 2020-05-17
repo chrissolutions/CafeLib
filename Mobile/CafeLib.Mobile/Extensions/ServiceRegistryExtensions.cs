@@ -1,14 +1,37 @@
 ﻿using System.Reflection;
+using CafeLib.Core.Caching;
+using CafeLib.Core.Eventing;
 using CafeLib.Core.IoC;
 using CafeLib.Mobile.Attributes;
 using CafeLib.Mobile.ViewModels;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.Extensions
 {
     public static class ServiceRegistryExtensions
     {
+        /// <summary>
+        /// Add the property service to the service registry.
+        /// </summary>
+        /// <param name="serviceRegistry"></param>
+        /// <returns></returns>
+        public static IServiceRegistry AddDictionaryService(this IServiceRegistry serviceRegistry)
+        {
+            serviceRegistry.AddSingleton<IDictionaryService>(x => DictionaryService.Current);
+            return serviceRegistry;
+        }
+
+        /// <summary>
+        /// Add the event service to the service registry.
+        /// </summary>
+        /// <param name="serviceRegistry"></param>
+        /// <returns></returns>
+        public static IServiceRegistry AddEventService(this IServiceRegistry serviceRegistry)
+        {
+            serviceRegistry.AddSingleton<IEventService>(x => EventService.Current);
+            return serviceRegistry;
+        }
+
         /// <summary>
         /// Add view model type as singleton service registry. 
         /// </summary>

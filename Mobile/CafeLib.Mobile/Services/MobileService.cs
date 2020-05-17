@@ -60,6 +60,48 @@ namespace CafeLib.Mobile.Services
         }
 
         /// <summary>
+        /// Resolve the dependency.
+        /// </summary>
+        /// <param name="type">dependency type</param>
+        /// <returns></returns>
+        public object Resolve(Type type)
+        {
+            return _resolver.Resolve(type);
+        }
+
+        /// <summary>
+        /// Resolve the dependency.
+        /// </summary>
+        /// <typeparam name="T">dependency type</typeparam>
+        /// <param name="value">out value</param>
+        /// <returns>true if dependency is found; false otherwise</returns>
+        public bool TryResolve<T>(out T value) where T : class
+        {
+            return _resolver.TryResolve(out value);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool TryResolve(Type type, out object value)
+        {
+            return _resolver.TryResolve(type, out value);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="serviceType"></param>
+        /// <returns></returns>
+        public object GetService(Type serviceType)
+        {
+            return _resolver.GetService(serviceType);
+        }
+
+        /// <summary>
         /// Resolve viewmodel type to is associated view.
         /// </summary>
         /// <typeparam name="TViewModel">view model type</typeparam>
@@ -300,24 +342,30 @@ namespace CafeLib.Mobile.Services
         /// <returns></returns>
         private static NavigationPage GetCurrentPage()
         {
-            NavigationPage GetPage(Page page)
+            static NavigationPage GetPage(Page page)
             {
-                var modalNavPage = page.Navigation.ModalStack.LastOrDefault(x => x.IsNavigationPage());
-
-                if (modalNavPage != null && page != modalNavPage)
+                while (true)
                 {
-                    return GetPage(modalNavPage);
+                    var modalNavPage = page.Navigation.ModalStack.LastOrDefault(x => x.IsNavigationPage());
+
+                    if (modalNavPage != null && page != modalNavPage)
+                    {
+                        page = modalNavPage;
+                        continue;
+                    }
+
+                    var navPage = page.Navigation.NavigationStack.LastOrDefault(x => x.IsNavigationPage());
+
+                    if (navPage != null && page != navPage)
+                    {
+                        page = navPage;
+                        continue;
+                    }
+
+                    return page as NavigationPage;
                 }
-
-                var navPage = page.Navigation.NavigationStack.LastOrDefault(x => x.IsNavigationPage());
-
-                if (navPage != null && page != navPage)
-                {
-                    return GetPage(navPage);
-                }
-
-                return page as NavigationPage;
             }
+
             return GetPage(Application.Current.MainPage);
         }
 

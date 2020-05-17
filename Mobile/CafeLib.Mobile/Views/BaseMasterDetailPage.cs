@@ -116,6 +116,7 @@ namespace CafeLib.Mobile.Views
                 case NavigationPage navPage:
                     return navPage.CurrentPage.GetViewModel<BaseViewModel>();
 
+                // ReSharper disable once PatternAlwaysOfType
                 case Page _:
                     return Detail.GetViewModel<BaseViewModel>();
 

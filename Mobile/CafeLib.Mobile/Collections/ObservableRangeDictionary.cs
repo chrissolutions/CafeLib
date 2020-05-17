@@ -93,8 +93,7 @@ namespace CafeLib.Mobile.Collections
         }
 
         #endregion
-
-
+        
         #region ICollection<KeyValuePair<TKey,TValue>> Members
 
 
@@ -141,7 +140,6 @@ namespace CafeLib.Mobile.Collections
 
         #endregion
 
-
         #region IEnumerable<KeyValuePair<TKey,TValue>> Members
 
 
@@ -152,7 +150,6 @@ namespace CafeLib.Mobile.Collections
 
 
         #endregion
-
 
         #region IEnumerable Members
 
@@ -165,7 +162,6 @@ namespace CafeLib.Mobile.Collections
 
         #endregion
 
-
         #region INotifyCollectionChanged Members
 
 
@@ -174,7 +170,6 @@ namespace CafeLib.Mobile.Collections
 
         #endregion
 
-
         #region INotifyPropertyChanged Members
 
 
@@ -182,7 +177,6 @@ namespace CafeLib.Mobile.Collections
 
 
         #endregion
-
 
         public void AddRange(IDictionary<TKey, TValue> items)
         {

@@ -13,7 +13,6 @@ namespace CafeLib.Mobile.Commands
     public interface IXamAsyncCommand<in T> : IXamCommand<T>
     {
         Task ExecuteAsync(T parameter);
-
         bool CanExecute(T parameter);
     }
 
