@@ -1,4 +1,5 @@
 ﻿using System;
+using CafeLib.Core.Caching;
 using CafeLib.Core.IoC;
 using Xunit;
 
@@ -17,7 +18,7 @@ namespace CafeLib.Core.UnitTests
         public DictionaryServiceTest()
         {
             Resolver = IocFactory.CreateRegistry()
-                .AddDictionaryService()
+                .AddSingleton<IDictionaryService>(x => DictionaryService.Current)
                 .GetResolver();
         }
 

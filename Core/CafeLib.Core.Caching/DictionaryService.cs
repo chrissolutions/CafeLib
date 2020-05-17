@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using CafeLib.Core.Extensions;
+using CafeLib.Core.Support;
 
-namespace CafeLib.Core.IoC
+namespace CafeLib.Core.Caching
 {
-    internal class DictionaryService : IDictionaryService
+    public class DictionaryService : SingletonBase<DictionaryService>, IDictionaryService
     {
         private readonly ConcurrentDictionary<string, object> _dictionary;
 

@@ -1,4 +1,6 @@
+using CafeLib.Core.Caching;
 using CafeLib.Core.IoC;
+using CafeLib.Core.UnitTests.Logging;
 using CafeLib.Core.UnitTests.Services;
 using Microsoft.Extensions.Logging;
 using Xunit;
@@ -12,7 +14,7 @@ namespace CafeLib.Core.UnitTests
         {
             IDisposableService disposableService;
             using (var resolver = IocFactory.CreateRegistry()
-                .AddLogging(builder => builder.AddConsole().AddDebug())
+                .AddSingleton<ILoggerFactory, TestLogFactory>()
                 .AddSingleton<IFooService, FooService>()
                 .AddSingleton<IBarService, BarService>()
                 .AddSingleton<IDisposableService, DisposableService>()
@@ -31,7 +33,7 @@ namespace CafeLib.Core.UnitTests
         public void ServiceProviderTest()
         {
             var resolver = IocFactory.CreateRegistry()
-                .AddDictionaryService()
+                .AddSingleton<IDictionaryService>(x => DictionaryService.Current)
                 .AddSingleton<ITestService>(x => new TestService())
                 .GetResolver();
 

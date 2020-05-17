@@ -1,18 +1,10 @@
 ﻿using System;
-using Microsoft.Extensions.Logging;
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.IoC
 {
     public interface IServiceRegistry
     {
-        /// <summary>
-        /// Logging service registration.
-        /// </summary>
-        /// <param name="configuration">configuration action</param>
-        /// <returns>service registry interface</returns>
-        IServiceRegistry AddLogging(Action<ILoggingBuilder> configuration);
-
         /// <summary>
         /// Register service of scoped lifetime.
         /// </summary>
