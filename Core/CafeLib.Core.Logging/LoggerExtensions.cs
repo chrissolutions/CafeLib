@@ -1,7 +1,7 @@
 ﻿using CafeLib.Core.Diagnostics;
 using Microsoft.Extensions.Logging;
 
-namespace CafeLib.Core.Extensions
+namespace CafeLib.Core.Logging
 {
     public static class LoggerExtensions
     {

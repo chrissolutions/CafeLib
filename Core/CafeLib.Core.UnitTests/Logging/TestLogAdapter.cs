@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.Logging;
 using Microsoft.Extensions.Logging;
