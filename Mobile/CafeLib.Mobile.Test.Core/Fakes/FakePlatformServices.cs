@@ -80,6 +80,11 @@ namespace CafeLib.Mobile.Test.Core.Fakes
             }
         }
 
+        public Color GetNamedColor(string name)
+        {
+            throw new NotImplementedException();
+        }
+
         public void OpenUriAction(Uri uri)
         {
             if (_openUriAction != null)
@@ -89,6 +94,7 @@ namespace CafeLib.Mobile.Test.Core.Fakes
         }
 
         public bool IsInvokeRequired { get; }
+        public OSAppTheme RequestedTheme { get; }
 
         public string RuntimePlatform { get; set; }
 

@@ -17,9 +17,8 @@
     <PackageReference Include="CafeLib.Core.Caching" Version="0.7.5" />
     <PackageReference Include="CafeLib.Core.Eventing" Version="0.7.5" />
     <PackageReference Include="CafeLib.Core.IoC" Version="0.7.5" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0" />
-    <PackageReference Include="Xamarin.Forms" Version="4.3.0.947036" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.4" />
+    <PackageReference Include="Xamarin.Forms" Version="4.6.0.772" />
   </ItemGroup>
 
   <ItemGroup>
