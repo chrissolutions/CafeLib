@@ -44,6 +44,18 @@ namespace CafeLib.Core.UnitTests
         [Fact]
         public void LogProviderTest()
         {
+            var factory = new LoggerFactory(new[] { new LogProvider<TestLogSender>(new TestLogReceiver(TestLoggerFactoryListener)) });
+            var logger = factory.CreateLogger<TestLogSender>();
+            logger.Log(LogLevel.Information,
+                new EventId(3, "TestEvent"),
+                new { tag = 20, state = 40 },
+                null,
+                (o, e) => "Message {tag} for state {state}".Render(o));
+        }
+
+        [Fact]
+        public void LogProviderTestUsingCreate()
+        {
             var factory = LoggerFactory.Create(builder =>
             {
                 builder
