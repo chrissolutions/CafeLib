@@ -30,6 +30,26 @@ namespace CafeLib.Core.UnitTests
         }
 
         [Fact]
+        public void IocTestUsingResolutionType()
+        {
+            IDisposableService disposableService;
+            using (var resolver = IocFactory.CreateRegistry()
+                .AddSingleton<ILoggerFactory, TestLogFactory>()
+                .AddSingleton<IFooService, FooService>()
+                .AddSingleton<IBarService, BarService>()
+                .AddSingleton<IDisposableService, DisposableService>()
+                .GetResolver())
+            {
+                //do the actual work here
+                var bar = (IBarService)resolver.Resolve(typeof(IBarService));
+                bar.DoSomeRealWork();
+                disposableService = resolver.Resolve<IDisposableService>();
+            }
+
+            Assert.True(disposableService.IsDisposed);
+        }
+
+        [Fact]
         public void ServiceProviderTest()
         {
             var resolver = IocFactory.CreateRegistry()

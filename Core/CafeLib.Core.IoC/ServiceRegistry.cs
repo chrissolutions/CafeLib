@@ -149,7 +149,7 @@ namespace CafeLib.Core.IoC
         /// <returns>service instance</returns>
         public object GetService(Type serviceType)
         {
-            return Resolve(serviceType);
+            return this.Resolve(serviceType);
         }
 
         /// <summary>
@@ -160,55 +160,6 @@ namespace CafeLib.Core.IoC
         public T Resolve<T>() where T : class
         {
             return (T)_serviceContainer.GetInstance(typeof(T));
-        }
-
-        /// <summary>
-        /// Resolve the service. 
-        /// </summary>
-        /// <param name="type">service type</param>
-        /// <returns>service instance</returns>
-        public object Resolve(Type type)
-        {
-            return _serviceContainer.GetInstance(type);
-        }
-
-        /// <summary>
-        /// Resolve the service.
-        /// </summary>
-        /// <typeparam name="T">service type</typeparam>
-        /// <returns>service instance</returns>
-        public bool TryResolve<T>(out T value) where T : class
-        {
-            try
-            {
-                value = Resolve<T>();
-                return true;
-            }
-            catch
-            {
-                value = default;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Resolve the service.
-        /// </summary>
-        /// <param name="type">service type</param>
-        /// <param name="value">service instance</param>
-        /// <returns>service instance</returns>
-        public bool TryResolve(Type type, out object value)
-        {
-            try
-            {
-                value = ServiceProvider.GetService(type);
-                return true;
-            }
-            catch
-            {
-                value = default;
-                return false;
-            }
         }
 
         /// <summary>
