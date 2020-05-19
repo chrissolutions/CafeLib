@@ -1,5 +1,5 @@
 ﻿using System;
-using CafeLib.Core.Caching;
+using CafeLib.Core.Collections;
 using CafeLib.Core.IoC;
 using Xunit;
 

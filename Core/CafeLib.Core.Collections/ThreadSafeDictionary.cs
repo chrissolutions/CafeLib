@@ -174,7 +174,7 @@ namespace CafeLib.Core.Collections
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="value">output value</param>
-        /// <returns>true if retreived, false otherwise</returns>
+        /// <returns>true if retrieved, false otherwise</returns>
         public bool TryGetValue(TKey key, out TValue value)
         {
             if (key == null)
@@ -187,7 +187,7 @@ namespace CafeLib.Core.Collections
             }
             catch
             {
-                value = default(TValue);
+                value = default;
                 return false;
             }
         }
