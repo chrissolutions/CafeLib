@@ -11,7 +11,7 @@ namespace CafeLib.Mobile.Commands
     /// </summary>
     public class XamAsyncCommand : XamAsyncCommand<object>, IXamAsyncCommand
     {
-        private static readonly object _parameter = new object();
+        private static readonly object Parameter = new object();
 
         /// <summary>
         /// XamAsyncCommand constructor.
@@ -52,12 +52,12 @@ namespace CafeLib.Mobile.Commands
 
         public Task ExecuteAsync()
         {
-            return ExecuteAsync(_parameter);
+            return ExecuteAsync(Parameter);
         }
 
         public bool CanExecute()
         {
-            return CanExecute(_parameter);
+            return CanExecute(Parameter);
         }
     }
 
@@ -93,14 +93,14 @@ namespace CafeLib.Mobile.Commands
 
         bool ICommand.CanExecute(object parameter)
         {
-            return CanExecute((T)parameter);
+            return CanExecute((T) parameter);
         }
 
-#pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
+        #pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
         async void ICommand.Execute(object parameter)
-#pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
+        #pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
         {
-            await ExecuteAsync((T)parameter);
+            await ExecuteAsync((T) parameter);
         }
 
         public event EventHandler CanExecuteChanged;

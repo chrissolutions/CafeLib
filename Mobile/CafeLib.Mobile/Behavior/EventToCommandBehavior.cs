@@ -30,8 +30,8 @@ namespace CafeLib.Mobile.Behavior
         /// </summary>
         public string EventName
         {
-            get => (string)GetValue(EventNameProperty);
-            set => SetValue(EventNameProperty, value);
+            get { return (string)GetValue(EventNameProperty); }
+            set { SetValue(EventNameProperty, value); }
         }
 
         /// <summary>
@@ -39,8 +39,8 @@ namespace CafeLib.Mobile.Behavior
         /// </summary>
         public ICommand Command
         {
-            get => (ICommand)GetValue(CommandProperty);
-            set => SetValue(CommandProperty, value);
+            get { return (ICommand)GetValue(CommandProperty); }
+            set { SetValue(CommandProperty, value); }
         }
 
         /// <summary>
@@ -48,8 +48,8 @@ namespace CafeLib.Mobile.Behavior
         /// </summary>
         public object CommandParameter
         {
-            get => GetValue(CommandParameterProperty);
-            set => SetValue(CommandParameterProperty, value);
+            get { return GetValue(CommandParameterProperty); }
+            set { SetValue(CommandParameterProperty, value); }
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace CafeLib.Mobile.Behavior
         /// </summary>
         public IValueConverter EventArgsConverter
         {
-            get => (IValueConverter)GetValue(EventArgsConverterProperty);
-            set => SetValue(EventArgsConverterProperty, value);
+            get { return (IValueConverter)GetValue(EventArgsConverterProperty); }
+            set { SetValue(EventArgsConverterProperty, value); }
         }
 
         /// <summary>
@@ -68,8 +68,8 @@ namespace CafeLib.Mobile.Behavior
         /// </summary>
         public object EventArgsConverterParameter
         {
-            get => GetValue(EventArgsConverterParameterProperty);
-            set => SetValue(EventArgsConverterParameterProperty, value);
+            get { return GetValue(EventArgsConverterParameterProperty); }
+            set { SetValue(EventArgsConverterParameterProperty, value); }
         }
 
         protected override void OnAttachedTo(VisualElement visualElement)

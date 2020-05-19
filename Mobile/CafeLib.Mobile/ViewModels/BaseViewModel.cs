@@ -13,11 +13,10 @@ using Xamarin.Forms;
 
 namespace CafeLib.Mobile.ViewModels
 {
-    public abstract class BaseViewModel : ObservableBase, IDisposable
+    public abstract class BaseViewModel : ObservableBase
     {
-        private readonly List<Guid> _onInitSubscribers;
         private readonly List<Guid> _onAppearingSubscribers;
-        private bool _disposed;
+        private readonly List<Guid> _onLoadSubscribers;
 
         private Func<ICommand, Task> ExecuteCommand { get; }
 
@@ -32,22 +31,35 @@ namespace CafeLib.Mobile.ViewModels
         }
 
         /// <summary>
+        /// Initialize view model.
+        /// </summary>
+        /// <returns></returns>
+        public async Task Initialize()
+        {
+            Lifecycle = LifecycleState.Initial;
+            await InitAsync();
+        }
+
+        /// <summary>
         /// BaseViewModel constructor.
         /// </summary>
         protected BaseViewModel()
         {
-            _onInitSubscribers = new List<Guid>();
             _onAppearingSubscribers = new List<Guid>();
+            _onLoadSubscribers = new List<Guid>();
             Resolver = Application.Current.Resolve<IServiceResolver>();
             Lifecycle = LifecycleState.Initial;
-            InitCommand = new XamAsyncCommand(() => { });
             AppearingCommand = new XamAsyncCommand(() => { });
             DisappearingCommand = new XamAsyncCommand(() => { });
             CloseCommand = new XamAsyncCommand(() => Close());
             LoadCommand = new XamAsyncCommand(() => { });
             UnloadCommand = new XamAsyncCommand(() => { });
             FocusCommand = new Command(() => { });
-            BackButtonPressed = new BackButtonCommand(x => Close());
+            BackButtonPressed = new XamCommand<NavigationSource, bool>(x =>
+            {
+                Close();
+                return true;
+            });
 
             ExecuteCommand = async command =>
             {
@@ -65,12 +77,11 @@ namespace CafeLib.Mobile.ViewModels
         }
 
         /// <summary>
-        /// Initialize view model.
+        /// Initialize the view model.
         /// </summary>
-        /// <returns></returns>
-        public async Task Initialize()
+        protected virtual async Task InitAsync()
         {
-            await InitCommand.ExecuteAsync();
+            await Task.CompletedTask;
         }
 
         /// <summary>
@@ -104,22 +115,9 @@ namespace CafeLib.Mobile.ViewModels
         protected IEventService EventService => Resolver.Resolve<IEventService>();
 
         /// <summary>
-        /// Appearing command.
+        /// Resolve the associated page.
         /// </summary>
-        private IXamAsyncCommand _initCommand;
-
-        public IXamAsyncCommand InitCommand
-        {
-            protected get => _initCommand;
-            set
-            {
-                _initCommand = new XamAsyncCommand(async () =>
-                {
-                    Lifecycle = LifecycleState.Initial;
-                    await ExecuteCommand(value);
-                });
-            }
-        }
+        protected Page Page => PageService.ResolvePage(this);
 
         /// <summary>
         /// Appearing command.
@@ -188,8 +186,18 @@ namespace CafeLib.Mobile.ViewModels
             {
                 _loadCommand = new XamAsyncCommand(async () =>
                 {
-                    Lifecycle = LifecycleState.Load;
-                    await ExecuteCommand(value);
+                    try
+                    {
+                        Lifecycle = LifecycleState.Load;
+                        if (!IsLoaded)
+                        {
+                            await ExecuteCommand(value);
+                        }
+                    }
+                    finally
+                    {
+                        IsLoaded = true;
+                    }
                 });
             }
         }
@@ -207,15 +215,16 @@ namespace CafeLib.Mobile.ViewModels
                 {
                     try
                     {
-                        if (Lifecycle != LifecycleState.Unload)
+                        Lifecycle = LifecycleState.Unload;
+                        if (IsLoaded)
                         {
-                            Lifecycle = LifecycleState.Unload;
                             await ExecuteCommand(value);
                         }
                     }
                     finally
                     {
                         ReleaseSubscribers();
+                        IsLoaded = false;
                     }
                 });
             }
@@ -258,6 +267,16 @@ namespace CafeLib.Mobile.ViewModels
         }
 
         /// <summary>
+        /// Determines loaded state.
+        /// </summary>
+        private bool _isLoaded;
+        public bool IsLoaded
+        {
+            get => _isLoaded;
+            set => SetValue(ref _isLoaded, value);
+        }
+
+        /// <summary>
         /// Determines visibility of the view model
         /// </summary>
         private bool _isVisible;
@@ -277,68 +296,16 @@ namespace CafeLib.Mobile.ViewModels
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="animate"></param>
-        protected virtual async void Close(ViewModelCloseMessage message, bool animate = false)
-        {
-            await CloseAsync(message, animate);
-        }
-
-        /// <summary>
         /// Close view model with message
         /// </summary>
         /// <param name="message">view model close message</param>
         /// <param name="animate">transition animation flag</param>
-        protected async Task CloseAsync(ViewModelCloseMessage message, bool animate = false)
+        protected void Close(ViewModelCloseMessage message, bool animate = false)
         {
             if (Lifecycle == LifecycleState.Close) return;
             Lifecycle = LifecycleState.Close;
             PublishEvent(message);
-
-            var navigationService = Resolver.Resolve<INavigationService>();
-            await navigationService.PopAsync(animate);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        protected async Task CloseToRoot()
-        {
-            var navigationService = Resolver.Resolve<INavigationService>();
-            await navigationService.PopToRootAsync();
-        }
-
-        /// <summary>
-        /// Close the view model.
-        /// </summary>
-        /// <param name="animate">transition animation flag</param>
-        protected virtual void CloseModal(bool animate = false)
-        {
-            CloseModal(new ViewModelCloseMessage(this), animate);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="animate"></param>
-        protected virtual async void CloseModal(ViewModelCloseMessage message, bool animate = false)
-        {
-            await CloseModalAsync(message, animate);
-        }
-
-
-        protected async Task CloseModalAsync(ViewModelCloseMessage message, bool animate = false)
-        {
-            if (Lifecycle == LifecycleState.Close) return;
-            Lifecycle = LifecycleState.Close;
-            PublishEvent(message);
-
-            var navigationService = Resolver.Resolve<INavigationService>();
-            await navigationService.PopModalAsync();
+            Page.Navigation.Close(this, animate);
         }
 
         /// <summary>
@@ -365,8 +332,8 @@ namespace CafeLib.Mobile.ViewModels
                 case LifecycleState.Initial:
                 case LifecycleState.Load:
                 case LifecycleState.Unload:
-                    _onInitSubscribers.ForEach(x => EventService.Unsubscribe(x));
-                    _onInitSubscribers.Clear();
+                    _onLoadSubscribers.ForEach(x => EventService.Unsubscribe(x));
+                    _onLoadSubscribers.Clear();
                     break;
             }
         }
@@ -397,7 +364,7 @@ namespace CafeLib.Mobile.ViewModels
 
                 case LifecycleState.Initial: 
                 case LifecycleState.Load:
-                    _onInitSubscribers.Add(EventService.SubscribeOnMainThread(action));
+                    _onLoadSubscribers.Add(EventService.SubscribeOnMainThread(action));
                     break;
             }
         }
@@ -414,6 +381,15 @@ namespace CafeLib.Mobile.ViewModels
         /// </summary>
         /// <returns>bounded page</returns>
         internal Page ResolvePage() => PageService.ResolvePage(this);
+
+        /// <summary>
+        /// Establish view model as the application navigator.
+        /// </summary>
+        /// <returns></returns>
+        public NavigationPage AsNavigator()
+        {
+            return NavigationService.SetNavigator(this);
+        }
 
         /// <summary>
         /// Displays an alert on the page.
@@ -458,34 +434,6 @@ namespace CafeLib.Mobile.ViewModels
         {
             PageService.ReleasePage(this);
         }
-
-        /// <summary>
-        /// Dispose the view model.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(!_disposed);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Dispose.
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual async void Dispose(bool disposing)
-        {
-            if (!disposing) return;
-            await UnloadCommand.ExecuteAsync();
-            _disposed = true;
-        }
-
-        /// <summary>
-        /// Call dispose on finalize.
-        /// </summary>
-        ~BaseViewModel()
-        {
-            Dispose(!_disposed);
-        }
     }
 
     /// <summary>
@@ -494,29 +442,6 @@ namespace CafeLib.Mobile.ViewModels
     /// <typeparam name="TParameter">initialization parameter type</typeparam>
     public abstract class BaseViewModel<TParameter> : BaseViewModel where TParameter : class
     {
-        private Func<ICommand, object, Task> ExecuteCommand { get; }
-
-        /// <summary>
-        /// BaseViewModel constructor
-        /// </summary>
-        /// <typeparam name="TParameter">parameter type</typeparam>
-        protected BaseViewModel()
-        {
-            ExecuteCommand = async (command, parameter) =>
-            {
-                switch (command)
-                {
-                    case IXamAsyncCommand<TParameter> a:
-                        await a.ExecuteAsync(parameter);
-                        break;
-
-                    default:
-                        command?.Execute(parameter);
-                        break;
-                }
-            };
-        }
-
         /// <summary>
         /// Initialize view model.
         /// </summary>
@@ -524,26 +449,25 @@ namespace CafeLib.Mobile.ViewModels
         /// <returns></returns>
         public async Task Initialize(TParameter parameter)
         {
-            var task = typeof(TParameter) != typeof(object) ? InitCommand.ExecuteAsync(parameter) : InitCommand.ExecuteAsync();
-            await task;
+            Lifecycle = LifecycleState.Initial;
+
+            if (typeof(TParameter) != typeof(object))
+            {
+                await InitAsync(parameter);
+            }
+            else
+            {
+                await InitAsync();
+            }
         }
 
         /// <summary>
-        /// Appearing command.
+        /// Initialize and pass parameter to the view model.
         /// </summary>
-        private IXamAsyncCommand<TParameter> _initCommand;
-
-        public new IXamAsyncCommand<TParameter> InitCommand
+        /// <param name="parameter">parameter passed to view model</param>
+        protected virtual async Task InitAsync(TParameter parameter)
         {
-            protected get => _initCommand;
-            set
-            {
-                _initCommand = new XamAsyncCommand<TParameter>(async x =>
-                {
-                    Lifecycle = LifecycleState.Initial;
-                    await ExecuteCommand(value, x);
-                });
-            }
+            await Task.CompletedTask;
         }
     }
 }

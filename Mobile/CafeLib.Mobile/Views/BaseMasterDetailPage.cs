@@ -54,11 +54,10 @@ namespace CafeLib.Mobile.Views
         /// <summary>
         /// Process OnAppearing lifecycle event.
         /// </summary>
-        protected override async void OnAppearing()
+        protected override void OnAppearing()
         {
             base.OnAppearing();
-            if (GetMasterDetailViewModel()?.AppearingCommand == null) return;
-            await GetMasterDetailViewModel().AppearingCommand.ExecuteAsync();
+            GetMasterDetailViewModel()?.AppearingCommand.Execute(null);
         }
 
         /// <summary>
@@ -67,10 +66,9 @@ namespace CafeLib.Mobile.Views
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            if (GetMasterDetailViewModel()?.DisappearingCommand == null) return;
-            GetMasterDetailViewModel()?.DisappearingCommand.ExecuteAsync();
+            GetMasterDetailViewModel()?.DisappearingCommand.Execute(null);
         }
-        
+
         /// <summary>
         /// Process OnLoad lifecycle event.
         /// </summary>
@@ -85,7 +83,7 @@ namespace CafeLib.Mobile.Views
         protected virtual void OnUnload()
         {
             GetMasterDetailViewModel()?.UnloadCommand.Execute(null);
-		}        
+        }
 
         /// <summary>
         /// Process hardware back button press event.
@@ -116,7 +114,6 @@ namespace CafeLib.Mobile.Views
                 case NavigationPage navPage:
                     return navPage.CurrentPage.GetViewModel<BaseViewModel>();
 
-                // ReSharper disable once PatternAlwaysOfType
                 case Page _:
                     return Detail.GetViewModel<BaseViewModel>();
 

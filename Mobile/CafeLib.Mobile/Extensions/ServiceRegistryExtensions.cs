@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
-using CafeLib.Core.Caching;
+using CafeLib.Core.Collections;
 using CafeLib.Core.Eventing;
 using CafeLib.Core.IoC;
-using CafeLib.Mobile.Attributes;
+using CafeLib.Mobile.Support;
 using CafeLib.Mobile.ViewModels;
 // ReSharper disable UnusedMember.Global
 
@@ -14,7 +14,7 @@ namespace CafeLib.Mobile.Extensions
         /// Add the property service to the service registry.
         /// </summary>
         /// <param name="serviceRegistry"></param>
-        /// <returns></returns>
+        /// <returns>service registry interface</returns>
         public static IServiceRegistry AddDictionaryService(this IServiceRegistry serviceRegistry)
         {
             serviceRegistry.AddSingleton<IDictionaryService>(x => DictionaryService.Current);
@@ -25,10 +25,21 @@ namespace CafeLib.Mobile.Extensions
         /// Add the event service to the service registry.
         /// </summary>
         /// <param name="serviceRegistry"></param>
-        /// <returns></returns>
+        /// <returns>service registry interface</returns>
         public static IServiceRegistry AddEventService(this IServiceRegistry serviceRegistry)
         {
             serviceRegistry.AddSingleton<IEventService>(x => EventService.Current);
+            return serviceRegistry;
+        }
+
+        /// <summary>
+        /// Logging service registration.
+        /// </summary>
+        /// <param name="serviceRegistry"></param>
+        /// <returns>service registry interface</returns>
+        public static IServiceRegistry AddLogging(this IServiceRegistry serviceRegistry)
+        {
+            //return _serviceRegistry.AddLogging(configuration);
             return serviceRegistry;
         }
 
@@ -38,7 +49,7 @@ namespace CafeLib.Mobile.Extensions
         /// <typeparam name="T">view model type</typeparam>
         /// <param name="serviceRegistry">service registry</param>
         /// <param name="transient">register as transient if true; otherwise as singleton</param>
-        /// <returns>service registry</returns>
+        /// <returns>service registry interface</returns>
         public static IServiceRegistry AddViewModel<T>(this IServiceRegistry serviceRegistry, bool transient = false) where T : BaseViewModel
         {
             var attr = typeof(T).GetTypeInfo().GetCustomAttribute<TransientAttribute>();

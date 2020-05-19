@@ -7,7 +7,7 @@ namespace CafeLib.Mobile.Behavior
     /// This base behavior class is aware of the binding context of its associated view,
     /// so that when the view's binding context changes, the behavior binding context will be the same.
     /// </summary>
-    /// <typeparam name="T">The type of the objects with which this <see cref="CafeLib.Mobile.Behavior"/> can be associated.</typeparam>
+    /// <typeparam name="T">The type of the objects with which this <see cref="CafeLib.Core.Mobile.Behavior"/> can be associated.</typeparam>
     public class BindableBehavior<T> : Behavior<T> where T : BindableObject
     {
         /// <summary>

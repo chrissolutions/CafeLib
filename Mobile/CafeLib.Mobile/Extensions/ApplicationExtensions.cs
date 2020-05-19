@@ -107,7 +107,7 @@ namespace CafeLib.Mobile.Extensions
         public static void StartOnViewModel<T>(this Application app) where T : BaseViewModel
         {
             var vm = app.Resolve<T>();
-            app.MainPage = new NavigationPage(vm.ResolvePage());
+            app.MainPage = vm.AsNavigator();
             app.GetDeviceService().RunOnMainThread(async () => await vm.Initialize());
         }
 
@@ -121,7 +121,7 @@ namespace CafeLib.Mobile.Extensions
         public static void StartOnViewModel<T, TP>(this Application app, TP parameter) where T : BaseViewModel<TP> where TP : class
         {
             var vm = app.Resolve<T>();
-            app.MainPage = new NavigationPage(vm.ResolvePage());
+            app.MainPage = vm.AsNavigator();
             app.GetDeviceService().RunOnMainThread(async () => await vm.Initialize(parameter));
         }
 

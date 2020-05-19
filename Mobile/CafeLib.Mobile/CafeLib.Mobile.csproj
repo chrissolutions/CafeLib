@@ -2,29 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <PackageIconUrl></PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/cwaldron/CafeLib/master/favicon.ico</PackageIconUrl>
     <Description>Cafe library for Mobile applications.</Description>
-    <AssemblyVersion>0.7.5.0</AssemblyVersion>
-    <Version>0.7.5</Version>
-    <PackageIcon>cafelib.png</PackageIcon>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Company>Chris Solutions</Company>
-    <Authors>Chris Solutions</Authors>
+    <AssemblyVersion>0.7.1.0</AssemblyVersion>
+    <Version>0.7.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Core" Version="0.7.5" />
     <PackageReference Include="CafeLib.Core.Caching" Version="0.7.5" />
+    <PackageReference Include="CafeLib.Core.Collections" Version="0.7.5" />
     <PackageReference Include="CafeLib.Core.Eventing" Version="0.7.5" />
     <PackageReference Include="CafeLib.Core.IoC" Version="0.7.5" />
-    <PackageReference Include="Xamarin.Forms" Version="4.6.0.772" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\cafelib.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    <PackageReference Include="Xamarin.Forms" Version="4.6.0.800" />
   </ItemGroup>
 
 </Project>

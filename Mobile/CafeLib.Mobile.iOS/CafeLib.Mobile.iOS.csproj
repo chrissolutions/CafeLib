@@ -46,11 +46,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms">
-      <Version>4.6.0.772</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\CafeLib.Mobile\CafeLib.Mobile.csproj">
       <Project>{e44e49e1-f34f-4dee-b13b-523e2d1ce5c7}</Project>
       <Name>CafeLib.Mobile</Name>

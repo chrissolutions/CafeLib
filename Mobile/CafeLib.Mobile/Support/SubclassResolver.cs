@@ -28,7 +28,7 @@ namespace CafeLib.Mobile.Support
         /// <returns>subclass instance</returns>
         public object Resolve()
         {
-            return _resolveInstance ??= (T)Activator.CreateInstance(_resolveType);
+            return _resolveInstance ?? (_resolveInstance = (T)Activator.CreateInstance(_resolveType));
         }
 
         /// <summary>
