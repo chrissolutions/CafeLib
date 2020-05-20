@@ -71,7 +71,7 @@ namespace CafeLib.Mobile.Extensions
         /// <returns></returns>
         public static T GetViewModel<T>(this Page page) where T : BaseViewModel
         {
-            return (T) page.BindingContext;
+            return page.BindingContext as T;
         }
 
         /// <summary>

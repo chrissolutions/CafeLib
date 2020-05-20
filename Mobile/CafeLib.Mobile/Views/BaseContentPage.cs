@@ -54,10 +54,11 @@ namespace CafeLib.Mobile.Views
         /// <summary>
         /// Process OnAppearing lifecycle event.
         /// </summary>
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
-            GetViewModel<BaseViewModel>()?.AppearingCommand.Execute(null);
+            if (GetViewModel<BaseViewModel>()?.AppearingCommand == null) return;
+            await GetViewModel<BaseViewModel>().AppearingCommand.ExecuteAsync();
         }
 
         /// <summary>
@@ -66,6 +67,7 @@ namespace CafeLib.Mobile.Views
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
+            if (GetViewModel<BaseViewModel>()?.DisappearingCommand == null) return;
             GetViewModel<BaseViewModel>()?.DisappearingCommand.Execute(null);
         }
 

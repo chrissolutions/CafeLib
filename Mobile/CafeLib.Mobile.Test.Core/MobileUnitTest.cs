@@ -101,7 +101,7 @@ namespace CafeLib.Mobile.Test.Core
         /// </summary>
         private void SetupRegistry()
         {
-            //Registry = IocFactory.CreateRegistry()
+            Registry = IocFactory.CreateRegistry();
             //    .AddLogging(builder => builder.AddConsole().AddDebug());
         }
     }

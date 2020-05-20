@@ -149,9 +149,14 @@ namespace CafeLib.Mobile.Startup
             return GetResolver().Resolve<T>();
         }
 
+        /// <summary>
+        /// Resolve a service.
+        /// </summary>
+        /// <param name="serviceType">service type</param>
+        /// <returns></returns>
         public object GetService(Type serviceType)
         {
-            throw new NotImplementedException();
+            return GetResolver().Resolve(serviceType);
         }
     }
 }

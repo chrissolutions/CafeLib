@@ -6,6 +6,7 @@ using CafeLib.Mobile.Effects;
 using CafeLib.Mobile.Extensions;
 using CafeLib.Mobile.ViewModels;
 using Xamarin.Forms;
+
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.Views
@@ -47,7 +48,7 @@ namespace CafeLib.Mobile.Views
         }
 
         /// <summary>
-        /// The viewmodel bound to the page.
+        /// The viewmodel bound to the view.
         /// </summary>
         public BaseViewModel ViewModel
         {
@@ -58,39 +59,47 @@ namespace CafeLib.Mobile.Views
         /// <summary>
         /// Process OnAppearing lifecycle event.
         /// </summary>
-        protected virtual void OnAppearing()
+        protected virtual async void OnAppearing()
         {
             if (ViewModel == null) return;
             ViewModel.IsVisible = true;
-            ViewModel.AppearingCommand.Execute(null);
+            await ViewModel.AppearingCommand.ExecuteAsync();
         }
 
         /// <summary>
         /// Process OnDisappearing lifecycle event.
         /// </summary>
-        protected virtual void OnDisappearing()
+        protected virtual async void OnDisappearing()
         {
             if (ViewModel == null) return;
-            ViewModel.DisappearingCommand.Execute(null);
+            await ViewModel.DisappearingCommand.ExecuteAsync();
             ViewModel.IsVisible = false;
         }
 
         /// <summary>
         /// Process OnLoad lifecycle event.
         /// </summary>
-        protected virtual void OnLoad()
+        protected virtual async void OnLoad()
         {
-            ViewModel?.LoadCommand.Execute(null);
+            if (ViewModel == null) return;
+            await ViewModel.LoadCommand.ExecuteAsync();
         }
 
         /// <summary>
         /// Process OnUnload lifecycle event.
         /// </summary>
-        protected virtual void OnUnload()
+        protected virtual async void OnUnload()
         {
-            ViewModel?.UnloadCommand.Execute(null);
-            _subscriberHandles.ForEach(x => EventService.Unsubscribe(x));
-            _subscriberHandles.Clear();
+            try
+            {
+                if (ViewModel == null) return;
+                await ViewModel?.UnloadCommand.ExecuteAsync();
+            }
+            finally
+            {
+                _subscriberHandles.ForEach(x => EventService.Unsubscribe(x));
+                _subscriberHandles.Clear();
+            }
         }
 
         /// <summary>

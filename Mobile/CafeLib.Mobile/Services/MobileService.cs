@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.IoC;
+using CafeLib.Mobile.Attributes;
 using CafeLib.Mobile.Extensions;
 using CafeLib.Mobile.Startup;
 using CafeLib.Mobile.Support;
@@ -19,7 +20,6 @@ namespace CafeLib.Mobile.Services
     {
         private readonly Assembly _appAssembly;
         private readonly Dictionary<Type, PageResolver> _pageResolvers;
-        private readonly Dictionary<Type, NavigationPage> _navigators;
         private readonly IServiceResolver _resolver;
         private readonly int _mainThreadId;
 
@@ -27,8 +27,6 @@ namespace CafeLib.Mobile.Services
         private const string PageSuffix = "Page";
         private const string DefaultAcceptText = "OK";
         private const string DefaultCancelText = "Cancel";
-
-        public NavigationPage Navigator { get; private set; }
 
         /// <summary>
         /// Bootstrapper constructor
@@ -38,9 +36,17 @@ namespace CafeLib.Mobile.Services
             _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
             _appAssembly = Application.Current.GetType().Assembly;
             _pageResolvers = new Dictionary<Type, PageResolver>();
-            _navigators = new Dictionary<Type, NavigationPage>();
             _mainThreadId = Environment.CurrentManagedThreadId;
             InitPageResolvers();
+        }
+
+        public Page CurrentPage => GetCurrentNavigationPage().NavigationStack.LastOrDefault();
+
+        public NavigationPage CurrentNavigation => GetCurrentPage();
+
+        public bool IsCurrent<T>(T viewModel) where T : BaseViewModel
+        {
+            return CurrentPage.GetViewModel<T>() == viewModel;
         }
 
         /// <summary>
@@ -120,7 +126,7 @@ namespace CafeLib.Mobile.Services
         /// <returns>awaitable task</returns>
         public void InsertBefore<T1, T2>(T1 viewModel, T2 currentViewModel) where T1 : BaseViewModel where T2 : BaseViewModel
         {
-            Navigator.Navigation.InsertPageBefore(viewModel.ResolvePage(), currentViewModel.ResolvePage());
+            GetCurrentNavigationPage().InsertPageBefore(viewModel.ResolvePage(), currentViewModel.ResolvePage());
         }
 
         /// <summary>
@@ -135,11 +141,8 @@ namespace CafeLib.Mobile.Services
             var vm = viewModel ?? Resolve<T>();
             var page = vm.ResolvePage();
 
-            if (Navigator.CurrentPage?.GetType() != page.GetType())
-            {
-                page.SetViewModel(vm);
-                await Navigator.Navigation.PushAsync(page, animate);
-            }
+            page.SetViewModel(vm);
+            await GetCurrentNavigationPage().PushAsync(page, animate);
         }
 
         /// <summary>
@@ -154,7 +157,16 @@ namespace CafeLib.Mobile.Services
             var vm = viewModel ?? Resolve<T>();
             var page = vm.ResolvePage();
             page.SetViewModel(vm);
-            await Navigator.Navigation.PushModalAsync(page.HasToolbarItems() ? page.AsNavigationPage<ModalNavigationPage>() : page, animate);
+
+            var showModalInNav = page.GetAttribute<ShowModalInNavAttribute>();
+            if (showModalInNav != null)
+            {
+                await GetCurrentNavigationPage().PushModalAsync(new ModalNavigationPage(page), animate);
+            }
+            else
+            {
+                await GetCurrentNavigationPage().PushModalAsync(page.HasToolbarItems() ? page.AsNavigationPage<ModalNavigationPage>() : page, animate);
+            }
         }
 
         /// <summary>
@@ -164,19 +176,31 @@ namespace CafeLib.Mobile.Services
         /// <returns>The page previously at top of the navigation stack</returns>
         public async Task PopAsync(bool animate = false)
         {
-            var page = await Navigator.Navigation.PopAsync(animate);
-            page.Parent = null;
+            var page = await GetCurrentNavigationPage().PopAsync(animate);
+            if (page != null)
+            {
+                ReleasePage(page.BindingContext?.GetType());
+                page.Parent = null;
+                page.BindingContext = null;
+            }
         }
 
         /// <summary>
         /// Asynchronously remove most recent page from the modal stack.
         /// </summary>
-        /// <typeparam name="T">view model type</typeparam>
         /// <param name="animate">optional animation</param>
         /// <returns>The page previously at top of the navigation stack</returns>
-        public async Task PopModalAsync<T>(bool animate = false) where T : BaseViewModel
+        public async Task PopModalAsync(bool animate = false)
         {
-            await Navigator.Navigation.PopModalAsync(animate);
+            var navPage = GetCurrentNavigationPage();
+            var page = navPage.NavigationStack.LastOrDefault();
+            await navPage.PopModalAsync(animate);
+            if (page != null)
+            {
+                ReleasePage(page.BindingContext?.GetType());
+                page.Parent = null;
+                page.BindingContext = null;
+            }
         }
 
         /// <summary>
@@ -185,12 +209,7 @@ namespace CafeLib.Mobile.Services
         /// <param name="animate">transition animation flag</param>
         public async Task PopToRootAsync(bool animate = false)
         {
-            RunOnMainThread(async () =>
-            {
-                await Navigator.Navigation.PopToRootAsync(animate);
-            });
-
-            await Task.CompletedTask;
+            await GetCurrentNavigationPage().PopModalAsync(animate);
         }
 
         /// <summary>
@@ -203,30 +222,8 @@ namespace CafeLib.Mobile.Services
             {
                 var vm = viewModel ?? Resolve<T>();
                 var page = vm.ResolvePage();
-                Navigator.Navigation.RemovePage(page);
+                GetCurrentNavigationPage().RemovePage(page);
             });
-        }
-
-        /// <summary>
-        /// Set the navigation page from the view model
-        /// </summary>
-        /// <typeparam name="T">view model type</typeparam>
-        /// <returns>navigation page</returns>
-        public NavigationPage SetNavigator<T>() where T : BaseViewModel
-        {
-            return SetNavigator(Resolve<T>());
-        }
-
-        /// <summary>
-        /// Set the navigation page from the view model
-        /// </summary>
-        /// <typeparam name="T">view model type</typeparam>
-        /// <param name="viewModel">view model</param>
-        /// <returns>navigation page</returns>
-        public NavigationPage SetNavigator<T>(T viewModel) where T : BaseViewModel
-        {
-            Navigator = _navigators.GetOrAdd(viewModel.GetType(), () => CreateNavigator(viewModel.ResolvePage()));
-            return Navigator;
         }
 
         /// <summary>
@@ -285,17 +282,50 @@ namespace CafeLib.Mobile.Services
             _resolver?.Dispose();
         }
 
+        ///// <summary>
+        ///// Create an application navigator.
+        ///// </summary>
+        ///// <param name="page">content page</param>
+        ///// <returns>previous navigator</returns>
+        //private NavigationPage CreateNavigator(Page page)
+        //{
+        //    if (page == null) throw new ArgumentNullException(nameof(page));
+        //    var contentPage = page is MasterDetailPage masterDetailPage ? masterDetailPage.Detail : page;
+        //    return contentPage.IsNavigationPage() ? (NavigationPage)contentPage : new NavigationPage(contentPage);
+        //}
+
         /// <summary>
-        /// Create an application navigator.
+        /// 
         /// </summary>
-        /// <param name="page">content page</param>
-        /// <returns>previous navigator</returns>
-        private NavigationPage CreateNavigator(Page page)
+        /// <returns></returns>
+        private static NavigationPage GetCurrentPage()
         {
-            if (page == null) throw new ArgumentNullException(nameof(page));
-            var contentPage = page is MasterDetailPage masterDetailPage ? masterDetailPage.Detail : page;
-            return contentPage.IsNavigationPage() ? (NavigationPage)contentPage : new NavigationPage(contentPage);
+            NavigationPage GetPage(Page page)
+            {
+                var modalNavPage = page.Navigation.ModalStack.LastOrDefault(x => x.IsNavigationPage());
+
+                if (modalNavPage != null && page != modalNavPage)
+                {
+                    return GetPage(modalNavPage);
+                }
+
+                var navPage = page.Navigation.NavigationStack.LastOrDefault(x => x.IsNavigationPage());
+
+                if (navPage != null && page != navPage)
+                {
+                    return GetPage(navPage);
+                }
+
+                return page as NavigationPage;
+            }
+            return GetPage(Application.Current.MainPage);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private static INavigation GetCurrentNavigationPage() => GetCurrentPage().Navigation;
 
         /// <summary>
         /// Set up page resolvers.
@@ -360,7 +390,7 @@ namespace CafeLib.Mobile.Services
         /// <param name="viewModelType">view model type</param>
         private void ReleasePage(Type viewModelType)
         {
-            if (ResolvePage(viewModelType)?.GetType().GetCustomAttribute<TransientAttribute>() == null) return;
+            if (viewModelType == null || ResolvePage(viewModelType)?.GetType().GetCustomAttribute<TransientAttribute>() == null) return;
             var resolver = GetPageResolver(viewModelType);
             resolver?.Release();
         }
@@ -418,6 +448,11 @@ namespace CafeLib.Mobile.Services
             return _pageResolvers.ContainsKey(viewModelType) ? _pageResolvers[viewModelType] : default;
         }
 
+        /// <summary>
+        /// Resolve a service.
+        /// </summary>
+        /// <param name="serviceType"></param>
+        /// <returns></returns>
         public object GetService(Type serviceType)
         {
             throw new NotImplementedException();
