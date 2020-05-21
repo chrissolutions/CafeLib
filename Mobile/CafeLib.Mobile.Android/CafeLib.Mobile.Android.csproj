@@ -78,7 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CafeLib.Mobile\CafeLib.Mobile.csproj">
-      <Project>{e44e49e1-f34f-4dee-b13b-523e2d1ce5c7}</Project>
+      <Project>{af534bd2-2b75-4cbe-94e3-af261188a0b1}</Project>
       <Name>CafeLib.Mobile</Name>
     </ProjectReference>
   </ItemGroup>

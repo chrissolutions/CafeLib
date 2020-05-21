@@ -499,7 +499,7 @@ namespace CafeLib.Mobile.ViewModels
                 switch (command)
                 {
                     case IXamAsyncCommand<TParameter> a:
-                        await a.ExecuteAsync(parameter);
+                        await a.ExecuteAsync((TParameter)parameter);
                         break;
 
                     default:

@@ -27,17 +27,5 @@ namespace CafeLib.Mobile.Extensions
                     throw new InvalidOperationException(nameof(command));
             }
         }
-
-        /// <summary>
-        /// Execute command asynchronously.
-        /// </summary>
-        /// <typeparam name="T">parameter type</typeparam>
-        /// <param name="command">command</param>
-        /// <param name="parameter">command parameter</param>
-        /// <returns>task</returns>
-        public static Task ExecuteAsync<T>(this ICommand command, T parameter)
-        {
-            return ((XamAsyncCommand<T>)command).ExecuteAsync(parameter);
-        }
     }
 }
