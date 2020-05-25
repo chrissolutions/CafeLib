@@ -26,7 +26,6 @@ namespace CafeLib.Mobile.Android.Effects
         protected override void OnDetached()
         {
             var _ = Control ?? Container;
-            _viewLifecycleEffect.OnUnload(Element);
             _nativeView.ViewAttachedToWindow -= OnViewAttachedToWindow;
             _nativeView.ViewDetachedFromWindow -= OnViewDetachedFromWindow;
         }

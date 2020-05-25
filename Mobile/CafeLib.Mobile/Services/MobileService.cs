@@ -158,14 +158,13 @@ namespace CafeLib.Mobile.Services
             var page = vm.ResolvePage();
             page.SetViewModel(vm);
 
-            var showModalInNav = page.GetAttribute<ShowModalInNavAttribute>();
-            if (showModalInNav != null)
+            if (page.GetAttribute<ShowModalInNavigatorAttribute>() != null)
             {
                 await GetCurrentNavigationPage().PushModalAsync(new ModalNavigationPage(page), animate);
             }
             else
             {
-                await GetCurrentNavigationPage().PushModalAsync(page.HasToolbarItems() ? page.AsNavigationPage<ModalNavigationPage>() : page, animate);
+                await GetCurrentNavigationPage().PushModalAsync(page.HasToolbarItems() ? new ModalNavigationPage(page) : page, animate);
             }
         }
 
@@ -300,24 +299,30 @@ namespace CafeLib.Mobile.Services
         /// <returns></returns>
         private static NavigationPage GetCurrentPage()
         {
-            NavigationPage GetPage(Page page)
+            static NavigationPage GetPage(Page page)
             {
-                var modalNavPage = page.Navigation.ModalStack.LastOrDefault(x => x.IsNavigationPage());
-
-                if (modalNavPage != null && page != modalNavPage)
+                while (true)
                 {
-                    return GetPage(modalNavPage);
+                    var modalNavPage = page.Navigation.ModalStack.LastOrDefault(x => x.IsNavigationPage());
+
+                    if (modalNavPage != null && page != modalNavPage)
+                    {
+                        page = modalNavPage;
+                        continue;
+                    }
+
+                    var navPage = page.Navigation.NavigationStack.LastOrDefault(x => x.IsNavigationPage());
+
+                    if (navPage != null && page != navPage)
+                    {
+                        page = navPage;
+                        continue;
+                    }
+
+                    return page as NavigationPage;
                 }
-
-                var navPage = page.Navigation.NavigationStack.LastOrDefault(x => x.IsNavigationPage());
-
-                if (navPage != null && page != navPage)
-                {
-                    return GetPage(navPage);
-                }
-
-                return page as NavigationPage;
             }
+
             return GetPage(Application.Current.MainPage);
         }
 

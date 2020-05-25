@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using CafeLib.Core.Extensions;
 using CafeLib.Mobile.Services;
 using CafeLib.Mobile.ViewModels;
 using Xamarin.Forms;
@@ -9,19 +8,6 @@ namespace CafeLib.Mobile.Extensions
 {
     public static class PageExtensions
     {
-        /// <summary>
-        /// Make a navigation page from a page.
-        /// </summary>
-        /// <typeparam name="T">navigation page type</typeparam>
-        /// <param name="page">page</param>
-        /// <returns>navigation page</returns>
-        internal static Page AsNavigationPage<T>(this Page page) where T : NavigationPage
-        {
-            return page.IsNavigationPage()
-                ? page
-                : typeof(T).CreateInstance<T>(page);
-        }
-
         /// <summary>
         /// Releases the page instance via its associated view model.
         /// </summary>

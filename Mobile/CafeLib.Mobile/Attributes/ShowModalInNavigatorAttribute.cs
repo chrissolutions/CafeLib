@@ -2,7 +2,7 @@
 
 namespace CafeLib.Mobile.Attributes
 {
-    public class ShowModalInNavAttribute : Attribute
+    public class ShowModalInNavigatorAttribute : Attribute
     {
     }
 }
