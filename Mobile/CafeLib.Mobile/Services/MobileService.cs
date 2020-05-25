@@ -40,9 +40,9 @@ namespace CafeLib.Mobile.Services
             InitPageResolvers();
         }
 
-        public Page CurrentPage => GetCurrentNavigationPage().NavigationStack.LastOrDefault();
+        public Page CurrentPage => GetCurrentNavigation().NavigationStack.LastOrDefault();
 
-        public NavigationPage CurrentNavigation => GetCurrentPage();
+        public NavigationPage CurrentNavigationPage => GetCurrentNavigationPage();
 
         public bool IsCurrent<T>(T viewModel) where T : BaseViewModel
         {
@@ -126,7 +126,7 @@ namespace CafeLib.Mobile.Services
         /// <returns>awaitable task</returns>
         public void InsertBefore<T1, T2>(T1 viewModel, T2 currentViewModel) where T1 : BaseViewModel where T2 : BaseViewModel
         {
-            GetCurrentNavigationPage().InsertPageBefore(viewModel.ResolvePage(), currentViewModel.ResolvePage());
+            GetCurrentNavigation().InsertPageBefore(viewModel.ResolvePage(), currentViewModel.ResolvePage());
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace CafeLib.Mobile.Services
             var page = vm.ResolvePage();
 
             page.SetViewModel(vm);
-            await GetCurrentNavigationPage().PushAsync(page, animate);
+            await GetCurrentNavigation().PushAsync(page, animate);
         }
 
         /// <summary>
@@ -160,11 +160,11 @@ namespace CafeLib.Mobile.Services
 
             if (page.GetAttribute<ShowModalInNavigatorAttribute>() != null)
             {
-                await GetCurrentNavigationPage().PushModalAsync(new ModalNavigationPage(page), animate);
+                await GetCurrentNavigation().PushModalAsync(new ModalNavigationPage(page), animate);
             }
             else
             {
-                await GetCurrentNavigationPage().PushModalAsync(page.HasToolbarItems() ? new ModalNavigationPage(page) : page, animate);
+                await GetCurrentNavigation().PushModalAsync(page.HasToolbarItems() ? new ModalNavigationPage(page) : page, animate);
             }
         }
 
@@ -175,7 +175,7 @@ namespace CafeLib.Mobile.Services
         /// <returns>The page previously at top of the navigation stack</returns>
         public async Task PopAsync(bool animate = false)
         {
-            var navPage = GetCurrentNavigationPage();
+            var navPage = GetCurrentNavigation();
             var page = await navPage.PopAsync(animate);
             if (page != null)
             {
@@ -192,7 +192,7 @@ namespace CafeLib.Mobile.Services
         /// <returns>The page previously at top of the navigation stack</returns>
         public async Task PopModalAsync(bool animate = false)
         {
-            var navPage = GetCurrentNavigationPage();
+            var navPage = GetCurrentNavigation();
             var page = navPage.NavigationStack.LastOrDefault();
             await navPage.PopModalAsync(animate);
             if (page != null)
@@ -209,7 +209,7 @@ namespace CafeLib.Mobile.Services
         /// <param name="animate">transition animation flag</param>
         public async Task PopToRootAsync(bool animate = false)
         {
-            await GetCurrentNavigationPage().PopModalAsync(animate);
+            await GetCurrentNavigation().PopModalAsync(animate);
         }
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace CafeLib.Mobile.Services
             {
                 var vm = viewModel ?? Resolve<T>();
                 var page = vm.ResolvePage();
-                GetCurrentNavigationPage().RemovePage(page);
+                GetCurrentNavigation().RemovePage(page);
             });
         }
 
@@ -298,7 +298,7 @@ namespace CafeLib.Mobile.Services
         /// 
         /// </summary>
         /// <returns></returns>
-        private static NavigationPage GetCurrentPage()
+        private static NavigationPage GetCurrentNavigationPage()
         {
             static NavigationPage GetPage(Page page)
             {
@@ -331,7 +331,7 @@ namespace CafeLib.Mobile.Services
         /// 
         /// </summary>
         /// <returns></returns>
-        private static INavigation GetCurrentNavigationPage() => GetCurrentPage().Navigation;
+        private static INavigation GetCurrentNavigation() => GetCurrentNavigationPage().Navigation;
 
         /// <summary>
         /// Set up page resolvers.

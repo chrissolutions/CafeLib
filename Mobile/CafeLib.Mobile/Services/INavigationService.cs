@@ -9,7 +9,7 @@ namespace CafeLib.Mobile.Services
     {
         Page CurrentPage { get; }
 
-        NavigationPage CurrentNavigation { get; }
+        NavigationPage CurrentNavigationPage { get; }
 
         bool IsCurrent<T>(T viewModel) where T : BaseViewModel;
 

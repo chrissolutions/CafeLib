@@ -339,6 +339,10 @@ namespace CafeLib.Mobile.ViewModels
             await CloseModalAsync(message, animate);
         }
 
+        protected Task CloseModalAsync(bool animate = false)
+        {
+            return CloseModalAsync(new ViewModelCloseMessage(this), animate);
+        }
 
         protected async Task CloseModalAsync(ViewModelCloseMessage message, bool animate = false)
         {
