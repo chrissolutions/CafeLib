@@ -287,6 +287,15 @@ namespace CafeLib.Mobile.ViewModels
         }
 
         /// <summary>
+        /// Close the view model.
+        /// </summary>
+        /// <param name="animate">transition animation flag</param>
+        protected virtual async Task CloseAsync(bool animate = false)
+        {
+            await CloseAsync(new ViewModelCloseMessage(this), animate);
+        }
+
+        /// <summary>
         /// Close view model with message
         /// </summary>
         /// <param name="message">view model close message</param>

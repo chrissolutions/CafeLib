@@ -175,7 +175,8 @@ namespace CafeLib.Mobile.Services
         /// <returns>The page previously at top of the navigation stack</returns>
         public async Task PopAsync(bool animate = false)
         {
-            var page = await GetCurrentNavigationPage().PopAsync(animate);
+            var navPage = GetCurrentNavigationPage();
+            var page = await navPage.PopAsync(animate);
             if (page != null)
             {
                 ReleasePage(page.BindingContext?.GetType());
