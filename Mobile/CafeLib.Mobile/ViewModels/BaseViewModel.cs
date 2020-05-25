@@ -43,7 +43,7 @@ namespace CafeLib.Mobile.ViewModels
             InitCommand = new XamAsyncCommand(() => { });
             AppearingCommand = new XamAsyncCommand(() => { });
             DisappearingCommand = new XamAsyncCommand(() => { });
-            CloseCommand = new XamAsyncCommand(() => Close());
+            CloseCommand = new XamAsyncCommand(async () => await CloseAsync());
             LoadCommand = new XamAsyncCommand(() => { });
             UnloadCommand = new XamAsyncCommand(() => { });
             FocusCommand = new Command(() => { });
