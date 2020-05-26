@@ -1,5 +1,5 @@
-﻿using CafeLib.Core.Diagnostics;
-using CafeLib.Core.Eventing;
+﻿using CafeLib.Core.Eventing;
+using CafeLib.Core.Support;
 
 // ReSharper disable UnusedMember.Global
 

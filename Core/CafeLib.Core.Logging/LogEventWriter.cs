@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
-using CafeLib.Core.Diagnostics;
 using CafeLib.Core.Extensions;
+using CafeLib.Core.Support;
 using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Core.Logging

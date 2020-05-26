@@ -1,6 +1,6 @@
 ﻿using System;
-using CafeLib.Core.Diagnostics;
 using CafeLib.Core.Eventing;
+using CafeLib.Core.Support;
 
 namespace CafeLib.Core.Logging
 {

@@ -1,4 +1,4 @@
-﻿namespace CafeLib.Core.Diagnostics
+﻿namespace CafeLib.Core.Support
 {
     /// <summary>
     /// Error level.

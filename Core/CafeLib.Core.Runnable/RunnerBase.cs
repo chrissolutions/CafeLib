@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using CafeLib.Core.Diagnostics;
 using CafeLib.Core.Eventing;
+using CafeLib.Core.Support;
 
 namespace CafeLib.Core.Runnable
 {

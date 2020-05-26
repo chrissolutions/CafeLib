@@ -1,4 +1,4 @@
-﻿using CafeLib.Core.Diagnostics;
+﻿using CafeLib.Core.Support;
 using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Core.Logging

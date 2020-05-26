@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using CafeLib.Core.Diagnostics;
 using CafeLib.Core.Logging;
+using CafeLib.Core.Support;
 
 namespace CafeLib.Core.UnitTests.Logging
 {
