@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using CafeLib.Mobile.Support;
 
 // ReSharper disable UnusedMember.Global
 
@@ -69,6 +70,7 @@ namespace CafeLib.Mobile.Commands
         private bool _isBusy;
         private readonly Func<T, Task> _action;
         private readonly Func<T, bool> _canExecute;
+        private readonly ThreadSafeBool _isSuppressed = new ThreadSafeBool();
 
         /// <summary>
         /// XamAsyncCommand constructor.
@@ -128,9 +130,16 @@ namespace CafeLib.Mobile.Commands
             ChangeCanExecute();
         }
 
-        public bool CanExecute(T parameter)
+        public bool CanExecute(T parameter) => !_isSuppressed && !_isBusy && (_canExecute?.Invoke(parameter) ?? true);
+
+        public void Suppress()
         {
-            return !_isBusy && (_canExecute?.Invoke(parameter) ?? true);
+            _isSuppressed.Set(true);
+        }
+
+        public void Release()
+        {
+            _isSuppressed.Set(false);
         }
     }
 
@@ -143,6 +152,7 @@ namespace CafeLib.Mobile.Commands
     {
         private readonly Func<TParameter, Task<TResult>> _command;
         private readonly Func<TParameter, bool> _canExecute;
+        private readonly ThreadSafeBool _isSuppressed = new ThreadSafeBool();
 
         /// <summary>
         /// XamAsyncCommand constructor.
@@ -186,7 +196,7 @@ namespace CafeLib.Mobile.Commands
             return result;
         }
 
-        public bool CanExecute(object parameter) => _canExecute((TParameter)parameter);
+        public bool CanExecute(object parameter) => !_isSuppressed && _canExecute((TParameter)parameter);
 
         void ICommand.Execute(object parameter)
         {
@@ -203,6 +213,16 @@ namespace CafeLib.Mobile.Commands
         public void ChangeCanExecute()
         {
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void Suppress()
+        {
+            _isSuppressed.Set(true);
+        }
+
+        public void Release()
+        {
+            _isSuppressed.Set(false);
         }
     }
 }

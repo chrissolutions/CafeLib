@@ -25,5 +25,10 @@ namespace CafeLib.Mobile.Support
             else
                 Interlocked.CompareExchange(ref _backing, 0L, 1L);
         }
+
+        public static implicit operator bool(ThreadSafeBool target)
+        {
+            return target.Get();
+        }
     }
 }

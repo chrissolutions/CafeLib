@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CafeLib.Mobile.Commands;
-using CafeLib.Mobile.Support;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.Extensions
@@ -17,32 +15,12 @@ namespace CafeLib.Mobile.Extensions
         /// <returns>task</returns>
         public static Task ExecuteAsync(this ICommand command)
         {
-            switch (command)
+            return command switch
             {
-                case XamAsyncCommand cmd0:
-                    return cmd0.ExecuteAsync();
-
-                case XamAsyncCommand<object> cmd1:
-                    return cmd1.ExecuteAsync(null);
-
-                default:
-                    throw new InvalidOperationException(nameof(command));
-            }
-        }
-
-        public static bool IsSuppressed(this ICommand command)
-        {
-            return CommandState.IsSuppressed(command);
-        }
-
-        public static void Suppress(this ICommand command)
-        {
-            CommandState.Suppress(command);
-        }
-
-        public static void Release(this ICommand command)
-        {
-            CommandState.Release(command);
+                XamAsyncCommand cmd0 => cmd0.ExecuteAsync(),
+                XamAsyncCommand<object> cmd1 => cmd1.ExecuteAsync(null),
+                _ => throw new InvalidOperationException(nameof(command))
+            };
         }
     }
 }

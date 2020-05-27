@@ -7,7 +7,7 @@ namespace CafeLib.Mobile.Commands
     /// <summary>
     /// ICommand adapter interface.
     /// </summary>
-    public interface IXamCommand : ICommand
+    public interface IXamCommand : ICommand, IXamCommandState
     {
         void ChangeCanExecute();
     }
