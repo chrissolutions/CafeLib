@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows.Input;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.Support;
@@ -12,7 +11,8 @@ namespace CafeLib.Mobile.Support
 
         public static bool IsSuppressed(ICommand command)
         {
-            var state = Instance._commandStateMap.GetOrAdd(command.GetType().GetHashCode(), () => new ThreadSafeBool(false));
+            var key = command.GetHashCode();
+            var state = Instance._commandStateMap.GetOrAdd(key, () => new ThreadSafeBool(false));
             return state.Get();
         }
 
@@ -23,7 +23,7 @@ namespace CafeLib.Mobile.Support
         /// <returns>false if safe to execute, true means cannot execute</returns>
         public static void Suppress(ICommand command)
         {
-            var key = command.GetType().FullName?.GetHashCode() ?? throw new TypeAccessException(nameof(command));
+            var key = command.GetHashCode();
             var state = Instance._commandStateMap.GetOrAdd(key, new ThreadSafeBool());
             state.Set(true);
         }
@@ -35,7 +35,7 @@ namespace CafeLib.Mobile.Support
         /// <returns></returns>
         public static void Release(ICommand command)
         {
-            var key = command.GetType().FullName?.GetHashCode() ?? throw new TypeAccessException(nameof(command));
+            var key = command.GetHashCode();
             if (Instance._commandStateMap.TryGetValue(key, out var state))
             {
                 state.Set(false);
