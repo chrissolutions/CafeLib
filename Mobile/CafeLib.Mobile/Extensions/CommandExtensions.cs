@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CafeLib.Mobile.Commands;
+using CafeLib.Mobile.Support;
+
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.Extensions
@@ -26,6 +28,21 @@ namespace CafeLib.Mobile.Extensions
                 default:
                     throw new InvalidOperationException(nameof(command));
             }
+        }
+
+        public static bool IsSuppressed(this ICommand command)
+        {
+            return CommandState.IsSuppressed(command);
+        }
+
+        public static void Suppress(this ICommand command)
+        {
+            CommandState.Suppress(command);
+        }
+
+        public static void Release(this ICommand command)
+        {
+            CommandState.Release(command);
         }
     }
 }
