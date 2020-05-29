@@ -36,7 +36,7 @@ namespace CafeLib.Mobile.Commands
     public class XamCommand<T> : IXamCommand<T>
     {
         private readonly Command<T> _command;
-        private readonly ThreadSafeBool _isSuppressed = new ThreadSafeBool();
+        private readonly ThreadSafeBool _isLocked = new ThreadSafeBool();
 
         /// <summary>
         /// XamCommand constructor.
@@ -64,7 +64,7 @@ namespace CafeLib.Mobile.Commands
         /// <returns><c>true</c> command can be executed; otherwise, <c>false</c>.</returns>
         public bool CanExecute(object parameter)
         {
-            return !_isSuppressed && _command.CanExecute(parameter);
+            return !_isLocked && _command.CanExecute(parameter);
         }
 
         /// <summary>
@@ -93,14 +93,14 @@ namespace CafeLib.Mobile.Commands
             remove => _command.CanExecuteChanged -= value;
         }
 
-        public void Suppress()
+        public void Lock()
         {
-            _isSuppressed.Set(true);
+            _isLocked.Set(true);
         }
 
-        public void Release()
+        public void Unlock()
         {
-            _isSuppressed.Set(false);
+            _isLocked.Set(false);
         }
     }
 
@@ -108,7 +108,7 @@ namespace CafeLib.Mobile.Commands
     {
         private readonly Func<TParameter, TResult> _command;
         private readonly Func<TParameter, bool> _canExecute;
-        private ThreadSafeBool _isSuppressed = new ThreadSafeBool();
+        private readonly ThreadSafeBool _isLocked = new ThreadSafeBool();
 
         /// <summary>
         /// XamCommand constructor.
@@ -143,7 +143,7 @@ namespace CafeLib.Mobile.Commands
             return result;
         }
 
-        public bool CanExecute(object parameter) => !_isSuppressed && _canExecute((TParameter)parameter);
+        public bool CanExecute(object parameter) => !_isLocked && _canExecute((TParameter)parameter);
 
         public void Execute(object parameter)
         {
@@ -157,14 +157,14 @@ namespace CafeLib.Mobile.Commands
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public void Suppress()
+        public void Lock()
         {
-            _isSuppressed.Set(true);
+            _isLocked.Set(true);
         }
 
-        public void Release()
+        public void Unlock()
         {
-            _isSuppressed.Set(false);
+            _isLocked.Set(false);
         }
     }
 }

@@ -70,7 +70,7 @@ namespace CafeLib.Mobile.Commands
         private bool _isBusy;
         private readonly Func<T, Task> _action;
         private readonly Func<T, bool> _canExecute;
-        private readonly ThreadSafeBool _isSuppressed = new ThreadSafeBool();
+        private readonly ThreadSafeBool _isLocked = new ThreadSafeBool();
 
         /// <summary>
         /// XamAsyncCommand constructor.
@@ -130,16 +130,22 @@ namespace CafeLib.Mobile.Commands
             ChangeCanExecute();
         }
 
-        public bool CanExecute(T parameter) => !_isSuppressed && !_isBusy && (_canExecute?.Invoke(parameter) ?? true);
+        public bool CanExecute(T parameter) => !_isLocked && !_isBusy && (_canExecute?.Invoke(parameter) ?? true);
 
-        public void Suppress()
+        /// <summary>
+        /// Locks the command to prevent execution.
+        /// </summary>
+        public void Lock()
         {
-            _isSuppressed.Set(true);
+            _isLocked.Set(true);
         }
 
-        public void Release()
+        /// <summary>
+        /// Unlocks the command to permit execution.
+        /// </summary>
+        public void Unlock()
         {
-            _isSuppressed.Set(false);
+            _isLocked.Set(false);
         }
     }
 
@@ -152,7 +158,7 @@ namespace CafeLib.Mobile.Commands
     {
         private readonly Func<TParameter, Task<TResult>> _command;
         private readonly Func<TParameter, bool> _canExecute;
-        private readonly ThreadSafeBool _isSuppressed = new ThreadSafeBool();
+        private readonly ThreadSafeBool _isLocked = new ThreadSafeBool();
 
         /// <summary>
         /// XamAsyncCommand constructor.
@@ -196,7 +202,7 @@ namespace CafeLib.Mobile.Commands
             return result;
         }
 
-        public bool CanExecute(object parameter) => !_isSuppressed && _canExecute((TParameter)parameter);
+        public bool CanExecute(object parameter) => !_isLocked && _canExecute((TParameter)parameter);
 
         void ICommand.Execute(object parameter)
         {
@@ -215,14 +221,20 @@ namespace CafeLib.Mobile.Commands
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public void Suppress()
+        /// <summary>
+        /// Locks the command to prevent execution.
+        /// </summary>
+        public void Lock()
         {
-            _isSuppressed.Set(true);
+            _isLocked.Set(true);
         }
 
-        public void Release()
+        /// <summary>
+        /// Unlocks the command to permit execution.
+        /// </summary>
+        public void Unlock()
         {
-            _isSuppressed.Set(false);
+            _isLocked.Set(false);
         }
     }
 }

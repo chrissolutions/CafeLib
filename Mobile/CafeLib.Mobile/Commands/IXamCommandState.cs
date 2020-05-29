@@ -2,8 +2,14 @@
 {
     public interface IXamCommandState
     {
-        void Suppress();
+        /// <summary>
+        /// Locks the command to prevent execution.
+        /// </summary>
+        void Lock();
 
-        void Release();
+        /// <summary>
+        /// Unlocks the command to permit execution.
+        /// </summary>
+        void Unlock();
     }
 }
