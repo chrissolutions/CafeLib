@@ -165,6 +165,7 @@ namespace CafeLib.Mobile.ViewModels
                 {
                     try
                     {
+                        if (Lifecycle == LifecycleState.Unload) return;
                         Lifecycle = LifecycleState.Disappearing;
                         await ExecuteCommand(value);
                     }

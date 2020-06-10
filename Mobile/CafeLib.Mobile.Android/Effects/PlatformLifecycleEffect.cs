@@ -6,10 +6,10 @@ using Xamarin.Forms.Platform.Android;
 using View = Android.Views.View;
 
 [assembly: ResolutionGroupName(ViewLifecycleEffect.EffectGroupName)]
-[assembly: ExportEffect(typeof(PlatformViewLifecycleEffect), ViewLifecycleEffect.EffectName)]
+[assembly: ExportEffect(typeof(PlatformLifecycleEffect), ViewLifecycleEffect.EffectName)]
 namespace CafeLib.Mobile.Android.Effects
 {
-    public class PlatformViewLifecycleEffect : PlatformEffect
+    public class PlatformLifecycleEffect : PlatformEffect
     {
         private View _nativeView;
         private ViewLifecycleEffect _viewLifecycleEffect;

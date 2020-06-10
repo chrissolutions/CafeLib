@@ -1,5 +1,5 @@
-﻿using CafeLib.Core.IoC;
-using CafeLib.Mobile.Effects;
+﻿using System;
+using CafeLib.Core.IoC;
 using CafeLib.Mobile.Extensions;
 using CafeLib.Mobile.ViewModels;
 using Xamarin.Forms;
@@ -21,16 +21,14 @@ namespace CafeLib.Mobile.Views
         public INavigableOwner Owner { get; internal set; }
 
         /// <summary>
-        /// BaseContextPage constructor.
+        /// 
         /// </summary>
-        // ReSharper disable once PublicConstructorInAbstractClass
-        public BaseContentPage()
-        {
-            var lifecycleEffect = new ViewLifecycleEffect();
-            lifecycleEffect.Loaded += (s, e) => OnLoad();
-            lifecycleEffect.Unloaded += (s, e) => OnUnload();
-            Effects.Add(lifecycleEffect);
-        }
+        public Action Loaded => OnLoad;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public Action Unloaded => OnUnload;
 
         /// <summary>
         /// Get the view model bound to the page.

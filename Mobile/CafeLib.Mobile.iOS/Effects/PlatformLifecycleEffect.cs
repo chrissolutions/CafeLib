@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using CafeLib.Mobile.Effects;
 using CafeLib.Mobile.iOS.Effects;
@@ -29,6 +30,11 @@ namespace CafeLib.Mobile.iOS.Effects
         {
             _viewLifecycleEffect.OnUnload(Element);
             _isLoadedObserverDisposable.Dispose();
+        }
+
+        protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)
+        {
+            base.OnElementPropertyChanged(args);
         }
 
         private void IsViewLoadedObserver(NSObservedChange nsObservedChange)

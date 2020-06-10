@@ -1,27 +1,13 @@
 ﻿using CafeLib.Core.IoC;
-using CafeLib.Mobile.Effects;
 using CafeLib.Mobile.Extensions;
 using CafeLib.Mobile.ViewModels;
 using Xamarin.Forms;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.Views
 {
     public abstract class BaseMasterDetailPage : MasterDetailPage, IPageBase, ISoftNavigationPage
     {
-        /// <summary>
-        /// BaseMasterDetailPage constructor.
-        /// </summary>
-        // ReSharper disable once PublicConstructorInAbstractClass
-        public BaseMasterDetailPage()
-        {
-            var lifecycleEffect = new ViewLifecycleEffect();
-            lifecycleEffect.Loaded += (s, e) => OnLoad();
-            lifecycleEffect.Unloaded += (s, e) => OnUnload();
-            Effects.Add(lifecycleEffect);
-        }
-
         /// <summary>
         /// The viewmodel bound to the page.
         /// </summary>

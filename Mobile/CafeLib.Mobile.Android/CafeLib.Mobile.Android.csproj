@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Effects\PlatformViewLifecycleEffect.cs" />
+    <Compile Include="Effects\PlatformLifecycleEffect.cs" />
     <Compile Include="Renderers\NavigationClickListener.cs" />
     <Compile Include="Renderers\MasterDetailMenuClickListener.cs" />
     <Compile Include="Renderers\NavigationPageRenderer.cs" />

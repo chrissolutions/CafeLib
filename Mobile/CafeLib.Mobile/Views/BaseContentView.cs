@@ -36,15 +36,26 @@ namespace CafeLib.Mobile.Views
         public Action Disappearing => OnDisappearing;
 
         /// <summary>
+        /// 
+        /// </summary>
+        public Action Loaded => OnLoad;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public Action Unloaded => OnUnload;
+
+
+        /// <summary>
         /// BaseContextView constructor.
         /// </summary>
         public BaseContentView()
         {
             _subscriberHandles = new List<Guid>();
-            var lifecycleEffect = new ViewLifecycleEffect();
-            lifecycleEffect.Loaded += (s, e) => OnLoad();
-            lifecycleEffect.Unloaded += (s, e) => OnUnload();
-            Effects.Add(lifecycleEffect);
+            //var lifecycleEffect = new ViewLifecycleEffect();
+            //lifecycleEffect.Loaded += (s, e) => OnLoad();
+            //lifecycleEffect.Unloaded += (s, e) => OnUnload();
+            //Effects.Add(lifecycleEffect);
         }
 
         /// <summary>
