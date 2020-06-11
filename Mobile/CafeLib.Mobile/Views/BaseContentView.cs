@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using CafeLib.Core.Eventing;
 using CafeLib.Core.IoC;
-using CafeLib.Mobile.Effects;
 using CafeLib.Mobile.Extensions;
 using CafeLib.Mobile.ViewModels;
 using Xamarin.Forms;
@@ -14,6 +13,7 @@ namespace CafeLib.Mobile.Views
     public class BaseContentView : ContentView
     {
         private readonly List<Guid> _subscriberHandles;
+        private BaseViewModel _viewModel;
 
         /// <summary>
         /// The viewmodel bound to the page.
@@ -52,10 +52,6 @@ namespace CafeLib.Mobile.Views
         public BaseContentView()
         {
             _subscriberHandles = new List<Guid>();
-            //var lifecycleEffect = new ViewLifecycleEffect();
-            //lifecycleEffect.Loaded += (s, e) => OnLoad();
-            //lifecycleEffect.Unloaded += (s, e) => OnUnload();
-            //Effects.Add(lifecycleEffect);
         }
 
         /// <summary>
@@ -63,8 +59,14 @@ namespace CafeLib.Mobile.Views
         /// </summary>
         public BaseViewModel ViewModel
         {
-            get => BindingContext as BaseViewModel;
-            set => BindingContext = value;
+            get => _viewModel;
+            set
+            {
+                if (_viewModel == value) return;
+                _viewModel = value;
+                BindingContext = _viewModel;
+                Application.Current.RunOnMainThread(async () => await _viewModel.Initialize());
+            }
         }
 
         /// <summary>
@@ -111,16 +113,6 @@ namespace CafeLib.Mobile.Views
                 _subscriberHandles.ForEach(x => EventService.Unsubscribe(x));
                 _subscriberHandles.Clear();
             }
-        }
-
-        /// <summary>
-        /// Process changes to the binding context.
-        /// </summary>
-        protected override void OnBindingContextChanged()
-        {
-            base.OnBindingContextChanged();
-            if (ViewModel == null) return;
-            Application.Current.RunOnMainThread(async () => await ViewModel.Initialize());
         }
 
         /// <summary>
