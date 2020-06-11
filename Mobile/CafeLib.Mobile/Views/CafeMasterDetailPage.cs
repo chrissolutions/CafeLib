@@ -1,14 +1,12 @@
-﻿using System;
-using CafeLib.Core.IoC;
+﻿using CafeLib.Core.IoC;
 using CafeLib.Mobile.Extensions;
 using CafeLib.Mobile.ViewModels;
 using Xamarin.Forms;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.Views
 {
-    public abstract class BaseContentPage : ContentPage, IPageBase
+    public abstract class CafeMasterDetailPage : MasterDetailPage, IPageBase, ISoftNavigationPage
     {
         /// <summary>
         /// The viewmodel bound to the page.
@@ -19,16 +17,6 @@ namespace CafeLib.Mobile.Views
         /// Navigation ownership.
         /// </summary>
         public INavigableOwner Owner { get; internal set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public Action Loaded => OnLoad;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public Action Unloaded => OnUnload;
 
         /// <summary>
         /// Get the view model bound to the page.
@@ -55,8 +43,8 @@ namespace CafeLib.Mobile.Views
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            if (GetViewModel<BaseViewModel>()?.AppearingCommand == null) return;
-            await GetViewModel<BaseViewModel>().AppearingCommand.ExecuteAsync();
+            if (GetMasterDetailViewModel()?.AppearingCommand == null) return;
+            await GetMasterDetailViewModel().AppearingCommand.ExecuteAsync();
         }
 
         /// <summary>
@@ -65,16 +53,16 @@ namespace CafeLib.Mobile.Views
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            if (GetViewModel<BaseViewModel>()?.DisappearingCommand == null) return;
-            GetViewModel<BaseViewModel>()?.DisappearingCommand.Execute(null);
+            if (GetMasterDetailViewModel()?.DisappearingCommand == null) return;
+            GetMasterDetailViewModel()?.DisappearingCommand.ExecuteAsync();
         }
-
+        
         /// <summary>
         /// Process OnLoad lifecycle event.
         /// </summary>
         protected virtual void OnLoad()
         {
-            GetViewModel<BaseViewModel>()?.LoadCommand.Execute(null);
+            GetMasterDetailViewModel()?.LoadCommand.Execute(null);
         }
 
         /// <summary>
@@ -82,51 +70,44 @@ namespace CafeLib.Mobile.Views
         /// </summary>
         protected virtual void OnUnload()
         {
-            GetViewModel<BaseViewModel>()?.UnloadCommand.Execute(null);
-        }
+            GetMasterDetailViewModel()?.UnloadCommand.Execute(null);
+		}        
 
         /// <summary>
         /// Process hardware back button press event.
-        /// </summary>
+        /// </summary>s
         /// <returns>true: ignore behavior; false: default behavior</returns>
         protected override bool OnBackButtonPressed()
         {
-            return GetViewModel<BaseViewModel>()?.BackButtonPressed.Execute(NavigationSource.Hardware) ?? false;
+            return GetMasterDetailViewModel()?.BackButtonPressed.Execute(NavigationSource.Hardware) ?? false;
         }
 
         /// <summary>
         /// Process software back button press event.
         /// </summary>
         /// <returns>true: ignore behavior; false: default behavior</returns>
-        public virtual bool OnSoftBackButtonPressed()
+        public bool OnSoftBackButtonPressed()
         {
-            return GetViewModel<BaseViewModel>()?.BackButtonPressed.Execute(NavigationSource.Software) ?? false;
-        }
-    }
-
-    public abstract class BaseContentPage<T> : BaseContentPage, ISoftNavigationPage where T : BaseViewModel
-    {
-        /// <summary>
-        /// The viewmodel bound to the page.
-        /// </summary>
-        public T ViewModel => GetViewModel<T>();
-
-        /// <summary>
-        /// Default constructor to allow creation of simple fakes for unit testing.
-        /// This constructor should never be used in production code.
-        /// </summary>
-        protected BaseContentPage()
-        {
-            SetViewModel(ResolveViewModel());
+            return GetMasterDetailViewModel()?.BackButtonPressed.Execute(NavigationSource.Software) ?? false;
         }
 
         /// <summary>
-        /// Resolve view model.
+        /// Return the proper view model from master-detail context. 
         /// </summary>
         /// <returns></returns>
-        protected T ResolveViewModel()
+        private BaseViewModel GetMasterDetailViewModel()
         {
-            return Resolver.Resolve<T>();
+            switch (Detail)
+            {
+                case NavigationPage navPage:
+                    return navPage.CurrentPage.GetViewModel<BaseViewModel>();
+
+                case Page _:
+                    return Detail.GetViewModel<BaseViewModel>();
+
+                case null:
+                    return GetViewModel<BaseViewModel>();
+            }
         }
     }
 }

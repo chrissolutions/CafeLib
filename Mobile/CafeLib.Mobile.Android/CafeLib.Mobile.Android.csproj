@@ -46,6 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Effects\PlatformLifecycleEffect.cs" />
+    <Compile Include="Renderers\CafeContentPageRenderer.cs" />
+    <Compile Include="Renderers\CafeContentViewRenderer.cs" />
     <Compile Include="Renderers\NavigationClickListener.cs" />
     <Compile Include="Renderers\MasterDetailMenuClickListener.cs" />
     <Compile Include="Renderers\NavigationPageRenderer.cs" />

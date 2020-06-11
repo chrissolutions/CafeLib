@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Effects\PlatformLifecycleEffect.cs" />
+    <Compile Include="Renderers\CafeContentPageRenderer.cs" />
+    <Compile Include="Renderers\CafeContentViewRenderer.cs" />
     <Compile Include="Runtime\Messaging.cs" />
     <Compile Include="Renderers\NavigationPageRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

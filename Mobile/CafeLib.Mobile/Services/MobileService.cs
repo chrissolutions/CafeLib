@@ -158,7 +158,7 @@ namespace CafeLib.Mobile.Services
             var page = vm.ResolvePage();
             page.SetViewModel(vm);
 
-            if (page.GetAttribute<ShowModalInNavigatorAttribute>() != null)
+            if (page.GetAttribute<ShowModalInHostAttribute>() != null)
             {
                 await GetCurrentNavigation().PushModalAsync(new ModalNavigationPage(page), animate);
             }

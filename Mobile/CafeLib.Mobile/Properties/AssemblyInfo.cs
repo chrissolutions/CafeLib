@@ -3,11 +3,11 @@ using System.Runtime.CompilerServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-// [assembly: AssemblyTitle("CafeLib.Core.Data")]
+// [assembly: AssemblyTitle("CafeLib.Mobile")]
 // [assembly: AssemblyDescription("")]
 // [assembly: AssemblyConfiguration("")]
 // [assembly: AssemblyCompany("")]
-// [assembly: AssemblyProduct("CafeLib.Core.Data")]
+// [assembly: AssemblyProduct("CafeLib.Mobile")]
 // [assembly: AssemblyCopyright("Copyright ©  2020")]
 // [assembly: AssemblyTrademark("")]
 // [assembly: AssemblyCulture("")]
@@ -29,7 +29,6 @@ using System.Runtime.CompilerServices;
 //
 // [assembly: AssemblyVersion("1.0.0.0")]
 // [assembly: AssemblyFileVersion("1.0.0.0")]
-//[assembly: InternalsVisibleTo("CafeLib.Data")]
-//[assembly: InternalsVisibleTo("CafeLib.Data.Expressions")]
-//[assembly: InternalsVisibleTo("CafeLib.Data.SqlGenerator")]
+[assembly: InternalsVisibleTo("CafeLib.Mobile.Android")]
+[assembly: InternalsVisibleTo("CafeLib.Mobile.iOS")]
 

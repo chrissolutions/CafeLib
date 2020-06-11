@@ -3,7 +3,7 @@
 
 namespace CafeLib.Mobile.Views
 {
-    public class BaseToolbarItem : ToolbarItem
+    public class CafeToolbarItem : ToolbarItem
     {
         public Color BarBackgroundColor { get; set; }
         public Color BarTextColor { get; set; }

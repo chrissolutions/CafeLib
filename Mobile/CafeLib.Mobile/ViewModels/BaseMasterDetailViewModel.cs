@@ -19,7 +19,7 @@ namespace CafeLib.Mobile.ViewModels
             set
             {
                 if (!SetValue(ref _isPresented, value)) return;
-                ResolvePageAs<BaseMasterDetailPage>().IsPresented = value;
+                ResolvePageAs<CafeMasterDetailPage>().IsPresented = value;
                 _presentedCommand.Execute(_isPresented);
             }
         }

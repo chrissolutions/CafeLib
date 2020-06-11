@@ -5,12 +5,11 @@ using CafeLib.Core.IoC;
 using CafeLib.Mobile.Extensions;
 using CafeLib.Mobile.ViewModels;
 using Xamarin.Forms;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.Views
 {
-    public class BaseContentView : ContentView
+    public abstract class CafeContentView : ContentView
     {
         private readonly List<Guid> _subscriberHandles;
         private BaseViewModel _viewModel;
@@ -26,30 +25,19 @@ namespace CafeLib.Mobile.Views
         protected IEventService EventService => Resolver.Resolve<IEventService>();
 
         /// <summary>
-        /// Notify appearance of content view from external source.
-        /// </summary>
-        public Action Appearing => OnAppearing;
-
-        /// <summary>
-        /// Notify disappearance of content view from external source.
-        /// </summary>
-        public Action Disappearing => OnDisappearing;
-
-        /// <summary>
-        /// 
+        /// Notify that the content view was loaded.
         /// </summary>
         public Action Loaded => OnLoad;
 
         /// <summary>
-        /// 
+        /// Notify that the content view was unloaded.
         /// </summary>
         public Action Unloaded => OnUnload;
-
 
         /// <summary>
         /// BaseContextView constructor.
         /// </summary>
-        public BaseContentView()
+        protected CafeContentView()
         {
             _subscriberHandles = new List<Guid>();
         }
@@ -67,26 +55,6 @@ namespace CafeLib.Mobile.Views
                 BindingContext = _viewModel;
                 Application.Current.RunOnMainThread(async () => await _viewModel.Initialize());
             }
-        }
-
-        /// <summary>
-        /// Process OnAppearing lifecycle event.
-        /// </summary>
-        protected virtual async void OnAppearing()
-        {
-            if (ViewModel == null) return;
-            ViewModel.IsVisible = true;
-            await ViewModel.AppearingCommand.ExecuteAsync();
-        }
-
-        /// <summary>
-        /// Process OnDisappearing lifecycle event.
-        /// </summary>
-        protected virtual async void OnDisappearing()
-        {
-            if (ViewModel == null) return;
-            await ViewModel.DisappearingCommand.ExecuteAsync();
-            ViewModel.IsVisible = false;
         }
 
         /// <summary>
@@ -133,6 +101,18 @@ namespace CafeLib.Mobile.Views
         protected void SubscribeEvent<T>(Action<T> action) where T : IEventMessage
         {
             _subscriberHandles.Add(EventService.SubscribeOnMainThread(action));
+        }
+    }
+
+    public abstract class CafeContentView<T> : CafeContentView where T : BaseViewModel
+    {
+        /// <summary>
+        /// The view model bound to the view.
+        /// </summary>
+        public new T ViewModel
+        {
+            get => base.ViewModel as T;
+            set => base.ViewModel = value;
         }
     }
 }

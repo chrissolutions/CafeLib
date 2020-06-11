@@ -19,8 +19,8 @@ namespace CafeLib.Mobile.Views
         {
             SetOwner(root, this);
 
-            var toolbarItem = (root as BaseContentPage)?.ToolbarItems?.FirstOrDefault() as BaseToolbarItem 
-                              ?? new BaseToolbarItem {BarBackgroundColor = root.BackgroundColor, BarTextColor = BarTextColor};
+            var toolbarItem = (root as CafeContentPage)?.ToolbarItems?.FirstOrDefault() as CafeToolbarItem 
+                              ?? new CafeToolbarItem {BarBackgroundColor = root.BackgroundColor, BarTextColor = BarTextColor};
             BarBackgroundColor = toolbarItem.BarBackgroundColor;
             BarTextColor = toolbarItem.BarTextColor;
 
@@ -44,11 +44,11 @@ namespace CafeLib.Mobile.Views
         {
             switch (page)
             {
-                case BaseContentPage contentPage:
+                case CafeContentPage contentPage:
                     contentPage.Owner = owner;
                     break;
 
-                case BaseMasterDetailPage masterDetailPage:
+                case CafeMasterDetailPage masterDetailPage:
                     masterDetailPage.Owner = owner;
                     break;
 
