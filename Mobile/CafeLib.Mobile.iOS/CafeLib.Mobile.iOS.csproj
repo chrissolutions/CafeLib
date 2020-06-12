@@ -42,7 +42,8 @@
   <ItemGroup>
     <Compile Include="Renderers\CafeContentPageRenderer.cs" />
     <Compile Include="Renderers\CafeContentViewRenderer.cs" />
-    <Compile Include="Plugin.cs" />
+    <Compile Include="Toolkit.cs" />
+    <Compile Include="Renderers\NavigationPageRenderer.cs" />
     <Compile Include="Runtime\Messaging.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

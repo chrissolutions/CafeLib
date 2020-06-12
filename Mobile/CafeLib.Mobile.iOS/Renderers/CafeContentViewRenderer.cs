@@ -11,10 +11,6 @@ namespace CafeLib.Mobile.iOS.Renderers
     {
         private bool _isDisposed;
 
-        internal static void Initialize()
-        {
-        }
-
         protected override void OnElementChanged(ElementChangedEventArgs<View> e)
         {
             base.OnElementChanged(e);

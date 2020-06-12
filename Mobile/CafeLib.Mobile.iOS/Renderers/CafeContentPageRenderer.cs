@@ -11,10 +11,6 @@ namespace CafeLib.Mobile.iOS.Renderers
     {
         private bool _isDisposed;
 
-        internal static void Initialize()
-        {
-        }
-
         public override void ViewDidLoad()
         {
             (Element as CafeContentPage)?.Loaded();

@@ -9,19 +9,16 @@ using Xamarin.Forms.Platform.iOS;
 
 namespace CafeLib.Mobile.iOS.Renderers
 {
-    public class NavigationPageRenderer : NavigationRenderer //PageRenderer
+    public class NavigationPageRenderer : NavigationRenderer
     {
-        internal static void Initialize()
-        {
-        }
-
         public override void ViewWillAppear(bool animated)
         {
             base.ViewWillAppear(animated);
 
-            if (!(Element is ISoftNavigationPage page)) return;
+            var rootPage = ((NavigationPage) Element).RootPage;
+            if (!(rootPage is ISoftNavigationPage page)) return;
 
-            var root = NavigationController.TopViewController;
+            var root = TopViewController;
             var backButton = root.NavigationItem.LeftBarButtonItem;
 
             var title = "<" + (string.IsNullOrEmpty(NavigationPage.GetBackButtonTitle(Element))

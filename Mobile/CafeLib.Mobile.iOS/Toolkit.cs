@@ -8,13 +8,10 @@ using UIKit;
 
 namespace CafeLib.Mobile.iOS
 {
-    public class Plugin
+    public class Toolkit
     {
         public static void Init()
         {
-            CafeContentPageRenderer.Initialize();
-            CafeContentViewRenderer.Initialize();
-            //NavigationPageRenderer.Initialize();
         }
     }
 }
