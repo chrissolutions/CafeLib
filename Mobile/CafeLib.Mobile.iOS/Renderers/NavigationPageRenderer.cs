@@ -9,7 +9,7 @@ using Xamarin.Forms.Platform.iOS;
 
 namespace CafeLib.Mobile.iOS.Renderers
 {
-    public class NavigationPageRenderer : PageRenderer
+    public class NavigationPageRenderer : NavigationRenderer //PageRenderer
     {
         internal static void Initialize()
         {
