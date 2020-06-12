@@ -1,6 +1,5 @@
 ﻿using CafeLib.Mobile.iOS.Renderers;
 using CafeLib.Mobile.Views;
-using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
@@ -11,6 +10,10 @@ namespace CafeLib.Mobile.iOS.Renderers
     public class CafeContentViewRenderer : ViewRenderer
     {
         private bool _isDisposed;
+
+        internal static void Initialize()
+        {
+        }
 
         protected override void OnElementChanged(ElementChangedEventArgs<View> e)
         {

@@ -11,6 +11,10 @@ namespace CafeLib.Mobile.iOS.Renderers
 {
     public class NavigationPageRenderer : PageRenderer
     {
+        internal static void Initialize()
+        {
+        }
+
         public override void ViewWillAppear(bool animated)
         {
             base.ViewWillAppear(animated);
