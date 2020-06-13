@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Drawing;
 using System.Runtime.InteropServices;
-
 using AudioToolbox;
-using AudioUnit;
 using AVFoundation;
 using CoreAnimation;
 using CoreGraphics;
