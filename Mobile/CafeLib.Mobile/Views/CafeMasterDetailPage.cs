@@ -14,11 +14,6 @@ namespace CafeLib.Mobile.Views
         protected IServiceResolver Resolver => Application.Current.Resolve<IServiceResolver>();
 
         /// <summary>
-        /// Navigation ownership.
-        /// </summary>
-        public INavigableOwner Owner { get; internal set; }
-
-        /// <summary>
         /// Get the view model bound to the page.
         /// </summary>
         /// <typeparam name="TViewModel">view model type</typeparam>

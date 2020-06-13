@@ -16,17 +16,12 @@ namespace CafeLib.Mobile.Views
         protected IServiceResolver Resolver => Application.Current.Resolve<IServiceResolver>();
 
         /// <summary>
-        /// Navigation ownership.
-        /// </summary>
-        public INavigableOwner Owner { get; internal set; }
-
-        /// <summary>
-        /// 
+        /// Page loaded sink.
         /// </summary>
         public Action Loaded => OnLoad;
 
         /// <summary>
-        /// 
+        /// Page unloaded sink.
         /// </summary>
         public Action Unloaded => OnUnload;
 
