@@ -15,11 +15,12 @@ namespace CafeLib.Mobile.iOS.Renderers
         {
             base.OnElementChanged(e);
 
-            if (e.OldElement == null && e.NewElement != null)
+            if (e.NewElement != null)
             {
                 (Element as CafeContentView)?.Loaded();
             }
-            else if (e.OldElement != null && e.NewElement == null)
+
+            if (e.OldElement != null)
             {
                 (Element as CafeContentView)?.Unloaded();
             }
