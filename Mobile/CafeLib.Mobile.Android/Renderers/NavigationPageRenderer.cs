@@ -2,12 +2,10 @@
 using Android.Content;
 using Android.Support.V4.App;
 using Android.Support.V7.Widget;
-using CafeLib.Mobile.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using NavigationPageRenderer = CafeLib.Mobile.Android.Renderers.NavigationPageRenderer;
-using View = Android.Views.View;
 
 [assembly: ExportRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer))]
 
