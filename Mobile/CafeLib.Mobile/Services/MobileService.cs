@@ -282,22 +282,10 @@ namespace CafeLib.Mobile.Services
             _resolver?.Dispose();
         }
 
-        ///// <summary>
-        ///// Create an application navigator.
-        ///// </summary>
-        ///// <param name="page">content page</param>
-        ///// <returns>previous navigator</returns>
-        //private NavigationPage CreateNavigator(Page page)
-        //{
-        //    if (page == null) throw new ArgumentNullException(nameof(page));
-        //    var contentPage = page is MasterDetailPage masterDetailPage ? masterDetailPage.Detail : page;
-        //    return contentPage.IsNavigationPage() ? (NavigationPage)contentPage : new NavigationPage(contentPage);
-        //}
-
         /// <summary>
-        /// 
+        /// Obtain the current navigation page
         /// </summary>
-        /// <returns></returns>
+        /// <returns>current navigation page</returns>
         private static NavigationPage GetCurrentNavigationPage()
         {
             static NavigationPage GetPage(Page page)
@@ -461,7 +449,7 @@ namespace CafeLib.Mobile.Services
         /// <returns></returns>
         public object GetService(Type serviceType)
         {
-            throw new NotImplementedException();
+            return _resolver.GetService(serviceType);
         }
     }
 }

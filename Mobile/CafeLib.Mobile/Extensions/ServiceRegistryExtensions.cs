@@ -1,10 +1,8 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using CafeLib.Core.Collections;
 using CafeLib.Core.Eventing;
 using CafeLib.Core.IoC;
 using CafeLib.Mobile.Attributes;
-using CafeLib.Mobile.Support;
 using CafeLib.Mobile.ViewModels;
 // ReSharper disable UnusedMember.Global
 
