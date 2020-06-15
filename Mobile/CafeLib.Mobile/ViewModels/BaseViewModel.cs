@@ -24,8 +24,8 @@ namespace CafeLib.Mobile.ViewModels
         protected internal enum LifecycleState
         {
             Initial,
-            Appearing,
             Load,
+            Appearing,
             Close,
             Disappearing,
             Unload

@@ -62,6 +62,7 @@ namespace CafeLib.Mobile.Views
         /// </summary>
         protected virtual async void OnLoad()
         {
+            _subscriberHandles.Clear();
             if (ViewModel == null) return;
             await ViewModel.LoadCommand.ExecuteAsync();
         }
