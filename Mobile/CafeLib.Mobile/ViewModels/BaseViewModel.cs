@@ -23,7 +23,7 @@ namespace CafeLib.Mobile.ViewModels
 
         protected internal enum LifecycleState
         {
-            Initial,
+            Initiate,
             Load,
             Appearing,
             Close,
@@ -39,7 +39,7 @@ namespace CafeLib.Mobile.ViewModels
             _onInitSubscribers = new List<Guid>();
             _onAppearingSubscribers = new List<Guid>();
             Resolver = Application.Current.Resolve<IServiceResolver>();
-            Lifecycle = LifecycleState.Initial;
+            Lifecycle = LifecycleState.Initiate;
             InitCommand = new XamAsyncCommand(() => { });
             AppearingCommand = new XamAsyncCommand(() => { });
             DisappearingCommand = new XamAsyncCommand(() => { });
@@ -65,12 +65,12 @@ namespace CafeLib.Mobile.ViewModels
         }
 
         /// <summary>
-        /// Initialize view model.
+        /// Initiate the view model.
         /// </summary>
         /// <returns></returns>
-        public async Task Initialize()
+        public async Task Initiate()
         {
-            await InitCommand.ExecuteAsync();
+            await ExecuteCommand(_initCommand);
         }
 
         /// <summary>
@@ -104,18 +104,18 @@ namespace CafeLib.Mobile.ViewModels
         protected IEventService EventService => Resolver.Resolve<IEventService>();
 
         /// <summary>
-        /// Appearing command.
+        /// Init command.
         /// </summary>
-        private IXamAsyncCommand _initCommand;
+        private protected ICommand _initCommand;
 
         public IXamAsyncCommand InitCommand
         {
-            protected get => _initCommand;
+            protected get => (IXamAsyncCommand)_initCommand;
             set
             {
                 _initCommand = new XamAsyncCommand(async () =>
                 {
-                    Lifecycle = LifecycleState.Initial;
+                    Lifecycle = LifecycleState.Initiate;
                     await ExecuteCommand(value);
                 });
             }
@@ -376,7 +376,7 @@ namespace CafeLib.Mobile.ViewModels
                     _onAppearingSubscribers.Clear();
                     break;
 
-                case LifecycleState.Initial:
+                case LifecycleState.Initiate:
                 case LifecycleState.Load:
                 case LifecycleState.Unload:
                     _onInitSubscribers.ForEach(x => EventService.Unsubscribe(x));
@@ -409,7 +409,7 @@ namespace CafeLib.Mobile.ViewModels
                     _onAppearingSubscribers.Add(EventService.SubscribeOnMainThread(action));
                     break;
 
-                case LifecycleState.Initial: 
+                case LifecycleState.Initiate: 
                 case LifecycleState.Load:
                     _onInitSubscribers.Add(EventService.SubscribeOnMainThread(action));
                     break;
@@ -528,25 +528,23 @@ namespace CafeLib.Mobile.ViewModels
         /// </summary>
         /// <param name="parameter">initialization parameter</param>
         /// <returns></returns>
-        public async Task Initialize(TParameter parameter)
+        public async Task Initiate(TParameter parameter)
         {
             var task = typeof(TParameter) != typeof(object) ? InitCommand.ExecuteAsync(parameter) : InitCommand.ExecuteAsync();
             await task;
         }
 
         /// <summary>
-        /// Appearing command.
+        /// Init command.
         /// </summary>
-        private IXamAsyncCommand<TParameter> _initCommand;
-
         public new IXamAsyncCommand<TParameter> InitCommand
         {
-            protected get => _initCommand;
+            protected get => (IXamAsyncCommand<TParameter>)_initCommand;
             set
             {
                 _initCommand = new XamAsyncCommand<TParameter>(async x =>
                 {
-                    Lifecycle = LifecycleState.Initial;
+                    Lifecycle = LifecycleState.Initiate;
                     await ExecuteCommand(value, x);
                 });
             }

@@ -53,7 +53,7 @@ namespace CafeLib.Mobile.Views
                 if (_viewModel == value) return;
                 _viewModel = value;
                 BindingContext = _viewModel;
-                Application.Current.RunOnMainThread(async () => await _viewModel.Initialize());
+                Application.Current.RunOnMainThread(async () => await _viewModel.Initiate());
             }
         }
 

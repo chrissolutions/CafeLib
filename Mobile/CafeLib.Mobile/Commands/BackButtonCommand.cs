@@ -5,6 +5,11 @@ namespace CafeLib.Mobile.Commands
 {
     public class BackButtonCommand : XamCommand<NavigationSource, bool>
     {
+        public BackButtonCommand(bool result = false)
+            : base(p => result)
+        {
+        }
+
         public BackButtonCommand(Action<NavigationSource> command, bool result = true)
             : base(p => { command(p); return result; })
         {
