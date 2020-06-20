@@ -18,12 +18,12 @@ namespace CafeLib.Mobile.Views
         /// <summary>
         /// Page loaded sink.
         /// </summary>
-        public Action Loaded => OnLoad;
+        internal Action Loaded => OnLoad;
 
         /// <summary>
         /// Page unloaded sink.
         /// </summary>
-        public Action Unloaded => OnUnload;
+        internal Action Unloaded => OnUnload;
 
         /// <summary>
         /// Get the view model bound to the page.

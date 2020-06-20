@@ -27,12 +27,12 @@ namespace CafeLib.Mobile.Views
         /// <summary>
         /// Notify that the content view was loaded.
         /// </summary>
-        public Action Loaded => OnLoad;
+        internal Action Loaded => OnLoad;
 
         /// <summary>
         /// Notify that the content view was unloaded.
         /// </summary>
-        public Action Unloaded => OnUnload;
+        internal Action Unloaded => OnUnload;
 
         /// <summary>
         /// BaseContextView constructor.
