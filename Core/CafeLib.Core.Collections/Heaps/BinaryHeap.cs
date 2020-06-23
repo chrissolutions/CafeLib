@@ -2,8 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+// ReSharper disable InvertIf
+// ReSharper disable SuggestVarOrType_SimpleTypes
+// ReSharper disable SuggestVarOrType_BuiltInTypes
+// ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Core.Collections
+namespace CafeLib.Core.Collections.Heaps
 {
     public class BinaryHeap<T> : IEnumerable<T> where T : IComparable<T>
     {
@@ -29,7 +33,7 @@ namespace CafeLib.Core.Collections
                 : new List<T>();
 
             // Add placeholder in top position.
-            _list.Add(default(T));
+            _list.Add(default);
         }
 
         #endregion
@@ -91,17 +95,17 @@ namespace CafeLib.Core.Collections
         public void Clear()
         {
             _list.Clear();
-            _list.Add(default(T));
+            _list.Add(default);
         }
 
         public bool Contains(T item)
         {
-            throw new NotImplementedException();
+            return _list.Contains(item);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            _list.CopyTo(array, arrayIndex);
         }
 
         /// <summary>
@@ -125,7 +129,7 @@ namespace CafeLib.Core.Collections
         public T Remove()
         {
             if (!this.Any())
-                return default(T);
+                return default;
 
             var topItem = _list[1];
             _list[1] = _list[Count];

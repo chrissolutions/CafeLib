@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CafeLib.Core.Collections\CafeLib.Core.Collections.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Runnable\CafeLib.Core.Runnable.csproj" />
     <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />
   </ItemGroup>

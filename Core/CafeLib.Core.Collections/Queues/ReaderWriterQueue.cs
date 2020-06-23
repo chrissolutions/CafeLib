@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
-
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Core.Queueing
+namespace CafeLib.Core.Collections.Queues
 {
     /// <summary>
-    /// Core producer/consumer queue.
+    /// ReaderWriterQueue.
     /// </summary>
-    internal class QueueCore<T> : IDisposable
+    public class ReaderWriterQueue<T> : IQueue<T>, IDisposable
     {
         #region Private Members
 
@@ -34,7 +35,7 @@ namespace CafeLib.Core.Queueing
         /// <summary>
         /// QueueCore constructor.
         /// </summary>
-        public QueueCore()
+        public ReaderWriterQueue()
         {
             Clear();
         }
@@ -42,7 +43,7 @@ namespace CafeLib.Core.Queueing
         /// <summary>
         /// QueueCore finalizer.
         /// </summary>
-        ~QueueCore()
+        ~ReaderWriterQueue()
         {
             Dispose(false);
         }
@@ -50,6 +51,17 @@ namespace CafeLib.Core.Queueing
         #endregion
 
         #region Methods
+		
+        /// <summary>
+        /// Clears the queue.
+        /// </summary>
+        public void Clear()
+        {
+            Dispose(true);
+            _producer = new SemaphoreSlim(0, int.MaxValue);
+            _consumer = new SemaphoreSlim(int.MaxValue, int.MaxValue);
+            _queue = new ConcurrentQueue<T>();
+        }
 
         /// <summary>
         /// Enqueue a request context and release the semaphore that
@@ -73,15 +85,26 @@ namespace CafeLib.Core.Queueing
             return item;
         }
 
-        /// <summary>
-        /// Clears the queue.
-        /// </summary>
-        public void Clear()
+        public bool TryDequeue(out T result)
         {
-            Dispose(true);
-            _producer = new SemaphoreSlim(0, int.MaxValue);
-            _consumer = new SemaphoreSlim(int.MaxValue, int.MaxValue);
-            _queue = new ConcurrentQueue<T>();
+            _producer.Wait();
+            _consumer.Release();
+            return _queue.TryDequeue(out result);
+        }
+
+        public bool TryPeek(out T result)
+        {
+            return _queue.TryPeek(out result);
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _queue.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         #endregion

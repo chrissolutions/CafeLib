@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using CafeLib.Core.Collections.Queues;
 using CafeLib.Core.Runnable;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Queueing
@@ -11,12 +10,12 @@ namespace CafeLib.Core.Queueing
     /// Facilitates the producer/consumer queue.
     /// </summary>
     /// <typeparam name="T">queue item type</typeparam>
-    public abstract class QueueProducer<T> : RunnerBase, IQueueProducer<T>
+    public abstract class PriorityQueueProducer<T> : RunnerBase, IPriorityQueueProducer<T>
     {
         #region Private Members
 
         private readonly IQueueConsumer<T> _queueConsumer;
-        private readonly ReaderWriterQueue<T> _queue;
+        private readonly ReaderWriterPriorityQueue<T> _queue;
 
         #endregion
 
@@ -27,12 +26,12 @@ namespace CafeLib.Core.Queueing
         /// </summary>
         /// <param name="queueConsumer">consumer queue</param>
         /// <param name="frequency">producer frequency</param>
-        protected QueueProducer(IQueueConsumer<T> queueConsumer, int frequency = default)
+        protected PriorityQueueProducer(IQueueConsumer<T> queueConsumer, int frequency = default)
             : base(frequency)
         {
             Contract.Assert(queueConsumer != null, nameof(queueConsumer));
             _queueConsumer = queueConsumer;
-            _queue = new ReaderWriterQueue<T>();
+            _queue = new ReaderWriterPriorityQueue<T>();
         }
 
         #endregion
@@ -45,7 +44,17 @@ namespace CafeLib.Core.Queueing
         /// <param name="item">item to queue</param>
         public void Produce(T item)
         {
-            _queue.Enqueue(item);
+            Produce(item, 0);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="priority"></param>
+        public void Produce(T item, int priority)
+        {
+            _queue.Enqueue(item, priority);
         }
 
         /// <summary>

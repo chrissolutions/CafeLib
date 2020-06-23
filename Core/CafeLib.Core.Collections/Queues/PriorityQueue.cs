@@ -2,11 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using CafeLib.Core.Collections.Internal;
+using CafeLib.Core.Collections.Heaps;
+// ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Core.Collections
+namespace CafeLib.Core.Collections.Queues
 {
-    public class PriorityQueue<T> : IEnumerable<T>  where T : IComparable<T>
+    public class PriorityQueue<T> : IQueue<T>
     {
         private readonly BinaryHeap<QueueEntry<T>> _heap;
         private readonly object _mutex = new object();
@@ -18,7 +19,18 @@ namespace CafeLib.Core.Collections
             _heap = new BinaryHeap<QueueEntry<T>>();
         }
 
-        public void Enqueue(T value, int priority = 0)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        public void Enqueue(T value) => Enqueue(value, 0);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="priority"></param>
+        public void Enqueue(T value, int priority)
         {
             lock (_mutex)
             {
@@ -26,12 +38,44 @@ namespace CafeLib.Core.Collections
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public T Dequeue()
         {
             lock (_mutex)
             {
                 return _heap.Remove().Value;
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public bool TryDequeue(out T result)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public bool TryPeek(out T result)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

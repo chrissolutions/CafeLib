@@ -7,7 +7,7 @@ using System.Text;
 using CafeLib.Core.Extensions;
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Core.Support
+namespace CafeLib.Core.Collections.Stores
 {
     public class KeyValueStore : IDictionary<string, string>
     {

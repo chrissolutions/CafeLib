@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using CafeLib.Core.Collections;
+using CafeLib.Core.Collections.Dictionaries;
 using CafeLib.Core.Extensions;
 using Xunit;
 

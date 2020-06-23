@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.Support;
 
-namespace CafeLib.Core.Collections
+namespace CafeLib.Core.Collections.Dictionaries
 {
     public class DictionaryService : SingletonBase<DictionaryService>, IDictionaryService
     {
