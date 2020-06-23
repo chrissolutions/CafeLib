@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using CafeLib.Core.Runnable;
+
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Core.Queueing
+namespace CafeLib.Core.Queueing.Producer
 {
     /// <summary>
     /// Facilitates the producer/consumer queue.

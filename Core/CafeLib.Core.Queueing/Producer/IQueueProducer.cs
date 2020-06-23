@@ -1,6 +1,6 @@
 ﻿using CafeLib.Core.Runnable;
 
-namespace CafeLib.Core.Queueing
+namespace CafeLib.Core.Queueing.Producer
 {
     public interface IQueueProducer<in T> : IRunnable
     {

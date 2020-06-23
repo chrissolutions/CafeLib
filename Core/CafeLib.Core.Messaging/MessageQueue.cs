@@ -1,5 +1,6 @@
 ﻿using CafeLib.Core.Eventing;
-using CafeLib.Core.Queueing;
+using CafeLib.Core.Queueing.Producer;
+
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Messaging

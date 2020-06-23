@@ -22,7 +22,7 @@ namespace CafeLib.Core.Eventing
         /// <summary>
         /// Synchronizes access to internal tables.
         /// </summary>
-        private static readonly object Mutex = new object();
+        private static readonly object _mutex = new object();
 
         /// <summary>
         /// EventBus constructor.
@@ -44,7 +44,7 @@ namespace CafeLib.Core.Eventing
         /// </typeparam>
         public Guid Subscribe<T>(Action<T> action) where T : IEventMessage
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 var subscribers = _subscriptions.GetOrAdd(typeof(T), new ConcurrentDictionary<Guid, EventSubscriber>());
                 var subscriber = new EventSubscriber<T>(action);
@@ -66,7 +66,7 @@ namespace CafeLib.Core.Eventing
         public void Publish<T>(T message) where T : IEventMessage
         {
             ConcurrentDictionary<Guid, EventSubscriber> subscribers;
-            lock (Mutex)
+            lock (_mutex)
             {
                 if (!_subscriptions.ContainsKey(typeof(T))) return;
                 subscribers = _subscriptions[typeof(T)];
@@ -82,14 +82,15 @@ namespace CafeLib.Core.Eventing
         /// </typeparam>
         public void Unsubscribe<T>() where T : IEventMessage
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 if (!_subscriptions.ContainsKey(typeof(T))) return;
                 var subscribers = _subscriptions[typeof(T)];
                 subscribers.ForEach(x =>
                 {
-                    subscribers.TryRemove(x.Key, out _);
-                    _lookup.TryRemove(x.Key, out _);
+                    var (key, _) = x;
+                    subscribers.TryRemove(key, out _);
+                    _lookup.TryRemove(key, out _);
                 });
                 _subscriptions.TryRemove(typeof(T), out _);
             }
@@ -113,7 +114,7 @@ namespace CafeLib.Core.Eventing
         /// <param name="subscriberId">subscriber identifier</param>
         public void Unsubscribe(Guid subscriberId)
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 if (!_lookup.ContainsKey(subscriberId)) return;
                 var subscriberType = _lookup[subscriberId];
@@ -145,7 +146,7 @@ namespace CafeLib.Core.Eventing
         private void Dispose(bool disposing)
         {
             if (!disposing) return;
-            lock (Mutex)
+            lock (_mutex)
             {
                 _subscriptions.ForEach(x => x.Value.Clear());
                 _subscriptions.Clear();

@@ -4,7 +4,7 @@ using System.Threading;
 
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Core.Queueing
+namespace CafeLib.Core.Queueing.Producer
 {
     /// <summary>
     /// Core producer/consumer queue.

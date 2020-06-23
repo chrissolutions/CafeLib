@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace CafeLib.Core.Queueing
+namespace CafeLib.Core.Queueing.Producer
 {
     public interface IQueueConsumer<in T>
     {

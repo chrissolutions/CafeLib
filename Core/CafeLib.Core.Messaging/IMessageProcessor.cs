@@ -1,5 +1,5 @@
 ﻿using CafeLib.Core.Eventing;
-using CafeLib.Core.Queueing;
+using CafeLib.Core.Queueing.Producer;
 
 namespace CafeLib.Core.Messaging
 {
