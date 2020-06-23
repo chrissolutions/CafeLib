@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CafeLib.Core.Queueing.Priority
+namespace CafeLib.Core.Collections.Internal
 {
     internal interface IRank<T> where T : IComparable<T>
     {

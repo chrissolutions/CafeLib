@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CafeLib.Core.Collections.Internal;
 
-namespace CafeLib.Core.Queueing.Priority
+namespace CafeLib.Core.Collections
 {
     public class PriorityQueue<T> : IEnumerable<T>  where T : IComparable<T>
     {

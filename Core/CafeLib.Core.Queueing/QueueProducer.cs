@@ -4,7 +4,7 @@ using CafeLib.Core.Runnable;
 
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Core.Queueing.Producer
+namespace CafeLib.Core.Queueing
 {
     /// <summary>
     /// Facilitates the producer/consumer queue.

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CafeLib.Core.Queueing.Priority
+namespace CafeLib.Core.Collections
 {
     public class BinaryHeap<T> : IEnumerable<T> where T : IComparable<T>
     {
