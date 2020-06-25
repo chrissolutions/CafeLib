@@ -79,7 +79,7 @@ namespace CafeLib.Core.Collections.Queues
         /// <param name="priority"></param>
         public void Enqueue(T item, int priority)
         {
-            _queue.Enqueue(item);
+            _queue.Enqueue(item, priority);
             _consumer.Wait();
             _producer.Release();
         }
