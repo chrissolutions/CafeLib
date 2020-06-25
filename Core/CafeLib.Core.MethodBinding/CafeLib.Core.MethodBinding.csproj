@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Copyright></Copyright>
+    <Description>Provides the ability to bind methods on a class for external use.</Description>
+    <PackageProjectUrl />
+    <PackageIconUrl></PackageIconUrl>
+    <PackageReleaseNotes>Support for method binding.</PackageReleaseNotes>
+    <Version>0.7.5</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyVersion>0.7.5.0</AssemblyVersion>
+    <FileVersion>0.7.5.0</FileVersion>
+    <PackageIcon>cafelib.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\cafelib.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

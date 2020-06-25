@@ -23,6 +23,7 @@ set sourcepath=C:\Projects\ChrisSolutions\CafeLib\%lib%
 %nuget% push %sourcepath%\CafeLib.Core.IoC\%libPath%\CafeLib.Core.IoC.%version%.nupkg %apikey% -source %nugetRepo%
 %nuget% push %sourcepath%\CafeLib.Core.Logging\%libPath%\CafeLib.Core.Logging.%version%.nupkg %apikey% -source %nugetRepo%
 %nuget% push %sourcepath%\CafeLib.Core.Messaging\%libPath%\CafeLib.Core.Messaging.%version%.nupkg %apikey% -source %nugetRepo%
+%nuget% push %sourcepath%\CafeLib.Core.MethodBinding\%libPath%\CafeLib.Core.MethodBinding.%version%.nupkg %apikey% -source %nugetRepo%
 %nuget% push %sourcepath%\CafeLib.Core.Queueing\%libPath%\CafeLib.Core.Queueing.%version%.nupkg %apikey% -source %nugetRepo%
 %nuget% push %sourcepath%\CafeLib.Core.Runnable\%libPath%\CafeLib.Core.Runnable.%version%.nupkg %apikey% -source %nugetRepo%
 
