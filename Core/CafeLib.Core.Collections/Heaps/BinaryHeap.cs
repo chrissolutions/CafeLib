@@ -5,7 +5,7 @@ using System.Linq;
 // ReSharper disable InvertIf
 // ReSharper disable SuggestVarOrType_SimpleTypes
 // ReSharper disable SuggestVarOrType_BuiltInTypes
-// ReSharper disable UnusedMember.Global
+// ReSharper disable StaticMemberInGenericType
 
 namespace CafeLib.Core.Collections.Heaps
 {
@@ -15,6 +15,7 @@ namespace CafeLib.Core.Collections.Heaps
 
         private readonly List<T> _list;
         private readonly int _comparison;
+        private static readonly object _mutex = new object();
 
         #endregion
 
@@ -28,7 +29,7 @@ namespace CafeLib.Core.Collections.Heaps
         public BinaryHeap(int capacity = 0, bool maxHeap = true)
         {
             _comparison = maxHeap ? 1 : -1;
-            _list = (capacity > 0)
+            _list = capacity > 0
                 ? new List<T>(capacity)
                 : new List<T>();
 
@@ -43,12 +44,16 @@ namespace CafeLib.Core.Collections.Heaps
         /// <summary>
         /// Returns the number of entries in the heap.
         /// </summary>
-        public int Count => _list.Count - 1;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool IsReadOnly => false;
+        public int Count
+        {
+            get
+            {
+                lock (_mutex)
+                {
+                    return _list.Count - 1;
+                }
+            }
+        }
 
         /// <summary>
         /// Determines whether the heap is a max-heap.
@@ -61,12 +66,18 @@ namespace CafeLib.Core.Collections.Heaps
 
         public IEnumerator<T> GetEnumerator()
         {
-            return _list.Skip(1).GetEnumerator();
+            lock (_mutex)
+            {
+                return _list.Skip(1).GetEnumerator();
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable<T>)_list).GetEnumerator();
+            lock (_mutex)
+            {
+                return ((IEnumerable<T>)_list).GetEnumerator();
+            }
         }
 
         /// <summary>
@@ -76,17 +87,20 @@ namespace CafeLib.Core.Collections.Heaps
         /// <param name="item">item to add to heap.</param>
         public void Add(T item)
         {
-            int slot = _list.Count;
-            _list.Add(item);
-
-            // Percolate up
-            while (slot > 1 && _comparison * item.CompareTo(_list[slot/2]) > 0)
+            lock (_mutex)
             {
-                _list[slot] = _list[slot/2];
-                slot /= 2;
-            }
+                int slot = _list.Count;
+                _list.Add(item);
 
-            _list[slot] = item;
+                // Percolate up
+                while (slot > 1 && _comparison * item.CompareTo(_list[slot / 2]) > 0)
+                {
+                    _list[slot] = _list[slot / 2];
+                    slot /= 2;
+                }
+
+                _list[slot] = item;
+            }
         }
 
         /// <summary>
@@ -94,18 +108,11 @@ namespace CafeLib.Core.Collections.Heaps
         /// </summary>
         public void Clear()
         {
-            _list.Clear();
-            _list.Add(default);
-        }
-
-        public bool Contains(T item)
-        {
-            return _list.Contains(item);
-        }
-
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            _list.CopyTo(array, arrayIndex);
+            lock (_mutex)
+            {
+                _list.Clear();
+                _list.Add(default);
+            }
         }
 
         /// <summary>
@@ -114,12 +121,15 @@ namespace CafeLib.Core.Collections.Heaps
         /// <returns></returns>
         public T Peek()
         {
-            if (this.Any())
+            lock (_mutex)
             {
-                return _list[1];
+                if (Count > 0)
+                {
+                    return _list[1];
+                }
             }
 
-            throw new InvalidOperationException();
+            throw new InvalidOperationException(nameof(Count));
         }
 
         /// <summary>
@@ -128,16 +138,18 @@ namespace CafeLib.Core.Collections.Heaps
         /// <returns>value</returns>
         public T Remove()
         {
-            if (!this.Any())
-                return default;
+            lock (_mutex)
+            {
+                if (Count == 0)
+                    return default;
 
-            var topItem = _list[1];
-            _list[1] = _list[Count];
-            _list.RemoveAt(Count);
-            TrickleDown(1);
-            return topItem;
+                var topItem = _list[1];
+                _list[1] = _list[Count];
+                _list.RemoveAt(Count);
+                TrickleDown(1);
+                return topItem;
+            }
         }
-
 
         #endregion
 

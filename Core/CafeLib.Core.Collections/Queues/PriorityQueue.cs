@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CafeLib.Core.Collections.Heaps;
-// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Collections.Queues
 {
     public class PriorityQueue<T> : IQueue<T>
     {
         private readonly BinaryHeap<QueueEntry<T>> _heap;
-        private readonly object _mutex = new object();
 
         public bool IsFifo => _heap.IsMaxHeap;
 
@@ -32,18 +29,15 @@ namespace CafeLib.Core.Collections.Queues
         /// <param name="priority"></param>
         public void Enqueue(T value, int priority)
         {
-            lock (_mutex)
-            {
-                _heap.Add(new QueueEntry<T>(value, priority));
-            }
+            _heap.Add(new QueueEntry<T>(value, priority));
         }
 
         /// <summary>
-        /// 
+        /// Clear priority queue.
         /// </summary>
         public void Clear()
         {
-            throw new NotImplementedException();
+            _heap.Clear();
         }
 
         /// <summary>
@@ -52,10 +46,7 @@ namespace CafeLib.Core.Collections.Queues
         /// <returns></returns>
         public T Dequeue()
         {
-            lock (_mutex)
-            {
-                return _heap.Remove().Value;
-            }
+            return _heap.Remove().Value;
         }
 
         /// <summary>
@@ -65,7 +56,16 @@ namespace CafeLib.Core.Collections.Queues
         /// <returns></returns>
         public bool TryDequeue(out T result)
         {
-            throw new NotImplementedException();
+            try
+            {
+                result = Dequeue();
+                return true;
+            }
+            catch
+            {
+                result = default;
+                return false;
+            }
         }
 
         /// <summary>
@@ -75,7 +75,16 @@ namespace CafeLib.Core.Collections.Queues
         /// <returns></returns>
         public bool TryPeek(out T result)
         {
-            throw new NotImplementedException();
+            try
+            {
+                result = Dequeue();
+                return true;
+            }
+            catch
+            {
+                result = default;
+                return false;
+            }
         }
 
         /// <summary>
