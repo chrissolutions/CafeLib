@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Core.Collections.Queues
+namespace CafeLib.Core.Collections
 {
     /// <summary>
     /// ReaderWriterQueue.

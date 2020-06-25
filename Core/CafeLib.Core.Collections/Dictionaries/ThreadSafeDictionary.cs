@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using CafeLib.Core.Extensions;
 
-namespace CafeLib.Core.Collections.Dictionaries
+namespace CafeLib.Core.Collections
 {
     public class ThreadSafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {

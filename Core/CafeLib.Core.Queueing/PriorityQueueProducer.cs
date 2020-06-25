@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
-using CafeLib.Core.Collections.Queues;
+using CafeLib.Core.Collections;
 using CafeLib.Core.Runnable;
 // ReSharper disable UnusedMember.Global
 

@@ -1,4 +1,4 @@
-﻿namespace CafeLib.Core.Collections.Queues
+﻿namespace CafeLib.Core.Collections
 {
     public interface IPriorityQueue<T> : IQueue<T>
     {

@@ -7,7 +7,7 @@ using System.Linq;
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable StaticMemberInGenericType
 
-namespace CafeLib.Core.Collections.Heaps
+namespace CafeLib.Core.Collections
 {
     public class BinaryHeap<T> : IEnumerable<T> where T : IComparable<T>
     {

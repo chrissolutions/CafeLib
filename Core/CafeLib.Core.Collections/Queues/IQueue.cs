@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CafeLib.Core.Collections.Queues
+namespace CafeLib.Core.Collections
 {
     public interface IQueue<T> : IReadOnlyCollection<T>
     {

@@ -1,8 +1,7 @@
 ﻿using System;
-
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Core.Collections.Dictionaries
+namespace CafeLib.Core.Collections
 {
     public interface IDictionaryService
     {

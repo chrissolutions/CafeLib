@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using CafeLib.Core.Collections.Heaps;
 
-namespace CafeLib.Core.Collections.Queues
+namespace CafeLib.Core.Collections
 {
     public class PriorityQueue<T> : IQueue<T>
     {

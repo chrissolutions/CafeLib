@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using CafeLib.Core.Collections.Queues;
+using CafeLib.Core.Collections;
 using Xunit;
 
 namespace CafeLib.Core.UnitTests

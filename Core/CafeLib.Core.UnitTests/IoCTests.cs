@@ -1,4 +1,4 @@
-using CafeLib.Core.Collections.Dictionaries;
+using CafeLib.Core.Collections;
 using CafeLib.Core.IoC;
 using CafeLib.Core.UnitTests.Logging;
 using CafeLib.Core.UnitTests.Services;

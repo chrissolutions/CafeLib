@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CafeLib.Core.Collections.Queues
+namespace CafeLib.Core.Collections
 {
     internal struct QueueEntry<T> : IRank<QueueEntry<T>>, IComparable<QueueEntry<T>>
     {
