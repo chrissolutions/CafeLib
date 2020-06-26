@@ -3,7 +3,7 @@
 namespace CafeLib.Core.MethodBinding
 {
     /// <summary>
-    /// Web export attribute.
+    /// Method export attribute.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public class MethodExportAttribute : Attribute
