@@ -16,7 +16,7 @@ namespace CafeLib.Web.Request
     /// <summary>
     /// Abstract class to handle Http requests.
     /// </summary>
-    internal static class WebRequest
+    internal static class WebRequestImpl
     {
         #region Constants
 

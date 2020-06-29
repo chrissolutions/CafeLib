@@ -57,35 +57,35 @@ namespace CafeLib.Web.Request
 
         protected async Task<T> GetAsync<T>(WebRequestHeaders headers = null, object parameters = null)
         {
-            var contentStream = await WebRequest.GetAsync(Endpoint, headers ?? Headers, parameters);
+            var contentStream = await WebRequestImpl.GetAsync(Endpoint, headers ?? Headers, parameters);
             return await ConvertContent<T>(contentStream);
         }
 
         protected async Task<bool> PostAsync(object body, WebRequestHeaders headers = null, object parameters = null)
         {
             var json = JsonConvert.SerializeObject(body);
-            await WebRequest.PostAsync(Endpoint, headers ?? Headers, json, parameters);
+            await WebRequestImpl.PostAsync(Endpoint, headers ?? Headers, json, parameters);
             return true;
         }
 
         protected async Task<bool> PostAsync<T>(T model, WebRequestHeaders headers = null)
         {
             var json = JsonConvert.SerializeObject(model);
-            await WebRequest.PostAsync(Endpoint, headers ?? Headers, json);
+            await WebRequestImpl.PostAsync(Endpoint, headers ?? Headers, json);
             return await Task.FromResult(true);
         }
 
         protected async Task<bool> PutAsync(object body, WebRequestHeaders headers = null, object parameters = null)
         {
             var json = JsonConvert.SerializeObject(body);
-            await WebRequest.PostAsync(Endpoint, headers ?? Headers, json, parameters);
+            await WebRequestImpl.PostAsync(Endpoint, headers ?? Headers, json, parameters);
             return true;
         }
 
         protected async Task<bool> PutAsync<T>(T model, WebRequestHeaders headers)
         {
             var json = JsonConvert.SerializeObject(model);
-            await WebRequest.PutAsync(Endpoint, headers ?? Headers, json);
+            await WebRequestImpl.PutAsync(Endpoint, headers ?? Headers, json);
             return await Task.FromResult(true);
         }
 
@@ -100,7 +100,10 @@ namespace CafeLib.Web.Request
                 return (T)(object)true;
             }
 
-            if (contentStream == null) return default;
+            if (contentStream == null)
+            {
+                return default;
+            }
 
             if (typeof(T) == typeof(byte[]))
             {
@@ -112,21 +115,22 @@ namespace CafeLib.Web.Request
             if (response == null) return default;
 
             var data = response.TrimStart();
-            if (data.StartsWith("{") || data.StartsWith("["))
+            switch (data[0])
             {
-                return JsonConvert.DeserializeObject<T>(data);
-            }
+                case '{':
+                case '[':
+                    return JsonConvert.DeserializeObject<T>(data);
 
-            if (data.StartsWith("<"))
-            {
-                var serializer = new XmlSerializer(typeof(T));
-                using (var stringReader = new StringReader(data))
+                case '<':
                 {
+                    var serializer = new XmlSerializer(typeof(T));
+                    using var stringReader = new StringReader(data);
                     return (T)serializer.Deserialize(stringReader);
                 }
-            }
 
-            return (T)(object)response;
+                default:
+                    return (T)(object)response;
+            }
         }
 
         #endregion
