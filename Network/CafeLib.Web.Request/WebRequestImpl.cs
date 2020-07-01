@@ -247,7 +247,7 @@ namespace CafeLib.Web.Request
                 client.DefaultRequestHeaders.TryAddWithoutValidation("Access-Control-Allow-Origin", "*");
             }
 
-            headers?.ForEach(x => client.DefaultRequestHeaders.TryAddWithoutValidation(x.Key, x.Value));
+            headers.ForEach(x => client.DefaultRequestHeaders.TryAddWithoutValidation(x.Key, x.Value));
         }
 
         /// <summary>

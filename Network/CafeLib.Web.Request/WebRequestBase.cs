@@ -48,45 +48,38 @@ namespace CafeLib.Web.Request
         protected WebRequestBase(Uri endpoint, WebRequestHeaders headers = null)
         {
             Endpoint = endpoint;
-            Headers = headers;
+            Headers = headers ?? new WebRequestHeaders();
         }
 
         #endregion
 
         #region Methods
 
-        protected async Task<T> GetAsync<T>(WebRequestHeaders headers = null, object parameters = null)
+        protected async Task<TOut> GetAsync<TOut>(WebRequestHeaders headers = null, object parameters = null)
         {
-            var contentStream = await WebRequestImpl.GetAsync(Endpoint, headers ?? Headers, parameters);
-            return await ConvertContent<T>(contentStream);
+            var stream = await WebRequestImpl.GetAsync(Endpoint, headers ?? Headers, parameters);
+            return await ConvertContent<TOut>(stream);
         }
 
-        protected async Task<bool> PostAsync(object body, WebRequestHeaders headers = null, object parameters = null)
+        protected async Task<TOut> PostAsync<TIn, TOut>(TIn body, WebRequestHeaders headers = null, object parameters = null)
         {
             var json = JsonConvert.SerializeObject(body);
-            await WebRequestImpl.PostAsync(Endpoint, headers ?? Headers, json, parameters);
-            return true;
+            var stream = await WebRequestImpl.PostAsync(Endpoint, headers ?? Headers, json, parameters);
+            return await ConvertContent<TOut>(stream);
         }
 
-        protected async Task<bool> PostAsync<T>(T model, WebRequestHeaders headers = null)
-        {
-            var json = JsonConvert.SerializeObject(model);
-            await WebRequestImpl.PostAsync(Endpoint, headers ?? Headers, json);
-            return await Task.FromResult(true);
-        }
-
-        protected async Task<bool> PutAsync(object body, WebRequestHeaders headers = null, object parameters = null)
+        protected async Task<TOut> PutAsync<TIn, TOut>(TIn body, WebRequestHeaders headers = null, object parameters = null)
         {
             var json = JsonConvert.SerializeObject(body);
-            await WebRequestImpl.PostAsync(Endpoint, headers ?? Headers, json, parameters);
-            return true;
+            var stream = await WebRequestImpl.PutAsync(Endpoint, headers ?? Headers, json, parameters);
+            return await ConvertContent<TOut>(stream);
         }
 
-        protected async Task<bool> PutAsync<T>(T model, WebRequestHeaders headers)
+        protected async Task<TOut> DeleteAsync<TIn, TOut>(TIn body, WebRequestHeaders headers = null, object parameters = null)
         {
-            var json = JsonConvert.SerializeObject(model);
-            await WebRequestImpl.PutAsync(Endpoint, headers ?? Headers, json);
-            return await Task.FromResult(true);
+            var json = JsonConvert.SerializeObject(body);
+            var stream = await WebRequestImpl.DeleteAsync(Endpoint, headers ?? Headers, json, parameters);
+            return await ConvertContent<TOut>(stream);
         }
 
         #endregion
