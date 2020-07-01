@@ -5,33 +5,33 @@ namespace CafeLib.Web.Request.UnitTests
 {
     public class WebRequest<TResponse> : WebRequestBase, IWebRequest<TResponse>
     {
-        public WebRequest(string endpoint, WebRequestHeaders headers = null)
+        public WebRequest(string endpoint, WebHeaders headers = null)
             : this(new Uri(endpoint), headers)
         {
         }
 
-        public WebRequest(Uri endpoint, WebRequestHeaders headers = null) 
+        public WebRequest(Uri endpoint, WebHeaders headers = null) 
             : base(endpoint, headers)
         {
             SetHeaders();
         }
 
-        public Task<TResponse> GetAsync(WebRequestHeaders headers = null, object parameters = null)
+        public Task<TResponse> GetAsync(WebHeaders headers = null, object parameters = null)
         {
             return GetAsync<TResponse>(headers, parameters);
         }
 
-        public Task<TResponse> PostAsync<TIn>(TIn request, WebRequestHeaders headers = null, object parameters = null)
+        public Task<TResponse> PostAsync<TIn>(TIn request, WebHeaders headers = null, object parameters = null)
         {
             return PostAsync<TIn, TResponse>(request, headers, parameters);
         }
 
-        public Task<TResponse> PutAsync<TIn>(TIn request, WebRequestHeaders headers = null, object parameters = null)
+        public Task<TResponse> PutAsync<TIn>(TIn request, WebHeaders headers = null, object parameters = null)
         {
             return PutAsync<TIn, TResponse>(request, headers, parameters);
         }
 
-        public Task<TResponse> DeleteAsync<TIn>(TIn request, WebRequestHeaders headers = null, object parameters = null)
+        public Task<TResponse> DeleteAsync<TIn>(TIn request, WebHeaders headers = null, object parameters = null)
         {
             return DeleteAsync<TIn, TResponse>(request, headers, parameters);
         }

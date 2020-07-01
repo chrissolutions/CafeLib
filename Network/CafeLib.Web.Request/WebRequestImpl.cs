@@ -26,7 +26,7 @@ namespace CafeLib.Web.Request
         /// <param name="headers">http headers</param>
         /// <param name="parameters">parameters</param>
         /// <returns>web response</returns>
-        public static async Task<WebResponse> GetAsync(Uri endpoint, WebRequestHeaders headers, object parameters = null)
+        public static async Task<WebResponse> GetAsync(Uri endpoint, WebHeaders headers, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
             var response = new WebResponse(await SendRequest(uri, HttpMethod.Get, headers, null));
@@ -42,7 +42,7 @@ namespace CafeLib.Web.Request
         /// <param name="body">body data</param>
         /// <param name="parameters">parameters</param>
         /// <returns>web response</returns>
-        public static async Task<WebResponse> PostAsync(Uri endpoint, WebRequestHeaders headers, object body, object parameters = null)
+        public static async Task<WebResponse> PostAsync(Uri endpoint, WebHeaders headers, object body, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
             var response = new WebResponse(await SendRequest(uri, HttpMethod.Post, headers, body));
@@ -58,7 +58,7 @@ namespace CafeLib.Web.Request
         /// <param name="body">body data</param>
         /// <param name="parameters">parameters</param>
         /// <returns>web response</returns>
-        public static async Task<WebResponse> PutAsync(Uri endpoint, WebRequestHeaders headers, object body, object parameters = null)
+        public static async Task<WebResponse> PutAsync(Uri endpoint, WebHeaders headers, object body, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
             var response = new WebResponse(await SendRequest(uri, HttpMethod.Put, headers, body));
@@ -74,7 +74,7 @@ namespace CafeLib.Web.Request
         /// <param name="body">body data</param>
         /// <param name="parameters">parameters</param>
         /// <returns>web response</returns>
-        public static async Task<WebResponse> DeleteAsync(Uri endpoint, WebRequestHeaders headers, object body, object parameters = null)
+        public static async Task<WebResponse> DeleteAsync(Uri endpoint, WebHeaders headers, object body, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
             var response = new WebResponse(await SendRequest(uri, HttpMethod.Delete, headers, body));
@@ -200,7 +200,7 @@ namespace CafeLib.Web.Request
         /// <param name="uri">endpoint uri</param>
         /// <param name="headers">http headers</param>
         /// <param name="body">body data</param>
-        private static void SetupRequestHeader(HttpClient client, Uri uri, WebRequestHeaders headers, object body)
+        private static void SetupRequestHeader(HttpClient client, Uri uri, WebHeaders headers, object body)
         {
             var index = uri.AbsoluteUri.IndexOf(uri.AbsolutePath, StringComparison.Ordinal);
             client.BaseAddress = new Uri(uri.AbsoluteUri.Remove(index));
@@ -246,7 +246,7 @@ namespace CafeLib.Web.Request
         /// <param name="body">body data</param>
         /// <exception cref="NotImplementedException"></exception>
         /// <returns>response message</returns>
-        private static async Task<HttpResponseMessage> SendRequest(Uri uri, HttpMethod method, WebRequestHeaders headers, object body)
+        private static async Task<HttpResponseMessage> SendRequest(Uri uri, HttpMethod method, WebHeaders headers, object body)
         {
             using var client = new HttpClient();
             SetupRequestHeader(client, uri, headers, body);
