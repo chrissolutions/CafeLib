@@ -6,14 +6,14 @@ using Xunit;
 
 namespace CafeLib.Web.Request.UnitTests
 {
-    public class UnitTest1
+    public class WebRequestTest
     {
         [Fact]
-        public async void WebRequestTest()
+        public async void GetRequestTest()
         {
             var request = new WebRequest<JToken>("https://api.github.com/users/mralexgray/repos");
-            var jtoken = await request.GetAsync();
-            Debug.WriteLine(jtoken);
+            var json = await request.GetAsync();
+            Assert.NotNull(json);
         }
     }
 }

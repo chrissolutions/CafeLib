@@ -32,17 +32,6 @@ namespace CafeLib.Web.Request
         /// <summary>
         /// WebRequestBase constructor
         /// </summary>
-        /// <param name="serverUrl">server address url</param>
-        /// <param name="path">path to endpoint</param>
-        /// <param name="headers">request headers</param>
-        protected WebRequestBase(string serverUrl, string path, WebRequestHeaders headers = null)
-            : this(new Uri(new Uri(serverUrl), path), headers)
-        {
-        }
-
-        /// <summary>
-        /// WebRequestBase constructor
-        /// </summary>
         /// <param name="endpoint">service endpoint</param>
         /// <param name="headers">request headers</param>
         protected WebRequestBase(Uri endpoint, WebRequestHeaders headers = null)
@@ -57,29 +46,29 @@ namespace CafeLib.Web.Request
 
         protected async Task<TOut> GetAsync<TOut>(WebRequestHeaders headers = null, object parameters = null)
         {
-            var stream = await WebRequestImpl.GetAsync(Endpoint, headers ?? Headers, parameters);
-            return await ConvertContent<TOut>(stream);
+            var response = await WebRequestImpl.GetAsync(Endpoint, headers ?? Headers, parameters);
+            return await ConvertContent<TOut>(await response.GetContent());
         }
 
         protected async Task<TOut> PostAsync<TIn, TOut>(TIn body, WebRequestHeaders headers = null, object parameters = null)
         {
             var json = JsonConvert.SerializeObject(body);
-            var stream = await WebRequestImpl.PostAsync(Endpoint, headers ?? Headers, json, parameters);
-            return await ConvertContent<TOut>(stream);
+            var response = await WebRequestImpl.PostAsync(Endpoint, headers ?? Headers, json, parameters);
+            return await ConvertContent<TOut>(await response.GetContent());
         }
 
         protected async Task<TOut> PutAsync<TIn, TOut>(TIn body, WebRequestHeaders headers = null, object parameters = null)
         {
             var json = JsonConvert.SerializeObject(body);
-            var stream = await WebRequestImpl.PutAsync(Endpoint, headers ?? Headers, json, parameters);
-            return await ConvertContent<TOut>(stream);
+            var response = await WebRequestImpl.PutAsync(Endpoint, headers ?? Headers, json, parameters);
+            return await ConvertContent<TOut>(await response.GetContent());
         }
 
         protected async Task<TOut> DeleteAsync<TIn, TOut>(TIn body, WebRequestHeaders headers = null, object parameters = null)
         {
             var json = JsonConvert.SerializeObject(body);
-            var stream = await WebRequestImpl.DeleteAsync(Endpoint, headers ?? Headers, json, parameters);
-            return await ConvertContent<TOut>(stream);
+            var response = await WebRequestImpl.DeleteAsync(Endpoint, headers ?? Headers, json, parameters);
+            return await ConvertContent<TOut>(await response.GetContent());
         }
 
         #endregion

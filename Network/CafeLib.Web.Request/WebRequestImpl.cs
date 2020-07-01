@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -18,18 +17,6 @@ namespace CafeLib.Web.Request
     /// </summary>
     internal static class WebRequestImpl
     {
-        #region Constants
-
-        internal class MimeType
-        {
-            internal const string Json = "application/json";
-            internal const string Octet = "application/octet-stream";
-            internal const string Xml = "text/html, application/xhtml+xml, application/xml";
-            internal const string Text = "text/plain";
-        }
-
-        #endregion
-
         #region Methods
 
         /// <summary>
@@ -38,13 +25,13 @@ namespace CafeLib.Web.Request
         /// <param name="endpoint">uri endpoint</param>
         /// <param name="headers">http headers</param>
         /// <param name="parameters">parameters</param>
-        /// <returns>content stream</returns>
-        public static async Task<Stream> GetAsync(Uri endpoint, WebRequestHeaders headers, object parameters = null)
+        /// <returns>web response</returns>
+        public static async Task<WebResponse> GetAsync(Uri endpoint, WebRequestHeaders headers, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
-            var response = await SendRequest(uri, HttpMethod.Get, headers, null);
+            var response = new WebResponse(await SendRequest(uri, HttpMethod.Get, headers, null));
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStreamAsync();
+            return response;
         }
 
         /// <summary>
@@ -54,13 +41,13 @@ namespace CafeLib.Web.Request
         /// <param name="headers">http headers</param>
         /// <param name="body">body data</param>
         /// <param name="parameters">parameters</param>
-        /// <returns>content stream</returns>
-        public static async Task<Stream> PostAsync(Uri endpoint, WebRequestHeaders headers, object body, object parameters = null)
+        /// <returns>web response</returns>
+        public static async Task<WebResponse> PostAsync(Uri endpoint, WebRequestHeaders headers, object body, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
-            var response = await SendRequest(uri, HttpMethod.Post, headers, body);
+            var response = new WebResponse(await SendRequest(uri, HttpMethod.Post, headers, body));
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStreamAsync();
+            return response;
         }
 
         /// <summary>
@@ -70,13 +57,13 @@ namespace CafeLib.Web.Request
         /// <param name="headers">http headers</param>
         /// <param name="body">body data</param>
         /// <param name="parameters">parameters</param>
-        /// <returns>content stream</returns>
-        public static async Task<Stream> PutAsync(Uri endpoint, WebRequestHeaders headers, object body, object parameters = null)
+        /// <returns>web response</returns>
+        public static async Task<WebResponse> PutAsync(Uri endpoint, WebRequestHeaders headers, object body, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
-            var response = await SendRequest(uri, HttpMethod.Put, headers, body);
+            var response = new WebResponse(await SendRequest(uri, HttpMethod.Put, headers, body));
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStreamAsync();
+            return response;
         }
 
         /// <summary>
@@ -86,13 +73,13 @@ namespace CafeLib.Web.Request
         /// <param name="headers">authentication cookie</param>
         /// <param name="body">body data</param>
         /// <param name="parameters">parameters</param>
-        /// <returns>content stream</returns>
-        public static async Task<Stream> DeleteAsync(Uri endpoint, WebRequestHeaders headers, object body, object parameters = null)
+        /// <returns>web response</returns>
+        public static async Task<WebResponse> DeleteAsync(Uri endpoint, WebRequestHeaders headers, object body, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
-            var response = await SendRequest(uri, HttpMethod.Delete, headers, body);
+            var response = new WebResponse(await SendRequest(uri, HttpMethod.Delete, headers, body));
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStreamAsync();
+            return response;
         }
 
         #endregion
@@ -224,22 +211,22 @@ namespace CafeLib.Web.Request
                 switch (body)
                 {
                     case byte[] _:
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MimeType.Octet));
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(WebContentType.Octet));
                         break;
 
                     case string _:
                         var data = body.ToString().TrimStart();
                         if (data.StartsWith("{") || data.StartsWith("["))
                         {
-                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MimeType.Json));
+                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(WebContentType.Json));
                         }
                         else if (data.StartsWith("<"))
                         {
-                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MimeType.Xml));
+                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(WebContentType.Xml));
                         }
                         else
                         {
-                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MimeType.Text));
+                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(WebContentType.Text));
                         }
                         break;
                 }
@@ -274,7 +261,7 @@ namespace CafeLib.Web.Request
                 var content = body != null
                     ? body is byte[] bytes
                         ? new ByteArrayContent(bytes)
-                        : new StringContent(body.ToString(), Encoding.UTF8, MimeType.Json)
+                        : new StringContent(body.ToString(), Encoding.UTF8, WebContentType.Json)
                     : null;
 
                 return await client.PostAsync(uri.PathAndQuery, content);
@@ -285,7 +272,7 @@ namespace CafeLib.Web.Request
                 var content = body != null
                     ? body is byte[] bytes
                         ? new ByteArrayContent(bytes)
-                        : new StringContent(body.ToString(), Encoding.UTF8, MimeType.Json)
+                        : new StringContent(body.ToString(), Encoding.UTF8, WebContentType.Json)
                     : null;
 
                 return await client.PutAsync(uri.PathAndQuery, content);

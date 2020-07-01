@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace CafeLib.Web.Request.UnitTests
@@ -7,15 +6,8 @@ namespace CafeLib.Web.Request.UnitTests
     public class WebRequest<TResponse> : WebRequestBase, IWebRequest<TResponse>
     {
         public WebRequest(string endpoint, WebRequestHeaders headers = null)
-            : base(endpoint, headers)
+            : this(new Uri(endpoint), headers)
         {
-            SetHeaders();
-        }
-
-        public WebRequest(string serverUrl, string path, WebRequestHeaders headers = null) 
-            : base(serverUrl, path, headers)
-        {
-            SetHeaders();
         }
 
         public WebRequest(Uri endpoint, WebRequestHeaders headers = null) 
