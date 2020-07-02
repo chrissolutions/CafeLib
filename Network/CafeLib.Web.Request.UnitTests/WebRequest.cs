@@ -32,9 +32,9 @@ namespace CafeLib.Web.Request.UnitTests
             return PutAsync<JToken, TResponse>(body, headers, parameters);
         }
 
-        public Task<TResponse> DeleteAsync(JToken body, WebHeaders headers = null, object parameters = null)
+        public Task<bool> DeleteAsync(JToken body, WebHeaders headers = null, object parameters = null)
         {
-            return DeleteAsync<JToken, TResponse>(body, headers, parameters);
+            return DeleteAsync<JToken>(body, headers, parameters);
         }
 
         private void SetHeaders()

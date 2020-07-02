@@ -64,11 +64,11 @@ namespace CafeLib.Web.Request
             return await ConvertContent<TOut>(response);
         }
 
-        protected async Task<TOut> DeleteAsync<TIn, TOut>(TIn body, WebHeaders headers = null, object parameters = null)
+        protected async Task<bool> DeleteAsync<TIn>(TIn body, WebHeaders headers = null, object parameters = null)
         {
             var json = JsonConvert.SerializeObject(body);
             var response = await WebRequestImpl.DeleteAsync(Endpoint, headers ?? Headers, json, parameters);
-            return await ConvertContent<TOut>(response);
+            return await ConvertContent<bool>(response);
         }
 
         #endregion

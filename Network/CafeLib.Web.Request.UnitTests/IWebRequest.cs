@@ -11,6 +11,6 @@ namespace CafeLib.Web.Request.UnitTests
 
         Task<T> PutAsync(JToken body, WebHeaders headers = null, object parameters = null);
 
-        Task<T> DeleteAsync(JToken body, WebHeaders headers = null, object parameters = null);
+        Task<bool> DeleteAsync(JToken body, WebHeaders headers = null, object parameters = null);
     }
 }
