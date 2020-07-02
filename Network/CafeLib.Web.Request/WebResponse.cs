@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using CafeLib.Core.Support;
 
 namespace CafeLib.Web.Request
 {
@@ -39,6 +39,27 @@ namespace CafeLib.Web.Request
         internal Task<Stream> GetContent()
         {
             return _response.Content.ReadAsStreamAsync();
+        }
+
+        internal string GetContentType()
+        {
+            if (ContentHeaders.TryGetValue("Content-Type", out var contentTypes))
+            {
+                var contentType = contentTypes.First();
+                if (contentType.Contains("json"))
+                    return WebContentType.Json;
+
+                if (contentType.Contains("xml"))
+                    return WebContentType.Xml;
+
+                if (contentType.Contains("html"))
+                    return WebContentType.Html;
+
+                if (contentType.Contains("octet"))
+                    return WebContentType.Octet;
+            }
+
+            return WebContentType.Text;
         }
 
         internal WebResponse EnsureSuccessStatusCode()

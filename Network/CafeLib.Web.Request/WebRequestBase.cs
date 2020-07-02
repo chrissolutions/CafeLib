@@ -47,39 +47,41 @@ namespace CafeLib.Web.Request
         protected async Task<TOut> GetAsync<TOut>(WebHeaders headers = null, object parameters = null)
         {
             var response = await WebRequestImpl.GetAsync(Endpoint, headers ?? Headers, parameters);
-            return await ConvertContent<TOut>(await response.GetContent());
+            return await ConvertContent<TOut>(response);
         }
 
         protected async Task<TOut> PostAsync<TIn, TOut>(TIn body, WebHeaders headers = null, object parameters = null)
         {
             var json = JsonConvert.SerializeObject(body);
             var response = await WebRequestImpl.PostAsync(Endpoint, headers ?? Headers, json, parameters);
-            return await ConvertContent<TOut>(await response.GetContent());
+            return await ConvertContent<TOut>(response);
         }
 
         protected async Task<TOut> PutAsync<TIn, TOut>(TIn body, WebHeaders headers = null, object parameters = null)
         {
             var json = JsonConvert.SerializeObject(body);
             var response = await WebRequestImpl.PutAsync(Endpoint, headers ?? Headers, json, parameters);
-            return await ConvertContent<TOut>(await response.GetContent());
+            return await ConvertContent<TOut>(response);
         }
 
         protected async Task<TOut> DeleteAsync<TIn, TOut>(TIn body, WebHeaders headers = null, object parameters = null)
         {
             var json = JsonConvert.SerializeObject(body);
             var response = await WebRequestImpl.DeleteAsync(Endpoint, headers ?? Headers, json, parameters);
-            return await ConvertContent<TOut>(await response.GetContent());
+            return await ConvertContent<TOut>(response);
         }
 
         #endregion
 
         #region Helpers
 
-        private static async Task<T> ConvertContent<T>(Stream contentStream)
+        private static async Task<T> ConvertContent<T>(WebResponse response)
         {
+            var contentStream = await response.GetContent();
+
             if (typeof(T) == typeof(bool))
             {
-                return (T)(object)true;
+                return (T)(object)(contentStream != null);
             }
 
             if (contentStream == null)
@@ -93,25 +95,23 @@ namespace CafeLib.Web.Request
             }
 
             var reader = new StreamReader(contentStream, Encoding.UTF8);
-            var response = await reader.ReadToEndAsync();
-            if (response == null) return default;
+            var content = await reader.ReadToEndAsync();
+            if (content == null) return default;
 
-            var data = response.TrimStart();
-            switch (data[0])
+            switch (response.GetContentType())
             {
-                case '{':
-                case '[':
-                    return JsonConvert.DeserializeObject<T>(data);
+                case WebContentType.Json:
+                    return JsonConvert.DeserializeObject<T>(content);
 
-                case '<':
+                case WebContentType.Xml:
                 {
                     var serializer = new XmlSerializer(typeof(T));
-                    using var stringReader = new StringReader(data);
+                    using var stringReader = new StringReader(content);
                     return (T)serializer.Deserialize(stringReader);
                 }
 
                 default:
-                    return (T)(object)response;
+                    return (T)(object)content;
             }
         }
 
