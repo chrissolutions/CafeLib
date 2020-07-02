@@ -33,5 +33,38 @@ namespace CafeLib.Web.Request.UnitTests
             Assert.NotNull(json);
         }
 
+        [Fact]
+        public async void PutRequestTest()
+        {
+            const string jsonText = @"{ 
+                    ""CaseID"": ""Unique File Name"",
+                    ""Content"": ""StreamValue""
+                    }";
+
+            var request = new WebRequest<JToken>("https://httpbin.org/anything");
+
+            var jsonBody = JToken.Parse(jsonText);
+
+            var json = await request.PutAsync(jsonBody);
+
+            Assert.NotNull(json);
+        }
+
+        [Fact]
+        public async void DeleteRequestTest()
+        {
+            const string jsonText = @"{ 
+                    ""CaseID"": ""Unique File Name"",
+                    ""Content"": ""StreamValue""
+                    }";
+
+            var request = new WebRequest<JToken>("https://httpbin.org/anything");
+
+            var jsonBody = JToken.Parse(jsonText);
+
+            var json = await request.DeleteAsync(jsonBody);
+
+            Assert.NotNull(json);
+        }
     }
 }
