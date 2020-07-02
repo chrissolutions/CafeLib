@@ -21,19 +21,19 @@ namespace CafeLib.Web.Request.UnitTests
             return GetAsync<TResponse>(headers, parameters);
         }
 
-        public Task<TResponse> PostAsync<TIn>(TIn request, WebHeaders headers = null, object parameters = null)
+        public Task<TResponse> PostAsync<TIn>(TIn body, WebHeaders headers = null, object parameters = null)
         {
-            return PostAsync<TIn, TResponse>(request, headers, parameters);
+            return PostAsync<TIn, TResponse>(body, headers, parameters);
         }
 
-        public Task<TResponse> PutAsync<TIn>(TIn request, WebHeaders headers = null, object parameters = null)
+        public Task<TResponse> PutAsync<TIn>(TIn body, WebHeaders headers = null, object parameters = null)
         {
-            return PutAsync<TIn, TResponse>(request, headers, parameters);
+            return PutAsync<TIn, TResponse>(body, headers, parameters);
         }
 
-        public Task<TResponse> DeleteAsync<TIn>(TIn request, WebHeaders headers = null, object parameters = null)
+        public Task<TResponse> DeleteAsync<TIn>(TIn body, WebHeaders headers = null, object parameters = null)
         {
-            return DeleteAsync<TIn, TResponse>(request, headers, parameters);
+            return DeleteAsync<TIn, TResponse>(body, headers, parameters);
         }
 
         private void SetHeaders()
