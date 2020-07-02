@@ -1,15 +1,16 @@
 ﻿using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace CafeLib.Web.Request.UnitTests
 {
-    public interface IWebRequest<TOut>
+    public interface IWebRequest<T>
     {
-        Task<TOut> GetAsync(WebHeaders headers = null, object parameters = null);
+        Task<T> GetAsync(WebHeaders headers = null, object parameters = null);
 
-        Task<TOut> PostAsync<TIn>(TIn body, WebHeaders headers = null, object parameters = null);
+        Task<T> PostAsync(JToken body, WebHeaders headers = null, object parameters = null);
 
-        Task<TOut> PutAsync<TIn>(TIn body, WebHeaders headers = null, object parameters = null);
+        Task<T> PutAsync(JToken body, WebHeaders headers = null, object parameters = null);
 
-        Task<TOut> DeleteAsync<TIn>(TIn body, WebHeaders headers = null, object parameters = null);
+        Task<T> DeleteAsync(JToken body, WebHeaders headers = null, object parameters = null);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace CafeLib.Web.Request.UnitTests
 {
@@ -21,19 +22,19 @@ namespace CafeLib.Web.Request.UnitTests
             return GetAsync<TResponse>(headers, parameters);
         }
 
-        public Task<TResponse> PostAsync<TIn>(TIn body, WebHeaders headers = null, object parameters = null)
+        public Task<TResponse> PostAsync(JToken body, WebHeaders headers = null, object parameters = null)
         {
-            return PostAsync<TIn, TResponse>(body, headers, parameters);
+            return PostAsync<JToken, TResponse>(body, headers, parameters);
         }
 
-        public Task<TResponse> PutAsync<TIn>(TIn body, WebHeaders headers = null, object parameters = null)
+        public Task<TResponse> PutAsync(JToken body, WebHeaders headers = null, object parameters = null)
         {
-            return PutAsync<TIn, TResponse>(body, headers, parameters);
+            return PutAsync<JToken, TResponse>(body, headers, parameters);
         }
 
-        public Task<TResponse> DeleteAsync<TIn>(TIn body, WebHeaders headers = null, object parameters = null)
+        public Task<TResponse> DeleteAsync(JToken body, WebHeaders headers = null, object parameters = null)
         {
-            return DeleteAsync<TIn, TResponse>(body, headers, parameters);
+            return DeleteAsync<JToken, TResponse>(body, headers, parameters);
         }
 
         private void SetHeaders()
