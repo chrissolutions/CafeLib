@@ -43,7 +43,8 @@ namespace CafeLib.Core.Logging
         public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             var message = formatter?.Invoke(state, exception);
-            Receiver.LogMessage(new LogEventMessage(Category, this.ToErrorLevel(logLevel), new LogEventInfo(eventId), message, exception));
+            var messageInfo = state.GetType().IsAnonymousType() ? new LogMessageInfo(state.ToObjectMap()) : null;
+            Receiver.LogMessage(new LogEventMessage(Category, this.ToErrorLevel(logLevel), new LogEventInfo(eventId), message, messageInfo, exception));
         }
 
         /// <summary>

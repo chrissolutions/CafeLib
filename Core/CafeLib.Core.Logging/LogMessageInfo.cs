@@ -4,7 +4,7 @@ namespace CafeLib.Core.Logging
 {
     public class LogMessageInfo : Dictionary<string, object>
     {
-        public LogMessageInfo(IDictionary<string, object> items)
+        internal LogMessageInfo(IDictionary<string, object> items)
             : base(items)
         {
         }

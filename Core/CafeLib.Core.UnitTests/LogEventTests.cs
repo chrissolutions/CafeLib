@@ -30,46 +30,46 @@ namespace CafeLib.Core.UnitTests
             Assert.Equal("Log event message", logEventInfo.Name);
         }
 
-        [Fact]
-        public void LogFactoryTest()
-        {
-            var messenger = new TestLogFactoryMessenger("testFactory", TestLoggerFactoryListener);
+        //[Fact]
+        //public void LogFactoryTest()
+        //{
+        //    var messenger = new TestLogFactoryMessenger("testFactory", TestLoggerFactoryListener);
 
-            messenger.Logger.Log(LogLevel.Information, 
-                        new EventId(3, "TestEvent"),
-                        new {tag = 20, state = 40},
-                        null, 
-                        (o, e) => "Message {tag} for state {state}".Render(o));
-        }
+        //    messenger.Logger.Log(LogLevel.Information, 
+        //                new EventId(3, "TestEvent"),
+        //                new {tag = 20, state = 40},
+        //                null, 
+        //                (o, e) => "Message {tag} for state {state}".Render(o));
+        //}
 
-        [Fact]
-        public void LogProviderTest()
-        {
-            var factory = new LoggerFactory(new[] { new LogProvider<TestLogSender>(new TestLogReceiver(TestLoggerFactoryListener)) });
-            var logger = factory.CreateLogger<TestLogSender>();
-            logger.Log(LogLevel.Information,
-                new EventId(3, "TestEvent"),
-                new { tag = 20, state = 40 },
-                null,
-                (o, e) => "Message {tag} for state {state}".Render(o));
-        }
+        //[Fact]
+        //public void LogProviderTest()
+        //{
+        //    var factory = new LoggerFactory(new[] { new LogProvider<TestLogSender>(new TestLogReceiver(TestLoggerFactoryListener)) });
+        //    var logger = factory.CreateLogger<TestLogSender>();
+        //    logger.Log(LogLevel.Information,
+        //        new EventId(3, "TestEvent"),
+        //        new { tag = 20, state = 40 },
+        //        null,
+        //        (o, e) => "Message {tag} for state {state}".Render(o));
+        //}
 
-        [Fact]
-        public void LogProviderTestUsingCreate()
-        {
-            var factory = LoggerFactory.Create(builder =>
-            {
-                builder
-                    .AddProvider(new LogProvider<TestLogSender>(new TestLogReceiver(TestLoggerFactoryListener)));
-            });
+        //[Fact]
+        //public void LogProviderTestUsingCreate()
+        //{
+        //    var factory = LoggerFactory.Create(builder =>
+        //    {
+        //        builder
+        //            .AddProvider(new LogProvider<TestLogSender>(new TestLogReceiver(TestLoggerFactoryListener)));
+        //    });
 
-            var logger = factory.CreateLogger<TestLogSender>();
-            logger.Log(LogLevel.Information,
-                        new EventId(3, "TestEvent"),
-                        new { tag = 20, state = 40 },
-                        null,
-                        (o, e) => "Message {tag} for state {state}".Render(o));
-        }
+        //    var logger = factory.CreateLogger<TestLogSender>();
+        //    logger.Log(LogLevel.Information,
+        //                new EventId(3, "TestEvent"),
+        //                new { tag = 20, state = 40 },
+        //                null,
+        //                (o, e) => "Message {tag} for state {state}".Render(o));
+        //}
 
         private static void TestLoggerFactoryListener(LogEventMessage logEventMessage)
         {
@@ -116,22 +116,22 @@ namespace CafeLib.Core.UnitTests
                 );
         }
 
-        [Fact]
-        public void LogAdapterTest()
-        {
-            var factory = LoggerFactory.Create(builder =>
-            {
-                builder
-                    .AddProvider(new LogAdapterProvider<TestLogAdapter>(TestLoggerFactoryListener));
-            });
+        //[Fact]
+        //public void LogAdapterTest()
+        //{
+        //    var factory = LoggerFactory.Create(builder =>
+        //    {
+        //        builder
+        //            .AddProvider(new LogAdapterProvider<TestLogAdapter>(TestLoggerFactoryListener));
+        //    });
 
-            var logger = factory.CreateLogger<TestLogAdapter>();
+        //    var logger = factory.CreateLogger<TestLogAdapter>();
 
-            logger.Log(LogLevel.Information,
-                new EventId(3, "TestEvent"),
-                new { tag = 20, state = 40 },
-                null,
-                (o, e) => "Message {tag} for state {state}".Render(o));
-        }
+        //    logger.Log(LogLevel.Information,
+        //        new EventId(3, "TestEvent"),
+        //        new { tag = 20, state = 40 },
+        //        null,
+        //        (o, e) => "Message {tag} for state {state}".Render(o));
+        //}
     }
 }

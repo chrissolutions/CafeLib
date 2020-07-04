@@ -9,13 +9,11 @@ namespace CafeLib.Core.Logging
     /// <summary>
     /// Log event writer.
     /// </summary>
-    public class LogEventWriter : ILogEventWriter, ILogEventReceiver
+    public class LogEventWriter : LoggerBase, ILogEventWriter
     {
         #region Priavate Variables
 
         private readonly ILogger _logger;
-        private static readonly ILoggerFactory _loggerFactory = new CoreLoggerFactory();
-        private readonly Action<LogEventMessage> _logEventListener;
 
         #endregion
 
@@ -27,10 +25,10 @@ namespace CafeLib.Core.Logging
         /// <param name="category">log category</param>
         /// <param name="logEventListener">log event listener</param>
         public LogEventWriter(NonNullable<string> category, Action<LogEventMessage> logEventListener)
+            : base(category, new LogEventReceiver(logEventListener))
         {
-            _logEventListener = logEventListener ?? delegate { };
-            _loggerFactory.AddProvider(new CoreLoggerProvider(category, this));
-            _logger = _loggerFactory.CreateLogger(category);
+            var factory = LoggerFactory.Create(builder => builder.AddProvider(new LoggerProvider(Receiver)));
+            _logger = factory.CreateLogger(category);
         }
 
         #endregion
@@ -185,16 +183,6 @@ namespace CafeLib.Core.Logging
             _logger.Log(_logger.ToLogLevel(errorLevel), LogEventInfo.ToEventId(logEventInfo), message.Value, exception, LogFormatter);
         }
 
-        /// <summary>
-        /// Forwards the logger log message.
-        /// </summary>
-        /// <typeparam name="T">Log event message type</typeparam>
-        /// <param name="message">logger message</param>
-        public void LogMessage<T>(T message) where T : LogEventMessage
-        {
-            _logEventListener(message);
-        }
-
         #endregion
 
         #region Helpers
@@ -205,7 +193,7 @@ namespace CafeLib.Core.Logging
         /// <param name="state">state object</param>
         /// <param name="exception">exception object</param>
         /// <returns></returns>
-        private static string LogFormatter(object state, Exception exception)
+        protected virtual string LogFormatter(object state, Exception exception)
         {
             // Set log message.
             var message = state?.ToString() ?? string.Empty;

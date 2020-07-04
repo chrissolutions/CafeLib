@@ -14,7 +14,7 @@ namespace CafeLib.Core.UnitTests
         {
             IDisposableService disposableService;
             using (var resolver = IocFactory.CreateRegistry()
-                .AddSingleton<ILoggerFactory, TestLogFactory>()
+                //.AddSingleton<ILoggerFactory, TestLogFactory>()
                 .AddSingleton<IFooService, FooService>()
                 .AddSingleton<IBarService, BarService>()
                 .AddSingleton<IDisposableService, DisposableService>()
@@ -34,7 +34,7 @@ namespace CafeLib.Core.UnitTests
         {
             IDisposableService disposableService;
             using (var resolver = IocFactory.CreateRegistry()
-                .AddSingleton<ILoggerFactory, TestLogFactory>()
+                //.AddSingleton<ILoggerFactory, TestLogFactory>()
                 .AddSingleton<IFooService, FooService>()
                 .AddSingleton<IBarService, BarService>()
                 .AddSingleton<IDisposableService, DisposableService>()

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using CafeLib.Core.Extensions;
 using Microsoft.Extensions.Logging;
 // ReSharper disable StaticMemberInGenericType
 
@@ -48,10 +47,10 @@ namespace CafeLib.Core.Logging
         /// </summary>
         /// <param name="category">log category</param>
         /// <param name="receiver">log event receiver</param>
-        public LogFactory(NonNullable<string> category, ILogEventReceiver receiver)
+        public LogFactory(string category, ILogEventReceiver receiver)
         {
             _receiver = receiver ?? new LogEventReceiver();
-            AddProvider(new LogProvider<T>(category, new NonNullable<ILogEventReceiver>(_receiver)));
+            AddProvider(new LogProvider<T>(category, _receiver));
         }
 
         #endregion
@@ -67,7 +66,7 @@ namespace CafeLib.Core.Logging
         {
             if (!_loggerProviders.TryGetValue(category, out var provider))
             {
-                provider = new LogProvider<T>(category, new NonNullable<ILogEventReceiver>(_receiver));
+                provider = new LogProvider<T>(category, _receiver);
                 AddProvider(provider);
             }
 

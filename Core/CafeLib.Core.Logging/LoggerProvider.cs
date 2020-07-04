@@ -1,5 +1,4 @@
 ﻿using System;
-using CafeLib.Core.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Core.Logging
@@ -28,9 +27,9 @@ namespace CafeLib.Core.Logging
         /// LogProvider constructor.
         /// </summary>
         /// <param name="receiver">log event receiver</param>
-        public LoggerProvider(NonNullable<ILogEventReceiver> receiver)
+        public LoggerProvider(ILogEventReceiver receiver)
+            : this(null, receiver)
         {
-            Receiver = receiver.Value ?? new LogEventReceiver(null);
         }
 
         /// <summary>
@@ -38,10 +37,10 @@ namespace CafeLib.Core.Logging
         /// </summary>
         /// <param name="category">log category</param>
         /// <param name="receiver">log event receiver</param>
-        internal LoggerProvider(NonNullable<string> category, NonNullable<ILogEventReceiver> receiver)
+        internal LoggerProvider(string category, ILogEventReceiver receiver)
         {
-            Category = category.Value;
-            Receiver = receiver.Value;
+            Category = category ?? string.Empty;
+            Receiver = receiver ?? new LogEventReceiver();
         }
 
         #endregion
