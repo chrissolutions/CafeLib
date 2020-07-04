@@ -29,6 +29,11 @@ namespace CafeLib.Core.Logging
         public string Message { get; }
 
         /// <summary>
+        /// Log message.
+        /// </summary>
+        public LogMessageInfo MessageInfo { get; }
+
+        /// <summary>
         /// Error level.
         /// </summary>
         public Exception Exception { get; }
@@ -52,7 +57,7 @@ namespace CafeLib.Core.Logging
         /// <param name="category">log category</param>
         /// <param name="message">log message</param>
         /// <param name="eventInfo">log event info</param>
-        public LogEventMessage(string category, string message, LogEventInfo eventInfo = default(LogEventInfo))
+        public LogEventMessage(string category, string message, LogEventInfo eventInfo = default)
             : this(category, ErrorLevel.Info, eventInfo, message)
         {
         }
@@ -64,7 +69,7 @@ namespace CafeLib.Core.Logging
         /// <param name="errorLevel">error level</param>
         /// <param name="message">log message</param>
         /// <param name="eventInfo">log event info</param>
-        public LogEventMessage(string category, ErrorLevel errorLevel, string message, LogEventInfo eventInfo = default(LogEventInfo))
+        public LogEventMessage(string category, ErrorLevel errorLevel, string message, LogEventInfo eventInfo = default)
             : this(category, errorLevel, eventInfo, message)
         {
         }
@@ -75,7 +80,7 @@ namespace CafeLib.Core.Logging
         /// <param name="category">log category</param>
         /// <param name="eventInfo">log event info</param>
         /// <param name="exception">exception object</param>
-        public LogEventMessage(string category, Exception exception, LogEventInfo eventInfo = default(LogEventInfo))
+        public LogEventMessage(string category, Exception exception, LogEventInfo eventInfo = default)
             : this(category, ErrorLevel.Error, eventInfo, null, exception)
         {
         }
@@ -89,11 +94,26 @@ namespace CafeLib.Core.Logging
         /// <param name="message">log message</param>
         /// <param name="exception">exception object</param>
         public LogEventMessage(string category, ErrorLevel errorLevel, LogEventInfo eventInfo, string message, Exception exception = null)
+            : this(category, errorLevel, eventInfo, message, null, exception)    
+        {
+        }
+
+        /// <summary>
+        /// Log event message constructor.
+        /// </summary>
+        /// <param name="category">log category</param>
+        /// <param name="errorLevel">error level</param>
+        /// <param name="eventInfo">log event info</param>
+        /// <param name="message">log message</param>
+        /// <param name="messageInfo">log message info</param>
+        /// <param name="exception">exception object</param>
+        public LogEventMessage(string category, ErrorLevel errorLevel, LogEventInfo eventInfo, string message, LogMessageInfo messageInfo, Exception exception = null)
         {
             Category = category;
             ErrorLevel = errorLevel;
             EventInfo = eventInfo;
             Message = message ?? string.Empty;
+            MessageInfo = messageInfo;
             Exception = exception;
         }
 

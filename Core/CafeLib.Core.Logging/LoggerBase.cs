@@ -24,7 +24,7 @@ namespace CafeLib.Core.Logging
         protected LoggerBase(string category, ILogEventReceiver receiver)
         {
             Category = category;
-            Receiver = receiver ?? new LogNullEventReceiver();
+            Receiver = receiver ?? new LogEventReceiver();
         }
 
         #endregion

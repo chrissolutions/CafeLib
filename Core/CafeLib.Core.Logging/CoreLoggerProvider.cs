@@ -10,9 +10,9 @@ namespace CafeLib.Core.Logging
         /// CoreLoggerProvider default constructor.
         /// </summary>
         /// <param name="category">log category</param>
-        /// <param name="messenger">log event messenger</param>
-        public CoreLoggerProvider(NonNullable<string> category, ILogEventReceiver messenger)
-            : base(category, messenger)
+        /// <param name="receiver">log event message receiver</param>
+        public CoreLoggerProvider(NonNullable<string> category, NonNullable<ILogEventReceiver> receiver)
+            : base(category, receiver)
         {
         }
 

@@ -7,13 +7,13 @@ using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Core.Logging
 {
-    public class LogFactory<T> : ILoggerFactory where T : LoggerBase
+    public class LogFactory<T> : ILoggerFactory where T : ILogger
     {
         #region Private Variables
 
-        private static readonly ConcurrentDictionary<string, ILogger> Loggers;
-        private static readonly ConcurrentDictionary<string, ILoggerProvider> LoggerProviders;
-        private readonly ILogEventReceiver _defaultReceiver;
+        private static readonly ConcurrentDictionary<string, ILogger> _loggers;
+        private static readonly ConcurrentDictionary<string, ILoggerProvider> _loggerProviders;
+        private readonly ILogEventReceiver _receiver;
         private bool _disposed;
 
         #endregion
@@ -22,15 +22,23 @@ namespace CafeLib.Core.Logging
 
         static LogFactory()
         {
-            Loggers = new ConcurrentDictionary<string, ILogger>();
-            LoggerProviders = new ConcurrentDictionary<string, ILoggerProvider>();
+            _loggers = new ConcurrentDictionary<string, ILogger>();
+            _loggerProviders = new ConcurrentDictionary<string, ILoggerProvider>();
+        }
+
+        /// <summary>
+        /// CoreLoggerFactory constructor.
+        /// </summary>
+        public LogFactory()
+            : this(new Guid().ToString(), new LogEventReceiver())
+        {
         }
 
         /// <summary>
         /// CoreLoggerFactory constructor.
         /// </summary>
         /// <param name="receiver">log event receiver</param>
-        public LogFactory(ILogEventReceiver receiver = null)
+        public LogFactory(ILogEventReceiver receiver)
             : this(new Guid().ToString(), receiver)
         {
         }
@@ -42,8 +50,8 @@ namespace CafeLib.Core.Logging
         /// <param name="receiver">log event receiver</param>
         public LogFactory(NonNullable<string> category, ILogEventReceiver receiver)
         {
-            _defaultReceiver = receiver;
-            AddProvider(new LogProvider<T>(category, receiver));
+            _receiver = receiver ?? new LogEventReceiver();
+            AddProvider(new LogProvider<T>(category, new NonNullable<ILogEventReceiver>(_receiver)));
         }
 
         #endregion
@@ -57,19 +65,19 @@ namespace CafeLib.Core.Logging
         /// <returns>logger</returns>
         public ILogger CreateLogger(string category)
         {
-            if (!LoggerProviders.TryGetValue(category, out var provider))
+            if (!_loggerProviders.TryGetValue(category, out var provider))
             {
-                provider = new LogProvider<T>(category, _defaultReceiver);
+                provider = new LogProvider<T>(category, new NonNullable<ILogEventReceiver>(_receiver));
                 AddProvider(provider);
             }
 
-            return Loggers.GetOrAdd(category, provider?.CreateLogger(category));
+            return _loggers.GetOrAdd(category, provider?.CreateLogger(category));
         }
 
         public void AddProvider(ILoggerProvider provider)
         {
             var category = (provider as LogProvider<T>)?.Category;
-            LoggerProviders.GetOrAdd(category ?? throw new InvalidOperationException(nameof(category)), provider);
+            _loggerProviders.GetOrAdd(category ?? throw new InvalidOperationException(nameof(category)), provider);
         }
 
         /// <summary>
@@ -79,7 +87,7 @@ namespace CafeLib.Core.Logging
         {
             if (_disposed) return;
 
-            foreach (var provider in LoggerProviders.Select(x => x.Value))
+            foreach (var provider in _loggerProviders.Select(x => x.Value))
             {
                 try
                 {

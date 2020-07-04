@@ -14,7 +14,7 @@ namespace CafeLib.Core.Logging
         #region Priavate Variables
 
         private readonly ILogger _logger;
-        private static readonly ILoggerFactory LoggerFactory = new CoreLoggerFactory();
+        private static readonly ILoggerFactory _loggerFactory = new CoreLoggerFactory();
         private readonly Action<LogEventMessage> _logEventListener;
 
         #endregion
@@ -29,8 +29,8 @@ namespace CafeLib.Core.Logging
         public LogEventWriter(NonNullable<string> category, Action<LogEventMessage> logEventListener)
         {
             _logEventListener = logEventListener ?? delegate { };
-            LoggerFactory.AddProvider(new CoreLoggerProvider(category, this));
-            _logger = LoggerFactory.CreateLogger(category);
+            _loggerFactory.AddProvider(new CoreLoggerProvider(category, this));
+            _logger = _loggerFactory.CreateLogger(category);
         }
 
         #endregion

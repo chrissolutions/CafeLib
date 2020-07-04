@@ -2,6 +2,7 @@ using CafeLib.Core.Extensions;
 using CafeLib.Core.Logging;
 using CafeLib.Core.UnitTests.Logging;
 using Microsoft.Extensions.Logging;
+using System.Net.Http;
 using Xunit;
 
 namespace CafeLib.Core.UnitTests
@@ -79,6 +80,40 @@ namespace CafeLib.Core.UnitTests
             Assert.Equal(20, eventMessage.MessageInfo["tag"]);
             Assert.Equal(40, eventMessage.MessageInfo["state"]);
             Assert.Equal("Message 20 for state 40", logEventMessage.Message);
+        }
+
+        private static void TestLogListener(LogEventMessage logEventMessage)
+        {
+            Assert.Equal("System.Net.Http.HttpClient", logEventMessage.Category);
+            Assert.Equal("Hello World", logEventMessage.Message);
+        }
+
+        [Fact]
+        public void LoggerTest()
+        {
+            var factory = LoggerFactory.Create(builder =>
+            {
+                builder
+                    .AddProvider(new LoggerProvider(TestLogListener));
+            });
+
+            factory.CreateLogger<HttpClient>();
+
+            var logger = (ILogger)new Logger<HttpClient>(factory);
+
+            logger.Log(LogLevel.Information,
+                new EventId(3, "TestEvent"),
+                new { tag = 20, state = 40 },
+                null,
+                (o, e) => "Message {tag} for state {state}".Render(o));
+
+
+            logger.Log(LogLevel.Information, "Hello World");
+            logger.Log(LogLevel.Information,
+                new EventId(3, "TestEvent"),
+
+                "Hello World"
+                );
         }
 
         [Fact]

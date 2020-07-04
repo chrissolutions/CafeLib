@@ -4,15 +4,22 @@ using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Core.Logging
 {
-    public class LogProvider<T> : LoggerProvider where T : ILogger
+    public class LoggerProvider : ILoggerProvider
     {
+        #region Automatic Properties
+
+        public string Category { get; private protected set; }
+        private protected ILogEventReceiver Receiver { get; }
+
+        #endregion
+
         #region Constructors
 
         /// <summary>
         /// LogProvider constructor.
         /// </summary>
         /// <param name="listener"></param>
-        public LogProvider(Action<LogEventMessage> listener)
+        public LoggerProvider(Action<LogEventMessage> listener)
             : this(new LogEventReceiver(listener))
         {
         }
@@ -21,9 +28,9 @@ namespace CafeLib.Core.Logging
         /// LogProvider constructor.
         /// </summary>
         /// <param name="receiver">log event receiver</param>
-        public LogProvider(NonNullable<ILogEventReceiver> receiver)
-            : base(receiver)
+        public LoggerProvider(NonNullable<ILogEventReceiver> receiver)
         {
+            Receiver = receiver.Value ?? new LogEventReceiver(null);
         }
 
         /// <summary>
@@ -31,9 +38,10 @@ namespace CafeLib.Core.Logging
         /// </summary>
         /// <param name="category">log category</param>
         /// <param name="receiver">log event receiver</param>
-        internal LogProvider(NonNullable<string> category, NonNullable<ILogEventReceiver> receiver)
-            : base(category, receiver)
+        internal LoggerProvider(NonNullable<string> category, NonNullable<ILogEventReceiver> receiver)
         {
+            Category = category.Value;
+            Receiver = receiver.Value;
         }
 
         #endregion
@@ -45,11 +53,16 @@ namespace CafeLib.Core.Logging
         /// </summary>
         /// <param name="category">log category</param>
         /// <returns>logger</returns>
-        public override ILogger CreateLogger(string category)
+        public virtual ILogger CreateLogger(string category)
         {
             Category ??= category;
-            return (T)Activator.CreateInstance(typeof(T), Category, Receiver);
+            return new LogEventSender(category, Receiver);
         }
+
+        /// <summary>
+        /// Disposes the provider.
+        /// </summary>
+        public void Dispose() { }
 
         #endregion
     }
