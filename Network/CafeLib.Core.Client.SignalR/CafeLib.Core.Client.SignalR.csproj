@@ -18,10 +18,4 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.1.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CafeLib.Core.Logging\CafeLib.Core.Logging.csproj" />
-    <ProjectReference Include="..\CafeLib.Core.Runnable\CafeLib.Core.Runnable.csproj" />
-    <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />
-  </ItemGroup>
-
 </Project>
