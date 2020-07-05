@@ -1,6 +1,6 @@
 ﻿namespace CafeLib.Core.Logging
 {
-    public class LogEventSender : LoggerBase
+    internal class LoggerCore : LoggerBase
     {
         #region Constructors
 
@@ -9,7 +9,7 @@
         /// </summary>
         /// <param name="category">log category</param>
         /// <param name="receiver">logger receiver</param>
-        public LogEventSender(string category, ILogEventReceiver receiver)
+        public LoggerCore(string category, ILogEventReceiver receiver)
             : base(category, receiver)
         {
         }

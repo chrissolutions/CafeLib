@@ -13,12 +13,12 @@ namespace CafeLib.Core.UnitTests.Services
 
     public class DisposableService : IDisposableService, IDisposable
     {
-        private readonly ILogger<FooService> _logger;
+        private readonly ILogger _logger;
         private int _disposed;
 
-        public DisposableService(ILoggerFactory loggerFactory)
+        public DisposableService(ILogger logger)
         {
-            _logger = loggerFactory.CreateLogger<FooService>();
+            _logger = logger;
         }
 
         public bool IsDisposed => _disposed > 0;

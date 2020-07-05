@@ -1,20 +1,14 @@
 ﻿using System;
-using CafeLib.Core.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Core.Logging
 {
-    public class LogProvider<T> : ILoggerProvider where T : LoggerBase
+    public class LoggerProvider : ILoggerProvider
     {
-        #region Private Variables
-
-        private readonly ILogEventReceiver _receiver;
-
-        #endregion
-
         #region Automatic Properties
 
-        public string Category { get; private set; }
+        public string Category { get; private protected set; }
+        private protected ILogEventReceiver Receiver { get; }
 
         #endregion
 
@@ -23,10 +17,19 @@ namespace CafeLib.Core.Logging
         /// <summary>
         /// LogProvider constructor.
         /// </summary>
-        /// <param name="receiver">log event receiver</param>
-        public LogProvider(ILogEventReceiver receiver)
+        /// <param name="logEvent"></param>
+        public LoggerProvider(Action<LogEventMessage> logEvent)
+            : this(new LogEventReceiver(logEvent))
         {
-            _receiver = receiver;
+        }
+
+        /// <summary>
+        /// LogProvider constructor.
+        /// </summary>
+        /// <param name="receiver">log event receiver</param>
+        public LoggerProvider(ILogEventReceiver receiver)
+            : this(null, receiver)
+        {
         }
 
         /// <summary>
@@ -34,10 +37,10 @@ namespace CafeLib.Core.Logging
         /// </summary>
         /// <param name="category">log category</param>
         /// <param name="receiver">log event receiver</param>
-        internal LogProvider(NonNullable<string> category, ILogEventReceiver receiver)
+        internal LoggerProvider(string category, ILogEventReceiver receiver)
         {
-            Category = category.Value;
-            _receiver = receiver;               
+            Category = category ?? string.Empty;
+            Receiver = receiver ?? new LogEventReceiver();
         }
 
         #endregion
@@ -49,10 +52,10 @@ namespace CafeLib.Core.Logging
         /// </summary>
         /// <param name="category">log category</param>
         /// <returns>logger</returns>
-        public ILogger CreateLogger(string category)
+        public virtual ILogger CreateLogger(string category)
         {
             Category ??= category;
-            return (T)Activator.CreateInstance(typeof(T), Category, _receiver);
+            return new LoggerCore(category, Receiver);
         }
 
         /// <summary>

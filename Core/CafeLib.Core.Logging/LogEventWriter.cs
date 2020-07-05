@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.Support;
 using Microsoft.Extensions.Logging;
@@ -9,13 +8,11 @@ namespace CafeLib.Core.Logging
     /// <summary>
     /// Log event writer.
     /// </summary>
-    public class LogEventWriter : ILogEventWriter, ILogEventReceiver
+    public class LogEventWriter : LoggerBase, ILogEventWriter
     {
         #region Priavate Variables
 
         private readonly ILogger _logger;
-        private static readonly ILoggerFactory LoggerFactory = new CoreLoggerFactory();
-        private readonly Action<LogEventMessage> _logEventListener;
 
         #endregion
 
@@ -27,10 +24,20 @@ namespace CafeLib.Core.Logging
         /// <param name="category">log category</param>
         /// <param name="logEventListener">log event listener</param>
         public LogEventWriter(NonNullable<string> category, Action<LogEventMessage> logEventListener)
+            : this(category, new LogEventReceiver(logEventListener))
         {
-            _logEventListener = logEventListener ?? delegate { };
-            LoggerFactory.AddProvider(new CoreLoggerProvider(category, this));
-            _logger = LoggerFactory.CreateLogger(category);
+        }
+
+        /// <summary>
+        /// LoggerHandler constructor.
+        /// </summary>
+        /// <param name="category">log category</param>
+        /// <param name="receiver">logger receiver</param>
+        public LogEventWriter(string category, ILogEventReceiver receiver)
+            : base(category, receiver)
+        {
+            var factory = LoggerFactory.Create(builder => builder.AddProvider(new LoggerProvider(Receiver)));
+            _logger = factory.CreateLogger(category);
         }
 
         #endregion
@@ -41,103 +48,103 @@ namespace CafeLib.Core.Logging
         /// Log info event.
         /// </summary>
         /// <param name="message">log message</param>
-        public void Info(string message) => LogMessage(ErrorLevel.Info, LogEventInfo.Empty, message);
+        public void Info(string message) => _logger.Info(message);
 
         /// <summary>
         /// Log info event.
         /// </summary>
         /// <param name="eventInfo">log event info</param>
         /// <param name="message">log message</param>
-        public void Info(LogEventInfo eventInfo, string message) => LogMessage(ErrorLevel.Info, eventInfo, message);
+        public void Info(LogEventInfo eventInfo, string message) => _logger.Info(eventInfo, message);
 
         /// <summary>
         /// Log OK event
         /// </summary>
         /// <param name="message">log message</param>
-        public void Ok(string message) => LogMessage(ErrorLevel.Ok, LogEventInfo.Empty, message);
+        public void Ok(string message) => _logger.Ok(LogEventInfo.Empty, message);
 
         /// <summary>
         /// Log OK event
         /// </summary>
         /// <param name="eventInfo">log event info</param>
         /// <param name="message">log message</param>
-        public void Ok(LogEventInfo eventInfo, string message) => LogMessage(ErrorLevel.Ok, eventInfo, message);
+        public void Ok(LogEventInfo eventInfo, string message) => _logger.Ok(eventInfo, message);
 
         /// <summary>
         /// Log error event.
         /// </summary>
         /// <param name="message">log message</param>
-        public void Error(string message) => LogMessage(ErrorLevel.Error, LogEventInfo.Empty, message);
+        public void Error(string message) => _logger.Error(LogEventInfo.Empty, message);
 
         /// <summary>
         /// Log error event.
         /// </summary>
         /// <param name="message">log message</param>
         /// <param name="exception">exception object</param>
-        public void Error(string message, Exception exception) => LogMessage(ErrorLevel.Error, LogEventInfo.Empty, message, exception);
-
-        /// <summary>
-        /// Log error event.
-        /// </summary>
-        /// <param name="eventInfo">log event info</param>
-        /// <param name="message">log message</param>
-        public void Error(LogEventInfo eventInfo, string message) => LogMessage(ErrorLevel.Error, eventInfo, message);
+        public void Error(string message, Exception exception) => _logger.Error(LogEventInfo.Empty, message, exception);
 
         /// <summary>
         /// Log error event.
         /// </summary>
         /// <param name="eventInfo">log event info</param>
         /// <param name="message">log message</param>
-        /// <param name="exception">exception object</param>
-        public void Error(LogEventInfo eventInfo, string message, Exception exception) => LogMessage(ErrorLevel.Error, eventInfo, message, exception);
+        public void Error(LogEventInfo eventInfo, string message) => _logger.Error(eventInfo, message);
 
         /// <summary>
-        /// Log critical event.
-        /// </summary>
-        /// <param name="message">log message</param>
-        public void Critical(string message) => LogMessage(ErrorLevel.Critical, LogEventInfo.Empty, message);
-
-        /// <summary>
-        /// Log critical event.
+        /// Log error event.
         /// </summary>
         /// <param name="eventInfo">log event info</param>
         /// <param name="message">log message</param>
-        public void Critical(LogEventInfo eventInfo, string message) => LogMessage(ErrorLevel.Critical, eventInfo, message);
+        /// <param name="exception">exception object</param>
+        public void Error(LogEventInfo eventInfo, string message, Exception exception) => _logger.Error(eventInfo, message, exception);
 
         /// <summary>
         /// Log critical event.
         /// </summary>
         /// <param name="message">log message</param>
-        /// <param name="exception">exception object</param>
-        public void Critical(string message, Exception exception) => LogMessage(ErrorLevel.Critical, LogEventInfo.Empty, message, exception);
+        public void Critical(string message) => _logger.Critical(LogEventInfo.Empty, message);
 
         /// <summary>
         /// Log critical event.
         /// </summary>
         /// <param name="eventInfo">log event info</param>
         /// <param name="message">log message</param>
+        public void Critical(LogEventInfo eventInfo, string message) => _logger.Critical(eventInfo, message);
+
+        /// <summary>
+        /// Log critical event.
+        /// </summary>
+        /// <param name="message">log message</param>
         /// <param name="exception">exception object</param>
-        public void Critical(LogEventInfo eventInfo, string message, Exception exception) => LogMessage(ErrorLevel.Critical, eventInfo, message, exception);
+        public void Critical(string message, Exception exception) => _logger.Critical(LogEventInfo.Empty, message, exception);
+
+        /// <summary>
+        /// Log critical event.
+        /// </summary>
+        /// <param name="eventInfo">log event info</param>
+        /// <param name="message">log message</param>
+        /// <param name="exception">exception object</param>
+        public void Critical(LogEventInfo eventInfo, string message, Exception exception) => _logger.Critical(eventInfo, message, exception);
 
         /// <summary>
         /// Log missing event.
         /// </summary>
         /// <param name="message">log message</param>
-        public void Missing(string message) => LogMessage(ErrorLevel.Missing, LogEventInfo.Empty, message);
+        public void Missing(string message) => _logger.Missing(LogEventInfo.Empty, message);
 
         /// <summary>
         /// Log missing event.
         /// </summary>
         /// <param name="message">log message</param>
         /// <param name="exception">exception object</param>
-        public void Missing(string message, Exception exception) => LogMessage(ErrorLevel.Missing, LogEventInfo.Empty, message, exception);
+        public void Missing(string message, Exception exception) => _logger.Missing(LogEventInfo.Empty, message, exception);
 
         /// <summary>
         /// Log missing event.
         /// </summary>
         /// <param name="eventInfo">log event info</param>
         /// <param name="message">log message</param>
-        public void Missing(LogEventInfo eventInfo, string message) => LogMessage(ErrorLevel.Missing, eventInfo, message);
+        public void Missing(LogEventInfo eventInfo, string message) => _logger.Missing(eventInfo, message);
 
         /// <summary>
         /// Log missing event.
@@ -145,33 +152,33 @@ namespace CafeLib.Core.Logging
         /// <param name="eventInfo">log event info</param>
         /// <param name="message">log message</param>
         /// <param name="exception">exception object</param>
-        public void Missing(LogEventInfo eventInfo, string message, Exception exception) => LogMessage(ErrorLevel.Missing, eventInfo, message, exception);
+        public void Missing(LogEventInfo eventInfo, string message, Exception exception) => _logger.Missing(eventInfo, message, exception);
 
         /// <summary>
         /// Log warning event.
         /// </summary>
         /// <param name="message">event message</param>
-        public void Warning(string message) => LogMessage(ErrorLevel.Warning, LogEventInfo.Empty, message);
+        public void Warning(string message) => _logger.Warning(LogEventInfo.Empty, message);
 
         /// <summary>
         /// Log warning event.
         /// </summary>
         /// <param name="eventInfo">log event info</param>
         /// <param name="message">log message</param>
-        public void Warning(LogEventInfo eventInfo, string message) => LogMessage(ErrorLevel.Warning, eventInfo, message);
+        public void Warning(LogEventInfo eventInfo, string message) => _logger.Warning(eventInfo, message);
 
         /// <summary>
         /// Log ignore event.
         /// </summary>
         /// <param name="message">log message</param>
-        public void Ignore(string message) => LogMessage(ErrorLevel.Ignore, LogEventInfo.Empty, message);
+        public void Ignore(string message) => _logger.Ignore(LogEventInfo.Empty, message);
 
         /// <summary>
         /// Log ignore event.
         /// </summary>
         /// <param name="eventInfo">log event info</param>
         /// <param name="message">log message</param>
-        public void Ignore(LogEventInfo eventInfo, string message) => LogMessage(ErrorLevel.Ignore, eventInfo, message);
+        public void Ignore(LogEventInfo eventInfo, string message) => _logger.Ignore(eventInfo, message);
 
         /// <summary>
         /// Log the message.
@@ -180,44 +187,19 @@ namespace CafeLib.Core.Logging
         /// <param name="logEventInfo">log event info</param>
         /// <param name="message">message</param>
         /// <param name="exception"></param>
-        public void LogMessage(ErrorLevel errorLevel, LogEventInfo logEventInfo, NonNullable<string> message, Exception exception = null)
-        {
-            _logger.Log(_logger.ToLogLevel(errorLevel), LogEventInfo.ToEventId(logEventInfo), message.Value, exception, LogFormatter);
-        }
+        public void LogMessage(ErrorLevel errorLevel, LogEventInfo logEventInfo, string message, Exception exception = null)
+            => _logger.LogMessage(errorLevel, logEventInfo, message, exception);
 
         /// <summary>
-        /// Forwards the logger log message.
+        /// Log the message.
         /// </summary>
-        /// <typeparam name="T">Log event message type</typeparam>
-        /// <param name="message">logger message</param>
-        public void LogMessage<T>(T message) where T : LogEventMessage
-        {
-            _logEventListener(message);
-        }
-
-        #endregion
-
-        #region Helpers
-
-        /// <summary>
-        /// Logging formatter.
-        /// </summary>
-        /// <param name="state">state object</param>
-        /// <param name="exception">exception object</param>
-        /// <returns></returns>
-        private static string LogFormatter(object state, Exception exception)
-        {
-            // Set log message.
-            var message = state?.ToString() ?? string.Empty;
-
-            // Set error message.
-            var error = exception != null
-                ? $"{Environment.NewLine}exception: {exception.Message} {exception.InnerException?.Message}"
-                : string.Empty;
-
-            // return log 
-            return string.Format(CultureInfo.CurrentCulture, $"{message}{error}");
-        }
+        /// <param name="errorLevel">log level</param>
+        /// <param name="logEventInfo">log event info</param>
+        /// <param name="state"></param>
+        /// <param name="exception"></param>
+        /// <param name="formatter"></param>
+        public void LogMessage(ErrorLevel errorLevel, LogEventInfo logEventInfo, object state, Exception exception, Func<object, Exception, string> formatter)
+            => _logger.Log(_logger.ToLogLevel(errorLevel), LogEventInfo.ToEventId(logEventInfo), state, exception, formatter);
 
         #endregion
     }

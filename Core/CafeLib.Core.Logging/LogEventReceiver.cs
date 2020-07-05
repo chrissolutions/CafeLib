@@ -1,13 +1,17 @@
 using System;
-using CafeLib.Core.Logging;
 
-namespace CafeLib.Core.UnitTests.Logging
+namespace CafeLib.Core.Logging
 {
-    public class TestLogReceiver : ILogEventReceiver
+    internal class LogEventReceiver : ILogEventReceiver
     {
         private readonly Action<LogEventMessage> _listener;
 
-        public TestLogReceiver(Action<LogEventMessage> listener)
+        public LogEventReceiver()
+            : this(null)
+        {
+        }
+
+        public LogEventReceiver(Action<LogEventMessage> listener)
         {
             _listener = listener;
         }
