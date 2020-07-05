@@ -203,4 +203,16 @@ namespace CafeLib.Core.Logging
 
         #endregion
     }
+
+    public class LogEventWriter<T> : LogEventWriter
+    {
+        public LogEventWriter(Action<LogEventMessage> logEventListener) : base(typeof(T).FullName, logEventListener)
+        {
+        }
+
+        public LogEventWriter(ILogEventReceiver receiver) : base(typeof(T).FullName, receiver)
+        {
+        }
+    }
+
 }

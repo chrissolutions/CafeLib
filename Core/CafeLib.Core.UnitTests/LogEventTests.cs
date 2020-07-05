@@ -114,5 +114,17 @@ namespace CafeLib.Core.UnitTests
                 (o, e) => "Message {tag} for state {state}".Render(o));
 
         }
+
+        [Fact]
+        public void LogEventWriterOfGenericTypeTest()
+        {
+            var writer = new LogEventWriter<HttpClient>(TestLoggerFactoryListener);
+            writer.LogMessage(ErrorLevel.Info,
+                new LogEventInfo(id: 3, name: "TestEvent"),
+                new { tag = 20, state = 40 },
+                null,
+                (o, e) => "Message {tag} for state {state}".Render(o));
+
+        }
     }
 }
