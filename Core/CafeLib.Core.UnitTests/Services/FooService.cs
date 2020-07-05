@@ -1,5 +1,3 @@
-using System;
-using CafeLib.Core.IoC;
 using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Core.UnitTests.Services
@@ -11,10 +9,10 @@ namespace CafeLib.Core.UnitTests.Services
 
     public class FooService : IFooService
     {
-        private readonly ILogger<FooService> _logger;
-        public FooService(ILoggerFactory loggerFactory)
+        private readonly ILogger _logger;
+        public FooService(ILogger logger)
         {
-            _logger = loggerFactory.CreateLogger<FooService>();
+            _logger = logger;
         }
 
         public void DoThing(int number)

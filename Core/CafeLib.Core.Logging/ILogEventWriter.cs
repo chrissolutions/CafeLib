@@ -1,4 +1,6 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
+
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMemberInSuper.Global
 
@@ -7,7 +9,7 @@ namespace CafeLib.Core.Logging
     /// <summary>
     /// Logs event by classification.
     /// </summary>
-    public interface ILogEventWriter
+    public interface ILogEventWriter : ILogger
     {
         /// <summary>
         /// Log info event.

@@ -17,9 +17,9 @@ namespace CafeLib.Core.Logging
         /// <summary>
         /// LogProvider constructor.
         /// </summary>
-        /// <param name="listener"></param>
-        public LoggerProvider(Action<LogEventMessage> listener)
-            : this(new LogEventReceiver(listener))
+        /// <param name="logEvent"></param>
+        public LoggerProvider(Action<LogEventMessage> logEvent)
+            : this(new LogEventReceiver(logEvent))
         {
         }
 
@@ -55,7 +55,7 @@ namespace CafeLib.Core.Logging
         public virtual ILogger CreateLogger(string category)
         {
             Category ??= category;
-            return new LogEventSender(category, Receiver);
+            return new LoggerCore(category, Receiver);
         }
 
         /// <summary>
