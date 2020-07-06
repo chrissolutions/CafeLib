@@ -1,6 +1,6 @@
-﻿namespace CafeLib.Core.Client.SignalR
+﻿namespace CafeLib.Web.SignalR
 {
-    public enum WebChannelConnectionState
+    public enum SignalRChannelState
     {
         Off,
         Connecting,
