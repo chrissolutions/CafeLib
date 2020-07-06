@@ -11,9 +11,13 @@ namespace CafeLib.Web.Request.UnitTests
         [Fact]
         public async void GetRequestTest()
         {
-            var request = new WebRequest<JToken>("https://api.github.com/users/mralexgray/repos");
+            const string endpoint = "https://httpbin.org/anything";
+            var request = new WebRequest<JToken>(endpoint);
             var json = await request.GetAsync();
             Assert.NotNull(json);
+            var result = json.ToObject<BinResult>();
+            Assert.Equal("GET", result.Method);
+            Assert.Equal(endpoint, result.Url);
         }
 
         [Fact]
