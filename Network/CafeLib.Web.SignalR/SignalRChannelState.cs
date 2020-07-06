@@ -6,6 +6,7 @@
         Connecting,
         Connected,
         Reconnecting,
-        Disconnected
+        Disconnected,
+        Faulted
     }
 }

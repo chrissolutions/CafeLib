@@ -1,6 +1,3 @@
-using System;
-using System.Diagnostics;
-using System.Threading;
 using Newtonsoft.Json.Linq;
 using Xunit;
 

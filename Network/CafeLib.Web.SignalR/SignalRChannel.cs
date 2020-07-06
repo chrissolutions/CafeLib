@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using CafeLib.Core.Logging;
 using CafeLib.Core.MethodBinding;
@@ -12,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CafeLib.Web.SignalR
 {
-    public abstract class SignalRChannel : RunnerBase, IServiceProvider
+    public class SignalRChannel : RunnerBase, IServiceProvider
     {
         #region Private Variables
 
@@ -21,16 +22,11 @@ namespace CafeLib.Web.SignalR
 
         #endregion
 
-        #region Constants
-
-        private const int ConnectionStateId = 26;
-
-        #endregion
-
         #region Automatic Properties
         protected MethodBridge Bridge { get; set; }
 
-        internal HubConnection Connection { get; private set; }
+        public HubConnection Connection { get; private set; }
+        public HubConnectionBuilder Connection2 { get; private set; }
 
         protected ILogger Logger { get; }
 
@@ -41,6 +37,9 @@ namespace CafeLib.Web.SignalR
         public int ConnectionAttempts { get; private set; }
 
         public bool IsConnected => ConnectionState == SignalRChannelState.Connected;
+//        public bool IsConnected => Connection.State == HubConnectionState.Connected;
+
+        public event Action<SignalRMessage> ChannelEvent;
 
         #endregion
 
@@ -52,7 +51,7 @@ namespace CafeLib.Web.SignalR
         /// <param name="url">Channel url</param>
         /// <param name="bridge">Method bridge</param>
         /// <param name="logger">event listener</param>
-        protected SignalRChannel(string url, MethodBridge bridge, ILogger logger = null)
+        public SignalRChannel(string url, MethodBridge bridge, ILogger logger = null)
             : base(DefaultDelay)
         {
             Url = new Uri(url);
@@ -109,7 +108,8 @@ namespace CafeLib.Web.SignalR
         /// <param name="message">event message</param>
         private void LogEventListener(LogEventMessage message)
         {
-            SetState(message);
+            SetState();
+            ChannelEvent.Invoke(new SignalRMessage(this));
             Logger.LogMessage(message.ErrorLevel, message.EventInfo, message.Message, message.Exception);
         }
 
@@ -121,6 +121,10 @@ namespace CafeLib.Web.SignalR
         {
             if (IsConnected) return;
 
+            //Connection = new HubConnectionBuilder()
+            //    .WithUrl(Url) //Make sure that the route is the same with your configured route for your HUB
+            //    .Build();
+
             var connectionFactory = this is SignalRTextChannel
                 ? new SignalRTextConnectionFactory(LogEventListener)
                 : new SignalRConnectionFactory(LogEventListener);
@@ -131,6 +135,30 @@ namespace CafeLib.Web.SignalR
 
             Connection = new HubConnection(connectionFactory, protocol, new UriEndPoint(Url), this, loggerFactory);
 
+            Connection.Reconnected += x =>
+            {
+                Console.WriteLine(x); 
+                return Task.CompletedTask;
+            };
+
+            // Subscribe to event
+            Connection.Closed += ex =>
+            {
+                if (ex == null)
+                {
+                    //Trace.WriteLine("Connection terminated");
+                    ConnectionState = SignalRChannelState.Disconnected;
+                }
+                else
+                {
+                    //Trace.WriteLine($"Connection terminated with error: {ex.GetType()}: {ex.Message}");
+                    ConnectionState = SignalRChannelState.Disconnected; //.Faulted;
+                }
+
+                return Task.CompletedTask;
+            };
+
+
             Connection.On("client", (string methodName, object[] args) =>
             {
                 Bridge?.Invoke(methodName, args);
@@ -140,6 +168,7 @@ namespace CafeLib.Web.SignalR
             ConnectionState = SignalRChannelState.Connected;
             Delay = CheckConnectionInterval;
         }
+
 
         private async Task CloseChannel()
         {
@@ -161,23 +190,56 @@ namespace CafeLib.Web.SignalR
         /// <summary>
         /// Set the connection state.
         /// </summary>
-        /// <param name="message">HttpConnection message to parse for connection state.</param>
-        private void SetState(LogEventMessage message)
+        private void SetState()
         {
-            if (message?.EventInfo.Id != ConnectionStateId || message.EventInfo.Name != "ConnectionStateChanged") return;
-            ConnectionState = (SignalRChannelState)Enum.Parse(typeof(SignalRChannelState), message.MessageInfo["newState"].ToString());
-
             switch (ConnectionState)
             {
+                case SignalRChannelState.Off:
+                    break;
+
                 case SignalRChannelState.Connected:
-                    ConnectionAttempts = 0;
+                    break;
+
+                case SignalRChannelState.Connecting:
                     break;
 
                 case SignalRChannelState.Disconnected:
                     break;
 
-                case SignalRChannelState.Connecting:
                 case SignalRChannelState.Reconnecting:
+                    break;
+
+                case SignalRChannelState.Faulted:
+                    break;
+            }
+
+
+
+            switch (Connection.State)
+            {
+                case HubConnectionState.Connected:
+                    ConnectionState = SignalRChannelState.Connected;
+                    ConnectionAttempts = 0;
+                    break;
+
+                case HubConnectionState.Disconnected:
+                    ConnectionState = SignalRChannelState.Disconnected;
+                    break;
+
+                case HubConnectionState.Connecting:
+                    ConnectionState = SignalRChannelState.Connecting;
+                    try
+                    {
+                        ++ConnectionAttempts;
+                    }
+                    catch
+                    {
+                        ConnectionAttempts = 0;
+                    }
+                    break;
+
+                case HubConnectionState.Reconnecting:
+                    ConnectionState = SignalRChannelState.Reconnecting;
                     try
                     {
                         ++ConnectionAttempts;
