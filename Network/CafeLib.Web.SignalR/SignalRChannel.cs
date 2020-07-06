@@ -57,7 +57,7 @@ namespace CafeLib.Web.SignalR
         {
             Url = new Uri(url);
             Bridge = bridge;
-            Logger = logger ?? new LogEventWriter<SignalRChannel>(LogEventListener);
+            Logger = logger ?? new LogEventWriter<SignalRChannel>(x => { });
             ConnectionState = SignalRChannelState.Off;
             RunnerEvent = x =>
             {
