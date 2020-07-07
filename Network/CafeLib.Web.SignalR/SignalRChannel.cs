@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Logging;
 using CafeLib.Core.MethodBinding;
@@ -20,13 +20,14 @@ namespace CafeLib.Web.SignalR
         private const int DefaultDelay = 10;  // 10 millisecond default delay.
         private const int CheckConnectionInterval = 5000; // Check connection every 5 sec.
 
+        private int _connectionAttempts;
+
         #endregion
 
         #region Automatic Properties
         protected MethodBridge Bridge { get; set; }
 
-        public HubConnection Connection { get; private set; }
-        public HubConnectionBuilder Connection2 { get; private set; }
+        internal HubConnection Connection { get; private set; }
 
         protected ILogger Logger { get; }
 
@@ -34,10 +35,7 @@ namespace CafeLib.Web.SignalR
 
         public SignalRChannelState ConnectionState { get; private set; }
 
-        public int ConnectionAttempts { get; private set; }
-
-        public bool IsConnected => ConnectionState == SignalRChannelState.Connected;
-//        public bool IsConnected => Connection.State == HubConnectionState.Connected;
+        public int ConnectionAttempts => _connectionAttempts;
 
         public event Action<SignalRMessage> ChannelEvent;
 
@@ -85,7 +83,7 @@ namespace CafeLib.Web.SignalR
         {
             try
             {
-                await OpenChannel();
+                await VerifyConnection();
             }
             catch (Exception ex)
             {
@@ -108,8 +106,6 @@ namespace CafeLib.Web.SignalR
         /// <param name="message">event message</param>
         private void LogEventListener(LogEventMessage message)
         {
-            SetState();
-            ChannelEvent.Invoke(new SignalRMessage(this));
             Logger.LogMessage(message.ErrorLevel, message.EventInfo, message.Message, message.Exception);
         }
 
@@ -119,12 +115,6 @@ namespace CafeLib.Web.SignalR
         /// <returns>task</returns>
         private async Task OpenChannel()
         {
-            if (IsConnected) return;
-
-            //Connection = new HubConnectionBuilder()
-            //    .WithUrl(Url) //Make sure that the route is the same with your configured route for your HUB
-            //    .Build();
-
             var connectionFactory = this is SignalRTextChannel
                 ? new SignalRTextConnectionFactory(LogEventListener)
                 : new SignalRConnectionFactory(LogEventListener);
@@ -165,10 +155,8 @@ namespace CafeLib.Web.SignalR
             });
 
             await Connection.StartAsync();
-            ConnectionState = SignalRChannelState.Connected;
-            Delay = CheckConnectionInterval;
+            Delay = DefaultDelay;
         }
-
 
         private async Task CloseChannel()
         {
@@ -187,68 +175,73 @@ namespace CafeLib.Web.SignalR
             }
         }
 
-        /// <summary>
-        /// Set the connection state.
-        /// </summary>
-        private void SetState()
+        private async Task VerifyConnection()
         {
-            switch (ConnectionState)
+            var state = GetConnectionState();
+
+            if (state != SignalRChannelState.Connected && state != SignalRChannelState.Connecting)
             {
-                case SignalRChannelState.Off:
-                    break;
-
-                case SignalRChannelState.Connected:
-                    break;
-
-                case SignalRChannelState.Connecting:
-                    break;
-
-                case SignalRChannelState.Disconnected:
-                    break;
-
-                case SignalRChannelState.Reconnecting:
-                    break;
-
-                case SignalRChannelState.Faulted:
-                    break;
+                await OpenChannel();
             }
 
+            if (state != ConnectionState)
+            {
+                switch (state)
+                {
+                    case SignalRChannelState.Connected:
+                        _connectionAttempts = 0;
+                        Delay = CheckConnectionInterval;
+                        break;
 
+                    case SignalRChannelState.Disconnected:
+                        break;
 
+                    case SignalRChannelState.Connecting:
+                        try
+                        {
+                            Interlocked.Increment(ref _connectionAttempts);
+                        }
+                        catch
+                        {
+                            _connectionAttempts = 0;
+                        }
+                        break;
+
+                    case SignalRChannelState.Reconnecting:
+                        try
+                        {
+                            Interlocked.Increment(ref _connectionAttempts);
+                        }
+                        catch
+                        {
+                            _connectionAttempts = 0;
+                        }
+                        break;
+                }
+
+                ConnectionState = state;
+                ChannelEvent?.Invoke(new SignalRMessage(this));
+            }
+        }
+
+        private SignalRChannelState GetConnectionState()
+        {
             switch (Connection.State)
             {
                 case HubConnectionState.Connected:
-                    ConnectionState = SignalRChannelState.Connected;
-                    ConnectionAttempts = 0;
-                    break;
+                    return SignalRChannelState.Connected;
 
                 case HubConnectionState.Disconnected:
-                    ConnectionState = SignalRChannelState.Disconnected;
-                    break;
+                    return SignalRChannelState.Disconnected;
 
                 case HubConnectionState.Connecting:
-                    ConnectionState = SignalRChannelState.Connecting;
-                    try
-                    {
-                        ++ConnectionAttempts;
-                    }
-                    catch
-                    {
-                        ConnectionAttempts = 0;
-                    }
-                    break;
+                    return SignalRChannelState.Connecting;
 
                 case HubConnectionState.Reconnecting:
-                    ConnectionState = SignalRChannelState.Reconnecting;
-                    try
-                    {
-                        ++ConnectionAttempts;
-                    }
-                    catch
-                    {
-                        ConnectionAttempts = 0;
-                    }
-                    break;
+                    return SignalRChannelState.Reconnecting;
+
+                default:
+                    return SignalRChannelState.Off;
             }
         }
 
