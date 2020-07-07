@@ -85,7 +85,7 @@ namespace CafeLib.Core.Runnable
                 lock (_mutex)
                 {
                     _cancellationSource = new CancellationTokenSource();
-                    Advised.Invoke(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} started."));
+                    OnAdvise(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} started."));
                     RunTask();
                 }
             }
@@ -103,7 +103,7 @@ namespace CafeLib.Core.Runnable
                 {
                     _cancellationSource.Cancel();
                 }
-                Advised.Invoke(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} stopped."));
+                OnAdvise(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} stopped."));
             }
 
             await Task.CompletedTask;
@@ -132,7 +132,7 @@ namespace CafeLib.Core.Runnable
                 }
                 catch (Exception ex)
                 {
-                    Advised.Invoke(new RunnerEventMessage($"{Name} exception: {ex.Message} {ex.InnerException?.Message}"));
+                    OnAdvise(new RunnerEventMessage($"{Name} exception: {ex.Message} {ex.InnerException?.Message}"));
                 }
 
                 await Task.Delay(Delay, _cancellationSource.Token);
@@ -160,6 +160,15 @@ namespace CafeLib.Core.Runnable
                 }
 
             }, _cancellationSource.Token);
+        }
+
+        /// <summary>
+        /// Raise advise event.
+        /// </summary>
+        /// <param name="message"></param>
+        protected virtual void OnAdvise(IEventMessage message)
+        {
+            Advised.Invoke(message);
         }
 
         #endregion

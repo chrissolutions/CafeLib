@@ -54,6 +54,14 @@ namespace CafeLib.Core.Logging
         /// Log error event.
         /// </summary>
         /// <param name="logger">logger</param>
+        /// <param name="exception">exception object</param>
+        public static void Error(this ILogger logger, Exception exception)
+            => LogMessage(logger, ErrorLevel.Error, LogEventInfo.Empty, exception.Message, exception);
+
+        /// <summary>
+        /// Log error event.
+        /// </summary>
+        /// <param name="logger">logger</param>
         /// <param name="message">log message</param>
         /// <param name="exception">exception object</param>
         public static void Error(this ILogger logger, string message, Exception exception) 
@@ -99,6 +107,14 @@ namespace CafeLib.Core.Logging
         /// Log critical event.
         /// </summary>
         /// <param name="logger">logger</param>
+        /// <param name="exception">exception object</param>
+        public static void Critical(this ILogger logger, Exception exception)
+            => LogMessage(logger, ErrorLevel.Critical, LogEventInfo.Empty, exception.Message, exception);
+
+        /// <summary>
+        /// Log critical event.
+        /// </summary>
+        /// <param name="logger">logger</param>
         /// <param name="message">log message</param>
         /// <param name="exception">exception object</param>
         public static void Critical(this ILogger logger, string message, Exception exception)
@@ -121,6 +137,14 @@ namespace CafeLib.Core.Logging
         /// <param name="message">log message</param>
         public static void Missing(this ILogger logger, string message)
             => LogMessage(logger, ErrorLevel.Missing, LogEventInfo.Empty, message);
+
+        /// <summary>
+        /// Log missing event.
+        /// </summary>
+        /// <param name="logger">logger</param>
+        /// <param name="exception">exception object</param>
+        public static void Missing(this ILogger logger, Exception exception)
+            => LogMessage(logger, ErrorLevel.Missing, LogEventInfo.Empty, exception.Message, exception);
 
         /// <summary>
         /// Log missing event.
