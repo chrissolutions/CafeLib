@@ -13,11 +13,16 @@ namespace CafeLib.Core.Runnable
     {
         #region Private Variables
 
-        private static readonly object Mutex = new object();
+        private static readonly object _mutex = new object();
         private int _delay;
         private bool _disposed;
-        private Action<IEventMessage> _runnerEvent = delegate { };
         private CancellationTokenSource _cancellationSource;
+
+        #endregion
+
+        #region Events
+
+        protected event Action<IEventMessage> Advised = x => { };
 
         #endregion
 
@@ -27,15 +32,6 @@ namespace CafeLib.Core.Runnable
         /// Runner name.
         /// </summary>
         protected string Name { get; }
-
-        /// <summary>
-        /// Log event handler.
-        /// </summary>
-        protected Action<IEventMessage> RunnerEvent
-        {
-            get => _runnerEvent;
-            set => _runnerEvent = value ?? delegate { };
-        }
 
         /// <summary>
         /// Runner delay duration in milliseconds.
@@ -86,10 +82,10 @@ namespace CafeLib.Core.Runnable
         {
             if (!IsRunning)
             {
-                lock (Mutex)
+                lock (_mutex)
                 {
                     _cancellationSource = new CancellationTokenSource();
-                    RunnerEvent.Invoke(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} started."));
+                    Advised.Invoke(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} started."));
                     RunTask();
                 }
             }
@@ -103,11 +99,11 @@ namespace CafeLib.Core.Runnable
         {
             if (IsRunning)
             {
-                lock (Mutex)
+                lock (_mutex)
                 {
                     _cancellationSource.Cancel();
                 }
-                RunnerEvent?.Invoke(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} stopped."));
+                Advised.Invoke(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} stopped."));
             }
 
             await Task.CompletedTask;
@@ -136,7 +132,7 @@ namespace CafeLib.Core.Runnable
                 }
                 catch (Exception ex)
                 {
-                    RunnerEvent.Invoke(new RunnerEventMessage($"{Name} exception: {ex.Message} {ex.InnerException?.Message}"));
+                    Advised.Invoke(new RunnerEventMessage($"{Name} exception: {ex.Message} {ex.InnerException?.Message}"));
                 }
 
                 await Task.Delay(Delay, _cancellationSource.Token);
@@ -175,7 +171,7 @@ namespace CafeLib.Core.Runnable
         /// </summary>
         private void ExitTask()
         {
-            lock (Mutex)
+            lock (_mutex)
             {
                 _cancellationSource?.Dispose();
                 _cancellationSource = null;
