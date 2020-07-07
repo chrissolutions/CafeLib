@@ -38,6 +38,7 @@ namespace CafeLib.Web.SignalR
         public int ConnectionAttempts => _connectionAttempts;
 
         public event Action<SignalRChangedMessage> Changed;
+        public new event Action<SignalRAdviseMessage> Advised = x => { };
 
         #endregion
 
@@ -56,10 +57,21 @@ namespace CafeLib.Web.SignalR
             Bridge = bridge;
             Logger = logger ?? new LogEventWriter<SignalRChannel>(x => { });
 
-            Advised += x =>
+            base.Advised += x =>
             {
-                if (!(x is RunnerEventMessage message) || message.ErrorLevel == ErrorLevel.Ignore) return;
-                LogEventListener(new LogEventMessage(Url.ToString(), message.ErrorLevel, message.Message));
+                switch (x)
+                {
+                    case RunnerEventMessage runner:
+                        if (runner.ErrorLevel == ErrorLevel.Info) return;
+                        Logger.LogMessage(runner.ErrorLevel, LogEventInfo.Empty, $"{Url}: {runner.Message}");
+                        Advised.Invoke(new SignalRAdviseMessage(new AbandonedMutexException()));
+                        return;
+
+                    case LogEventMessage log:
+                        Logger.LogMessage(log.ErrorLevel, log.EventInfo, log.Message, log.Exception);
+                        Advised.Invoke(new SignalRAdviseMessage(new AbandonedMutexException()));
+                        return;
+                }
             };
 
             ConnectionState = SignalRChannelState.Off;
@@ -86,11 +98,11 @@ namespace CafeLib.Web.SignalR
         {
             try
             {
-                await VerifyConnection();
+                 await VerifyConnection();
             }
             catch (Exception ex)
             {
-                LogEventListener(new LogEventMessage(Url.ToString(), ex));
+                Logger.Error(Url.ToString(), ex);
             }
         }
 
@@ -104,27 +116,18 @@ namespace CafeLib.Web.SignalR
         #region Helpers
 
         /// <summary>
-        /// Forward log message to log event listener.
-        /// </summary>
-        /// <param name="message">event message</param>
-        private void LogEventListener(LogEventMessage message)
-        {
-            Logger.LogMessage(message.ErrorLevel, message.EventInfo, message.Message, message.Exception);
-        }
-
-        /// <summary>
         /// Connect the web channel.
         /// </summary>
         /// <returns>task</returns>
         private async Task OpenChannel()
         {
             var connectionFactory = this is SignalRTextChannel
-                ? new SignalRTextConnectionFactory(LogEventListener)
-                : new SignalRConnectionFactory(LogEventListener);
+                ? new SignalRTextConnectionFactory(OnAdvise)
+                : new SignalRConnectionFactory(OnAdvise);
 
             var protocol = new JsonHubProtocol();
 
-            var loggerFactory = LoggerFactory.Create(builder => builder.AddProvider(new LoggerProvider(LogEventListener)));
+            var loggerFactory = LoggerFactory.Create(builder => builder.AddProvider(new LoggerProvider(OnAdvise)));
 
             Connection = new HubConnection(connectionFactory, protocol, new UriEndPoint(Url), this, loggerFactory);
 
@@ -157,8 +160,17 @@ namespace CafeLib.Web.SignalR
                 Bridge?.Invoke(methodName, args);
             });
 
-            await Connection.StartAsync();
-            Delay = DefaultDelay;
+            try
+            {
+                await Connection.StartAsync();
+                Delay = DefaultDelay;
+            }
+            catch (Exception e)
+            {
+
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         private async Task CloseChannel()
@@ -167,8 +179,6 @@ namespace CafeLib.Web.SignalR
             {
                 await Connection.StopAsync();
                 await Connection.DisposeAsync();
-                ConnectionState = SignalRChannelState.Off;
-                SendChangedEvent();
             }
             catch
             {
@@ -176,6 +186,8 @@ namespace CafeLib.Web.SignalR
             }
             finally
             {
+                ConnectionState = SignalRChannelState.Off;
+                SendChangedEvent();
                 Connection = null;
             }
         }
@@ -250,6 +262,9 @@ namespace CafeLib.Web.SignalR
             }
         }
 
+        /// <summary>
+        /// Send changed event.
+        /// </summary>
         private void SendChangedEvent()
         {
             Changed?.Invoke(new SignalRChangedMessage(this));
