@@ -7,6 +7,5 @@
         Connected,
         Reconnecting,
         Disconnected,
-        Faulted
     }
 }

@@ -2,11 +2,11 @@
 
 namespace CafeLib.Web.SignalR
 {
-    public class SignalRMessage : EventMessage
+    public class SignalRChangedMessage : EventMessage
     {
         public SignalRChannel Channel { get; }
 
-        internal SignalRMessage(SignalRChannel channel)
+        internal SignalRChangedMessage(SignalRChannel channel)
         {
             Channel = channel;
         }

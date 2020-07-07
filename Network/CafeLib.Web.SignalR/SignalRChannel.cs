@@ -37,7 +37,7 @@ namespace CafeLib.Web.SignalR
 
         public int ConnectionAttempts => _connectionAttempts;
 
-        public event Action<SignalRMessage> ChannelEvent;
+        public event Action<SignalRChangedMessage> Changed;
 
         #endregion
 
@@ -55,12 +55,14 @@ namespace CafeLib.Web.SignalR
             Url = new Uri(url);
             Bridge = bridge;
             Logger = logger ?? new LogEventWriter<SignalRChannel>(x => { });
-            ConnectionState = SignalRChannelState.Off;
-            RunnerEvent = x =>
+
+            Advised += x =>
             {
                 if (!(x is RunnerEventMessage message) || message.ErrorLevel == ErrorLevel.Ignore) return;
                 LogEventListener(new LogEventMessage(Url.ToString(), message.ErrorLevel, message.Message));
             };
+
+            ConnectionState = SignalRChannelState.Off;
         }
 
         #endregion
@@ -69,6 +71,7 @@ namespace CafeLib.Web.SignalR
 
         public override async Task Start()
         {
+            SendChangedEvent();
             await OpenChannel();
             await base.Start();
         }
@@ -164,6 +167,8 @@ namespace CafeLib.Web.SignalR
             {
                 await Connection.StopAsync();
                 await Connection.DisposeAsync();
+                ConnectionState = SignalRChannelState.Off;
+                SendChangedEvent();
             }
             catch
             {
@@ -220,7 +225,7 @@ namespace CafeLib.Web.SignalR
                 }
 
                 ConnectionState = state;
-                ChannelEvent?.Invoke(new SignalRMessage(this));
+                SendChangedEvent();
             }
         }
 
@@ -243,6 +248,11 @@ namespace CafeLib.Web.SignalR
                 default:
                     return SignalRChannelState.Off;
             }
+        }
+
+        private void SendChangedEvent()
+        {
+            Changed?.Invoke(new SignalRChangedMessage(this));
         }
 
         #endregion
