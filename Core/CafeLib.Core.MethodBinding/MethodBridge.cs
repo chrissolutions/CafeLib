@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using CafeLib.Core.Extensions;
 // ReSharper disable UnusedMember.Global
 
@@ -45,10 +46,17 @@ namespace CafeLib.Core.MethodBinding
 
             object[] ConvertArguments(IEnumerable<ParameterInfo> parameters)
             {
-                var index = 0;
-                return parameters.Select(p => index < args.Length
-                    ? Converter.ConvertTo(p.ParameterType, args[index++])
-                    : null).ToArray();
+                return parameters.Select((p, i) =>
+                {
+                    switch (args[i])
+                    {
+                        case JsonElement element:
+                            return Converter.ConvertTo(p.ParameterType, element.ToString());
+
+                        default:
+                            return Converter.ConvertTo(p.ParameterType, args[i]);
+                    }
+                }).ToArray();
             }
         }
 
