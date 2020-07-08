@@ -117,6 +117,162 @@ namespace CafeLib.Web.SignalR
             return serviceType == GetType() ? this : throw new NotSupportedException(nameof(serviceType));
         }
 
+        public async Task InvokeAsync(string methodName, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await Connection.InvokeAsync(methodName, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+            }
+        }
+
+        public async Task InvokeAsync(string methodName, object arg1, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await Connection.InvokeAsync(methodName, arg1, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+            }
+        }
+
+        public async Task InvokeAsync(string methodName, object arg1, object arg2, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await Connection.InvokeAsync(methodName, arg1, arg2, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+            }
+        }
+
+        public async Task InvokeAsync(string methodName, object arg1, object arg2, object arg3, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await Connection.InvokeAsync(methodName, arg1, arg2, arg3, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+            }
+        }
+
+        public async Task InvokeAsync(string methodName, object arg1, object arg2, object arg3, object arg4, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await Connection.InvokeAsync(methodName, arg1, arg2, arg3, arg4, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+            }
+        }
+
+        public async Task InvokeAsync(string methodName, object arg1, object arg2, object arg3, object arg4, object arg5, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await Connection.InvokeAsync(methodName, arg1, arg2, arg3, arg4, arg5, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+            }
+        }
+
+        public async Task InvokeAsync(string methodName, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await Connection.InvokeAsync(methodName, arg1, arg2, arg3, arg4, arg5, arg6, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+            }
+        }
+
+        public async Task InvokeAsync(string methodName, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await Connection.InvokeAsync(methodName, arg1, arg2, arg3, arg4, arg5, arg6, arg7, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+            }
+        }
+
+        public async Task InvokeAsync(string methodName, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await Connection.InvokeAsync(methodName, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+            }
+        }
+
+        public async Task InvokeAsync(string methodName, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8, object arg9, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await Connection.InvokeAsync(methodName, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+            }
+        }
+
+        public async Task InvokeAsync(string methodName, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8, object arg9, object arg10, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await Connection.InvokeAsync(methodName, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+            }
+        }
+
+        public async Task InvokeAsync(string methodName, params object[] args)
+        {
+            try
+            {
+                await Connection.InvokeAsync(methodName, args);
+            }
+            catch (Exception ex)
+            {
+                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+            }
+        }
+
+        public async Task InvokeAsync(CancellationToken cancellationToken, string methodName, params object[] args)
+        {
+            try
+            {
+                await Connection.InvokeAsync(methodName, args, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+            }
+        }
+
         #endregion
 
         #region Helpers
@@ -143,7 +299,7 @@ namespace CafeLib.Web.SignalR
                 return Task.CompletedTask;
             };
 
-            // Subscribe to event
+            // Subscribe to event.
             Connection.Closed += ex =>
             {
                 if (ex == null)

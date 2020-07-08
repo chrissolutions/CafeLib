@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Extensions;
 using Microsoft.AspNetCore.SignalR.Client;
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Web.SignalR
 {
@@ -67,30 +67,6 @@ namespace CafeLib.Web.SignalR
         {
             var connection = new NonNullable<HubConnection>(channel.Connection);
             return connection.Value.On(methodName, parameterTypes, handler);
-        }
-
-        public static async Task InvokeAsync(this SignalRChannel channel, string methodName, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var connection = new NonNullable<HubConnection>(channel.Connection);
-            await connection.Value.InvokeAsync(methodName, cancellationToken);
-        }
-
-        public static async Task InvokeAsync(this SignalRChannel channel, string methodName, object arg1, object arg2)
-        {
-            var connection = new NonNullable<HubConnection>(channel.Connection);
-            await connection.Value.InvokeAsync(methodName, arg1, arg2);
-        }
-
-        public static async Task InvokeAsync(this SignalRChannel channel, string methodName, params object[] args)
-        {
-            var connection = new NonNullable<HubConnection>(channel.Connection);
-            await connection.Value.InvokeAsync(methodName, args);
-        }
-
-        public static async Task InvokeAsync(this SignalRChannel channel, CancellationToken cancellationToken, string methodName, params object[] args)
-        {
-            var connection = new NonNullable<HubConnection>(channel.Connection);
-            await connection.Value.InvokeAsync(methodName, args, cancellationToken);
         }
     }
 }
