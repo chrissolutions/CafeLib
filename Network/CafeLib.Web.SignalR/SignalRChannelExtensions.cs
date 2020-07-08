@@ -75,6 +75,12 @@ namespace CafeLib.Web.SignalR
             await connection.Value.InvokeAsync(methodName, cancellationToken);
         }
 
+        public static async Task InvokeAsync(this SignalRChannel channel, string methodName, object arg1, object arg2)
+        {
+            var connection = new NonNullable<HubConnection>(channel.Connection);
+            await connection.Value.InvokeAsync(methodName, arg1, arg2);
+        }
+
         public static async Task InvokeAsync(this SignalRChannel channel, string methodName, params object[] args)
         {
             var connection = new NonNullable<HubConnection>(channel.Connection);
