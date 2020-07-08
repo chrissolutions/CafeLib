@@ -4,11 +4,14 @@ namespace CafeLib.Web.SignalR
 {
     public class SignalRChangedMessage : EventMessage
     {
-        public SignalRChannel Channel { get; }
+        public SignalRChannelState ConnectionState { get; }
+
+        public int ConnectionAttempts { get; }
 
         internal SignalRChangedMessage(SignalRChannel channel)
         {
-            Channel = channel;
+            ConnectionState = channel.ConnectionState;
+            ConnectionAttempts = channel.ConnectionAttempts;
         }
     }
 }

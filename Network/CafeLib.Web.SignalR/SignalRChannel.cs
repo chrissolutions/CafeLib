@@ -37,7 +37,7 @@ namespace CafeLib.Web.SignalR
 
         public int ConnectionAttempts => _connectionAttempts;
 
-        public event Action<SignalRChangedMessage> Changed;
+        public event Action<SignalRChangedMessage> Changed = x => { };
         public new event Action<SignalRAdviseMessage> Advised = x => { };
 
         #endregion
@@ -64,12 +64,16 @@ namespace CafeLib.Web.SignalR
                     case RunnerEventMessage runner:
                         if (runner.ErrorLevel == ErrorLevel.Info) return;
                         Logger.LogMessage(runner.ErrorLevel, LogEventInfo.Empty, $"{Url}: {runner.Message}");
-                        Advised.Invoke(new SignalRAdviseMessage(new AbandonedMutexException()));
+                        Advised.Invoke(new SignalRAdviseMessage(runner.Message));
                         return;
 
                     case LogEventMessage log:
                         Logger.LogMessage(log.ErrorLevel, log.EventInfo, log.Message, log.Exception);
-                        Advised.Invoke(new SignalRAdviseMessage(new AbandonedMutexException()));
+                        Advised.Invoke(new SignalRAdviseMessage(log.Message, log.Exception));
+                        return;
+
+                    case SignalRChangedMessage changed:
+                        Changed.Invoke(changed);
                         return;
                 }
             };
@@ -84,8 +88,10 @@ namespace CafeLib.Web.SignalR
         public override async Task Start()
         {
             SendChangedEvent();
-            await OpenChannel();
-            await base.Start();
+            if (await OpenChannel())
+            {
+                await base.Start();
+            }
         }
 
         public override async Task Stop()
@@ -119,7 +125,7 @@ namespace CafeLib.Web.SignalR
         /// Connect the web channel.
         /// </summary>
         /// <returns>task</returns>
-        private async Task OpenChannel()
+        private async Task<bool> OpenChannel()
         {
             var connectionFactory = this is SignalRTextChannel
                 ? new SignalRTextConnectionFactory(OnAdvise)
@@ -164,12 +170,12 @@ namespace CafeLib.Web.SignalR
             {
                 await Connection.StartAsync();
                 Delay = DefaultDelay;
+                return true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-
-                Console.WriteLine(e);
-                throw;
+                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                return false;
             }
         }
 
@@ -198,7 +204,7 @@ namespace CafeLib.Web.SignalR
 
             if (state != SignalRChannelState.Connected && state != SignalRChannelState.Connecting)
             {
-                await OpenChannel();
+                ConnectionState = await OpenChannel() ? ConnectionState : SignalRChannelState.Disconnected;
             }
 
             if (state != ConnectionState)
@@ -267,7 +273,7 @@ namespace CafeLib.Web.SignalR
         /// </summary>
         private void SendChangedEvent()
         {
-            Changed?.Invoke(new SignalRChangedMessage(this));
+            OnAdvise(new SignalRChangedMessage(this));
         }
 
         #endregion
