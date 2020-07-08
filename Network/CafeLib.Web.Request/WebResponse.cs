@@ -1,15 +1,11 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace CafeLib.Web.Request
 {
     public class WebResponse
     {
-        private readonly HttpResponseMessage _response;
-
         public int StatusCode { get; }
 
         public string ReasonPhrase { get; }
@@ -24,9 +20,10 @@ namespace CafeLib.Web.Request
 
         public WebHeaders ResponseHeaders { get; }
 
+        internal string ContentType { get; }
+
         internal WebResponse(HttpResponseMessage response)
         {
-            _response = response;
             StatusCode = (int)response.StatusCode;
             ReasonPhrase = response.ReasonPhrase;
             RequestMethod = response.RequestMessage.Method.ToString();
@@ -34,11 +31,7 @@ namespace CafeLib.Web.Request
             ContentHeaders = new WebHeaders(response.Content.Headers);
             RequestHeaders = new WebHeaders(response.RequestMessage.Headers);
             ResponseHeaders = new WebHeaders(response.Headers);
-        }
-
-        internal Task<Stream> GetContent()
-        {
-            return _response.Content.ReadAsStreamAsync();
+            ContentType = GetContentType();
         }
 
         internal string GetContentType()
@@ -62,9 +55,9 @@ namespace CafeLib.Web.Request
             return WebContentType.Text;
         }
 
-        internal WebResponse EnsureSuccessStatusCode()
+        internal WebResponse EnsureSuccessStatusCode(HttpResponseMessage response)
         {
-            if (!_response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
                 throw new WebRequestException(this);
             }

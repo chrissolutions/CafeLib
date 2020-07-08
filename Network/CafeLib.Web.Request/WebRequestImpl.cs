@@ -2,12 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using CafeLib.Core.Extensions;
+using Newtonsoft.Json;
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Web.Request
@@ -26,12 +29,13 @@ namespace CafeLib.Web.Request
         /// <param name="headers">http headers</param>
         /// <param name="parameters">parameters</param>
         /// <returns>web response</returns>
-        public static async Task<WebResponse> GetAsync(Uri endpoint, WebHeaders headers, object parameters = null)
+        public static async Task<T> GetAsync<T>(Uri endpoint, WebHeaders headers, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
-            var response = new WebResponse(await SendRequest(uri, HttpMethod.Get, headers, null));
-            response.EnsureSuccessStatusCode();
-            return response;
+            using var httpResponse = await SendRequest(uri, HttpMethod.Get, headers, null);
+            var response = new WebResponse(httpResponse);
+            response.EnsureSuccessStatusCode(httpResponse);
+            return await ConvertContent<T>(response, await httpResponse.Content.ReadAsStreamAsync());
         }
 
         /// <summary>
@@ -42,12 +46,13 @@ namespace CafeLib.Web.Request
         /// <param name="body">body data</param>
         /// <param name="parameters">parameters</param>
         /// <returns>web response</returns>
-        public static async Task<WebResponse> PostAsync(Uri endpoint, WebHeaders headers, object body, object parameters = null)
+        public static async Task<T> PostAsync<T>(Uri endpoint, WebHeaders headers, object body, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
-            var response = new WebResponse(await SendRequest(uri, HttpMethod.Post, headers, body));
-            response.EnsureSuccessStatusCode();
-            return response;
+            using var httpResponse = await SendRequest(uri, HttpMethod.Post, headers, body);
+            var response = new WebResponse(httpResponse);
+            response.EnsureSuccessStatusCode(httpResponse);
+            return await ConvertContent<T>(response, await httpResponse.Content.ReadAsStreamAsync());
         }
 
         /// <summary>
@@ -58,12 +63,13 @@ namespace CafeLib.Web.Request
         /// <param name="body">body data</param>
         /// <param name="parameters">parameters</param>
         /// <returns>web response</returns>
-        public static async Task<WebResponse> PutAsync(Uri endpoint, WebHeaders headers, object body, object parameters = null)
+        public static async Task<T> PutAsync<T>(Uri endpoint, WebHeaders headers, object body, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
-            var response = new WebResponse(await SendRequest(uri, HttpMethod.Put, headers, body));
-            response.EnsureSuccessStatusCode();
-            return response;
+            using var httpResponse = await SendRequest(uri, HttpMethod.Put, headers, body);
+            var response = new WebResponse(httpResponse);
+            response.EnsureSuccessStatusCode(httpResponse);
+            return await ConvertContent<T>(response, await httpResponse.Content.ReadAsStreamAsync());
         }
 
         /// <summary>
@@ -74,12 +80,13 @@ namespace CafeLib.Web.Request
         /// <param name="body">body data</param>
         /// <param name="parameters">parameters</param>
         /// <returns>web response</returns>
-        public static async Task<WebResponse> DeleteAsync(Uri endpoint, WebHeaders headers, object body, object parameters = null)
+        public static async Task<bool> DeleteAsync(Uri endpoint, WebHeaders headers, object body, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
-            var response = new WebResponse(await SendRequest(uri, HttpMethod.Delete, headers, body));
-            response.EnsureSuccessStatusCode();
-            return response;
+            using var httpResponse = await SendRequest(uri, HttpMethod.Delete, headers, body);
+            var response = new WebResponse(httpResponse);
+            response.EnsureSuccessStatusCode(httpResponse);
+            return await ConvertContent<bool>(response, await httpResponse.Content.ReadAsStreamAsync());
         }
 
         #endregion
@@ -171,7 +178,7 @@ namespace CafeLib.Web.Request
                     break;
 
                 // Convert dictionary parameter to comma separated "key|value" string.
-                case IDictionary dictionary: 
+                case IDictionary dictionary:
                     if (dictionary.Count > 0)
                     {
                         foreach (var item in dictionary.Keys)
@@ -284,6 +291,51 @@ namespace CafeLib.Web.Request
             }
 
             throw new MissingMethodException(nameof(method));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="response"></param>
+        /// <param name="contentStream"></param>
+        /// <returns></returns>
+        private static async Task<T> ConvertContent<T>(WebResponse response, Stream contentStream)
+        {
+            if (typeof(T) == typeof(bool))
+            {
+                return (T)(object)(contentStream != null);
+            }
+
+            if (contentStream == null)
+            {
+                return default;
+            }
+
+            if (typeof(T) == typeof(byte[]))
+            {
+                return (T)(object)await contentStream.ToByteArrayAsync();
+            }
+
+            var reader = new StreamReader(contentStream, Encoding.UTF8);
+            var content = await reader.ReadToEndAsync();
+            if (content == null) return default;
+
+            switch (response.ContentType)
+            {
+                case WebContentType.Json:
+                    return JsonConvert.DeserializeObject<T>(content);
+
+                case WebContentType.Xml:
+                {
+                    var serializer = new XmlSerializer(typeof(T));
+                    using var stringReader = new StringReader(content);
+                    return (T)serializer.Deserialize(stringReader);
+                }
+
+                default:
+                    return (T)(object)content;
+            }
         }
 
         #endregion
