@@ -51,7 +51,8 @@ namespace CafeLib.Core.MethodBinding
                     switch (args[i])
                     {
                         case JsonElement element:
-                            return Converter.ConvertTo(p.ParameterType, element.ToString());
+                            var text = element.GetRawText();
+                            return JsonSerializer.Deserialize(text, p.ParameterType);
 
                         default:
                             return Converter.ConvertTo(p.ParameterType, args[i]);
