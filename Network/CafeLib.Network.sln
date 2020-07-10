@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Web.Request.UnitTes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Web.SignalR", "CafeLib.Web.SignalR\CafeLib.Web.SignalR.csproj", "{1214E151-1151-4C89-8EC5-D9E5A9CD074E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Web.SignalR.Hubs", "CafeLib.Web.SignalR.Hubs\CafeLib.Web.SignalR.Hubs.csproj", "{93D1EB05-5A78-433D-AD94-5CD7424E0F2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{1214E151-1151-4C89-8EC5-D9E5A9CD074E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1214E151-1151-4C89-8EC5-D9E5A9CD074E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1214E151-1151-4C89-8EC5-D9E5A9CD074E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93D1EB05-5A78-433D-AD94-5CD7424E0F2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93D1EB05-5A78-433D-AD94-5CD7424E0F2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93D1EB05-5A78-433D-AD94-5CD7424E0F2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93D1EB05-5A78-433D-AD94-5CD7424E0F2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -19,6 +19,7 @@ namespace CafeLib.Web.SignalR
 
         private const int DefaultDelay = 10;  // 10 millisecond default delay.
         private const int CheckConnectionInterval = 5000; // Check connection every 5 sec.
+        private const string SinkName = "client";
 
         private int _connectionAttempts;
 
@@ -295,29 +296,18 @@ namespace CafeLib.Web.SignalR
 
             Connection.Reconnected += x =>
             {
-                Console.WriteLine(x); 
+                ConnectionState = SignalRChannelState.Connected;
                 return Task.CompletedTask;
             };
 
-            // Subscribe to event.
             Connection.Closed += ex =>
             {
-                if (ex == null)
-                {
-                    //Trace.WriteLine("Connection terminated");
-                    ConnectionState = SignalRChannelState.Disconnected;
-                }
-                else
-                {
-                    //Trace.WriteLine($"Connection terminated with error: {ex.GetType()}: {ex.Message}");
-                    ConnectionState = SignalRChannelState.Disconnected; //.Faulted;
-                }
-
+                ConnectionState = SignalRChannelState.Disconnected;
                 return Task.CompletedTask;
             };
 
 
-            Connection.On("client", (string methodName, object[] args) =>
+            Connection.On(SinkName, (string methodName, object[] args) =>
             {
                 Bridge?.Invoke(methodName, args);
             });
