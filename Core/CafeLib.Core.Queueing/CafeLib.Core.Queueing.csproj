@@ -5,7 +5,7 @@
     <Copyright></Copyright>
     <Description>Provides producer-consumer support.</Description>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <Version>0.7.5</Version>
+    <Version>0.8.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIconUrl></PackageIconUrl>
     <PackageIcon>cafelib.png</PackageIcon>

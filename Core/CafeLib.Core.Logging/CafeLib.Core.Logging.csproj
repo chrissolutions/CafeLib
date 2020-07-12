@@ -5,7 +5,7 @@
     <Description>Logging support</Description>
     <PackageIcon>cafelib.png</PackageIcon>
     <PackageIconUrl />
-    <Version>0.7.5</Version>
+    <Version>0.8.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Chris Solutions</Authors>
   </PropertyGroup>
