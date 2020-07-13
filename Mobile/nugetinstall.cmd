@@ -3,7 +3,7 @@ setlocal
 
 :: Configuration
 set lib=Mobile
-set version=0.7.5
+set version=0.8.0
 
 :: Settings
 set nuget=nuget.exe

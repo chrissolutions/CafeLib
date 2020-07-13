@@ -40,11 +40,16 @@ namespace CafeLib.Mobile.Test.Core.Fakes
             IsInvokeRequired = isInvokeRequired;
         }
 
-        private static readonly MD5CryptoServiceProvider Checksum = new MD5CryptoServiceProvider();
+        private static readonly MD5CryptoServiceProvider _checksum = new MD5CryptoServiceProvider();
+
+        public string GetHash(string input)
+        {
+            return input.GetHashCode().ToString();
+        }
 
         public string GetMD5Hash(string input)
         {
-            var bytes = Checksum.ComputeHash(Encoding.UTF8.GetBytes(input));
+            var bytes = _checksum.ComputeHash(Encoding.UTF8.GetBytes(input));
             var ret = new char[32];
             for (int i = 0; i < 16; i++)
             {
