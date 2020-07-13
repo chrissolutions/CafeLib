@@ -421,7 +421,7 @@ namespace CafeLib.Mobile.ViewModels
         /// </summary>
         /// <typeparam name="TPage">page type</typeparam>
         /// <returns>bounded page</returns>
-        protected TPage ResolvePageAs<TPage>() where TPage : Page => PageService.ResolvePage(this) as TPage;
+        protected TPage ResolvePage<TPage>() where TPage : Page => PageService.ResolvePage(this) as TPage;
 
         /// <summary>
         /// Resolves viewmodel to is associated page.
