@@ -2,34 +2,36 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using CafeLib.Core.Data;
 
-namespace Microsoft.AspNetCore.Identity
+namespace CafeLib.Aspnet.Identity
 {
     /// <summary>
     /// Represents an authentication token for a user.
     /// </summary>
     /// <typeparam name="TKey">The type of the primary key used for users.</typeparam>
-    public class IdentityUserToken<TKey> where TKey : IEquatable<TKey>
+    [Table("AspNetUserTokens")]
+    public class IdentityUserToken : IEntity
     {
         /// <summary>
         /// Gets or sets the primary key of the user that the token belongs to.
         /// </summary>
-        public virtual TKey UserId { get; set; }
+        public string UserId { get; set; }
 
         /// <summary>
         /// Gets or sets the LoginProvider this token is from.
         /// </summary>
-        public virtual string LoginProvider { get; set; }
+        public string LoginProvider { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the token.
         /// </summary>
-        public virtual string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the token value.
         /// </summary>
-        [ProtectedPersonalData]
-        public virtual string Value { get; set; }
+        public string Value { get; set; }
     }
 }
