@@ -1,4 +1,5 @@
-﻿using CafeLib.Core.Data;
+﻿using System;
+using CafeLib.Core.Data;
 using CafeLib.Data.Sources;
 
 namespace CafeLib.Data.Persistence
@@ -15,11 +16,11 @@ namespace CafeLib.Data.Persistence
         /// <param name="connectionString">connection string</param>
         /// <param name="domain">entity domain</param>
         /// <param name="options">connection options</param>
-        public StorageConnectionInfo(string connectionString, Domain domain, IConnectionOptions options = null)
+        public StorageConnectionInfo(string connectionString, Domain domain, IConnectionOptions options)
         {
             ConnectionString = connectionString;
             Domain = domain;
-            Options = options ?? new SqlOptions();
+            Options = options ?? throw new ArgumentNullException(nameof(options));
         }
     }
 }
