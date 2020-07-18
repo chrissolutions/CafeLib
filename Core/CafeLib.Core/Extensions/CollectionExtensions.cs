@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using CafeLib.Core.Support;
+
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Extensions

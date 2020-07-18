@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace CafeLib.Core.Extensions
+namespace CafeLib.Core.Support
 {
     // ReSharper disable once UseNameofExpression
     [DebuggerDisplay("Value = {Value}")]
