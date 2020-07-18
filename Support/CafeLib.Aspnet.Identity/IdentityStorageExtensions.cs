@@ -8,7 +8,7 @@ namespace CafeLib.Aspnet.Identity
     {
         public static async Task<T> FindUserByEmailAddress<T>(this IdentityStorage storage, string emailAddress) where T : IdentityUser
         {
-            return await storage.FindOne<T>(x => x.NormalizedEmail.ToLower(CultureInfo.CurrentCulture) == emailAddress.ToLower(CultureInfo.CurrentCulture));
+            return await storage.FindOne<T>(x => x.NormalizedEmail == emailAddress);
         }
 
         public static async Task<T> FindUserByUserName<T>(this IdentityStorage storage, string userName) where T : IdentityUser
