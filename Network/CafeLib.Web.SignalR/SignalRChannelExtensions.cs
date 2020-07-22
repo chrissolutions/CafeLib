@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CafeLib.Core.Extensions;
+using CafeLib.Core.Support;
 using Microsoft.AspNetCore.SignalR.Client;
 // ReSharper disable UnusedMember.Global
 
