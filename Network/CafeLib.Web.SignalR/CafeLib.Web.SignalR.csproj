@@ -15,11 +15,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Core.Logging" Version="0.7.5" />
-    <PackageReference Include="CafeLib.Core.MethodBinding" Version="0.7.5" />
+    <PackageReference Include="CafeLib.Core.Logging" Version="0.8.0" />
+    <PackageReference Include="CafeLib.Core.MethodBinding" Version="0.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.5" />
-    <PackageReference Include="CafeLib.Core" Version="0.7.5" />
-    <PackageReference Include="CafeLib.Core.Runnable" Version="0.7.5" />
+    <PackageReference Include="CafeLib.Core" Version="0.8.0" />
+    <PackageReference Include="CafeLib.Core.Runnable" Version="0.8.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
   
