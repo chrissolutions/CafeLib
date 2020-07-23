@@ -7,10 +7,10 @@ namespace CafeLib.Aspnet.Identity.Secrets
 	{
 		public static void AddPasswordHasher(this IServiceCollection services)
 		{
-			services.AddScoped<IPasswordHasher, PasswordHasher>(x =>
+			services.AddScoped<IPasswordHash, PasswordHash>(x =>
 			{
-				var options = x.GetRequiredService<IOptions<PasswordHasherOptions>>();
-				return new PasswordHasher(options, new BytesEqualityComparer());
+				var options = x.GetRequiredService<IOptions<PasswordHashOptions>>();
+				return new PasswordHash(options, new BytesEqualityComparer());
 			});
 		}
 	}

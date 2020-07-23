@@ -2,9 +2,9 @@
 
 namespace CafeLib.Aspnet.Identity.Secrets
 {
-	public class PasswordHasherOptions
+	public class PasswordHashOptions
 	{
-        private PasswordHasherAlgorithms _hashAlgorithm;
+        private PasswordHashAlgorithms _hashAlgorithm;
 
 		/// <summary>
 		/// The name of a cryptographic hash algorithm
@@ -32,7 +32,7 @@ namespace CafeLib.Aspnet.Identity.Secrets
 		/// <summary>
 		/// Creates a default instance with implementation of the SHA256 algorithm
 		/// </summary>
-		public PasswordHasherOptions() : this(PasswordHasherAlgorithms.Sha256)
+		public PasswordHashOptions() : this(PasswordHashAlgorithms.Sha256)
 		{
 		}
 
@@ -42,28 +42,28 @@ namespace CafeLib.Aspnet.Identity.Secrets
 		/// <param name="algorithm"></param>
 		/// <param name="saltSize"></param>
 		/// <param name="iterations"></param>
-		public PasswordHasherOptions(PasswordHasherAlgorithms algorithm, int? saltSize = null, int? iterations = null)
+		public PasswordHashOptions(PasswordHashAlgorithms algorithm, int? saltSize = null, int? iterations = null)
 		{
 			HashAlgorithm = algorithm;
 
             switch (HashAlgorithm)
             {
-                case PasswordHasherAlgorithms.Sha1:
+                case PasswordHashAlgorithms.Sha1:
                     SaltSize = saltSize ?? 10; // hashed password will contain 40 characters for saltSize = 10
                     Iterations = iterations ?? 1024;
                     break;
 
-                case PasswordHasherAlgorithms.Sha256:
+                case PasswordHashAlgorithms.Sha256:
                     SaltSize = saltSize ?? 16; // hashed password will contain 64 characters for saltSize = 16
                     Iterations = iterations ?? 8192;
                     break;
 
-                case PasswordHasherAlgorithms.Sha384:
+                case PasswordHashAlgorithms.Sha384:
                     SaltSize = saltSize ?? 24; // hashed password will contain 96 characters for saltSize = 24
                     Iterations = iterations ?? 10240;
                     break;
 
-                case PasswordHasherAlgorithms.Sha512:
+                case PasswordHashAlgorithms.Sha512:
                     SaltSize = saltSize ?? 32; // hashed password will contain 128 characters for saltSize = 32
                     Iterations = iterations ?? 10240;
                     break;
@@ -73,7 +73,7 @@ namespace CafeLib.Aspnet.Identity.Secrets
         /// <summary>
         /// algorithm for hashing
         /// </summary>
-        public PasswordHasherAlgorithms HashAlgorithm
+        public PasswordHashAlgorithms HashAlgorithm
         {
             get => _hashAlgorithm;
             set
@@ -83,22 +83,22 @@ namespace CafeLib.Aspnet.Identity.Secrets
                 _hashAlgorithm = value;
                 switch (_hashAlgorithm)
                 {
-                    case PasswordHasherAlgorithms.Sha1:
+                    case PasswordHashAlgorithms.Sha1:
                         HashAlgorithmName = HashAlgorithmName.SHA1;
                         HashSize = 20;
                         break;
 
-                    case PasswordHasherAlgorithms.Sha256:
+                    case PasswordHashAlgorithms.Sha256:
                         HashAlgorithmName = HashAlgorithmName.SHA256;
                         HashSize = 32;
                         break;
 
-                    case PasswordHasherAlgorithms.Sha384:
+                    case PasswordHashAlgorithms.Sha384:
                         HashAlgorithmName = HashAlgorithmName.SHA384;
                         HashSize = 48;
                         break;
 
-                    case PasswordHasherAlgorithms.Sha512:
+                    case PasswordHashAlgorithms.Sha512:
                         HashAlgorithmName = HashAlgorithmName.SHA512;
                         HashSize = 64;
                         break;

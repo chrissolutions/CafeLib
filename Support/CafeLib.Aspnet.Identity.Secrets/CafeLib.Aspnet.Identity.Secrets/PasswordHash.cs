@@ -5,20 +5,20 @@ using Microsoft.Extensions.Options;
 
 namespace CafeLib.Aspnet.Identity.Secrets
 {
-	public class PasswordHasher : IPasswordHasher
+	public class PasswordHash : IPasswordHash
 	{
-		private readonly PasswordHasherOptions _options;
+		private readonly PasswordHashOptions _options;
 
 		private readonly IEqualityComparer<byte[]> _comparer;
 
 		/// <summary>
-		/// Creates a new instance of <see cref="PasswordHasher"/>.
+		/// Creates a new instance of <see cref="PasswordHash"/>.
 		/// </summary>
 		/// <param name="optionsAccessor">The options for this instance.</param>
 		/// <param name="bytesComparer">The comparer of byte[] for this instance.</param>
-		public PasswordHasher(IOptions<PasswordHasherOptions> optionsAccessor = null, IEqualityComparer<byte[]> bytesComparer = null)
+		public PasswordHash(IOptions<PasswordHashOptions> optionsAccessor = null, IEqualityComparer<byte[]> bytesComparer = null)
 		{
-			_options = optionsAccessor?.Value ?? new PasswordHasherOptions();
+			_options = optionsAccessor?.Value ?? new PasswordHashOptions();
 
 			if (_options.SaltSize < 8)
 				throw new ArgumentOutOfRangeException(nameof(_options.SaltSize));
