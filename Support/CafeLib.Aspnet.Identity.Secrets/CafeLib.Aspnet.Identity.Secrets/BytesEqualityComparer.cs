@@ -1,36 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CafeLib.Aspnet.Identity.Secrets
 {
-	public class BytesEqualityComparer : EqualityComparer<byte[]>
-	{
-		public override bool Equals(byte[] x, byte[] y)
-		{
-			if (x == y)
-			{
-				return true;
-			}
+	internal class BytesEqualityComparer : EqualityComparer<byte[]>
+    {
+        public override bool Equals(byte[] array1, byte[] array2)
+        {
+            switch (array1, array2)
+            {
+				case var _ when ReferenceEquals(array1, array2):
+                    return true;
 
-			if (x == null || y == null || x.Length != y.Length)
-			{
-				return false;
-			}
+				case var _ when array1?.Length != array2?.Length:
+                    return false;
 
-			for (int i = 0; i < x.Length; i++)
-			{
-				if (x[i] != y[i])
-					return false;
-			}
-
-			return true;
-		}
+				default:
+                    var index = 0;
+					return array1.All(b => b == array2[index++]);
+            }
+        }
 
 		public override int GetHashCode(byte[] obj)
 		{
 			var result = Convert.ToBase64String(obj ?? Array.Empty<byte>());
 			return result.GetHashCode();
 		}
-
 	}
 }

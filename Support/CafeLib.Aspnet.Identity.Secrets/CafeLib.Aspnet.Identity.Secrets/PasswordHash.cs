@@ -8,17 +8,15 @@ namespace CafeLib.Aspnet.Identity.Secrets
 	public class PasswordHash : IPasswordHash
 	{
 		private readonly PasswordHashOptions _options;
-
 		private readonly IEqualityComparer<byte[]> _comparer;
 
-		/// <summary>
-		/// Creates a new instance of <see cref="PasswordHash"/>.
-		/// </summary>
-		/// <param name="optionsAccessor">The options for this instance.</param>
-		/// <param name="bytesComparer">The comparer of byte[] for this instance.</param>
-		public PasswordHash(IOptions<PasswordHashOptions> optionsAccessor = null, IEqualityComparer<byte[]> bytesComparer = null)
+        /// <summary>
+        /// PasswordHash constructor.
+        /// </summary>
+        /// <param name="options">The options for this instance.</param>
+        public PasswordHash(IOptions<PasswordHashOptions> options = null)
 		{
-			_options = optionsAccessor?.Value ?? new PasswordHashOptions();
+			_options = options?.Value ?? new PasswordHashOptions();
 
 			if (_options.SaltSize < 8)
 				throw new ArgumentOutOfRangeException(nameof(_options.SaltSize));
@@ -26,9 +24,14 @@ namespace CafeLib.Aspnet.Identity.Secrets
 			if (_options.Iterations < 1)
 				throw new ArgumentOutOfRangeException(nameof(_options.Iterations));
 
-			_comparer = bytesComparer ?? new BytesEqualityComparer();
+			_comparer = _options.ByteArrayComparer ?? new BytesEqualityComparer();
 		}
 
+		/// <summary>
+		/// Hash password.
+		/// </summary>
+		/// <param name="password"></param>
+		/// <returns>hash of the password</returns>
 		public string HashPassword(string password)
 		{
 			byte[] saltBuffer;
@@ -40,23 +43,29 @@ namespace CafeLib.Aspnet.Identity.Secrets
 				hashBuffer = keyDerivation.GetBytes(_options.HashSize);
 			}
 
-			byte[] result = new byte[_options.HashSize + _options.SaltSize];
+			var result = new byte[_options.HashSize + _options.SaltSize];
 			Buffer.BlockCopy(hashBuffer, 0, result, 0, _options.HashSize);
 			Buffer.BlockCopy(saltBuffer, 0, result, _options.HashSize, _options.SaltSize);
 			return Convert.ToBase64String(result);
 		}
 
+		/// <summary>
+		/// Verify hashed password.
+		/// </summary>
+		/// <param name="hashedPassword"></param>
+		/// <param name="providedPassword"></param>
+		/// <returns></returns>
 		public bool VerifyHashedPassword(string hashedPassword, string providedPassword)
 		{
-			byte[] hashedPasswordBytes = Convert.FromBase64String(hashedPassword);
+			var hashedPasswordBytes = Convert.FromBase64String(hashedPassword);
 			if (hashedPasswordBytes.Length != _options.HashSize + _options.SaltSize)
 			{
 				return false;
 			}
 
-			byte[] hashBytes = new byte[_options.HashSize];
+			var hashBytes = new byte[_options.HashSize];
 			Buffer.BlockCopy(hashedPasswordBytes, 0, hashBytes, 0, _options.HashSize);
-			byte[] saltBytes = new byte[_options.SaltSize];
+			var saltBytes = new byte[_options.SaltSize];
 			Buffer.BlockCopy(hashedPasswordBytes, _options.HashSize, saltBytes, 0, _options.SaltSize);
 
             using var keyDerivation = new Rfc2898DeriveBytes(providedPassword, saltBytes, _options.Iterations, _options.HashAlgorithmName);
@@ -64,6 +73,5 @@ namespace CafeLib.Aspnet.Identity.Secrets
 
             return _comparer.Equals(hashBytes, providedHashBytes);
 		}
-		
 	}
 }

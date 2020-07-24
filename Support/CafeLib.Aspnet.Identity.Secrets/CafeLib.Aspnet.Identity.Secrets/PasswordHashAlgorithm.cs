@@ -1,6 +1,6 @@
 ﻿namespace CafeLib.Aspnet.Identity.Secrets
 {
-	public enum PasswordHashAlgorithms
+	public enum PasswordHashAlgorithm
 	{		
 		//MD5 = 1, Not supported
 		Sha1 = 2, 
