@@ -11,6 +11,11 @@ namespace CafeLib.Aspnet.Identity.Secrets
 		private readonly IEqualityComparer<byte[]> _comparer;
         private readonly HashAlgorithmName _hashName;
 
+		/// <summary>
+		/// Default static password hash;
+		/// </summary>
+		public static readonly PasswordHash Default = new PasswordHash();
+
         /// <summary>
         /// PasswordHash constructor.
         /// </summary>

@@ -6,6 +6,21 @@ namespace CafeLib.Aspnet.Identity.Secrets.UnitTests
 {
 	public class PasswordHashTest
 	{
+        [Fact]
+        public void Default_PasswordHash_Check()
+        {
+            const string password = "password 1";
+
+            // Act & assert - success case
+            var hashedPassword = PasswordHash.Default.HashPassword(password);
+            var successResult = PasswordHash.Default.VerifyHashedPassword(hashedPassword, password);
+            Assert.True(successResult);
+
+			var passwordHash = new PasswordHash(new PasswordHashOptions(PasswordHashAlgorithm.Sha256));
+            successResult = passwordHash.VerifyHashedPassword(hashedPassword, password);
+            Assert.True(successResult);
+        }
+
 		[Theory]
 		[InlineData(-1)]
 		[InlineData(0)]
@@ -106,8 +121,7 @@ namespace CafeLib.Aspnet.Identity.Secrets.UnitTests
 
 		public static IOptions<PasswordHashOptions> BuildOptions(PasswordHashAlgorithm algorithm, int? saltSize = null, int? iterations = null)
 		{
-			var options = new PasswordHashOptions(algorithm, saltSize, iterations);
-			return Options.Create(options);
-		}
+			return new PasswordHashOptions(algorithm, saltSize, iterations);
+        }
 	}
 }

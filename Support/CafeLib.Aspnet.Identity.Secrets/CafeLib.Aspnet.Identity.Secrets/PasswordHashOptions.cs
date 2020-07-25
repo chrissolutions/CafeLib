@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 
 namespace CafeLib.Aspnet.Identity.Secrets
 {
-	public class PasswordHashOptions
+	public class PasswordHashOptions : IOptions<PasswordHashOptions>
 	{
         private PasswordHashAlgorithm _hashAlgorithm;
 
@@ -28,6 +29,12 @@ namespace CafeLib.Aspnet.Identity.Secrets
         /// 
         /// </summary>
         public IEqualityComparer<byte[]> ByteArrayComparer { get; set; } = new BytesEqualityComparer();
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public PasswordHashOptions Value => this;
+
 
         /// <summary>
         /// Creates a default instance with implementation of the SHA256 algorithm
@@ -102,5 +109,5 @@ namespace CafeLib.Aspnet.Identity.Secrets
                 }
             }
         }
-	}
+    }
 }
