@@ -1,16 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Security.Cryptography;
 
 namespace CafeLib.Aspnet.Identity.Secrets
 {
 	public class PasswordHashOptions
 	{
         private PasswordHashAlgorithm _hashAlgorithm;
-
-		/// <summary>
-		/// The name of a cryptographic hash algorithm
-		/// </summary>
-		public HashAlgorithmName HashAlgorithmName { get; private set; }
 
 		/// <summary>
 		/// 160-bit hash by default for SHA1
@@ -91,22 +85,18 @@ namespace CafeLib.Aspnet.Identity.Secrets
                 switch (_hashAlgorithm)
                 {
                     case PasswordHashAlgorithm.Sha1:
-                        HashAlgorithmName = HashAlgorithmName.SHA1;
                         HashSize = 20;
                         break;
 
                     case PasswordHashAlgorithm.Sha256:
-                        HashAlgorithmName = HashAlgorithmName.SHA256;
                         HashSize = 32;
                         break;
 
                     case PasswordHashAlgorithm.Sha384:
-                        HashAlgorithmName = HashAlgorithmName.SHA384;
                         HashSize = 48;
                         break;
 
                     case PasswordHashAlgorithm.Sha512:
-                        HashAlgorithmName = HashAlgorithmName.SHA512;
                         HashSize = 64;
                         break;
                 }

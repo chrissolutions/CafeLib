@@ -9,6 +9,7 @@ namespace CafeLib.Aspnet.Identity.Secrets
 	{
 		private readonly PasswordHashOptions _options;
 		private readonly IEqualityComparer<byte[]> _comparer;
+        private readonly HashAlgorithmName _hashName;
 
         /// <summary>
         /// PasswordHash constructor.
@@ -24,6 +25,8 @@ namespace CafeLib.Aspnet.Identity.Secrets
 			if (_options.Iterations < 1)
 				throw new ArgumentOutOfRangeException(nameof(_options.Iterations));
 
+            _hashName = new HashAlgorithmName(_options.HashAlgorithm.ToString().ToUpper());
+
 			_comparer = _options.ByteArrayComparer ?? new BytesEqualityComparer();
 		}
 
@@ -37,7 +40,7 @@ namespace CafeLib.Aspnet.Identity.Secrets
 			byte[] saltBuffer;
 			byte[] hashBuffer;
 
-			using (var keyDerivation = new Rfc2898DeriveBytes(password, _options.SaltSize, _options.Iterations, _options.HashAlgorithmName))
+			using (var keyDerivation = new Rfc2898DeriveBytes(password, _options.SaltSize, _options.Iterations, _hashName))
 			{
 				saltBuffer = keyDerivation.Salt;
 				hashBuffer = keyDerivation.GetBytes(_options.HashSize);
@@ -68,7 +71,7 @@ namespace CafeLib.Aspnet.Identity.Secrets
 			var saltBytes = new byte[_options.SaltSize];
 			Buffer.BlockCopy(hashedPasswordBytes, _options.HashSize, saltBytes, 0, _options.SaltSize);
 
-            using var keyDerivation = new Rfc2898DeriveBytes(providedPassword, saltBytes, _options.Iterations, _options.HashAlgorithmName);
+            using var keyDerivation = new Rfc2898DeriveBytes(providedPassword, saltBytes, _options.Iterations, _hashName);
             var providedHashBytes = keyDerivation.GetBytes(_options.HashSize);
 
             return _comparer.Equals(hashBytes, providedHashBytes);

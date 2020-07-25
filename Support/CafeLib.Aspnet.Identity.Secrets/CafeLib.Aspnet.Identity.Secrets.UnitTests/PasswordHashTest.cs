@@ -13,7 +13,7 @@ namespace CafeLib.Aspnet.Identity.Secrets.UnitTests
 		public void Ctor_InvalidSaltSize_Throws(int saltSize)
 		{
 			// Act & assert
-			var ex = Assert.Throws<ArgumentOutOfRangeException>(() =>
+			Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
                 var _ = new PasswordHash(BuildOptions(saltSize: saltSize));
             });
@@ -25,7 +25,7 @@ namespace CafeLib.Aspnet.Identity.Secrets.UnitTests
 		public void Ctor_InvalidIterations_Throws(int iterations)
 		{
 			// Act & assert
-			var ex = Assert.Throws<ArgumentOutOfRangeException>(() =>
+			Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
                 var _ = new PasswordHash(BuildOptions(iterations: iterations));
             });
@@ -90,23 +90,6 @@ namespace CafeLib.Aspnet.Identity.Secrets.UnitTests
 			// Act & assert - failure case
 			Assert.Equal(expectedSize, options.HashSize);
 		}
-
-
-        [Theory]
-        [InlineData(PasswordHashAlgorithm.Sha1)]
-        [InlineData(PasswordHashAlgorithm.Sha256)]
-        [InlineData(PasswordHashAlgorithm.Sha384)]
-        [InlineData(PasswordHashAlgorithm.Sha512)]
-        public void HashAlgorithmName_Check(PasswordHashAlgorithm algorithm)
-        {
-
-			// Arrange
-			var options = new PasswordHashOptions(algorithm);
-
-            //Assert.Equal(assertexpectedSize, options.HashSize);
-
-		}
-
 
 		public static IOptions<PasswordHashOptions> BuildOptions(int? saltSize = null, int? iterations = null)
 		{
