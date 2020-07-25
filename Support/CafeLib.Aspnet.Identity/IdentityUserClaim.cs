@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using CafeLib.Core.Data;
 
 namespace CafeLib.Aspnet.Identity
 {
     [Table("AspNetUserClaims")]
-    public class IdentityUserClaim
+    public class IdentityUserClaim : IEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
