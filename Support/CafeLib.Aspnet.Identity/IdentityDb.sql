@@ -1,4 +1,4 @@
-﻿CREATE TABLE IF NOT EXISTS 'AspNetRoles' ( 
+CREATE TABLE IF NOT EXISTS 'AspNetRoles' ( 
     Id varchar(450) NOT NULL,
     Name varchar(256) NOT NULL,
     NormalizedName varchar(256) NOT NULL,

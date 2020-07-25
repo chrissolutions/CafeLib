@@ -1,6 +1,8 @@
 ﻿using System.Globalization;
 using System.Threading.Tasks;
 using CafeLib.Data.Extensions;
+using CafeLib.Data.Scripts;
+using RepoDb;
 
 namespace CafeLib.Aspnet.Identity
 {
@@ -16,6 +18,16 @@ namespace CafeLib.Aspnet.Identity
         {
             var normalizedUserName = userName.ToUpper(CultureInfo.CurrentCulture);
             return await storage.FindOne<T>(x => x.NormalizedUserName == normalizedUserName);
+        }
+
+        public static void CreateDatabase(this IdentityStorage storage)
+        {
+            var script = Script.GetScript("IdentityDb.sql");
+            using var connection = storage.GetConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            connection.ExecuteNonQuery(script);
+            transaction.Commit();
         }
     }
 }
