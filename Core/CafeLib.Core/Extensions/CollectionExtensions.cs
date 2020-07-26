@@ -5,7 +5,6 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using CafeLib.Core.Support;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Extensions
@@ -17,12 +16,12 @@ namespace CafeLib.Core.Extensions
         /// </summary>
         /// <typeparam name="T">item type</typeparam>
         /// <param name="collection">collection</param>
-        /// <param name="eachAction">iterative action</param>
-        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> eachAction)
+        /// <param name="action">iterative action</param>
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
         {
             foreach (var item in collection)
             {
-                eachAction?.Invoke(item);
+                action?.Invoke(item);
             }
         }
 
@@ -31,13 +30,13 @@ namespace CafeLib.Core.Extensions
         /// </summary>
         /// <typeparam name="T">item type</typeparam>
         /// <param name="collection">collection</param>
-        /// <param name="eachAction">iterative action</param>
-        public static void ForEach<T>(this IEnumerable<T> collection, Action<T, int> eachAction)
+        /// <param name="action">iterative action</param>
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T, int> action)
         {
             var index = 0;
             foreach (var item in collection)
             {
-                eachAction?.Invoke(item, index++);
+                action?.Invoke(item, index++);
             }
         }
 
@@ -47,11 +46,11 @@ namespace CafeLib.Core.Extensions
         /// <typeparam name="T">item type</typeparam>
         /// <typeparam name="TU">result type</typeparam>
         /// <param name="collection">collection</param>
-        /// <param name="eachFunc">select function</param>
+        /// <param name="func">select function</param>
         /// <returns>returns list of results</returns>
-        public static IEnumerable<TU> ForEach<T, TU>(this IEnumerable<T> collection, Func<T, TU> eachFunc)
+        public static IEnumerable<TU> ForEach<T, TU>(this IEnumerable<T> collection, Func<T, TU> func)
         {
-            return collection.Select(eachFunc.Invoke).ToList();
+            return collection.Select(func.Invoke).ToList();
         }
 
         /// <summary>
@@ -60,11 +59,11 @@ namespace CafeLib.Core.Extensions
         /// <typeparam name="T">item type</typeparam>
         /// <typeparam name="TU">result type</typeparam>
         /// <param name="collection">collection</param>
-        /// <param name="eachFunc">select function with item and index</param>
+        /// <param name="func">select function with item and index</param>
         /// <returns>returns list of results</returns>
-        public static IEnumerable<TU> ForEach<T, TU>(this IEnumerable<T> collection, Func<T, int, TU> eachFunc)
+        public static IEnumerable<TU> ForEach<T, TU>(this IEnumerable<T> collection, Func<T, int, TU> func)
         {
-            return collection.Select(eachFunc.Invoke).ToList();
+            return collection.Select(func.Invoke).ToList();
         }
 
         /// <summary>
@@ -117,16 +116,29 @@ namespace CafeLib.Core.Extensions
         }
 
         /// <summary>
-        /// Some extension.
+        /// Every test whether all elements matches the predicate
         /// </summary>
-        /// <typeparam name="T">item type</typeparam>
-        /// <param name="collection">collection</param>
-        /// <param name="someFunc">some function with item and index</param>
-        /// <returns>returns true if any item matched the criteria; false otherwise</returns>
-        public static bool Some<T>(this IEnumerable<T> collection, Func<T, int, bool> someFunc)
+        /// <typeparam name="T">collection item type</typeparam>
+        /// <param name="collection">collection of item type</param>
+        /// <param name="predicate">predicate function</param>
+        /// <returns>returns true if all items match the predicate; false otherwise</returns>
+        public static bool Every<T>(this IEnumerable<T> collection, Func<T, int, bool> predicate)
         {
             var index = 0;
-            return collection.Any(item => someFunc.Invoke(item, index++));
+            return collection.All(item => predicate.Invoke(item, index++));
+        }
+
+        /// <summary>
+        /// Some test whether any element matches the predicate.
+        /// </summary>
+        /// <typeparam name="T">collection item type</typeparam>
+        /// <param name="collection">collection of item type</param>
+        /// <param name="predicate">predicate function</param>
+        /// <returns>returns true if any item matches the predicate; false otherwise</returns>
+        public static bool Some<T>(this IEnumerable<T> collection, Func<T, int, bool> predicate)
+        {
+            var index = 0;
+            return collection.Any(item => predicate.Invoke(item, index++));
         }
 
         /// <summary>
