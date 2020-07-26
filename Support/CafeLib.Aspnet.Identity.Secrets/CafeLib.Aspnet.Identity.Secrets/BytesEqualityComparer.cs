@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using CafeLib.Core.Extensions;
 
 namespace CafeLib.Aspnet.Identity.Secrets
 {
@@ -17,8 +17,7 @@ namespace CafeLib.Aspnet.Identity.Secrets
                     return false;
 
 				default:
-                    var index = 0;
-					return array1.All(b => b == array2[index++]);
+                    return array1.Every((b, i) => array2 != null && b == array2[i]);
             }
         }
 
