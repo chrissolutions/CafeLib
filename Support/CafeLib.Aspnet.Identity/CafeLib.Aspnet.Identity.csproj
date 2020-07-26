@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="IdentityDb.sql" />
+    <EmbeddedResource Include="IdentityDb.sql" />
   </ItemGroup>
 
   <ItemGroup>
