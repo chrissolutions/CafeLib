@@ -48,7 +48,7 @@ namespace CafeLib.Data.Sources.SqlServer
         public async Task<int> DeleteAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<SqlConnection>();
-            return connection.BulkDelete(data);
+            return await connection.BulkDeleteAsync(data);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace CafeLib.Data.Sources.SqlServer
         public async Task<int> DeleteByKeyAsync<TEntity, TKey>(IConnectionInfo connectionInfo, IEnumerable<TKey> keys, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<SqlConnection>();
-            return connection.BulkDelete<TEntity>(keys.Cast<object>());
+            return await connection.BulkDeleteAsync<TEntity>(keys.Cast<object>());
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace CafeLib.Data.Sources.SqlServer
         public async Task<int> InsertAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<SqlConnection>();
-            return connection.BulkInsert(data);
+            return await connection.BulkInsertAsync(data);
         }
 
         /// <summary>
@@ -317,7 +317,7 @@ namespace CafeLib.Data.Sources.SqlServer
         public async Task<int> UpdateAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<SqlConnection>();
-            return connection.BulkUpdate(data);
+            return await connection.BulkUpdateAsync(data);
         }
 
         /// <summary>
@@ -345,7 +345,7 @@ namespace CafeLib.Data.Sources.SqlServer
         public async Task<int> UpsertAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, Expression<Func<TEntity, object>>[] expressions, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<SqlConnection>();
-            return connection.BulkMerge(data);
+            return await connection.BulkMergeAsync(data);
         }
     }
 }

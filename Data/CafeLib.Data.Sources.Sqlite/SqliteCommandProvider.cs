@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Data;
 using CafeLib.Core.Support;
+using CafeLib.Data.Sources.Extensions;
+using RepoDb;
 
 namespace CafeLib.Data.Sources.Sqlite
 {
@@ -336,7 +338,8 @@ namespace CafeLib.Data.Sources.Sqlite
         /// <param name="token">Cancellation token</param>
         public async Task<int> UpsertAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, Expression<Func<TEntity, object>>[] expressions, CancellationToken token = default) where TEntity : class, IEntity
         {
-            return await SqlCommandProvider.UpsertAsync(connectionInfo, data, expressions, token);
+            await using var connection = connectionInfo.GetConnection<SQLiteConnection>();
+            return await connection.MergeAllAsync(data);
         }
     }
 }
