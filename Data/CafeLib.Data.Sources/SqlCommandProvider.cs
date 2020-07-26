@@ -24,22 +24,21 @@ namespace CafeLib.Data.Sources
         public async Task<bool> DeleteAsync<TEntity>(IConnectionInfo connectionInfo, TEntity data, CancellationToken token = default) where TEntity : class, IEntity
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
+            var results = 0;
             await using var connection = connectionInfo.GetConnection<T>();
+            await connection.EnsureOpenAsync();
             using var transaction = connection.BeginTransaction();
 
             try
             {
-                await connection.DeleteAsync(data, transaction: transaction);
-                var deleted = await connection.DeleteAsync(data);
+                results = await connection.DeleteAsync(data);
                 transaction.Commit();
-                return deleted > 0;
             }
             catch (Exception)
             {
                 try
                 {
                     transaction.Rollback();
-                    throw;
                 }
                 catch (Exception ex)
                 {
@@ -47,6 +46,8 @@ namespace CafeLib.Data.Sources
                     throw ex;
                 }
             }
+
+            return results > 0;
         }
 
         /// <summary>
@@ -390,9 +391,33 @@ namespace CafeLib.Data.Sources
         /// <param name="expressions"></param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        public Task<int> UpsertAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, Expression<Func<TEntity, object>>[] expressions, CancellationToken token = default) where TEntity : class, IEntity
+        public async Task<int> UpsertAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, Expression<Func<TEntity, object>>[] expressions, CancellationToken token = default) where TEntity : class, IEntity
         {
-            throw new InvalidOperationException($"{GetType().Name} does not implement bulk {nameof(UpdateAsync)}.");
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            var results = 0;
+            await using var connection = connectionInfo.GetConnection<T>();
+            await connection.EnsureOpenAsync();
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                results = await connection.MergeAllAsync(data, transaction: transaction);
+                transaction.Commit();
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    transaction.Rollback();
+                }
+                catch (Exception ex)
+                {
+                    // ReSharper disable once PossibleIntendedRethrow
+                    throw ex;
+                }
+            }
+
+            return results;
         }
 
         #region Helpers
