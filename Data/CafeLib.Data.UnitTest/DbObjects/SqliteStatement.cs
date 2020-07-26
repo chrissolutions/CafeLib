@@ -2,7 +2,7 @@
 using CafeLib.Data.SqlGenerator.DbObjects;
 using CafeLib.Data.SqlGenerator.DbObjects.SqlObjects;
 
-namespace CafeLib.Data.Sources.Sqlite.DbObjects
+namespace CafeLib.Data.UnitTest.DbObjects
 {
     public class SqliteStatement : SqlStatement
     {

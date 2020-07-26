@@ -4,7 +4,7 @@ using CafeLib.Data.SqlGenerator.DbObjects;
 using CafeLib.Data.SqlGenerator.DbObjects.SqlObjects;
 using CafeLib.Data.SqlGenerator.Extensions;
 
-namespace CafeLib.Data.Sources.Sqlite.DbObjects
+namespace CafeLib.Data.UnitTest.DbObjects
 {
     public class SqliteTempTable : SqlTempTable
     {

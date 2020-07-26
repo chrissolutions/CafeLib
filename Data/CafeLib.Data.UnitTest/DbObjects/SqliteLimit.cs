@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using CafeLib.Data.SqlGenerator.DbObjects;
 
-namespace CafeLib.Data.Sources.Sqlite.DbObjects
+namespace CafeLib.Data.UnitTest.DbObjects
 {
     public class SqliteLimit : DbLimit
     {
