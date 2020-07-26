@@ -8,7 +8,7 @@ namespace CafeLib.Core.Caching
 {
     public class MemoryCache : ICacheService, IDisposable
     {
-        private static readonly SystemMemoryCache Cache = SystemMemoryCache.Default;
+        private static readonly SystemMemoryCache _cache = SystemMemoryCache.Default;
 
         private const int DefaultLifetimeMinutes = 15;
         private readonly int _lifetimeMilliseconds;
@@ -52,11 +52,11 @@ namespace CafeLib.Core.Caching
         /// <returns>item</returns>
         public T Get<T>(string key, Func<T> getItem, bool updateNow) where T : class
         {
-            if (!updateNow && Cache.Get(key) is T item) return item;
+            if (!updateNow && _cache.Get(key) is T item) return item;
 
             item = getItem();
             var cacheItemPolicy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddMilliseconds(_lifetimeMilliseconds) };
-            Cache.Add(key, item, cacheItemPolicy);
+            _cache.Add(key, item, cacheItemPolicy);
             return item;
         }
 
@@ -105,14 +105,14 @@ namespace CafeLib.Core.Caching
         /// <param name="getItem">get item task</param>
         /// <param name="updateNow">force item update via getItem</param>
         /// <returns>item</returns>
-        public Task<T> GetAsync<T>(string key, Task<T> getItem, bool updateNow) where T : class
+        public async Task<T> GetAsync<T>(string key, Task<T> getItem, bool updateNow) where T : class
         {
-            if (!updateNow && Cache.Get(key) is T item) return Task.FromResult(item);
+            if (!updateNow && _cache.Get(key) is T item) return item;
 
-            item = getItem.Result;
+            item = await getItem;
             var cacheItemPolicy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddMilliseconds(_lifetimeMilliseconds) };
-            Cache.Add(key, item, cacheItemPolicy);
-            return Task.FromResult(item);
+            _cache.Add(key, item, cacheItemPolicy);
+            return item;
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace CafeLib.Core.Caching
         /// </summary>
         public void Clear()
         {
-            Cache.Dispose();
+            _cache.Dispose();
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace CafeLib.Core.Caching
         /// </summary>
         public void Dispose()
         {
-            Cache.Dispose();
+            _cache.Dispose();
         }
     }
 }
