@@ -297,7 +297,5 @@ namespace CafeLib.Core.UnitTests
             // shows default value Address.Phone value
             Console.WriteLine(duser.Phone);
         }
-
-
     }
 }
