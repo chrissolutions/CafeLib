@@ -60,7 +60,7 @@ namespace CafeLib.Core.Dynamic
     /// Dynamic: dynamic cast allows access to dictionary and native properties/methods
     /// Dictionary: Any of the extended properties are accessible via IDictionary interface
     /// </summary>
-    public class Expando : DynamicObject, IDynamicMetaObjectProvider
+    public class Expando : DynamicObject
     {
         /// <summary>
         /// Instance of object passed in
@@ -228,18 +228,14 @@ namespace CafeLib.Core.Dynamic
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
             // first check to see if there's a native property to set
-            if (_instance != null)
+            try
             {
-                try
-                {
-                    bool result = SetProperty(_instance, binder.Name, value);
-                    if (result)
-                        return true;
-                }
-                catch
-                {
-                    return false;
-                }
+                if (SetProperty(binder.Name, value))
+                    return true;
+            }
+            catch
+            {
+                return false;
             }
 
             // no match - set or add to dictionary
@@ -257,12 +253,13 @@ namespace CafeLib.Core.Dynamic
         /// <returns></returns>
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
+            result = null;
             if (_instance != null)
             {
                 try
                 {
                     // check instance passed in for methods to invoke
-                    if (InvokeMethod(_instance, binder.Name, args, out result))
+                    if (InvokeMethod(binder.Name, args, out result))
                         return true;
                 }
                 catch
@@ -271,7 +268,6 @@ namespace CafeLib.Core.Dynamic
                 }
             }
 
-            result = null;
             return false;
         }
 
@@ -285,8 +281,8 @@ namespace CafeLib.Core.Dynamic
         /// <returns></returns>
         protected bool GetProperty(object instance, string name, out object result)
         {
-            if (instance == null)
-                instance = this;
+            result = null;
+            instance ??= this;
 
             var miArray = _instanceType.GetMember(name, BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.Instance);
             if (miArray.Length > 0)
@@ -299,22 +295,17 @@ namespace CafeLib.Core.Dynamic
                 }
             }
 
-            result = null;
             return false;
         }
 
         /// <summary>
         /// Reflection helper method to set a property value
         /// </summary>
-        /// <param name="instance"></param>
         /// <param name="name"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        protected bool SetProperty(object instance, string name, object value)
+        protected bool SetProperty(string name, object value)
         {
-            if (instance == null)
-                instance = this;
-
             var miArray = _instanceType.GetMember(name, BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance);
             if (miArray.Length > 0)
             {
@@ -331,25 +322,21 @@ namespace CafeLib.Core.Dynamic
         /// <summary>
         /// Reflection helper method to invoke a method
         /// </summary>
-        /// <param name="instance"></param>
         /// <param name="name"></param>
         /// <param name="args"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        protected bool InvokeMethod(object instance, string name, object[] args, out object result)
+        protected bool InvokeMethod(string name, object[] args, out object result)
         {
-            if (instance == null)
-                instance = this;
-
             // Look at the instanceType
             var miArray = _instanceType.GetMember(name,
                                     BindingFlags.InvokeMethod |
                                     BindingFlags.Public | BindingFlags.Instance);
 
-            if (miArray != null && miArray.Length > 0)
+            if (miArray.Length > 0)
             {
                 var mi = miArray[0] as MethodInfo;
-                result = mi.Invoke(_instance, args);
+                result = mi?.Invoke(_instance, args);
                 return true;
             }
 
@@ -403,10 +390,10 @@ namespace CafeLib.Core.Dynamic
                     return;
                 }
 
-                // check instance for existance of type first
+                // check instance for existence of type first
                 var miArray = _instanceType.GetMember(key, BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.Instance);
                 if (miArray.Length > 0)
-                    SetProperty(_instance, key, value);
+                    SetProperty(key, value);
                 else
                     Properties[key] = value;
             }
@@ -416,7 +403,7 @@ namespace CafeLib.Core.Dynamic
         /// <summary>
         /// Returns and the properties of 
         /// </summary>
-        /// <param name="includeProperties"></param>
+        /// <param name="includeInstanceProperties"></param>
         /// <returns></returns>
         public IEnumerable<KeyValuePair<string, object>> GetProperties(bool includeInstanceProperties = false)
         {
@@ -426,11 +413,9 @@ namespace CafeLib.Core.Dynamic
                     yield return new KeyValuePair<string, object>(prop.Name, prop.GetValue(_instance, null));
             }
 
-            foreach (var key in this.Properties.Keys)
+            foreach (var key in Properties.Keys)
                 yield return new KeyValuePair<string, object>(key, this.Properties[key]);
-
         }
-
 
         /// <summary>
         /// Checks whether a property exists in the Property collection
@@ -455,51 +440,6 @@ namespace CafeLib.Core.Dynamic
             }
 
             return false;
-        }
-
-
-        /// <summary>
-        /// Converts an <see cref="IDictionary&lt;string, object&gt;"/> into an <see cref="Expando"/>
-        /// </summary>
-        /// <returns><see cref="Expando"/></returns>
-        public static Expando ToIndexableExpando(IDictionary<string, object> dict)
-        {
-            var expando = new Expando();
-
-            foreach (var kvp in dict)
-            {
-                switch (kvp.Value)
-                {
-                    case IDictionary<string, object> d:
-                        var expandoVal = ToIndexableExpando(d);
-                        expando[kvp.Key] = expandoVal;
-                        break;
-
-                    case ICollection c:
-                        // iterate through the collection and convert any string-object dictionaries
-                        // along the way into expando objects
-                        var objList = new List<object>();
-                        foreach (var item in c)
-                        {
-                            if (item is IDictionary<string, object> items)
-                            {
-                                var expandoItem = ToIndexableExpando(items);
-                                objList.Add(expandoItem);
-                            }
-                            else
-                            {
-                                objList.Add(item);
-                            }
-                        }
-                        expando[kvp.Key] = objList;
-                        break;
-
-                    default:
-                        expando[kvp.Key] = kvp.Value;
-                        break;
-                }
-            }
-            return expando;
         }
     }
 }
