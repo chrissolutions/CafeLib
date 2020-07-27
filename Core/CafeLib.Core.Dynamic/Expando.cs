@@ -426,20 +426,15 @@ namespace CafeLib.Core.Dynamic
         /// <returns></returns>
         public bool Contains(KeyValuePair<string, object> item, bool includeInstanceProperties = false)
         {
-            bool res = Properties.ContainsKey(item.Key);
-            if (res)
-                return true;
+            var result = false;
+            result |= Properties.ContainsKey(item.Key);
 
-            if (includeInstanceProperties && _instance != null)
+            if (!result && includeInstanceProperties && _instance != null)
             {
-                foreach (var prop in this.InstancePropertyInfo)
-                {
-                    if (prop.Name == item.Key)
-                        return true;
-                }
+                result |= InstancePropertyInfo.Any(prop => prop.Name == item.Key);
             }
 
-            return false;
+            return result;
         }
     }
 }
