@@ -37,6 +37,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
+using CafeLib.Core.Extensions;
 using ICollection = System.Collections.ICollection;
 
 namespace CafeLib.Core.Dynamic
@@ -226,7 +227,6 @@ namespace CafeLib.Core.Dynamic
         /// <returns></returns>
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
-
             // first check to see if there's a native property to set
             if (_instance != null)
             {
@@ -243,7 +243,7 @@ namespace CafeLib.Core.Dynamic
             }
 
             // no match - set or add to dictionary
-            Properties[binder.Name] = value;
+            Properties.AddOrUpdate(binder.Name, value, (k, v) => value);
             return true;
         }
 

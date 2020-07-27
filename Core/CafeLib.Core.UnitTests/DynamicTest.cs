@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using CafeLib.Core.UnitTests.DynamicModels;
 using Newtonsoft.Json;
 using Xunit;
@@ -211,5 +212,92 @@ namespace CafeLib.Core.UnitTests
             Assert.Contains("Name", json); // static
             Assert.Contains("Company", json); // dynamic
         }
+
+        [Fact]
+        public void ExpandoObjectJsonTest()
+        {
+            dynamic ex = new ExpandoObject();
+            ex.Name = "Rick";
+            ex.Entered = DateTime.Now;
+
+            const string address = "32 Kaiea";
+
+            ex.Address = address;
+            ex.Contacted = true;
+
+            ex.Count = 10;
+            ex.Completed = DateTime.Now.AddHours(2);
+
+            string json = JsonConvert.SerializeObject(ex, Formatting.Indented);
+            _testOutputHelper.WriteLine(json);
+
+            Assert.Contains(address, json);
+        }
+
+        [Fact]
+        public void UserExampleTest()
+        {
+            var user = new User
+            {
+                Email = "rick@west-wind.com", 
+                Password = "nonya123", 
+                Name = "Rickochet", 
+                Active = true
+            };
+
+            // Now add dynamic properties
+            dynamic duser = user;
+            duser.Entered = DateTime.Now;
+            duser.Accesses = 1;
+
+            // you can also add dynamic props via indexer 
+            user["NickName"] = "Wreck";
+            duser["WebSite"] = "http://www.west-wind.com/weblog";
+
+            // Access strong type through dynamic ref
+            Assert.Equal(user.Name, duser.Name);
+
+            // Access strong type through indexer 
+            Assert.Equal(user.Password, user["Password"]);
+
+            // access dynamically added value through indexer
+            Assert.Equal(duser.Entered, user["Entered"]);
+
+            // access index added value through dynamic
+            Assert.Equal(user["NickName"], duser.NickName);
+
+            // loop through all properties dynamic AND strong type properties (true)
+            foreach (var (key, value) in user.GetProperties(true))
+            {
+                _testOutputHelper.WriteLine(key + ": " + value);
+                Assert.Equal(duser[key], user[key]);
+            }
+        }
+
+        [Fact]
+        public void ExpandoMixinTest()
+        {
+            // have Expando work on Addresses
+            var user = new User(new Address());
+
+            // cast to dynamicAccessToPropertyTest
+            dynamic duser = user;
+
+            // Set strongly typed properties
+            duser.Email = "rick@west-wind.com";
+            user.Password = "nonya123";
+
+            // Set properties on address object
+            duser.Address = "32 Kaiea";
+            //duser.Phone = "808-123-2131";
+
+            // set dynamic properties
+            duser.NonExistantProperty = "This works too";
+
+            // shows default value Address.Phone value
+            Console.WriteLine(duser.Phone);
+        }
+
+
     }
 }
