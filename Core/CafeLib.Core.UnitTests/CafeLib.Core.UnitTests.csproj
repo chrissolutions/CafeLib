@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CafeLib.Core.Collections\CafeLib.Core.Collections.csproj" />
+    <ProjectReference Include="..\CafeLib.Core.Dynamic\CafeLib.Core.Dynamic.csproj" />
     <ProjectReference Include="..\CafeLib.Core.IoC\CafeLib.Core.IoC.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Logging\CafeLib.Core.Logging.csproj" />
     <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />
