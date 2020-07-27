@@ -199,7 +199,6 @@ namespace CafeLib.Core.Dynamic
                 return true;
             }
 
-
             // Next check for Public properties via Reflection
             if (_instance != null)
             {
@@ -214,7 +213,6 @@ namespace CafeLib.Core.Dynamic
             }
 
             // failed to retrieve a property
-            result = null;
             return false;
         }
 
@@ -291,7 +289,7 @@ namespace CafeLib.Core.Dynamic
                 instance = this;
 
             var miArray = _instanceType.GetMember(name, BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.Instance);
-            if (miArray != null && miArray.Length > 0)
+            if (miArray.Length > 0)
             {
                 var mi = miArray[0];
                 if (mi.MemberType == MemberTypes.Property)
@@ -318,7 +316,7 @@ namespace CafeLib.Core.Dynamic
                 instance = this;
 
             var miArray = _instanceType.GetMember(name, BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance);
-            if (miArray != null && miArray.Length > 0)
+            if (miArray.Length > 0)
             {
                 var mi = miArray[0];
                 if (mi.MemberType == MemberTypes.Property)
@@ -407,7 +405,7 @@ namespace CafeLib.Core.Dynamic
 
                 // check instance for existance of type first
                 var miArray = _instanceType.GetMember(key, BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.Instance);
-                if (miArray != null && miArray.Length > 0)
+                if (miArray.Length > 0)
                     SetProperty(_instance, key, value);
                 else
                     Properties[key] = value;
@@ -470,33 +468,35 @@ namespace CafeLib.Core.Dynamic
 
             foreach (var kvp in dict)
             {
-                if (kvp.Value is IDictionary<string, object> kvpValue)
+                switch (kvp.Value)
                 {
-                    var expandoVal = ToIndexableExpando(kvpValue);
-                    expando[kvp.Key] = expandoVal;
-                }
-                else if (kvp.Value is ICollection)
-                {
-                    // iterate through the collection and convert any string-object dictionaries
-                    // along the way into expando objects
-                    var objList = new List<object>();
-                    foreach (var item in (ICollection)kvp.Value)
-                    {
-                        if (item is IDictionary<string, object> items)
+                    case IDictionary<string, object> d:
+                        var expandoVal = ToIndexableExpando(d);
+                        expando[kvp.Key] = expandoVal;
+                        break;
+
+                    case ICollection c:
+                        // iterate through the collection and convert any string-object dictionaries
+                        // along the way into expando objects
+                        var objList = new List<object>();
+                        foreach (var item in c)
                         {
-                            var expandoItem = ToIndexableExpando(items);
-                            objList.Add(expandoItem);
+                            if (item is IDictionary<string, object> items)
+                            {
+                                var expandoItem = ToIndexableExpando(items);
+                                objList.Add(expandoItem);
+                            }
+                            else
+                            {
+                                objList.Add(item);
+                            }
                         }
-                        else
-                        {
-                            objList.Add(item);
-                        }
-                    }
-                    expando[kvp.Key] = objList;
-                }
-                else
-                {
-                    expando[kvp.Key] = kvp.Value;
+                        expando[kvp.Key] = objList;
+                        break;
+
+                    default:
+                        expando[kvp.Key] = kvp.Value;
+                        break;
                 }
             }
             return expando;

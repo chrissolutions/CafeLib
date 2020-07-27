@@ -12,6 +12,7 @@
     <FileVersion>0.8.0.0</FileVersion>
     <PackageIconUrl />
     <Authors>Chris Solutions</Authors>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

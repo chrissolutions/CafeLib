@@ -8,6 +8,7 @@
     <Description>Provides event messaging support.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Chris Solutions</Authors>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

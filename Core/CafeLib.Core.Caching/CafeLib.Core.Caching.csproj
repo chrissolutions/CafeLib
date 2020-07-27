@@ -8,6 +8,7 @@
     <Description>Provides memory caching support.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Chris Solutions</Authors>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
