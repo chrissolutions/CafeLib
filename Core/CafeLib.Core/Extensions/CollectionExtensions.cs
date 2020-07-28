@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using CafeLib.Core.Support;
@@ -295,25 +294,6 @@ namespace CafeLib.Core.Extensions
         public static TV AddOrUpdate<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, Func<TK, TV> addFunc, Func<TK, TV, TV> updateFunc)
         {
             return AddOrUpdateInternal(dictionary, key, new NonNullable<Func<TK, TV>>(addFunc), new NonNullable<Func<TK, TV, TV>>(updateFunc));
-        }
-
-        /// <summary>
-        /// Convert dictionary to an object.
-        /// </summary>
-        /// <typeparam name="T">value type</typeparam>
-        /// <param name="dictionary"></param>
-        /// <returns>object</returns>
-        public static T ToObject<T>(this IDictionary<string, T> dictionary)
-        {
-            try
-            {
-                dynamic dyn = dictionary.Aggregate(new ExpandoObject() as IDictionary<string, object>, (x, p) => { x.Add(p.Key.ToString(), p.Value); return x; });
-                return (T) (object) dyn;
-            }
-            catch (Exception)
-            {
-                return default;
-            }
         }
 
         /// <summary>

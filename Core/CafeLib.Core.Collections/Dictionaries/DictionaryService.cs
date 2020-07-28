@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using CafeLib.Core.Extensions;
+using CafeLib.Core.Dynamic;
 using CafeLib.Core.Support;
 
 namespace CafeLib.Core.Collections

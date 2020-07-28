@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using CafeLib.Core.Dynamic;
 using CafeLib.Core.UnitTests.DynamicModels;
 using Newtonsoft.Json;
 using Xunit;
@@ -296,6 +297,32 @@ namespace CafeLib.Core.UnitTests
 
             // shows default value Address.Phone value
             Console.WriteLine(duser.Phone);
+        }
+
+        [Fact]
+        public void ExpandoFromDictionary()
+        {
+            var dict = new Dictionary<string, object>()
+            {
+                {"Name", "Rick"},
+                {"Company", "West Wind"},
+                {"Accesses", 2}
+            };
+
+            dynamic expando = new Expando(dict);
+
+            Console.WriteLine(expando.Name);
+            Console.WriteLine(expando.Company);
+            Console.WriteLine(expando.Accesses);
+
+            Assert.Equal(dict["Name"], expando.Name);
+            Assert.Equal(dict["Company"], expando.Company);
+            Assert.Equal(dict["Accesses"], expando.Accesses);
+
+            var entity = dict.ToObject<TestEntity>();
+            Assert.Equal(dict["Name"], entity.Name);
+            Assert.Equal(dict["Company"], entity.Company);
+            Assert.Equal(dict["Accesses"], entity.Accesses);
         }
     }
 }
