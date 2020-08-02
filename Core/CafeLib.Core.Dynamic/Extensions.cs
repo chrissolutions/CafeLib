@@ -40,6 +40,18 @@ namespace CafeLib.Core.Dynamic
             var json = JObject.FromObject(dictionary);
             return json.ToObject<TObject>();
         }
+
+        /// <summary>
+        /// Convert expando class to a typed object.
+        /// </summary>
+        /// <typeparam name="TObject">typed object</typeparam>
+        /// <param name="expando">expando class</param>
+        /// <returns></returns>
+        public static TObject ToObject<TObject>(this Expando expando) where TObject : class
+        {
+            var json = JObject.FromObject(expando);
+            return json.ToObject<TObject>();
+        }
     }
 }
 

@@ -76,8 +76,8 @@ namespace CafeLib.Core.UnitTests
             // create dynamic and create new props
             dynamic exd = ex;
 
-            string company = "West Wind";
-            int count = 10;
+            const string company = "West Wind";
+            const int count = 10;
 
             exd.entered = DateTime.Now;
             exd.Company = company;
@@ -90,11 +90,9 @@ namespace CafeLib.Core.UnitTests
         [Fact]
         public void AddAndReadDynamicIndexersTest()
         {
-            var ex = new ExpandoInstance();
-            ex.Name = "Rick";
-            ex.Entered = DateTime.Now;
+            var ex = new ExpandoInstance {Name = "Rick", Entered = DateTime.Now};
 
-            string address = "32 Kaiea";
+            const string address = "32 Kaiea";
 
             ex["Address"] = address;
             ex["Contacted"] = true;
@@ -109,9 +107,7 @@ namespace CafeLib.Core.UnitTests
         public void PropertyAsIndexerTest()
         {
             // Set standard properties
-            var ex = new ExpandoInstance();
-            ex.Name = "Rick";
-            ex.Entered = DateTime.Now;
+            var ex = new ExpandoInstance {Name = "Rick", Entered = DateTime.Now};
 
             Assert.Equal(ex.Name, ex["Name"]);
             Assert.Equal(ex.Entered, ex["Entered"]);
@@ -134,9 +130,7 @@ namespace CafeLib.Core.UnitTests
         [Fact]
         public void IterateOverDynamicPropertiesTest()
         {
-            var ex = new ExpandoInstance();
-            ex.Name = "Rick";
-            ex.Entered = DateTime.Now;
+            var ex = new ExpandoInstance {Name = "Rick", Entered = DateTime.Now};
 
             dynamic exd = ex;
             exd.Company = "West Wind";
@@ -175,7 +169,7 @@ namespace CafeLib.Core.UnitTests
         public void TwoWayJsonSerializeExpandoTyped()
         {
             // Set standard properties
-            var ex = new User()
+            var ex = new User
             {
                 Name = "Rick",
                 Email = "rstrahl@whatsa.com",
@@ -233,6 +227,26 @@ namespace CafeLib.Core.UnitTests
             _testOutputHelper.WriteLine(json);
 
             Assert.Contains(address, json);
+        }
+
+        [Fact]
+        public void ExpandoToObjectTest()
+        {
+            // Set standard properties
+            var expando = new ExpandoModel
+            {
+                ["Email"] = "rick @west-wind.com",
+                ["Password"] = "nonya123",
+                ["Name"] = "Rickochet",
+                ["Active"] = true
+            };
+
+            var user = expando.ToObject<User>();
+
+            Assert.Equal("rick @west-wind.com", user.Email);
+            Assert.Equal("nonya123", user.Password);
+            Assert.Equal("Rickochet", user.Name);
+            Assert.True(user.Active);
         }
 
         [Fact]

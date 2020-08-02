@@ -10,9 +10,9 @@ namespace CafeLib.Core.Collections
         private readonly ConcurrentDictionary<string, object> _dictionary;
 
         /// <summary>
-        /// PropertyService constructor.
+        /// DictionaryService constructor.
         /// </summary>
-        public DictionaryService()
+        private DictionaryService()
         {
             _dictionary = new ConcurrentDictionary<string, object>();
         }
