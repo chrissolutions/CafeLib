@@ -2,14 +2,21 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Authorization.Tokens
 {
     public class Token
     {
+        private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
         private SecurityToken _token;
         private string _tokenString;
-        private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
+
+        public string Id => _token?.Id;
+
+        public string Issuer => _token?.Issuer;
+
+        public DateTime Expiry => _token?.ValidTo ?? throw new NullReferenceException(nameof(_token));
 
         internal Token(SecurityToken token)
         {
@@ -23,16 +30,7 @@ namespace CafeLib.Authorization.Tokens
 
         public Token Validate(string issuer, string audience, string secret)
         {
-            if (string.IsNullOrWhiteSpace(_tokenString)) throw new ArgumentNullException(nameof(_tokenString));
-            var param = new TokenValidationParameters
-            {
-                ClockSkew = TimeSpan.FromMinutes(1),
-                ValidIssuer = issuer,
-                ValidAudience = audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
-            };
-
-            _handler.ValidateToken(_tokenString, param, out _token);
+            _token = GetTokenFromString(_tokenString, issuer, audience, secret);
             return this;
         }
 
@@ -51,6 +49,33 @@ namespace CafeLib.Authorization.Tokens
             }
 
             return _tokenString;
+        }
+
+
+        private static SecurityToken GetTokenFromString(string tokenString, string issuer, string audience, string secret)
+        {
+            var handler = new JwtSecurityTokenHandler();
+
+            if (string.IsNullOrWhiteSpace(tokenString)) throw new ArgumentNullException(nameof(_tokenString));
+            var param = new TokenValidationParameters
+            {
+                ClockSkew = TimeSpan.FromMinutes(1),
+                ValidIssuer = issuer,
+                ValidAudience = audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
+            };
+
+            handler.ValidateToken(tokenString, param, out var token);
+            return token;
+        }
+
+        /// <summary>
+        /// Cast to underlying SecurityToken.
+        /// </summary>
+        /// <param name="token"></param>
+        public static implicit operator SecurityToken(Token token)
+        {
+            return token._token;
         }
     }
 }
