@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
@@ -9,7 +8,15 @@ namespace CafeLib.Authorization.Tokens
 {
     public class TokenBuilder : ITokenBuilder
     {
+        private const string DefaultIssuer = "issuer";
+        private const string DefaultAudience = "audience";
         private readonly SecurityTokenDescriptor _descriptor = new SecurityTokenDescriptor();
+
+        public TokenBuilder()
+        {
+            AddIssuer(DefaultIssuer);
+            AddAudience(DefaultAudience);
+        }
 
         public Token Build()
         {
