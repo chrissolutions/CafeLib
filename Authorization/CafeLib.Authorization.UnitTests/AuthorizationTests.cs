@@ -1,6 +1,6 @@
 using System;
-using System.Security.Claims;
 using CafeLib.Authorization.Tokens;
+using CafeLib.Core.Extensions;
 using Xunit;
 
 namespace CafeLib.Authorization.UnitTests
@@ -20,15 +20,18 @@ namespace CafeLib.Authorization.UnitTests
         [Fact]
         public void BuildTokenTest()
         {
+            var expires = DateTime.UtcNow.AddHours(3);
             var tokenBuilder = new TokenBuilder()
                 .AddIssuer(TestIssuer)
                 .AddAudience(TestAudience)
-                .AddClaims(_claimCollection);
+                .AddClaims(_claimCollection)
+                .Expires(expires);
 
             var token = tokenBuilder.Build();
 
             Assert.NotNull(token);
             Assert.Equal(TestIssuer, token.Issuer);
+            Assert.Equal(expires.Truncate(TimeSpan.FromSeconds(1)), token.Expires);
         }
     }
 }

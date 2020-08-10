@@ -1,4 +1,5 @@
 ﻿using System;
+
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Extensions
@@ -15,6 +16,22 @@ namespace CafeLib.Core.Extensions
         public static string ToUtcString(this DateTime dateTime, string format = "r")
         {
             return dateTime.ToUniversalTime().ToString(format);
+        }
+
+        /// <summary>
+        /// Truncate datetime.
+        /// </summary>
+        /// <param name="dateTime">datetime</param>
+        /// <param name="timeSpan">the portion of datetime to truncate</param>
+        /// <returns>truncated datetime</returns>
+        public static DateTime Truncate(this DateTime dateTime, TimeSpan timeSpan = default)
+        {
+            return dateTime switch
+            {
+                _ when timeSpan == default => dateTime,
+                _ when dateTime == DateTime.MinValue || dateTime == DateTime.MaxValue => dateTime,
+                _ => dateTime.AddTicks(-(dateTime.Ticks % timeSpan.Ticks))
+            };
         }
 
         /// <summary>

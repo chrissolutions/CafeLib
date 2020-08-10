@@ -16,7 +16,7 @@ namespace CafeLib.Authorization.Tokens
 
         public string Issuer => _token?.Issuer;
 
-        public DateTime Expiry => _token?.ValidTo ?? throw new NullReferenceException(nameof(_token));
+        public DateTime Expires => _token?.ValidTo ?? throw new NullReferenceException(nameof(_token));
 
         internal Token(SecurityToken token)
         {
