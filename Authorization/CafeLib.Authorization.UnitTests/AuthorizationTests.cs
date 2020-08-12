@@ -31,7 +31,7 @@ namespace CafeLib.Authorization.UnitTests
 
             Assert.NotNull(token);
             Assert.Equal(TestIssuer, token.Issuer);
-            Assert.Equal(expires.Truncate(TimeSpan.FromSeconds(1)), token.Expires);
+            Assert.Equal(expires.TruncateMilliseconds(), token.Expires);
         }
     }
 }
