@@ -9,6 +9,7 @@ namespace CafeLib.Authorization.UnitTests
     {
         private const string TestIssuer = "testIssuer";
         private const string TestAudience = "testAudience";
+        private const string TestSecret = "secretsecretsecret";
 
         private readonly ClaimCollection _claimCollection = new ClaimCollection
         {
@@ -32,6 +33,24 @@ namespace CafeLib.Authorization.UnitTests
             Assert.NotNull(token);
             Assert.Equal(TestIssuer, token.Issuer);
             Assert.Equal(expires.TruncateMilliseconds(), token.Expires);
+        }
+
+        [Fact]
+        public void ValidateTokenTest()
+        {
+            var expires = DateTime.UtcNow.AddHours(3);
+            var tokenBuilder = new TokenBuilder()
+                .AddIssuer(TestIssuer)
+                .AddAudience(TestAudience)
+                .AddClaims(_claimCollection)
+                .AddSecret(TestSecret)
+                .Expires(expires);
+
+            var token = tokenBuilder.Build();
+
+            var validToken = token.Validate(TestIssuer, TestAudience, TestSecret);
+
+            Assert.Equal(token.Issuer, validToken.Issuer);
         }
     }
 }
