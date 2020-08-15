@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 // ReSharper disable UnusedMember.Global
@@ -16,11 +17,14 @@ namespace CafeLib.Authorization.Tokens
 
         public string Issuer => _token?.Issuer;
 
+        public ClaimCollection Claims { get; private set; }
+
         public DateTime Expires => _token?.ValidTo ?? throw new NullReferenceException(nameof(_token));
 
         internal Token(SecurityToken token)
         {
             _token = token;
+            Claims = GetClaims(token);
         }
 
         public Token(string tokenString)
@@ -30,7 +34,8 @@ namespace CafeLib.Authorization.Tokens
 
         public Token Validate(string issuer, string audience, string secret)
         {
-            _token = GetTokenFromString(_tokenString, issuer, audience, secret);
+            _token = GetTokenFromString(ToString(), issuer, audience, secret);
+            Claims = GetClaims(_token);
             return this;
         }
 
@@ -51,12 +56,21 @@ namespace CafeLib.Authorization.Tokens
             return _tokenString;
         }
 
+        /// <summary>
+        /// Cast to underlying SecurityToken.
+        /// </summary>
+        /// <param name="token"></param>
+        public static implicit operator SecurityToken(Token token)
+        {
+            return token._token;
+        }
+
+        #region Helpers
 
         private static SecurityToken GetTokenFromString(string tokenString, string issuer, string audience, string secret)
         {
             var handler = new JwtSecurityTokenHandler();
 
-            if (string.IsNullOrWhiteSpace(tokenString)) throw new ArgumentNullException(nameof(_tokenString));
             var param = new TokenValidationParameters
             {
                 ClockSkew = TimeSpan.FromMinutes(1),
@@ -69,13 +83,12 @@ namespace CafeLib.Authorization.Tokens
             return token;
         }
 
-        /// <summary>
-        /// Cast to underlying SecurityToken.
-        /// </summary>
-        /// <param name="token"></param>
-        public static implicit operator SecurityToken(Token token)
+        private static ClaimCollection GetClaims(SecurityToken token)
         {
-            return token._token;
+            var jwt = (JwtSecurityToken)token;
+            return new ClaimCollection(jwt.Payload.ToDictionary(x => x.Key, x => x.Value.ToString()));
         }
+
+        #endregion
     }
 }

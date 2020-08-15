@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using CafeLib.Core.Extensions;
 
 namespace CafeLib.Authorization.Tokens
@@ -13,10 +12,23 @@ namespace CafeLib.Authorization.Tokens
         public int Count => _dictionary.Count;
         public bool IsReadOnly => _dictionary.IsReadOnly;
 
+        /// <summary>
+        /// Claims default constructor.
+        /// </summary>
         public ClaimCollection()
         {
             _dictionary = new ConcurrentDictionary<string, string>();
         }
+
+        /// <summary>
+        /// Claims constructor.
+        /// </summary>
+        /// <param name="claims">collection of claims</param>
+        public ClaimCollection(IDictionary<string, string> claims)
+        {
+            _dictionary = new ConcurrentDictionary<string, string>(claims);
+        }
+
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using CafeLib.Authorization.Tokens;
 using CafeLib.Core.Extensions;
 using Xunit;
@@ -38,6 +39,7 @@ namespace CafeLib.Authorization.UnitTests
         [Fact]
         public void ValidateTokenTest()
         {
+            // Arrange.
             var expires = DateTime.UtcNow.AddHours(3);
             var tokenBuilder = new TokenBuilder()
                 .AddIssuer(TestIssuer)
@@ -46,11 +48,40 @@ namespace CafeLib.Authorization.UnitTests
                 .AddSecret(TestSecret)
                 .Expires(expires);
 
+            // Act.
             var token = tokenBuilder.Build();
-
             var validToken = token.Validate(TestIssuer, TestAudience, TestSecret);
 
+            // Assert.
             Assert.Equal(token.Issuer, validToken.Issuer);
+            Assert.Equal(token.Expires, validToken.Expires);
+        }
+
+        [Fact]
+        public void ValidateClaimsTest()
+        {
+            // Arrange.
+            var expires = DateTime.UtcNow.AddHours(3);
+            var tokenBuilder = new TokenBuilder()
+                .AddIssuer(TestIssuer)
+                .AddAudience(TestAudience)
+                .AddClaims(_claimCollection)
+                .AddSecret(TestSecret)
+                .Expires(expires);
+
+            // Act.
+            var token = tokenBuilder.Build();
+            var validToken = token.Validate(TestIssuer, TestAudience, TestSecret);
+            var claims1 = token.Claims;
+            var claims2 = validToken.Claims;
+
+            // Assert.
+            claims1.ForEach((x, i) =>
+            {
+                var (key, value) = x;
+                Assert.Equal(key, claims2.ElementAt(i).Key);
+                Assert.Equal(value, claims2.ElementAt(i).Value);
+            });
         }
     }
 }
