@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CafeLib.Authorization.Hash\CafeLib.Authorization.Hash.csproj" />
     <ProjectReference Include="..\CafeLib.Authorization.Tokens\CafeLib.Authorization.Tokens.csproj" />
   </ItemGroup>
 
