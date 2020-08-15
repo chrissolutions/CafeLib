@@ -1,8 +1,9 @@
-﻿using System;
+﻿using CafeLib.Authorization.Hash;
+using System;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace CafeLib.Authorization.Hash.UnitTests
+namespace CafeLib.Authorization.UnitTests
 {
 	public class PasswordHashTest
 	{

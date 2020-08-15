@@ -1,8 +1,9 @@
+using CafeLib.Authorization.Hash;
 using Xunit;
 
 // ReSharper disable ExpressionIsAlwaysNull
 
-namespace CafeLib.Authorization.Hash.UnitTests
+namespace CafeLib.Authorization.UnitTests
 {
     public class BytesEqualityComparerTest
     {
