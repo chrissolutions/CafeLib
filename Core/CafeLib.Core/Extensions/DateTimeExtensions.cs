@@ -28,14 +28,13 @@ namespace CafeLib.Core.Extensions
         }
 
         /// <summary>
-        /// Converts datetime to Unix time.
+        /// Converts datetime to Unix time in milliseconds.
         /// </summary>
         /// <param name="dateTime">date time</param>
         /// <returns></returns>
         public static long ToUnixTime(this DateTime dateTime)
         {
-            var sTime = DateTime.UnixEpoch;
-            return (long) (dateTime - sTime).TotalSeconds;
+            return (long)(dateTime - DateTime.UnixEpoch).TotalMilliseconds;
         }
 
         /// <summary>

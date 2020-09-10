@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+// ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Core.Extensions
+namespace CafeLib.Core.Support
 {
     public static class Converter
     {
@@ -10,7 +11,7 @@ namespace CafeLib.Core.Extensions
         /// <summary>
         /// Map of instrinsic data types.
         /// </summary>
-        private static readonly Dictionary<Type, Converter<string, object>> StringConverterMap =
+        private static readonly Dictionary<Type, Converter<string, object>> _stringConverterMap =
             new Dictionary<Type, Converter<string, object>>
             {
                 {typeof(bool), s=> ToBool(s)},
@@ -31,7 +32,7 @@ namespace CafeLib.Core.Extensions
                 {typeof(string), s => s}
             };
 
-        private static readonly Dictionary<Type, Converter<object, object>> ObjectConverterMap =
+        private static readonly Dictionary<Type, Converter<object, object>> _objectConverterMap =
             new Dictionary<Type, Converter<object, object>>
             {
                 {typeof(bool), o => System.Convert.ToBoolean(o)},
@@ -73,7 +74,7 @@ namespace CafeLib.Core.Extensions
         /// <returns></returns>
         public static object ConvertTo(Type type, string value)
         {
-            return StringConverterMap[type](value);
+            return _stringConverterMap[type](value);
         }
 
         /// <summary>
@@ -98,7 +99,7 @@ namespace CafeLib.Core.Extensions
         {
             try
             {
-                return ObjectConverterMap[type](value);
+                return _objectConverterMap[type](value);
             }
             catch
             {

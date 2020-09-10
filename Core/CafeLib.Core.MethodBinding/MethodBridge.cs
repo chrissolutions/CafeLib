@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using CafeLib.Core.Extensions;
+using CafeLib.Core.Support;
+
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.MethodBinding
