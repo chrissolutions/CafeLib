@@ -57,6 +57,40 @@ namespace CafeLib.Authorization.Tokens
         }
 
         /// <summary>
+        /// Validate token with secret.
+        /// </summary>
+        /// <param name="secret"></param>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        public bool TryValidate(string secret, out TokenResponse response)
+        {
+            return TryValidate(TokenBuilder.DefaultIssuer, TokenBuilder.DefaultAudience, secret, out response);
+        }
+
+        /// <summary>
+        /// Validate token
+        /// </summary>
+        /// <param name="issuer">issuer</param>
+        /// <param name="audience">audience</param>
+        /// <param name="secret">secret</param>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        public bool TryValidate(string issuer, string audience, string secret, out TokenResponse response)
+        {
+            try
+            {
+                var token = Validate(issuer, audience, secret);
+                response = new TokenResponse { Token = token };
+                return true;
+            }
+            catch (Exception ex)
+            {
+                response = new TokenResponse { Exception = ex, Message = ex.Message };
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Convert token to token string.
         /// </summary>
         /// <returns></returns>

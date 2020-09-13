@@ -56,6 +56,28 @@ namespace CafeLib.Authorization.UnitTests
             Assert.Equal(token.Issuer, validToken.Issuer);
             Assert.Equal(token.Expires, validToken.Expires);
         }
+        [Fact]
+        public void ValidateTokenResponseTest()
+        {
+            // Arrange.
+            var expires = DateTime.UtcNow.AddHours(3);
+            var tokenBuilder = new TokenBuilder()
+                .AddIssuer(TestIssuer)
+                .AddAudience(TestAudience)
+                .AddClaims(_claimCollection)
+                .AddSecret(TestSecret)
+                .Expires(expires);
+
+            // Act.
+            var token = tokenBuilder.Build();
+            var result = token.TryValidate(TestIssuer, TestAudience, TestSecret, out var response);
+
+            // Assert.
+            Assert.True(result);
+            Assert.NotNull(response.Token);
+            Assert.Equal(token.Issuer, response.Token.Issuer);
+            Assert.Equal(token.Expires, response.Token.Expires);
+        }
 
         [Fact]
         public void ValidateClaimsTest()
