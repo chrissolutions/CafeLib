@@ -8,8 +8,8 @@ namespace CafeLib.Authorization.Tokens
 {
     public class TokenBuilder : ITokenBuilder
     {
-        private const string DefaultIssuer = "issuer";
-        private const string DefaultAudience = "audience";
+        internal const string DefaultIssuer = "issuer";
+        internal const string DefaultAudience = "audience";
         private readonly SecurityTokenDescriptor _descriptor = new SecurityTokenDescriptor();
 
         public TokenBuilder()

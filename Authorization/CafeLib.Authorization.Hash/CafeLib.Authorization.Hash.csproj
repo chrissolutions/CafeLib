@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CafeLib.Authorization.Hash\**" />
+    <EmbeddedResource Remove="CafeLib.Authorization.Hash\**" />
+    <None Remove="CafeLib.Authorization.Hash\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CafeLib.Core" Version="0.8.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.6" />
   </ItemGroup>

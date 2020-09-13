@@ -17,7 +17,7 @@ namespace CafeLib.Authorization.Hash
                     return false;
 
 				default:
-                    return array1.Every((b, i) => b == array2[i]);
+                    return array1.Every((b, i) => array2 != null && b == array2[i]);
             }
         }
 
