@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using CafeLib.Authorization.Tokens;
 using CafeLib.Core.Extensions;
 using Xunit;
@@ -104,6 +105,29 @@ namespace CafeLib.Authorization.UnitTests
                 Assert.Equal(key, claims2.ElementAt(i).Key);
                 Assert.Equal(value, claims2.ElementAt(i).Value);
             });
+        }
+
+        [Fact]
+        public void ValidateTokenString()
+        {
+            // Arrange.
+            var expires = DateTime.UtcNow.AddHours(3);
+            var tokenBuilder = new TokenBuilder()
+                .AddIssuer(TestIssuer)
+                .AddAudience(TestAudience)
+                .AddClaims(_claimCollection)
+                .AddSecret(TestSecret)
+                .Expires(expires);
+
+            var token = tokenBuilder.Build();
+            var tokenString = token.ToString();
+
+            // Act.
+            var testToken = new Token(tokenString);
+            var result = testToken.TryValidate(TestIssuer, TestAudience, TestSecret, out var response);
+
+            // Assert.
+            Assert.True(result);
         }
     }
 }
