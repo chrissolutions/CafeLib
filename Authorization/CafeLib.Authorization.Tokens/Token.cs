@@ -128,7 +128,7 @@ namespace CafeLib.Authorization.Tokens
 
             var param = new TokenValidationParameters
             {
-                ClockSkew = TimeSpan.FromMinutes(1),
+                ClockSkew = TimeSpan.Zero,
                 ValidIssuer = issuer,
                 ValidAudience = audience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
