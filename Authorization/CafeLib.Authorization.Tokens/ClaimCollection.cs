@@ -67,7 +67,7 @@ namespace CafeLib.Authorization.Tokens
 
         public string this[string key]
         {
-            get => _dictionary[key];
+            get => _dictionary.TryGetValue(key, out var claim) ? claim : null;
             set => _dictionary[key] = value;
         }
 

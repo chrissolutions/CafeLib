@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 // ReSharper disable UnusedMember.Global
 
@@ -30,16 +31,25 @@ namespace CafeLib.Core.Extensions
         }
 
         /// <summary>
+        /// Get value associated to the EnumMemberAttribute
+        /// </summary>
+        /// <param name="value">enum value</param>
+        /// <returns>EnumMemberAttribute value</returns>
+        public static string GetEnumMemberValue(this Enum value)
+        {
+            var fieldInfo = value.GetType().GetField(value.GetName());
+            return fieldInfo.GetCustomAttribute<EnumMemberAttribute>()?.Value;
+        }
+
+        /// <summary>
         /// Humanize the enum field.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         public static string Humanize(this Enum value)
         {
-            var type = value.GetType();
-            var name = Enum.GetName(type, value);
-            var field = type.GetField(name);
-            return GetDescriptor(field);
+            var fieldInfo = value.GetType().GetField(value.GetName());
+            return GetDescriptor(fieldInfo);
         }
 
         /// <summary>

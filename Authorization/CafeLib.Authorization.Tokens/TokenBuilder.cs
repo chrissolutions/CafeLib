@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
@@ -20,8 +21,9 @@ namespace CafeLib.Authorization.Tokens
 
         public Token Build()
         {
-            var handler = new JwtSecurityTokenHandler();
-            return new Token(handler.CreateToken(_descriptor));
+            var claims = _descriptor.Claims.Select(x => new Claim(x.Key, x.Value.ToString()));
+            var token = new JwtSecurityToken(_descriptor.Issuer, _descriptor.Audience, claims, expires: _descriptor.Expires, signingCredentials: _descriptor.SigningCredentials);
+            return new Token(token);
         }
 
         public ITokenBuilder AddIssuer(string issuer)

@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using System.Reflection;
+using System.Security.Claims;
 using CafeLib.Authorization.Tokens;
 using CafeLib.Core.Extensions;
 using Xunit;
@@ -17,7 +17,8 @@ namespace CafeLib.Authorization.UnitTests
         {
             {"email", "bruce.wayne@wayne.com"},
             {"firstName", "Bruce"},
-            {"lastName", "Wayne"}
+            {"lastName", "Wayne"},
+            {ClaimTypes.Name, "Batman"}   
         };
 
         [Fact]
@@ -105,6 +106,8 @@ namespace CafeLib.Authorization.UnitTests
                 Assert.Equal(key, claims2.ElementAt(i).Key);
                 Assert.Equal(value, claims2.ElementAt(i).Value);
             });
+
+            Assert.Equal("Batman", validToken.Claims.Single(x => x.Key == ClaimTypes.Name).Value);
         }
 
         [Fact]
@@ -128,6 +131,7 @@ namespace CafeLib.Authorization.UnitTests
 
             // Assert.
             Assert.True(result);
+            Assert.NotNull(response.Token);
         }
     }
 }

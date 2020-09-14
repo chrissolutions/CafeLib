@@ -141,7 +141,7 @@ namespace CafeLib.Authorization.Tokens
         private static ClaimCollection GetClaims(SecurityToken token)
         {
             var jwt = (JwtSecurityToken)token;
-            return new ClaimCollection(jwt.Payload.ToDictionary(x => x.Key, x => x.Value.ToString()));
+            return new ClaimCollection(jwt.Claims.ToDictionary(x => x.Type, x => x.Value.ToString()));
         }
 
         #endregion
