@@ -22,9 +22,9 @@ namespace CafeLib.Data.Mapping
         internal object ToProperty { get; private set; }
 
         /// <summary>
-        /// ToObject conversion.
+        /// ToOutput conversion.
         /// </summary>
-        internal object ToObject { get; private set; }
+        internal object ToOutput { get; private set; }
 
         /// <summary>
         /// Convert property to object.
@@ -34,20 +34,46 @@ namespace CafeLib.Data.Mapping
         /// <returns>mapper</returns>
         public IMapper Convert<TProperty>(Func<TProperty, object> func)
         {
-            ToObject = func;
+            ToOutput = func;
             return this;
         }
 
         /// <summary>
         /// Convert from value to property.
         /// </summary>
-        /// <typeparam name="TFrom">type of from value</typeparam>
+        /// <typeparam name="TInput">input type</typeparam>
         /// <typeparam name="TProperty">property type</typeparam>
         /// <param name="func">mapping function</param>
         /// <returns>mapper</returns>
-        public IMapper Convert<TFrom, TProperty>(Func<TFrom, TProperty> func)
+        public IMapper Convert<TInput, TProperty>(Func<TInput, TProperty> func)
         {
             ToProperty = func;
+            return this;
+        }
+
+        /// <summary>
+        /// Convert from value to property.
+        /// </summary>
+        /// <typeparam name="TInput">input type</typeparam>
+        /// <typeparam name="TProperty">property type</typeparam>
+        /// <param name="func">mapping function</param>
+        /// <returns>mapper</returns>
+        public IMapper From<TInput, TProperty>(Func<TInput, TProperty> func)
+        {
+            ToProperty = func;
+            return this;
+        }
+
+        /// <summary>
+        /// Convert property to object.
+        /// </summary>
+        /// <typeparam name="TProperty">property type</typeparam>
+        /// <typeparam name="TOutput">output type</typeparam>
+        /// <param name="func">mapping function</param>
+        /// <returns>mapper</returns>
+        public IMapper To<TProperty, TOutput>(Func<TProperty, TOutput> func)
+        {
+            ToOutput = func;
             return this;
         }
     }

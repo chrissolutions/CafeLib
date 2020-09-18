@@ -49,8 +49,8 @@ namespace CafeLib.Data.Mapping
             {
                 var entityProperty = EntityProperties[propertyConverter.PropertyInfo.Name];
                 if (entityProperty == null || !entityProperty.CanRead || entityProperty.GetGetMethod() == null) continue;
-                var value = propertyConverter.ToObject != null
-                            ? ((Delegate) propertyConverter.ToObject).DynamicInvoke(propertyConverter.PropertyInfo.GetValue(this))
+                var value = propertyConverter.ToOutput != null
+                            ? ((Delegate) propertyConverter.ToOutput).DynamicInvoke(propertyConverter.PropertyInfo.GetValue(this))
                             : propertyConverter.PropertyInfo.GetValue(this);
 
                 entityProperty.SetValue(dto, value);

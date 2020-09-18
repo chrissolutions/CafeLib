@@ -130,8 +130,8 @@ namespace CafeLib.Data.Mapping
                         var lambdaExpression = Expression.Lambda(node).Compile();
                         var value = lambdaExpression.DynamicInvoke();
                         var converter = _propertyMap[node.Member.Name];
-                        if (converter.ToObject == null) return Expression.Constant(value);
-                        var converterMethod = (Delegate)converter.ToObject;
+                        if (converter.ToOutput == null) return Expression.Constant(value);
+                        var converterMethod = (Delegate)converter.ToOutput;
                         return Expression.Constant(converterMethod.DynamicInvoke(value));
 
                     case ExpressionType.MemberAccess:
@@ -154,8 +154,8 @@ namespace CafeLib.Data.Mapping
                     var constantExpression = (ConstantExpression)expr;
                     var value = leftNode.Type.IsEnum ? Enum.ToObject(leftNode.Type, constantExpression.Value) : constantExpression.Value;
                     var converter = _propertyMap[leftNode.Member.Name];
-                    if (converter.ToObject == null) return Expression.Constant(value);
-                    var converterMethod = (Delegate)converter.ToObject;
+                    if (converter.ToOutput == null) return Expression.Constant(value);
+                    var converterMethod = (Delegate)converter.ToOutput;
                     return Expression.Constant(converterMethod.DynamicInvoke(value));
             }
 
