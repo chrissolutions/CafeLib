@@ -5,6 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="IdentityDb.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="IdentityDb.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CafeLib.Authorization.Hash" Version="0.8.0" />
   </ItemGroup>
 

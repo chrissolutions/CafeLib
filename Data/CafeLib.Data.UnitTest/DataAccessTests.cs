@@ -1,54 +1,34 @@
-using System.Collections.Generic;
-using System.Linq;
-using CafeLib.Data.SqlGenerator;
-using CafeLib.Data.SqlGenerator.Models;
-using CafeLib.Data.UnitTest.DbObjects;
-using CafeLib.Data.UnitTest.TestDomain;
+using System.Threading.Tasks;
+using CafeLib.Data.UnitTest.Identity;
+using CafeLib.Data.UnitTest.IdentityAccess;
+using CafeLib.Data.UnitTest.Models;
 using Xunit;
 
 namespace CafeLib.Data.UnitTest
 {
     public class DataAccessTests
     {
-        [Fact]
-        public void QueryTranslator_Translate_Where_GroupBy_Select()
+        private readonly IdentityDatabase _database;
+
+        public DataAccessTests()
         {
-            var domain = new TestDomain.TestDomain();
-
-            var query = new List<Post>().AsQueryable().
-                Where(p => p.Content != null).
-                GroupBy(p => p.BlogId).
-                Select(g => new { cnt = g.Count() });
-
-            var script = QueryTranslator.Translate(query.Expression, new EntityModelInfoProvider(domain), new SqliteObjectFactory());
-            var sql = script.ToString();
-
-            const string expected = @"
-select count(1) as 'cnt'
-from Post p0
-where p0.Content is not null
-group by p0.BlogId";
-
-            TestUtils.AssertStringEqual(expected, sql);
+            _database = new IdentityDatabase();                
         }
 
         [Fact]
-        public void QueryTranslator_Translate_Where()
+        public async Task IdentityUser_Test()
         {
-            var domain = new TestDomain.TestDomain();
+            var login = new LoginModel
+            {
+                UserName = "Alice",
+                Password = "My long 123$ password",
+                EmailAddress = "AliceSmith@email.com",
+                RememberMe = true
+            };
 
-            var query = new List<Post>().AsQueryable()
-                .Where(p => p.Content != null);
-
-            var script = QueryTranslator.Translate(query.Expression, new EntityModelInfoProvider(domain), new SqliteObjectFactory());
-            var sql = script.ToString();
-
-            const string expected = @"
-select p0.* from Post p0
-where p0.Content is not null";
-
-            TestUtils.AssertStringEqual(expected, sql);
+            var storage = _database.GetIdentityStorage();
+            var user = await storage.FindUserByUserName<IdentityUser>(login.UserName);
+            Assert.NotNull(user);
         }
-
     }
 }
