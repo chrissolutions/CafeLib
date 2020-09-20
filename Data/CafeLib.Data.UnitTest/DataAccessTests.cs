@@ -8,7 +8,7 @@ using Xunit;
 
 namespace CafeLib.Data.UnitTest
 {
-    public class UnitTest
+    public class DataAccessTests
     {
         [Fact]
         public void QueryTranslator_Translate_Where_GroupBy_Select()
