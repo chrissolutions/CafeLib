@@ -11,7 +11,7 @@ namespace CafeLib.Data.UnitTest
     public class UnitTest
     {
         [Fact]
-        public void Test1()
+        public void QueryTranslator_Translate_Where_GroupBy_Select()
         {
             var domain = new TestDomain.TestDomain();
 
@@ -33,7 +33,7 @@ group by p0.BlogId";
         }
 
         [Fact]
-        public void Test2()
+        public void QueryTranslator_Translate_Where()
         {
             var domain = new TestDomain.TestDomain();
 
