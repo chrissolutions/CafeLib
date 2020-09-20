@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using CafeLib.Core.Data;
 
-namespace CafeLib.Data.UnitTest.TestDomain
+namespace CafeLib.Data.UnitTest.Identity
 {
     /// <summary>
     /// Represents a user in the identity system
