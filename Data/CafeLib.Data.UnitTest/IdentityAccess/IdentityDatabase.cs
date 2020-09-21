@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using CafeLib.Data.Sources.Sqlite;
-using CafeLib.Data.SqlGenerator.MethodTranslators;
 using CafeLib.Data.UnitTest.Identity;
 // ReSharper disable UnusedMember.Global
 

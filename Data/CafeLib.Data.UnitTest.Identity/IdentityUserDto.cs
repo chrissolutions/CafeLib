@@ -1,13 +1,15 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using CafeLib.Data.Mapping;
+using System.ComponentModel.DataAnnotations.Schema;
+using CafeLib.Core.Data;
 
 namespace CafeLib.Data.UnitTest.Identity
 {
     /// <summary>
     /// Represents a user in the identity system
     /// </summary>
-    public class IdentityUser : MappedEntity<IdentityUser, IdentityUserDto>
+    [Table("AspNetUsers")]
+    public class IdentityUserDto : IEntity
     {
         /// <summary>
         /// Initializes a new instance of <see cref="IdentityUser"/>.
@@ -15,12 +17,10 @@ namespace CafeLib.Data.UnitTest.Identity
         /// <remarks>
         /// The Id property is initialized to form a new GUID string value.
         /// </remarks>
-        public IdentityUser()
+        public IdentityUserDto()
         {
-            Map(p => p.EmailConfirmed).From<byte, bool>(x => x == 1).To<bool, byte>(x => x ? (byte)1 : (byte)0);
-            Map(p => p.PhoneNumberConfirmed).From<byte, bool>(x => x == 1).To<bool, byte>(x => x ? (byte)1 : (byte)0);
-            Map(p => p.TwoFactorEnabled).From<byte, bool>(x => x == 1).To<bool, byte>(x => x ? (byte)1 : (byte)0);
-            Map(p => p.LockoutEnabled).From<byte, bool>(x => x == 1).To<bool, byte>(x => x ? (byte)1 : (byte)0);
+            Id = Guid.NewGuid().ToString();
+            SecurityStamp = Guid.NewGuid().ToString();
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace CafeLib.Data.UnitTest.Identity
         /// <remarks>
         /// The Id property is initialized to form a new GUID string value.
         /// </remarks>
-        public IdentityUser(string userName)
+        public IdentityUserDto(string userName)
             : this()
         {
             UserName = userName;
@@ -42,15 +42,15 @@ namespace CafeLib.Data.UnitTest.Identity
         public string NormalizedUserName { get; set; }
         public string Email { get; set; }
         public string NormalizedEmail { get; set; }
-        public bool EmailConfirmed { get; set; }
+        public byte EmailConfirmed { get; set; }
         public string PasswordHash { get; set; }
         public string SecurityStamp { get; set; }
         public string ConcurrencyStamp { get; set; }
         public string PhoneNumber { get; set; }
-        public bool PhoneNumberConfirmed { get; set; }
-        public bool TwoFactorEnabled { get; set; }
+        public byte PhoneNumberConfirmed { get; set; }
+        public byte TwoFactorEnabled { get; set; }
         public DateTimeOffset? LockoutEnd { get; set; }
-        public bool LockoutEnabled { get; set; }
+        public byte LockoutEnabled { get; set; }
         public int AccessFailedCount { get; set; }
 
         /// <summary>

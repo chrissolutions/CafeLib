@@ -20,7 +20,7 @@ namespace CafeLib.Data.UnitTest
         {
             var login = new LoginModel
             {
-                UserName = "Alice",
+                UserName = "alice",
                 Password = "My long 123$ password",
                 EmailAddress = "AliceSmith@email.com",
                 RememberMe = true
@@ -29,6 +29,7 @@ namespace CafeLib.Data.UnitTest
             var storage = _database.GetIdentityStorage();
             var user = await storage.FindUserByUserName<IdentityUser>(login.UserName);
             Assert.NotNull(user);
+            Assert.Equal(login.UserName, user.UserName);
         }
     }
 }

@@ -11,25 +11,25 @@ namespace CafeLib.Data.UnitTest.IdentityAccess
         {
             const string password = "My long 123$ password";
 
-            var alice = new IdentityUser
+            var alice = new IdentityUserDto
             {
                 Id = "1",
                 UserName = "alice",
                 NormalizedUserName = "ALICE",
                 Email = "AliceSmith@email.com",
                 NormalizedEmail = "AliceSmith@email.com".ToUpper(),
-                EmailConfirmed = true,
+                EmailConfirmed = 1,
                 PasswordHash = PasswordHash.Default.HashPassword(password)
             };
 
-            var bob = new IdentityUser
+            var bob = new IdentityUserDto
             {
                 Id = "2",
                 UserName = "bob",
                 NormalizedUserName = "BOB",
                 Email = "BobSmith@email.com",
                 NormalizedEmail = "bobsmith@email.com".ToUpper(),
-                EmailConfirmed = true,
+                EmailConfirmed = 1,
                 PasswordHash = PasswordHash.Default.HashPassword(password)
             };
 

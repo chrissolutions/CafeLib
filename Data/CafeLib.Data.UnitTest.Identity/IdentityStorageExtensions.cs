@@ -16,8 +16,8 @@ namespace CafeLib.Data.UnitTest.Identity
 
         public static async Task<T> FindUserByUserName<T>(this IdentityStorage storage, string userName) where T : IdentityUser
         {
-            var normalizedUserName = userName.ToUpper(CultureInfo.CurrentCulture);
-            return await storage.FindOne<T>(x => x.NormalizedUserName == normalizedUserName);
+            var NormalizedUserName = userName.ToUpper(CultureInfo.CurrentCulture);
+            return await storage.FindOne<T>(x => x.NormalizedUserName == NormalizedUserName);
         }
 
         public static void CreateDatabase(this IdentityStorage storage)
