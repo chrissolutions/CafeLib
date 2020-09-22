@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using CafeLib.Core.Data;
 using CafeLib.Data.Mapping.Visitors;
+
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Mapping
@@ -12,7 +12,7 @@ namespace CafeLib.Data.Mapping
         where TModel : class, IMappedEntity<TModel, TEntity> where TEntity : class, IEntity
     {
         private ParameterExpression _entityParameter;
-        private readonly IDictionary<string, PropertyConverter> _propertyMap;
+        private readonly PropertyConverterMap _propertyMap;
         private readonly PropertyDictionary<TEntity> _entityProperties;
         private readonly ParameterExpressionVisitor _parameterVisitor;
         private readonly DefaultExpressionVisitor _defaultVisitor;
@@ -21,9 +21,7 @@ namespace CafeLib.Data.Mapping
         {
             _entityProperties = MappedEntity<TModel, TEntity>.EntityProperties;
 
-            _propertyMap = MappedEntity<TModel, TEntity>.PropertyMap.Cast<PropertyConverter>()
-                .ToDictionary(x => x.PropertyInfo.Name, x => x);
-
+            _propertyMap = new PropertyConverterMap(MappedEntity<TModel, TEntity>.PropertyMap.Cast<PropertyConverter>());
             _defaultVisitor = new DefaultExpressionVisitor();
             _parameterVisitor = new ParameterExpressionVisitor(_propertyMap);
         }
@@ -130,7 +128,7 @@ namespace CafeLib.Data.Mapping
                         var lambdaExpression = Expression.Lambda(node).Compile();
                         var value = lambdaExpression.DynamicInvoke();
                         var converter = _propertyMap[node.Member.Name];
-                        if (converter.ToOutput == null) return Expression.Constant(value);
+                        if (converter?.ToOutput == null) return Expression.Constant(value);
                         var converterMethod = (Delegate)converter.ToOutput;
                         return Expression.Constant(converterMethod.DynamicInvoke(value));
 
@@ -154,7 +152,7 @@ namespace CafeLib.Data.Mapping
                     var constantExpression = (ConstantExpression)expr;
                     var value = leftNode.Type.IsEnum ? Enum.ToObject(leftNode.Type, constantExpression.Value) : constantExpression.Value;
                     var converter = _propertyMap[leftNode.Member.Name];
-                    if (converter.ToOutput == null) return Expression.Constant(value);
+                    if (converter?.ToOutput == null) return Expression.Constant(value);
                     var converterMethod = (Delegate)converter.ToOutput;
                     return Expression.Constant(converterMethod.DynamicInvoke(value));
             }

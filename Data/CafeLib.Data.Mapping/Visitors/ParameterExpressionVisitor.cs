@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
+
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Mapping.Visitors
 {
     internal class ParameterExpressionVisitor : ExpressionVisitor
     {
-        private readonly IDictionary<string, PropertyConverter> _propertyMap;
+        private readonly PropertyConverterMap _propertyMap;
 
-        public ParameterExpressionVisitor(IDictionary<string, PropertyConverter> propertyMap)
+        public ParameterExpressionVisitor(PropertyConverterMap propertyMap)
         {
             _propertyMap = propertyMap;
         }
