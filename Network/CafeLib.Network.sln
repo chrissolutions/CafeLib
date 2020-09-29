@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Web.SignalR.Hubs", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.AspNet.WebSockets", "CafeLib.AspNet.WebSockets\CafeLib.AspNet.WebSockets.csproj", "{D2C7E34C-218D-42D4-94F5-FA25A7672982}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.AspNet.Authorization", "CafeLib.AspNet.Authorization\CafeLib.AspNet.Authorization.csproj", "{83DEB598-E97E-4DD1-8029-1EF8EE93C700}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,10 +39,6 @@ Global
 		{D2C7E34C-218D-42D4-94F5-FA25A7672982}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2C7E34C-218D-42D4-94F5-FA25A7672982}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2C7E34C-218D-42D4-94F5-FA25A7672982}.Release|Any CPU.Build.0 = Release|Any CPU
-		{83DEB598-E97E-4DD1-8029-1EF8EE93C700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{83DEB598-E97E-4DD1-8029-1EF8EE93C700}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{83DEB598-E97E-4DD1-8029-1EF8EE93C700}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{83DEB598-E97E-4DD1-8029-1EF8EE93C700}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
