@@ -1,7 +1,6 @@
-﻿using CafeLib.AspNet.WebSockets;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace CafeLib.AspNet.Extensions
+namespace CafeLib.AspNet.WebSockets
 {
     public static class ServiceCollectionExtensions
     {

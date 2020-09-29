@@ -1,10 +1,9 @@
 ﻿using System;
-using CafeLib.AspNet.WebSockets;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CafeLib.AspNet.Extensions
+namespace CafeLib.AspNet.WebSockets
 {
     public static class AppBuilderExtensions
     {
