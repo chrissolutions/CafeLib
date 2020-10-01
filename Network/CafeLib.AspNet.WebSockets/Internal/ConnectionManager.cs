@@ -6,9 +6,9 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CafeLib.AspNet.WebSockets
+namespace CafeLib.AspNet.WebSockets.Internal
 {
-    internal class ConnectionManager : IConnectionManager
+    internal class ConnectionManager : IWebSocketConnectionManager
     {
         private readonly ConcurrentDictionary<Guid, WebSocket> _sockets = new ConcurrentDictionary<Guid, WebSocket>();
         private readonly ConcurrentDictionary<int, Guid> _connections = new ConcurrentDictionary<int, Guid>();

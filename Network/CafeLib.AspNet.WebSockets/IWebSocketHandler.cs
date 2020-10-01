@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
 
 namespace CafeLib.AspNet.WebSockets
@@ -9,6 +10,6 @@ namespace CafeLib.AspNet.WebSockets
 
         Task OnDisconnect(Guid connectionId);
 
-        Task<bool> ReceiveAsync(Guid connectionId, byte[] buffer, int count);
+        Task ReceiveAsync(Guid connectionId, WebSocketMessageType messageType, byte[] buffer, int count);
     }
 }

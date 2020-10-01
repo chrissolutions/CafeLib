@@ -4,13 +4,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CafeLib.AspNet.WebSockets
+namespace CafeLib.AspNet.WebSockets.Internal
 {
     internal class WebSocketSender : IWebSocketSender
     {
-        private readonly IConnectionManager _connectionManager;
+        private readonly IWebSocketConnectionManager _connectionManager;
 
-        protected WebSocketSender(IConnectionManager connectionManager)
+        public WebSocketSender(IWebSocketConnectionManager connectionManager)
         {
             _connectionManager = connectionManager;            
         }

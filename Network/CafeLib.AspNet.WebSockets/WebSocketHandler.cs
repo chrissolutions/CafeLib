@@ -1,31 +1,40 @@
 ﻿using System;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CafeLib.AspNet.WebSockets
 {
     public abstract class WebSocketHandler : IWebSocketHandler
     {
-        private readonly IWebSocketSender _webSocketSender;
+        protected readonly IWebSocketConnectionManager _connectionManager;
+        protected readonly IWebSocketSender _sender;
 
-        protected WebSocketHandler(IWebSocketSender sender)
+        protected WebSocketHandler(IServiceProvider serviceProvider)
         {
-            _webSocketSender = sender;
+            _connectionManager = serviceProvider.GetService<IWebSocketConnectionManager>();
+            _sender = serviceProvider.GetService<IWebSocketSender>();
         }
 
-        public abstract Task OnConnect(Guid connectionId);
+        public virtual Task OnConnect(Guid connectionId)
+        {
+            return Task.CompletedTask;
+        }
 
-        public abstract Task OnDisconnect(Guid connectionId);
-
-        public abstract Task<bool> ReceiveAsync(Guid connectionId, byte[] buffer, int count);
-
+        public virtual Task OnDisconnect(Guid connectionId)
+        {
+            return Task.CompletedTask;
+        }
         public async Task BroadcastMessageAsync(string message)
         {
-            await _webSocketSender.BroadcastMessageAsync(message);
+            await _sender.BroadcastMessageAsync(message);
         }
 
-        public async Task SendMessageAsync(Guid connectionId, string message)
+        public async Task SendMessageAsync(Guid socketId, string message)
         {
-            await _webSocketSender.SendMessageAsync(connectionId, message);
+            await _sender.SendMessageAsync(socketId, message);
         }
+
+        public abstract Task ReceiveAsync(Guid connectionId, WebSocketMessageType messageType, byte[] buffer, int count);
     }
 }
