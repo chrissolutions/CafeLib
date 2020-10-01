@@ -163,6 +163,28 @@ namespace CafeLib.Core.Extensions
         /// <param name="types">list of types</param>
         /// <param name="baseType">base type</param>
         /// <returns>enumerable list of derived types</returns>
+        public static IEnumerable<Type> Inherits(this IEnumerable<Type> types, Type baseType)
+        {
+            return types.Where(baseType.IsAssignableFrom);
+        }
+
+        /// <summary>
+        /// Get derived types
+        /// </summary>
+        /// <typeparam name="TBase">base type</typeparam>
+        /// <param name="types">list of types</param>
+        /// <returns>enumerable list of derived types</returns>
+        public static IEnumerable<Type> Inherits<TBase>(this IEnumerable<Type> types)
+        {
+            return types.Inherits(typeof(TBase));
+        }
+
+        /// <summary>
+        /// Get derive types.
+        /// </summary>
+        /// <param name="types">list of types</param>
+        /// <param name="baseType">base type</param>
+        /// <returns>enumerable list of derived types</returns>
         public static IEnumerable<TypeInfo> Inherits(this IEnumerable<TypeInfo> types, TypeInfo baseType)
         {
             return types.Where(baseType.IsAssignableFrom);
