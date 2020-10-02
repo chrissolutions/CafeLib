@@ -7,14 +7,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CafeLib.AspNet.WebSockets.Internal
 {
-    internal class WebSocketHost<T> where T : IWebSocketHandler
+    internal class WebSocketMiddleware<T> where T : IWebSocketHandler
     {
         private readonly T _webSocketHandler;
         private readonly IWebSocketConnectionManager _connectionManager;
+        private readonly RequestDelegate _next;
 
-        public WebSocketHost(RequestDelegate next, IServiceProvider serviceProvider)
+        public WebSocketMiddleware(RequestDelegate next, IServiceProvider serviceProvider)
         {
-            var _ = next;
+            var _next = next;
             _webSocketHandler = serviceProvider.GetService<T>();
             _connectionManager = serviceProvider.GetService<IWebSocketConnectionManager>();
         }
@@ -22,11 +23,15 @@ namespace CafeLib.AspNet.WebSockets.Internal
         // ReSharper disable once UnusedMember.Global
         public async Task Invoke(HttpContext context)
         {
-            if (!context.WebSockets.IsWebSocketRequest)
-                return;
-
-            var connectionId = await Connect(context);
-            await Receive(connectionId);
+            if (context.WebSockets.IsWebSocketRequest)
+            {
+                var connectionId = await Connect(context);
+                await Receive(connectionId);
+            }
+            else
+            {
+                await _next.Invoke(context);
+            }
         }
 
         private async Task<Guid> Connect(HttpContext context)
@@ -51,20 +56,28 @@ namespace CafeLib.AspNet.WebSockets.Internal
 
         private async Task ProcessMessage(Guid connectionId, WebSocketReceiveResult result, byte[] buffer)
         {
-            switch (result.MessageType)
+            try
             {
-                case WebSocketMessageType.Binary:
-                case WebSocketMessageType.Text:
-                    await _webSocketHandler.ReceiveAsync(connectionId, result.MessageType, buffer, result.Count);
-                    return;
+                switch (result.MessageType)
+                {
+                    case WebSocketMessageType.Binary:
+                    case WebSocketMessageType.Text:
+                        await _webSocketHandler.ReceiveAsync(connectionId, result.MessageType, buffer, result.Count);
+                        return;
 
-                case WebSocketMessageType.Close:
-                    await _connectionManager.Remove(connectionId);
-                    await _webSocketHandler.OnDisconnect(connectionId);
-                    return;
+                    case WebSocketMessageType.Close:
+                        await _connectionManager.Remove(connectionId);
+                        await _webSocketHandler.OnDisconnect(connectionId);
+                        return;
 
-                default:
-                    return;
+                    default:
+                        return;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
         }
     }

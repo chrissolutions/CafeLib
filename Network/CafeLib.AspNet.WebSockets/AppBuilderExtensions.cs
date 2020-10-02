@@ -8,7 +8,7 @@ namespace CafeLib.AspNet.WebSockets
     {
         public static IApplicationBuilder MapWebSocket<T>(this IApplicationBuilder app, PathString path) where T : IWebSocketHandler
         {
-            return app.Map(path, x => x.UseMiddleware<WebSocketHost<T>>());
+            return app.Map(path, x => x.UseMiddleware<WebSocketMiddleware<T>>());
         }
     }
 }
