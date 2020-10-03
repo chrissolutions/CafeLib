@@ -15,7 +15,7 @@ namespace CafeLib.AspNet.WebSockets.Internal
 
         public WebSocketMiddleware(RequestDelegate next, IServiceProvider serviceProvider)
         {
-            var _next = next;
+            _next = next;
             _webSocketHandler = serviceProvider.GetService<T>();
             _connectionManager = serviceProvider.GetService<IWebSocketConnectionManager>();
         }
@@ -23,7 +23,7 @@ namespace CafeLib.AspNet.WebSockets.Internal
         // ReSharper disable once UnusedMember.Global
         public async Task Invoke(HttpContext context)
         {
-            if (context.WebSockets.IsWebSocketRequest)
+            if (!context.RequestAborted.IsCancellationRequested && context.WebSockets.IsWebSocketRequest)
             {
                 var connectionId = await Connect(context);
                 await Receive(connectionId);
@@ -44,7 +44,7 @@ namespace CafeLib.AspNet.WebSockets.Internal
 
         private async Task Receive(Guid connectionId)
         {
-            var buffer = new byte[1024 * 4];
+            var buffer = new byte[8192];
             var socket = _connectionManager.Find(connectionId);
 
             while (socket.State == WebSocketState.Open)

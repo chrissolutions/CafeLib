@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using CafeLib.Core.Extensions;
 
 namespace CafeLib.AspNet.WebSockets.Internal
 {
@@ -48,18 +49,18 @@ namespace CafeLib.AspNet.WebSockets.Internal
             if (_sockets.TryRemove(id, out var socket))
             {
                 await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, $"Closed by {GetType().Name}", CancellationToken.None);
+                socket.Dispose();
             }
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            throw new NotImplementedException();
         }
 
         public void Dispose()
         {
-            var tasks = new[] { DisposeAsync().AsTask() };
-            Task.WhenAll(tasks);
+            Task.WaitAll(DisposeAsync().AsTask());
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(_sockets.Keys.ForEachAsync( async x => await Remove(x)));
         }
     }
 }

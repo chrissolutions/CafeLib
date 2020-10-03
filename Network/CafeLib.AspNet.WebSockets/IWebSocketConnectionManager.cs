@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace CafeLib.AspNet.WebSockets
 {
-    public interface IWebSocketConnectionManager : IEnumerable<(Guid, WebSocket)>
+    public interface IWebSocketConnectionManager : IEnumerable<(Guid, WebSocket)>, IAsyncDisposable, IDisposable
     {
         Guid Add(WebSocket socket);
         Guid? Find(WebSocket socket);
