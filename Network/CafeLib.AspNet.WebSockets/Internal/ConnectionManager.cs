@@ -60,7 +60,7 @@ namespace CafeLib.AspNet.WebSockets.Internal
 
         public ValueTask DisposeAsync()
         {
-            return new ValueTask(_sockets.Keys.ForEachAsync( async x => await Remove(x)));
+            return new ValueTask(_sockets.Keys.ForEachAsync(async x => await Remove(x)));
         }
     }
 }
