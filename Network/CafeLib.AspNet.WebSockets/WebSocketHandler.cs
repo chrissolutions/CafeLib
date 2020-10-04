@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,6 +24,7 @@ namespace CafeLib.AspNet.WebSockets
         {
             return Task.CompletedTask;
         }
+
         public async Task BroadcastMessageAsync(string message)
         {
             await _sender.BroadcastMessageAsync(message);
@@ -35,6 +35,14 @@ namespace CafeLib.AspNet.WebSockets
             await _sender.SendMessageAsync(socketId, message);
         }
 
-        public abstract Task ReceiveAsync(Guid connectionId, WebSocketMessageType messageType, byte[] buffer, int count);
+        public virtual Task ReceiveAsync(Guid connectionId, byte[] buffer, int count)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task ReceiveMessageAsync(Guid connectionId, string message)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

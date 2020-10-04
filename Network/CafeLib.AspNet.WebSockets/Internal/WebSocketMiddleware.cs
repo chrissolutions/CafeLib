@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.WebSockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -60,9 +61,13 @@ namespace CafeLib.AspNet.WebSockets.Internal
             {
                 switch (result.MessageType)
                 {
-                    case WebSocketMessageType.Binary:
                     case WebSocketMessageType.Text:
-                        await _webSocketHandler.ReceiveAsync(connectionId, result.MessageType, buffer, result.Count);
+                        var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                        await _webSocketHandler.ReceiveMessageAsync(connectionId, message);
+                        return;
+
+                    case WebSocketMessageType.Binary:
+                        await _webSocketHandler.ReceiveAsync(connectionId, buffer, result.Count);
                         return;
 
                     case WebSocketMessageType.Close:
