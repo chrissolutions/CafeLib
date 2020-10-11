@@ -296,21 +296,21 @@ namespace CafeLib.Core.UnitTests
             var user = new User(new Address());
 
             // cast to dynamicAccessToPropertyTest
-            dynamic duser = user;
+            dynamic dynUser = user;
 
             // Set strongly typed properties
-            duser.Email = "rick@west-wind.com";
+            dynUser.Email = "rick@west-wind.com";
             user.Password = "nonya123";
 
             // Set properties on address object
-            duser.Address = "32 Kaiea";
+            dynUser.Address = "32 Kaiea";
             //duser.Phone = "808-123-2131";
 
             // set dynamic properties
-            duser.NonExistantProperty = "This works too";
+            dynUser.NonExistantProperty = "This works too";
 
             // shows default value Address.Phone value
-            Console.WriteLine(duser.Phone);
+            Console.WriteLine(dynUser.Phone);
         }
 
         [Fact]
