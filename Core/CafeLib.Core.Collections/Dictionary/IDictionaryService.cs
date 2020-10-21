@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Collections
@@ -96,6 +98,6 @@ namespace CafeLib.Core.Collections
         /// <summary>
         /// Convert the property bag to an object.
         /// </summary>
-        T ToObject<T>();
+        IReadOnlyDictionary<string, object> ToDictionary();
     }
 }

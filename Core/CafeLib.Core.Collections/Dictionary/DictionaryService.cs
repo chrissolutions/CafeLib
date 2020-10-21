@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using CafeLib.Core.Dynamic;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using CafeLib.Core.Support;
 
 namespace CafeLib.Core.Collections
@@ -90,9 +91,6 @@ namespace CafeLib.Core.Collections
         }
 
         /// <inheritdoc />
-        public T ToObject<T>()
-        {
-            return (T)_dictionary.ToObject();
-        }
+        public IReadOnlyDictionary<string, object> ToDictionary() => new ReadOnlyDictionary<string, object>(_dictionary);
     }
 }
