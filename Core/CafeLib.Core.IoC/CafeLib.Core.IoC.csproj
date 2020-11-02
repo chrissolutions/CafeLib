@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LightInject.Source" Version="6.3.4" />
+    <PackageReference Include="LightInject.Source" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
