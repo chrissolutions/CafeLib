@@ -10,9 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="RepoDb.SqlServer" Version="1.0.11" />
-    <PackageReference Include="RepoDb.SqlServer.BulkOperations" Version="1.0.12" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+    <PackageReference Include="RepoDb.SqlServer" Version="1.1.1" />
+    <PackageReference Include="RepoDb.SqlServer.BulkOperations" Version="1.1.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
   </ItemGroup>
 
   <ItemGroup>

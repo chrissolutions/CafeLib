@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="CafeLib.Core.Data" Version="0.8.0" />
-    <PackageReference Include="RepoDb" Version="1.11.4" />
+    <PackageReference Include="RepoDb" Version="1.12.4" />
   </ItemGroup>
 
   <ItemGroup>

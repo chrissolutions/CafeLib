@@ -26,12 +26,12 @@ namespace CafeLib.Data.Sources
             if (data == null) throw new ArgumentNullException(nameof(data));
             var results = 0;
             await using var connection = connectionInfo.GetConnection<T>();
-            await connection.EnsureOpenAsync();
+            await connection.EnsureOpenAsync(cancellationToken: token).ConfigureAwait(false);
             using var transaction = connection.BeginTransaction();
 
             try
             {
-                results = await connection.DeleteAsync(data);
+                results = await connection.DeleteAsync(data, cancellationToken: token).ConfigureAwait(false);
                 transaction.Commit();
             }
             catch (Exception)
@@ -66,7 +66,7 @@ namespace CafeLib.Data.Sources
 
             try
             {
-                var deleted = await connection.DeleteAllAsync(data, transaction: transaction);
+                var deleted = await connection.DeleteAllAsync(data, transaction: transaction, cancellationToken: token).ConfigureAwait(false);
                 transaction.Commit();
                 return deleted;
             }
@@ -96,7 +96,7 @@ namespace CafeLib.Data.Sources
         public async Task<int> DeleteAsync<TEntity>(IConnectionInfo connectionInfo, Expression<Func<TEntity, bool>> predicate, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            return await connection.DeleteAsync(predicate);
+            return await connection.DeleteAsync(predicate, cancellationToken: token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace CafeLib.Data.Sources
         /// <returns>Query result</returns>
         public async Task<bool> DeleteByKeyAsync<TEntity, TKey>(IConnectionInfo connectionInfo, TKey key, CancellationToken token = default) where TEntity : class, IEntity
         {
-            return await DeleteByKeyAsync<TEntity, TKey>(connectionInfo, new[]{key}, token) > 0;
+            return await DeleteByKeyAsync<TEntity, TKey>(connectionInfo, new[]{key}, token).ConfigureAwait(false) > 0;
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace CafeLib.Data.Sources
         public async Task<int> DeleteByKeyAsync<TEntity, TKey>(IConnectionInfo connectionInfo, IEnumerable<TKey> keys, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            return await connection.DeleteAllAsync<TEntity>(keys.Cast<object>());
+            return await connection.DeleteAllAsync<TEntity>(keys.Cast<object>(), cancellationToken: token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace CafeLib.Data.Sources
         public async Task<int> ExecuteAsync(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default)
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            return await connection.ExecuteNonQueryAsync(sql, parameters);
+            return await connection.ExecuteNonQueryAsync(sql, parameters, cancellationToken: token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace CafeLib.Data.Sources
         public async Task<SaveResult<TKey>> ExecuteSaveAsync<TKey>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default)
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            var result = await connection.ExecuteScalarAsync(sql, parameters).ConfigureAwait(false);
+            var result = await connection.ExecuteScalarAsync(sql, parameters, cancellationToken: token).ConfigureAwait(false);
             return result != null ? new SaveResult<TKey>((TKey)result, true) : new SaveResult<TKey>((TKey)DefaultSqlId<TKey>());
         }
 
@@ -169,7 +169,7 @@ namespace CafeLib.Data.Sources
         public async Task<object> ExecuteScalarAsync(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default)
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            return await connection.ExecuteScalarAsync(sql, parameters).ConfigureAwait(false);
+            return await connection.ExecuteScalarAsync(sql, parameters, cancellationToken: token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace CafeLib.Data.Sources
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             await using var connection = connectionInfo.GetConnection<T>();
-            var id = await connection.InsertAsync(data);
+            var id = await connection.InsertAsync(data, cancellationToken: token).ConfigureAwait(false);
             var propertyInfo = PrimaryCache.Get<TEntity>().PropertyInfo;
             propertyInfo.SetValue(data, Convert.ChangeType(id, propertyInfo.PropertyType));
             return data;
@@ -202,7 +202,7 @@ namespace CafeLib.Data.Sources
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             await using var connection = connectionInfo.GetConnection<T>();
-            var inserted = await connection.InsertAllAsync(data);
+            var inserted = await connection.InsertAllAsync(data, cancellationToken: token).ConfigureAwait(false);
             return inserted;
         }
 
@@ -218,9 +218,9 @@ namespace CafeLib.Data.Sources
         public async Task<QueryResult<TEntity>> QueryAsync<TEntity>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            using var result = connection.ExecuteQueryMultipleAsync(sql, parameters);
-            var entities = result.Result.Extract<TEntity>()?.ToArray();
-            var scalar = result.Result.Scalar<int>();
+            using var result = await connection.ExecuteQueryMultipleAsync(sql, parameters, cancellationToken: token).ConfigureAwait(false);
+            var entities = result.Extract<TEntity>()?.ToArray();
+            var scalar = result.Scalar<int>();
             var totalCount = scalar != 0 ? scalar : entities?.Length ?? -1;
             return new QueryResult<TEntity> { Records = entities, TotalCount = totalCount };
         }
@@ -236,7 +236,7 @@ namespace CafeLib.Data.Sources
         public async Task<QueryResult<TEntity>> QueryAsync<TEntity>(IConnectionInfo connectionInfo, Expression<Func<TEntity, bool>> predicate, CancellationToken token) where TEntity : class,  IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            var result = (await connection.QueryAsync(predicate)).ToArray();
+            var result = (await connection.QueryAsync(predicate, cancellationToken: token).ConfigureAwait(false)).ToArray();
             return new QueryResult<TEntity> { Records = result, TotalCount = result.Length };
         }
 
@@ -250,7 +250,7 @@ namespace CafeLib.Data.Sources
         public async Task<QueryResult<TEntity>> QueryAllAsync<TEntity>(IConnectionInfo connectionInfo, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            var result = (await connection.QueryAllAsync<TEntity>()).ToArray();
+            var result = (await connection.QueryAllAsync<TEntity>(cancellationToken: token).ConfigureAwait(false)).ToArray();
             return new QueryResult<TEntity> { Records = result, TotalCount = result.Length };
         }
 
@@ -267,7 +267,7 @@ namespace CafeLib.Data.Sources
         {
             await using var connection = connectionInfo.GetConnection<T>();
             var queryField = new QueryField(PrimaryCache.Get<TEntity>().AsField(), key);
-            return (await connection.QueryAsync<TEntity>(queryField)).FirstOrDefault();
+            return (await connection.QueryAsync<TEntity>(queryField, cancellationToken: token).ConfigureAwait(false)).FirstOrDefault();
         }
 
         /// <summary>
@@ -283,7 +283,7 @@ namespace CafeLib.Data.Sources
         {
             await using var connection = connectionInfo.GetConnection<T>();
             var queryField = new QueryField(PrimaryCache.Get<TEntity>().AsField(), keys);
-            return await connection.QueryAsync<TEntity>(queryField);
+            return await connection.QueryAsync<TEntity>(queryField, cancellationToken: token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace CafeLib.Data.Sources
         public async Task<int> QueryCountAsync<TEntity>(IConnectionInfo connectionInfo, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            return (int)await connection.CountAllAsync<TEntity>();
+            return (int)await connection.CountAllAsync<TEntity>(cancellationToken: token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -312,26 +312,26 @@ namespace CafeLib.Data.Sources
         {
             var keyColumnName = PrimaryCache.Get<TEntity>().GetMappedName();
             var tableName = ClassMappedNameCache.Get<TEntity>();
-            var result = await ExecuteAsync(connectionInfo, $@"SELECT TOP 1 {keyColumnName} FROM {tableName} WHERE {keyColumnName} = {CheckSqlKey(key)}", null, token);
+            var result = await ExecuteAsync(connectionInfo, $@"SELECT TOP 1 {keyColumnName} FROM {tableName} WHERE {keyColumnName} = {CheckSqlKey(key)}", null, token).ConfigureAwait(false);
             return result;
         }
 
         public async Task<int> QueryCountAsync<TEntity>(IConnectionInfo connectionInfo, Expression<Func<TEntity, bool>> predicate, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            return (int)await connection.CountAsync(predicate);
+            return (int)await connection.CountAsync(predicate, cancellationToken: token).ConfigureAwait(false);
         }
 
         public async Task<TEntity> QueryOneAsync<TEntity>(IConnectionInfo connectionInfo, string sql, object parameters, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            return (await connection.ExecuteQueryAsync<TEntity>(sql, parameters)).FirstOrDefault();
+            return (await connection.ExecuteQueryAsync<TEntity>(sql, parameters, cancellationToken: token).ConfigureAwait(false)).FirstOrDefault();
         }
 
         public async Task<TEntity> QueryOneAsync<TEntity>(IConnectionInfo connectionInfo, Expression<Func<TEntity, bool>> predicate, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            return (await connection.QueryAsync(predicate)).FirstOrDefault();
+            return (await connection.QueryAsync(predicate, cancellationToken: token).ConfigureAwait(false)).FirstOrDefault();
         }
 
         /// <summary>
@@ -345,7 +345,7 @@ namespace CafeLib.Data.Sources
         public async Task<bool> UpdateAsync<TEntity>(IConnectionInfo connectionInfo, TEntity data, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            var updated = await connection.UpdateAsync(data);
+            var updated = await connection.UpdateAsync(data, cancellationToken: token).ConfigureAwait(false);
             return updated > 0;
         }
 
@@ -360,7 +360,7 @@ namespace CafeLib.Data.Sources
         public async Task<int> UpdateAsync<TEntity>(IConnectionInfo connectionInfo, IEnumerable<TEntity> data, CancellationToken token = default) where TEntity : class, IEntity
         {
             await using var connection = connectionInfo.GetConnection<T>();
-            return await connection.UpdateAllAsync(data);
+            return await connection.UpdateAllAsync(data, cancellationToken: token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -376,7 +376,7 @@ namespace CafeLib.Data.Sources
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             await using var connection = connectionInfo.GetConnection<T>();
-            var id = await connection.MergeAsync(data);
+            var id = await connection.MergeAsync(data, cancellationToken: token).ConfigureAwait(false);
             var propertyInfo = PrimaryCache.Get<TEntity>().PropertyInfo;
             propertyInfo.SetValue(data, Convert.ChangeType(id, propertyInfo.PropertyType));
             return data;
@@ -396,12 +396,12 @@ namespace CafeLib.Data.Sources
             if (data == null) throw new ArgumentNullException(nameof(data));
             var results = 0;
             await using var connection = connectionInfo.GetConnection<T>();
-            await connection.EnsureOpenAsync();
+            await connection.EnsureOpenAsync(cancellationToken: token).ConfigureAwait(false);
             using var transaction = connection.BeginTransaction();
 
             try
             {
-                results = await connection.MergeAllAsync(data, transaction: transaction);
+                results = await connection.MergeAllAsync(data, transaction: transaction, cancellationToken: token).ConfigureAwait(false);
                 transaction.Commit();
             }
             catch (Exception)
