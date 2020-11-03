@@ -16,7 +16,7 @@
     <PackageReference Include="CafeLib.Core.Collections" Version="0.8.0" />
     <PackageReference Include="CafeLib.Core.Eventing" Version="0.8.0" />
     <PackageReference Include="CafeLib.Core.IoC" Version="0.8.0" />
-    <PackageReference Include="Xamarin.Forms" Version="4.7.0.1080" />
+    <PackageReference Include="Xamarin.Forms" Version="4.8.0.1560" />
   </ItemGroup>
   
   <ItemGroup>

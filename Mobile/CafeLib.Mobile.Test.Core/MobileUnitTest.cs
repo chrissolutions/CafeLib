@@ -5,7 +5,6 @@ using CafeLib.Core.IoC;
 using CafeLib.Mobile.Extensions;
 using CafeLib.Mobile.Services;
 using CafeLib.Mobile.Test.Core.Fakes;
-using Microsoft.Extensions.Logging;
 using Moq;
 using Xamarin.Forms;
 // ReSharper disable UnusedMember.Global
