@@ -13,7 +13,6 @@ namespace CafeLib.Core.Runnable
     {
         #region Private Variables
 
-        private static readonly object _mutex = new object();
         private int _delay;
         private bool _disposed;
         private CancellationTokenSource _cancellationSource;
@@ -82,12 +81,9 @@ namespace CafeLib.Core.Runnable
         {
             if (!IsRunning)
             {
-                lock (_mutex)
-                {
-                    _cancellationSource = new CancellationTokenSource();
-                    OnAdvise(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} started."));
-                    RunTask();
-                }
+                _cancellationSource = new CancellationTokenSource();
+                OnAdvise(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} started."));
+                BeginLoop();
             }
             await Task.CompletedTask;
         }
@@ -99,10 +95,7 @@ namespace CafeLib.Core.Runnable
         {
             if (IsRunning)
             {
-                lock (_mutex)
-                {
-                    _cancellationSource.Cancel();
-                }
+                _cancellationSource.Cancel();
                 OnAdvise(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} stopped."));
             }
 
@@ -119,10 +112,46 @@ namespace CafeLib.Core.Runnable
         protected abstract Task Run();
 
         /// <summary>
+        /// Raise advise event.
+        /// </summary>
+        /// <param name="message"></param>
+        protected virtual void OnAdvise(IEventMessage message)
+        {
+            Advised.Invoke(message);
+        }
+
+        #endregion
+
+        #region Helpers
+
+        /// <summary>
+        /// Begin the loop in the background.
+        /// </summary>
+        private void BeginLoop()
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await RunLoop();
+                }
+                catch
+                {
+                    // ignore
+                }
+                finally
+                {
+                    ExitLoop();
+                }
+
+            }, _cancellationSource.Token);
+        }
+
+        /// <summary>
         /// Run loop.
         /// </summary>
         /// <returns>awaitable task</returns>
-        protected async Task RunLoop()
+        private async Task RunLoop()
         {
             while (IsRunning)
             {
@@ -140,51 +169,12 @@ namespace CafeLib.Core.Runnable
         }
 
         /// <summary>
-        /// Run the task in the background.
+        /// Exit the background loop.
         /// </summary>
-        protected void RunTask()
+        private void ExitLoop()
         {
-            Task.Run(async () =>
-            {
-                try
-                {
-                    await RunLoop();
-                }
-                catch
-                {
-                    // ignore
-                }
-                finally
-                {
-                    ExitTask();
-                }
-
-            }, _cancellationSource.Token);
-        }
-
-        /// <summary>
-        /// Raise advise event.
-        /// </summary>
-        /// <param name="message"></param>
-        protected virtual void OnAdvise(IEventMessage message)
-        {
-            Advised.Invoke(message);
-        }
-
-        #endregion
-
-        #region Helpers
-
-        /// <summary>
-        /// Exit the background task.
-        /// </summary>
-        private void ExitTask()
-        {
-            lock (_mutex)
-            {
-                _cancellationSource?.Dispose();
-                _cancellationSource = null;
-            }
+            _cancellationSource?.Dispose();
+            _cancellationSource = null;
         }
 
         #endregion
