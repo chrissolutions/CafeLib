@@ -12,10 +12,8 @@ namespace CafeLib.Core.Extensions
         /// <returns>byte array</returns>
         public static byte[] ToByteArray(this Stream stream)
         {
-            using (var memoryStream = stream.ToMemoryStream())
-            {
-                return memoryStream.ToArray();
-            }
+            using var memoryStream = stream.ToMemoryStream();
+            return memoryStream.ToArray();
         }
 
         /// <summary>
@@ -25,10 +23,8 @@ namespace CafeLib.Core.Extensions
         /// <returns>byte array</returns>
         public static async Task<byte[]> ToByteArrayAsync(this Stream stream)
         {
-            using (var memoryStream = await stream.ToMemoryStreamAsync())
-            {
-                return memoryStream.ToArray();
-            }
+            await using var memoryStream = await stream.ToMemoryStreamAsync();
+            return memoryStream.ToArray();
         }
 
         /// <summary>
@@ -40,10 +36,22 @@ namespace CafeLib.Core.Extensions
         {
             using (stream)
             {
-                using (var reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
+                using var reader = new StreamReader(stream);
+                return reader.ReadToEnd();
+            }
+        }
+
+        /// <summary>
+        /// Converts a stream to a text string
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns>text string</returns>
+        public static Task<string> ToTextStringAsync(this Stream stream)
+        {
+            using (stream)
+            {
+                using var reader = new StreamReader(stream);
+                return reader.ReadToEndAsync();
             }
         }
 
@@ -75,9 +83,9 @@ namespace CafeLib.Core.Extensions
         {
             if (stream is MemoryStream memoryStream) return memoryStream;
 
-            using (stream)
+            await using (stream)
             {
-                using (memoryStream = new MemoryStream())
+                await using (memoryStream = new MemoryStream())
                 {
                     await stream.CopyToAsync(memoryStream);
                     return memoryStream;
