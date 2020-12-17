@@ -23,11 +23,11 @@ namespace CafeLib.Kafka.UnitTests
         {
             var aq = new AsyncCollection<bool>();
 
-            Assert.False(aq.OnHasDataAvailable(CancellationToken.None).IsCompleted);
+            Assert.False(aq.OnHasDataAvailable(CancellationToken.None).IsCompleted, "Task should indicate no data available.");
 
             aq.Add(true);
 
-            Assert.True(aq.OnHasDataAvailable(CancellationToken.None).IsCompleted);
+            Assert.True(aq.OnHasDataAvailable(CancellationToken.None).IsCompleted, "Task should indicate data available.");
         }
 
         [Fact]
@@ -36,38 +36,36 @@ namespace CafeLib.Kafka.UnitTests
             var aq = new AsyncCollection<bool>();
 
             aq.Add(true);
-            Assert.True(aq.OnHasDataAvailable(CancellationToken.None).IsCompleted);
+            Assert.True(aq.OnHasDataAvailable(CancellationToken.None).IsCompleted, "Task should indicate data available.");
 
             aq.TryTake(out var data);
             Assert.True(data);
 
-            Assert.False(aq.OnHasDataAvailable(CancellationToken.None).IsCompleted);
+            Assert.False(aq.OnHasDataAvailable(CancellationToken.None).IsCompleted, "Task should indicate no data available.");
         }
 
-        //[Test]
-        //[ExpectedException(typeof(OperationCanceledException))]
-        //public async void OnDataAvailableShouldCancel()
-        //{
-        //    var aq = new AsyncCollection<bool>();
-        //    var cancelToken = new CancellationTokenSource();
-        //    Task.Delay(TimeSpan.FromMilliseconds(100)).ContinueWith(t => cancelToken.Cancel());
+        [Fact]
+        public async void OnDataAvailableShouldCancel()
+        {
+            var aq = new AsyncCollection<bool>();
+            var cancelToken = new CancellationTokenSource();
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancelToken.Token).ContinueWith(t => cancelToken.Cancel(), cancelToken.Token);
+            await Assert.ThrowsAsync<OperationCanceledException>(() => aq.OnHasDataAvailable(cancelToken.Token));
+        }
 
-        //    await aq.OnHasDataAvailable(cancelToken.Token);
-        //}
+        [Fact]
+        public void DrainShouldBlockWhenDataRemoved()
+        {
+            var aq = new AsyncCollection<bool>();
 
-        //[Test]
-        //public void DrainShouldBlockWhenDataRemoved()
-        //{
-        //    var aq = new AsyncCollection<bool>();
+            aq.Add(true);
+            aq.Add(true);
 
-        //    aq.Add(true);
-        //    aq.Add(true);
+            Assert.True(aq.OnHasDataAvailable(CancellationToken.None).IsCompleted, "Task should indicate data available.");
 
-        //    Assert.That(aq.OnHasDataAvailable(CancellationToken.None).IsCompleted, Is.True, "Task should indicate data available.");
-
-        //    var drained = aq.Drain().ToList();
-        //    Assert.That(aq.OnHasDataAvailable(CancellationToken.None).IsCompleted, Is.False, "Task should indicate no data available.");
-        //}
+            var drained = aq.Drain().ToList();
+            Assert.False(aq.OnHasDataAvailable(CancellationToken.None).IsCompleted, "Task should indicate no data available.");
+        }
 
         //[Test]
         //public async void CollectionShouldReportCorrectBufferCount()
