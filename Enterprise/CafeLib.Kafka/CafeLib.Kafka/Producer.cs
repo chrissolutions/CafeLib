@@ -16,12 +16,12 @@ namespace CafeLib.Kafka
     /// </summary>
     public class Producer : IMetadataQueries
     {
-        private const int MaxDisposeWaitSeconds = 30;
-        private const int DefaultAckTimeoutMilliseconds = 1000;
-        private const int MaximumAsyncRequests = 20;
-        private const int MaximumMessageBuffer = 1000;
-        private const int DefaultBatchDelayMilliseconds = 100;
-        private const int DefaultBatchSize = 100;
+        private const int MaxDisposeWaitSecondsDefault = 30;
+        private const int AckTimeoutMillisecondsDefault = 1000;
+        private const int MaximumAsyncRequestsDefault = 20;
+        private const int MaximumMessageBufferDefault = 1000;
+        private const int BatchDelayMillisecondsDefault = 100;
+        private const int BatchSizeDefault = 100;
 
         private readonly CancellationTokenSource _stopToken = new CancellationTokenSource();
         private readonly int _maximumAsyncRequests;
@@ -29,8 +29,14 @@ namespace CafeLib.Kafka
         private readonly SemaphoreSlim _semaphoreMaximumAsync;
         private readonly IMetadataQueries _metadataQueries;
         private readonly Task _postTask;
+        private readonly Guid _guid = Guid.NewGuid();
 
         private int _inFlightMessageCount;
+
+        /// <summary>
+        /// Get the number of messages sitting in the buffer waiting to be sent. 
+        /// </summary>
+        public string Name => _guid.ToString();
 
         /// <summary>
         /// Get the number of messages sitting in the buffer waiting to be sent. 
@@ -81,7 +87,7 @@ namespace CafeLib.Kafka
         /// messages sitting in the async queue then a message may spend its entire timeout cycle waiting in this queue and never getting
         /// attempted to send to Kafka before a timeout exception is thrown.
         /// </remarks>
-        public Producer(IBrokerRouter brokerRouter, int maximumAsyncRequests = MaximumAsyncRequests, int maximumMessageBuffer = MaximumMessageBuffer)
+        public Producer(IBrokerRouter brokerRouter, int maximumAsyncRequests = MaximumAsyncRequestsDefault, int maximumMessageBuffer = MaximumMessageBufferDefault)
         {
             BrokerRouter = brokerRouter;
             _maximumAsyncRequests = maximumAsyncRequests;
@@ -90,15 +96,14 @@ namespace CafeLib.Kafka
             _semaphoreMaximumAsync = new SemaphoreSlim(maximumAsyncRequests, maximumAsyncRequests);
             var _ = maximumMessageBuffer;
 
-            BatchSize = DefaultBatchSize;
-            BatchDelayTime = TimeSpan.FromMilliseconds(DefaultBatchDelayMilliseconds);
+            BatchSize = BatchSizeDefault;
+            BatchDelayTime = TimeSpan.FromMilliseconds(BatchDelayMillisecondsDefault);
 
             _postTask = Task.Run(async () =>
             {
                 await BatchSendAsync().ConfigureAwait(false);
                 //TODO add log for ending the sending thread.
             });
-
         }
 
         /// <summary>
@@ -106,16 +111,22 @@ namespace CafeLib.Kafka
         /// </summary>
         /// <param name="topic">The name of the kafka topic to send the messages to.</param>
         /// <param name="messages">The enumerable of messages that will be sent to the given topic.</param>
-        /// <param name="acks">The required level of acknowlegment from the kafka server.  0=none, 1=writen to leader, 2+=writen to replicas, -1=writen to all replicas.</param>
-        /// <param name="timeout">Interal kafka timeout to wait for the requested level of ack to occur before returning. Defaults to 1000ms.</param>
+        /// <param name="acks">The required level of acknowledgement from the kafka server.  0=none, 1=written to leader, 2+=written to replicas, -1=writen to all replicas.</param>
+        /// <param name="timeout">Internal kafka timeout to wait for the requested level of ack to occur before returning. Defaults to 1000ms.</param>
         /// <param name="codec">The codec to apply to the message collection.  Defaults to none.</param>
         /// <returns>List of ProduceResponses from each partition sent to or empty list if acks = 0.</returns>
-        public async Task<List<ProduceResponse>> SendMessageAsync(string topic, IEnumerable<Message> messages, Int16 acks = 1,
-            TimeSpan? timeout = null, MessageCodec codec = MessageCodec.CodecNone)
+        public async Task<List<ProduceResponse>> SendMessageAsync
+        (
+            string topic, 
+            IEnumerable<Message> messages, 
+            short acks = 1,
+            TimeSpan? timeout = null, 
+            MessageCodec codec = MessageCodec.CodecNone
+        )
         {
             if (_stopToken.IsCancellationRequested)
                 throw new ObjectDisposedException("Cannot send new documents as producer is disposing.");
-            if (timeout == null) timeout = TimeSpan.FromMilliseconds(DefaultAckTimeoutMilliseconds);
+            if (timeout == null) timeout = TimeSpan.FromMilliseconds(AckTimeoutMillisecondsDefault);
 
             var batch = messages.Select(message => new TopicMessage
             {
@@ -164,7 +175,7 @@ namespace CafeLib.Kafka
             if (waitForRequestsToComplete)
             {
                 //wait for the collection to drain
-                _postTask.Wait(maxWait ?? TimeSpan.FromSeconds(MaxDisposeWaitSeconds));
+                _postTask.Wait(maxWait ?? TimeSpan.FromSeconds(MaxDisposeWaitSecondsDefault));
             }
 
             _stopToken.Cancel();
@@ -228,7 +239,7 @@ namespace CafeLib.Kafka
             }
         }
 
-        private async Task ProduceAndSendBatchAsync(List<TopicMessage> messages, CancellationToken cancellationToken)
+        private async Task ProduceAndSendBatchAsync(IReadOnlyCollection<TopicMessage> messages, CancellationToken cancellationToken)
         {
             Interlocked.Add(ref _inFlightMessageCount, messages.Count);
 
@@ -240,7 +251,7 @@ namespace CafeLib.Kafka
                     TopicMessage = batch,
                     Route = BrokerRouter.SelectBrokerRoute(batch.Topic, batch.Message.Key),
                 })
-                                         .GroupBy(x => new { x.Route, x.TopicMessage.Topic, x.TopicMessage.Codec });
+                .GroupBy(x => new { x.Route, x.TopicMessage.Topic, x.TopicMessage.Codec });
 
                 var sendTasks = new List<BrokerRouteSendBatch>();
                 foreach (var group in messageByRouter)
@@ -281,7 +292,7 @@ namespace CafeLib.Kafka
 
                     foreach (var task in sendTasks)
                     {
-                        //TODO when we dont ask for an ACK, result is an empty list.  Which FirstOrDefault returns null.  Dont like this...
+                        //TODO when we don't ask for an ACK, result is an empty list.  Which FirstOrDefault returns null.  Dont like this...
                         task.MessagesSent.ForEach(x => x.Tcs.TrySetResult(task.Task.Result.FirstOrDefault()));
                     }
                 }
@@ -322,7 +333,7 @@ namespace CafeLib.Kafka
         #endregion
     }
 
-    class TopicMessage
+    internal class TopicMessage
     {
         public TaskCompletionSource<ProduceResponse> Tcs { get; set; }
         public short Acks { get; set; }
@@ -337,7 +348,7 @@ namespace CafeLib.Kafka
         }
     }
 
-    class BrokerRouteSendBatch
+    internal class BrokerRouteSendBatch
     {
         public BrokerRoute Route { get; set; }
         public Task<List<ProduceResponse>> Task { get; set; }
