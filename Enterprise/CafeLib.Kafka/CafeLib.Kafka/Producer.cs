@@ -36,7 +36,7 @@ namespace CafeLib.Kafka
         /// <summary>
         /// Get the number of messages sitting in the buffer waiting to be sent. 
         /// </summary>
-        public string Name => _guid.ToString();
+        public string Name => $"kafka-producer-{_guid}" ;
 
         /// <summary>
         /// Get the number of messages sitting in the buffer waiting to be sent. 
