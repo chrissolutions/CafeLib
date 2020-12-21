@@ -60,9 +60,9 @@ namespace CafeLib.Core.Queueing
         /// Process queued items.
         /// </summary>
         /// <returns>awaitable task</returns>
-        protected sealed override async Task Run()
+        protected sealed override Task Run()
         {
-            await _queueConsumer.Consume(_queue.Dequeue());
+            return _queueConsumer.Consume(_queue.Dequeue());
         }
 
         #endregion
