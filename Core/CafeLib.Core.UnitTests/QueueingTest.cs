@@ -39,6 +39,34 @@ namespace CafeLib.Core.UnitTests
             Assert.Equal(limit, _id + 1);
         }
 
+        [Fact]
+        public async Task PriorityProducerConsumerTest()
+        {
+            var producer = new TestProducerQueue();
+            var consumer1 = new TestQueueConsumer { Notify = Verify };
+            var consumer2 = new TestQueueConsumer { Notify = Verify };
+
+            _counter = 0;
+            _id = 0;
+            _consumersPerProducer = 2;
+            const int limit = 10;
+
+            QueueBroker.Current.Subscribe(consumer1, producer);
+            QueueBroker.Current.Subscribe(consumer2, producer);
+
+
+            await producer.Start();
+
+            for (var x = 0; x < limit; ++x)
+            {
+                producer.Produce(new TestQueueItem { Id = x, Name = $"Item{x}" });
+            }
+
+            await producer.Stop();
+
+            Assert.Equal(limit, _id + 1);
+        }
+
         private void Verify(TestQueueItem item)
         {
             Assert.NotNull(item);
