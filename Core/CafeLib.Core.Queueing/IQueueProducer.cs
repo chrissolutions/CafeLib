@@ -1,23 +1,19 @@
-﻿using CafeLib.Core.Runnable;
-
-namespace CafeLib.Core.Queueing
+﻿namespace CafeLib.Core.Queueing
 {
-    public interface IQueueProducer : IRunnable
+    public interface IQueueProducer<T>
     {
         /// <summary>
-        /// Produce an item into the queue.
+        /// Add consumer to producer.
         /// </summary>
-        /// <param name="item"></param>
-        void Produce(object item);
+        /// <param name="consumer"></param>
+        void Add(IQueueConsumer<T> consumer);
 
         /// <summary>
-        /// Clears all queued items.
+        /// Remove consumer from producer.
         /// </summary>
-        void Clear();
-    }
+        /// <param name="consumer"></param>
+        void Remove(IQueueConsumer<T> consumer);
 
-    public interface IQueueProducer<in T> : IQueueProducer
-    {
         /// <summary>
         /// Produce an item into the queue.
         /// </summary>

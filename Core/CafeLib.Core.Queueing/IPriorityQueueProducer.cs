@@ -1,8 +1,6 @@
-﻿using CafeLib.Core.Runnable;
-
-namespace CafeLib.Core.Queueing
+﻿namespace CafeLib.Core.Queueing
 {
-    public interface IPriorityQueueProducer<in T> : IQueueProducer<T>
+    public interface IPriorityQueueProducer<T> : IQueueProducer<T>
     {
         /// <summary>
         /// Produce an item into the queue.

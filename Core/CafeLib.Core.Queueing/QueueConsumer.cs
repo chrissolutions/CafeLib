@@ -12,6 +12,6 @@ namespace CafeLib.Core.Queueing
     {
         public abstract Task Consume(T item);
 
-        public Task Consume(object item) => Consume((T) item);
+        public Task Consume(object item) => Consume((T)item);
     }
 }
