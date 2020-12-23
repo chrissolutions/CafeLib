@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CafeLib.Core.Collections;
-using CafeLib.Core.Extensions;
 using CafeLib.Core.Runnable;
 // ReSharper disable UnusedMember.Global
 
