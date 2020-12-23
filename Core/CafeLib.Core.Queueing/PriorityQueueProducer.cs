@@ -48,7 +48,7 @@ namespace CafeLib.Core.Queueing
         }
 
         /// <summary>
-        /// 
+        /// Produce a queued item with priority.
         /// </summary>
         /// <param name="item"></param>
         /// <param name="priority"></param>
@@ -56,6 +56,12 @@ namespace CafeLib.Core.Queueing
         {
             _queue.Enqueue(item, priority);
         }
+
+        /// <summary>
+        /// Produce a queued item.
+        /// </summary>
+        /// <param name="item"></param>
+        public void Produce(object item) => Produce((T) item, 0);
 
         /// <summary>
         /// Clears all queued items.
