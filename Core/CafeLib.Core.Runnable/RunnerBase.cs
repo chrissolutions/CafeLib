@@ -91,7 +91,7 @@ namespace CafeLib.Core.Runnable
         /// <summary>
         /// Stop the service.
         /// </summary>
-        public virtual async Task Stop()
+        public virtual Task Stop()
         {
             if (IsRunning)
             {
@@ -99,7 +99,7 @@ namespace CafeLib.Core.Runnable
                 OnAdvise(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} stopped."));
             }
 
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         #endregion
