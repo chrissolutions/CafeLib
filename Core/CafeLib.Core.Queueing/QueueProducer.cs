@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CafeLib.Core.Collections;
-using CafeLib.Core.Extensions;
 using CafeLib.Core.Runnable;
 // ReSharper disable UnusedMember.Global
 
@@ -90,10 +89,14 @@ namespace CafeLib.Core.Queueing
         /// Stop the producer.
         /// </summary>
         /// <returns>awaitable task</returns>
-        public override Task Stop()
+        public override async Task Stop()
         {
-            _queue.ForEachAsync(x => Task.Delay(Delay));
-            return base.Stop();
+            while (_queue.Any())
+            {
+                await Task.Delay(Delay);
+            }
+
+            await base.Stop();
         }
 
         #endregion
