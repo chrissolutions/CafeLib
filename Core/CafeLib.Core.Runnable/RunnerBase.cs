@@ -77,7 +77,8 @@ namespace CafeLib.Core.Runnable
         /// <summary>
         /// Start the service.
         /// </summary>
-        public virtual async Task Start()
+        /// <returns>start task</returns>
+        public virtual Task Start()
         {
             if (!IsRunning)
             {
@@ -85,13 +86,14 @@ namespace CafeLib.Core.Runnable
                 OnAdvise(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} started."));
                 BeginLoop();
             }
-            await Task.CompletedTask;
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Stop the service.
         /// </summary>
-        public virtual async Task Stop()
+        public virtual Task Stop()
         {
             if (IsRunning)
             {
@@ -99,7 +101,7 @@ namespace CafeLib.Core.Runnable
                 OnAdvise(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} stopped."));
             }
 
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         #endregion

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using CafeLib.Core.Collections;
 using CafeLib.Core.Runnable;
@@ -14,7 +15,6 @@ namespace CafeLib.Core.Queueing
     {
         #region Private Members
 
-        private readonly IQueueConsumer<T> _queueConsumer;
         private readonly ReaderWriterPriorityQueue<T> _queue;
 
         #endregion
@@ -24,13 +24,24 @@ namespace CafeLib.Core.Queueing
         /// <summary>
         /// QueueController constructor.
         /// </summary>
-        /// <param name="queueConsumer">consumer queue</param>
         /// <param name="frequency">producer frequency</param>
-        protected PriorityQueueProducer(IQueueConsumer<T> queueConsumer, int frequency = default)
+        protected PriorityQueueProducer(int frequency = default)
             : base(frequency)
         {
-            Contract.Assert(queueConsumer != null, nameof(queueConsumer));
-            _queueConsumer = queueConsumer;
+            QueueBroker.Current.Register(this);
+            _queue = new ReaderWriterPriorityQueue<T>();
+        }
+
+        /// <summary>
+        /// QueueController constructor.
+        /// </summary>
+        /// <param name="consumer">consumer</param>
+        /// <param name="frequency">producer frequency</param>
+        protected PriorityQueueProducer(IQueueConsumer<T> consumer, int frequency = default)
+            : base(frequency)
+        {
+            consumer = consumer ?? throw new ArgumentNullException(nameof(consumer));
+            QueueBroker.Current.Subscribe(consumer, this);
             _queue = new ReaderWriterPriorityQueue<T>();
         }
 
@@ -48,7 +59,7 @@ namespace CafeLib.Core.Queueing
         }
 
         /// <summary>
-        /// 
+        /// Produce a queued item with priority.
         /// </summary>
         /// <param name="item"></param>
         /// <param name="priority"></param>
@@ -56,6 +67,12 @@ namespace CafeLib.Core.Queueing
         {
             _queue.Enqueue(item, priority);
         }
+
+        /// <summary>
+        /// Produce a queued item.
+        /// </summary>
+        /// <param name="item"></param>
+        public void Produce(object item) => Produce((T) item, 0);
 
         /// <summary>
         /// Clears all queued items.
@@ -69,9 +86,25 @@ namespace CafeLib.Core.Queueing
         /// Process queued items.
         /// </summary>
         /// <returns>awaitable task</returns>
-        protected sealed override async Task Run()
+        protected sealed override Task Run()
         {
-            await _queueConsumer.Consume(_queue.Dequeue());
+            var item = _queue.Dequeue();
+            var tasks = QueueBroker.Current.GetConsumers(this).Select(x => x.Consume(item));
+            return Task.WhenAll(tasks);
+        }
+
+        /// <summary>
+        /// Stop the producer.
+        /// </summary>
+        /// <returns>awaitable task</returns>
+        public override async Task Stop()
+        {
+            while (_queue.Any())
+            {
+                await Task.Delay(Delay);
+            }
+
+            await base.Stop();
         }
 
         #endregion

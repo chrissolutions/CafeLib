@@ -1,8 +1,8 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using CafeLib.Core.Collections;
 using CafeLib.Core.Runnable;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Queueing
@@ -15,7 +15,6 @@ namespace CafeLib.Core.Queueing
     {
         #region Private Members
 
-        private readonly IQueueConsumer<T> _queueConsumer;
         private readonly ReaderWriterQueue<T> _queue;
 
         #endregion
@@ -25,14 +24,24 @@ namespace CafeLib.Core.Queueing
         /// <summary>
         /// QueueController constructor.
         /// </summary>
-        /// <param name="queueConsumer">consumer queue</param>
         /// <param name="frequency">producer frequency</param>
-        protected QueueProducer(IQueueConsumer<T> queueConsumer, int frequency = default)
+        protected QueueProducer(int frequency = default)
             : base(frequency)
         {
-            Contract.Assert(queueConsumer != null, nameof(queueConsumer));
-            _queueConsumer = queueConsumer;
+            QueueBroker.Current.Register(this);
             _queue = new ReaderWriterQueue<T>();
+        }
+
+        /// <summary>
+        /// QueueController constructor.
+        /// </summary>
+        /// <param name="consumer">consumer</param>
+        /// <param name="frequency">producer frequency</param>
+        protected QueueProducer(IQueueConsumer consumer, int frequency = default)
+            : this(frequency)
+        {
+            consumer = consumer ?? throw new ArgumentNullException( nameof(consumer));
+            QueueBroker.Current.Subscribe(consumer, this);
         }
 
         #endregion
@@ -45,8 +54,17 @@ namespace CafeLib.Core.Queueing
         /// <param name="item">item to queue</param>
         public void Produce(T item)
         {
-            _queue.Enqueue(item);
+            if (IsRunning)
+            {
+                _queue.Enqueue(item);
+            }
         }
+
+        /// <summary>
+        /// Produce a queued item.
+        /// </summary>
+        /// <param name="item">item to queue</param>
+        public void Produce(object item) => Produce((T) item);
 
         /// <summary>
         /// Clears all queued items.
@@ -60,9 +78,25 @@ namespace CafeLib.Core.Queueing
         /// Process queued items.
         /// </summary>
         /// <returns>awaitable task</returns>
-        protected sealed override async Task Run()
+        protected sealed override Task Run()
         {
-            await _queueConsumer.Consume(_queue.Dequeue());
+            var item = _queue.Dequeue();
+            var tasks = QueueBroker.Current.GetConsumers(this).Select(x => x.Consume(item));
+            return Task.WhenAll(tasks);
+        }
+
+        /// <summary>
+        /// Stop the producer.
+        /// </summary>
+        /// <returns>awaitable task</returns>
+        public override async Task Stop()
+        {
+            while (_queue.Any())
+            {
+                await Task.Delay(Delay);
+            }
+
+            await base.Stop();
         }
 
         #endregion
@@ -79,6 +113,7 @@ namespace CafeLib.Core.Queueing
             Task.Run(async () =>
             {
                 await Stop();
+                QueueBroker.Current.Unregister(this);
                 _queue.Dispose();
                 base.Dispose(true);
             });
