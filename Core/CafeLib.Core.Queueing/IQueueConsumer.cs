@@ -2,12 +2,7 @@
 
 namespace CafeLib.Core.Queueing
 {
-    public interface IQueueConsumer
-    {
-        Task Consume(object item);
-    }
-
-    public interface IQueueConsumer<in T> : IQueueConsumer
+    public interface IQueueConsumer<in T>
     {
         Task Consume(T item);
     }

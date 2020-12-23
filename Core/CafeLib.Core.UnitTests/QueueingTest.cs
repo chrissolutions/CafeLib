@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using CafeLib.Core.Queueing;
 using CafeLib.Core.UnitTests.Queueing;
 using Xunit;
 
@@ -23,8 +22,8 @@ namespace CafeLib.Core.UnitTests
             _consumersPerProducer = 2;
             const int limit = 10;
 
-            QueueBroker.Current.Subscribe(consumer1, producer);
-            QueueBroker.Current.Subscribe(consumer2, producer);
+            producer.Add(consumer1);
+            producer.Add(consumer2);
 
 
             await producer.Start();
@@ -51,8 +50,8 @@ namespace CafeLib.Core.UnitTests
             _consumersPerProducer = 2;
             const int limit = 10;
 
-            QueueBroker.Current.Subscribe(consumer1, producer);
-            QueueBroker.Current.Subscribe(consumer2, producer);
+            producer.Add(consumer1);
+            producer.Add(consumer2);
 
 
             await producer.Start();

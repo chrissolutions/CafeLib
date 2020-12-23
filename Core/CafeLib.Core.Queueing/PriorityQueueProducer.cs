@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CafeLib.Core.Collections;
@@ -15,6 +16,7 @@ namespace CafeLib.Core.Queueing
     {
         #region Private Members
 
+        private readonly HashSet<IQueueConsumer<T>> _consumers;
         private readonly ReaderWriterPriorityQueue<T> _queue;
 
         #endregion
@@ -22,32 +24,61 @@ namespace CafeLib.Core.Queueing
         #region Constructors
 
         /// <summary>
-        /// QueueController constructor.
+        /// PriorityQueueController constructor.
         /// </summary>
         /// <param name="frequency">producer frequency</param>
         protected PriorityQueueProducer(int frequency = default)
             : base(frequency)
         {
-            QueueBroker.Current.Register(this);
+            _consumers = new HashSet<IQueueConsumer<T>>();
             _queue = new ReaderWriterPriorityQueue<T>();
         }
 
         /// <summary>
-        /// QueueController constructor.
+        /// PriorityQueueController constructor.
         /// </summary>
         /// <param name="consumer">consumer</param>
         /// <param name="frequency">producer frequency</param>
         protected PriorityQueueProducer(IQueueConsumer<T> consumer, int frequency = default)
-            : base(frequency)
+            : this(frequency)
         {
             consumer = consumer ?? throw new ArgumentNullException(nameof(consumer));
-            QueueBroker.Current.Subscribe(consumer, this);
-            _queue = new ReaderWriterPriorityQueue<T>();
+            Add(consumer);
+        }
+
+        /// <summary>
+        /// PriorityQueueController constructor.
+        /// </summary>
+        /// <param name="consumers">collection of consumers</param>
+        /// <param name="frequency">producer frequency</param>
+        protected PriorityQueueProducer(IEnumerable<IQueueConsumer<T>> consumers, int frequency = default)
+            : this(frequency)
+        {
+            consumers = consumers ?? throw new ArgumentNullException(nameof(consumers));
+            _consumers = consumers.ToHashSet();
         }
 
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Add consumer to producer.
+        /// </summary>
+        /// <param name="consumer"></param>
+        public void Add(IQueueConsumer<T> consumer)
+        {
+            _consumers.Add(consumer);
+        }
+
+        /// <summary>
+        /// Remove consumer from producer.
+        /// </summary>
+        /// <param name="consumer"></param>
+        public void Remove(IQueueConsumer<T> consumer)
+        {
+            _consumers.Remove(consumer);
+        }
 
         /// <summary>
         /// Produce a queued item.
@@ -72,7 +103,7 @@ namespace CafeLib.Core.Queueing
         /// Produce a queued item.
         /// </summary>
         /// <param name="item"></param>
-        public void Produce(object item) => Produce((T) item, 0);
+        public void Produce(object item) => Produce((T)item, 0);
 
         /// <summary>
         /// Clears all queued items.
@@ -89,7 +120,7 @@ namespace CafeLib.Core.Queueing
         protected sealed override Task Run()
         {
             var item = _queue.Dequeue();
-            var tasks = QueueBroker.Current.GetConsumers(this).Select(x => x.Consume(item));
+            var tasks = _consumers.Select(x => x.Consume(item));
             return Task.WhenAll(tasks);
         }
 
