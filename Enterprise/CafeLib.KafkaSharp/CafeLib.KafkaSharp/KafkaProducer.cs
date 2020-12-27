@@ -55,6 +55,7 @@ namespace CafeLib.KafkaSharp
         /// </summary>
         /// <param name="key">Message key</param>
         /// <param name="data">Message value</param>
+        /// <param name="timestamp">Record timestamp</param>
         bool Produce(TKey key, TValue data, DateTime timestamp);
 
         /// <summary>
