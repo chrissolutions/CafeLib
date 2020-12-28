@@ -204,13 +204,13 @@ namespace CafeLib.Kafka.Common
             return bytes;
         }
 
-        private byte[] GetNextBytes(Int32 count)
+        private byte[] GetNextBytes(int count)
         {
             Contract.Requires(count >= 0);
             Contract.Ensures(Contract.Result<byte[]>() != null);
             Contract.Ensures(Contract.Result<byte[]>().Length == count);
 
-            var buffer = new Byte[count];
+            var buffer = new byte[count];
             var bytesRead = BaseStream.Read(buffer, 0, count);
 
             if (bytesRead != count)

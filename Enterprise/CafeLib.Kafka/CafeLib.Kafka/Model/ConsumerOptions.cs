@@ -8,9 +8,9 @@ namespace CafeLib.Kafka.Model
 {
     public class ConsumerOptions
     {
-        private const int DefaultMaxConsumerBufferSize = 50;
-        private const int DefaultBackoffIntervalMilliseconds = 1000;
-        private const double DefaulFetchBufferMultiplier = 1.5;
+        private const int MaxConsumerBufferSizeDefault = 50;
+        private const int BackoffIntervalMillisecondsDefault = 1000;
+        private const double FetchBufferMultiplierDefault = 1.5;
 
         /// <summary>
         /// The topic to consume messages from.
@@ -65,9 +65,9 @@ namespace CafeLib.Kafka.Model
             PartitionWhitelist = new List<int>();
             Log = new DefaultTraceLog();
             TopicPartitionQueryTimeMs = (int)TimeSpan.FromMinutes(15).TotalMilliseconds;
-            ConsumerBufferSize = DefaultMaxConsumerBufferSize;
-            BackoffInterval = TimeSpan.FromMilliseconds(DefaultBackoffIntervalMilliseconds);
-            FetchBufferMultiplier = DefaulFetchBufferMultiplier;
+            ConsumerBufferSize = MaxConsumerBufferSizeDefault;
+            BackoffInterval = TimeSpan.FromMilliseconds(BackoffIntervalMillisecondsDefault);
+            FetchBufferMultiplier = FetchBufferMultiplierDefault;
             MaxWaitTimeForMinimumBytes = TimeSpan.FromMilliseconds(FetchRequest.DefaultMaxBlockingWaitTime);
             MinimumBytes = FetchRequest.DefaultMinBlockingByteBufferSize;
         }
