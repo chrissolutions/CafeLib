@@ -4,6 +4,8 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <Version>0.8.0</Version>
     <PackageIcon>cafelib.png</PackageIcon>
+    <Description>.NET Core port of the kafka-net library</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
