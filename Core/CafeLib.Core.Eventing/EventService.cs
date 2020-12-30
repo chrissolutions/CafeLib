@@ -8,29 +8,36 @@ namespace CafeLib.Core.Eventing
     public class EventService : SingletonBase<EventService>, IEventService, IDisposable
     {
         private bool _disposed;
-
-        /// <summary>
-        /// This map contains the event Message type key and a collection of subscribers associated with the message type.
-        /// </summary>
-        private ConcurrentDictionary<Type, ConcurrentDictionary<Guid, EventSubscriber>> _subscriptions;
-
-        /// <summary>
-        /// This map provides type lookup.
-        /// </summary>
-        private ConcurrentDictionary<Guid, Type> _lookup;
-
-        /// <summary>
-        /// Synchronizes access to internal tables.
-        /// </summary>
-        private static readonly object _mutex = new object();
+        private readonly EventBroker _serviceBroker;
+        private readonly ConcurrentDictionary<string, IEventBroker> _brokers;
 
         /// <summary>
         /// EventBus constructor.
         /// </summary>
         private EventService()
         {
-            _subscriptions = new ConcurrentDictionary<Type, ConcurrentDictionary<Guid, EventSubscriber>>();
-            _lookup = new ConcurrentDictionary<Guid, Type>();
+            _brokers = new ConcurrentDictionary<string, IEventBroker>();
+            _serviceBroker = new EventBroker();
+            _brokers.TryAdd(_serviceBroker.Name, _serviceBroker);
+        }
+
+        /// <summary>
+        /// Create a new event broker.
+        /// </summary>
+        /// <returns></returns>
+        public IEventBroker CreateBroker(string name)
+        {
+            return _brokers.GetOrAdd(name, new EventBroker());
+        }
+
+        /// <summary>
+        /// Get an event broker.
+        /// </summary>
+        /// <param name="name">event broker name</param>
+        /// <returns>event broker</returns>
+        public IEventBroker GetBroker(string name)
+        {
+            return _brokers.TryGetValue(name, out var value) ? value : null;
         }
 
         /// <summary>
@@ -44,14 +51,7 @@ namespace CafeLib.Core.Eventing
         /// </typeparam>
         public Guid Subscribe<T>(Action<T> action) where T : IEventMessage
         {
-            lock (_mutex)
-            {
-                var subscribers = _subscriptions.GetOrAdd(typeof(T), new ConcurrentDictionary<Guid, EventSubscriber>());
-                var subscriber = new EventSubscriber<T>(action);
-                subscribers.TryAdd(subscriber.Id, subscriber);
-                _lookup.TryAdd(subscriber.Id, typeof(T));
-                return subscriber.Id;
-            }
+            return _serviceBroker.Subscribe(action);
         }
 
         /// <summary>
@@ -65,13 +65,7 @@ namespace CafeLib.Core.Eventing
         /// </typeparam>
         public void Publish<T>(T message) where T : IEventMessage
         {
-            ConcurrentDictionary<Guid, EventSubscriber> subscribers;
-            lock (_mutex)
-            {
-                if (!_subscriptions.ContainsKey(typeof(T))) return;
-                subscribers = _subscriptions[typeof(T)];
-            }
-            subscribers.ForEach(x => x.Value.Invoke(message));
+            _serviceBroker.Publish(message);
         }
 
         /// <summary>
@@ -82,18 +76,7 @@ namespace CafeLib.Core.Eventing
         /// </typeparam>
         public void Unsubscribe<T>() where T : IEventMessage
         {
-            lock (_mutex)
-            {
-                if (!_subscriptions.ContainsKey(typeof(T))) return;
-                var subscribers = _subscriptions[typeof(T)];
-                subscribers.ForEach(x =>
-                {
-                    var (key, _) = x;
-                    subscribers.TryRemove(key, out _);
-                    _lookup.TryRemove(key, out _);
-                });
-                _subscriptions.TryRemove(typeof(T), out _);
-            }
+            _serviceBroker.Unsubscribe<T>();
         }
 
         /// <summary>
@@ -105,7 +88,7 @@ namespace CafeLib.Core.Eventing
         /// </typeparam>
         public void Unsubscribe<T>(Guid subscriberId) where T : IEventMessage
         {
-            Unsubscribe(subscriberId);
+            _serviceBroker.Unsubscribe(subscriberId);
         }
 
         /// <summary>
@@ -114,19 +97,7 @@ namespace CafeLib.Core.Eventing
         /// <param name="subscriberId">subscriber identifier</param>
         public void Unsubscribe(Guid subscriberId)
         {
-            lock (_mutex)
-            {
-                if (!_lookup.ContainsKey(subscriberId)) return;
-                var subscriberType = _lookup[subscriberId];
-
-                var subscribers = _subscriptions[subscriberType];
-                subscribers.TryRemove(subscriberId, out _);
-                _lookup.TryRemove(subscriberId, out _);
-                if (subscribers.Count == 0)
-                {
-                    _subscriptions.TryRemove(subscriberType, out _);
-                }
-            }
+            _serviceBroker.Unsubscribe(subscriberId);
         }
 
         /// <summary>
@@ -146,15 +117,8 @@ namespace CafeLib.Core.Eventing
         private void Dispose(bool disposing)
         {
             if (!disposing) return;
-            lock (_mutex)
-            {
-                _subscriptions.ForEach(x => x.Value.Clear());
-                _subscriptions.Clear();
-                _lookup.Clear();
-                _subscriptions = null;
-                _lookup = null;
-                ReleaseSingleton();
-            }
+            _brokers.Values.ForEach(x => ((EventBroker)x).Dispose());
+            ReleaseSingleton();
         }
     }
 }
