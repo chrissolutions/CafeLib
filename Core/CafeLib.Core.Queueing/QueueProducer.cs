@@ -49,7 +49,7 @@ namespace CafeLib.Core.Queueing
         /// <summary>
         /// QueueController constructor.
         /// </summary>
-        /// <param name="consumers">collectionn of consumers</param>
+        /// <param name="consumers">collection of consumers</param>
         /// <param name="frequency">producer frequency</param>
         protected QueueProducer(IEnumerable<IQueueConsumer<T>> consumers, int frequency = default)
             : this(frequency)
