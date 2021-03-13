@@ -159,15 +159,15 @@ namespace CafeLib.Core.Extensions
         /// |  3  |  3  |  3  |  3  |  E  | C/0 |  E  |  E  |  Build format parameter
         /// |--------------------------------------------------------------------------|
         /// 
-        /// A)	Lookahead.
+        /// A)       Lookahead.
         ///     If character is '}' Then ++index, goto 0
         ///     Else goto E
         /// 
-        /// B)	Symbol found.
+        /// B)       Symbol found.
         /// 
         /// C)  Format parameter found.
         /// 
-        /// E)	Syntax error.
+        /// E)       Syntax error.
         /// </remarks>
         private static Tuple<string, HashSet<string>> ParseFormat(string source)
         {
@@ -184,21 +184,19 @@ namespace CafeLib.Core.Extensions
                 switch (state)
                 {
                     case 0: // Initial
-                        if (source[index] == '{')
+                        switch (source[index])
                         {
-                            symbol = new StringBuilder();
-                            state = 1;
-                        }
-                        else if (source[index] == '}')
-                        {
-                            if (Lookahead(source, index, '}'))
-                            {
+                            case '{':
+                                symbol = new StringBuilder();
+                                state = 1;
+                                break;
+
+                            case '}' when Lookahead(source, index, '}'):
                                 target.Append(source[index++]);
-                            }
-                            else
-                            {
+                                break;
+
+                            case '}':
                                 throw new FormatException();
-                            }
                         }
 
                         target.Append(source[index]);
@@ -212,13 +210,14 @@ namespace CafeLib.Core.Extensions
                             state = 0;
                             continue;
                         }
-                        if (char.IsLetter(source[index]))
+                        else if (char.IsLetter(source[index]))
                         {
                             state = 2;
                             symbol.Append(source[index]);
                             index += 1;
                             continue;
                         }
+
                         throw new FormatException();
 
                     case 2: // Build symbol
@@ -230,27 +229,26 @@ namespace CafeLib.Core.Extensions
                             continue;
                         }
 
-                        if (source[index] == '}')
+                        switch (source[index])
                         {
-                            // Process symbol
-                            symbolTable.Add(symbol.ToString());
-                            tagTable.Add(symbol.ToString());
-                            target.Append(GetPlaceholder(symbol.ToString(), tagTable));
-                            target.Append(source[index]);
-                            state = 0;
-                            index += 1;
-                            continue;
-                        }
+                            case '}':
+                                // Process symbol
+                                symbolTable.Add(symbol.ToString());
+                                tagTable.Add(symbol.ToString());
+                                target.Append(GetPlaceholder(symbol.ToString(), tagTable));
+                                target.Append(source[index]);
+                                state = 0;
+                                index += 1;
+                                continue;
 
-                        if (source[index] == ':')
-                        {
-                            // Start parse of format parameters
-                            symbolTable.Add(symbol.ToString());
-                            tagTable.Add(symbol.ToString());
-                            state = 3;
-                            format = new StringBuilder();
-                            index += 1;
-                            continue;
+                            case ':':
+                                // Start parse of format parameters
+                                symbolTable.Add(symbol.ToString());
+                                tagTable.Add(symbol.ToString());
+                                state = 3;
+                                format = new StringBuilder();
+                                index += 1;
+                                continue;
                         }
 
                         throw new FormatException();
