@@ -134,8 +134,8 @@ namespace CafeLib.Core.Extensions
         public static string Render(this string format, IFormatProvider provider, IDictionary<string, object> values)
         {
             if (values == null) return format;
-            var results = ParseFormat(format);
-            return string.Format(provider, results.Item1, results.Item2.Select(x => values[x]).ToArray());
+            var (target, symbolTable) = ParseFormat(format);
+            return string.Format(provider, target, symbolTable.Select(x => values[x]).ToArray());
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace CafeLib.Core.Extensions
         /// 
         /// E)       Syntax error.
         /// </remarks>
-        private static Tuple<string, HashSet<string>> ParseFormat(string source)
+        private static (string, HashSet<string>) ParseFormat(string source)
         {
             int state = 0;
             int index = 0;
@@ -276,7 +276,7 @@ namespace CafeLib.Core.Extensions
             if (state != 0)
                 throw new FormatException();
 
-            return new Tuple<string, HashSet<string>>(target.ToString(), symbolTable);
+            return (target.ToString(), symbolTable);
         }
 
         /// <summary>
