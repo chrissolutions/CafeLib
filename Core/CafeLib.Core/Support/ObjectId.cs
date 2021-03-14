@@ -397,7 +397,7 @@ namespace CafeLib.Core.Support
         /// Compares this ObjectId to another ObjectId.
         /// </summary>
         /// <param name="other">The other ObjectId.</param>
-        /// <returns>A 32-bit signed integer that indicates whether this ObjectId is less than, equal to, or greather than the other.</returns>
+        /// <returns>A 32-bit signed integer that indicates whether this ObjectId is less than, equal to, or greater than the other.</returns>
         public int CompareTo(ObjectId other)
         {
             int r = _timestamp.CompareTo(other._timestamp);
