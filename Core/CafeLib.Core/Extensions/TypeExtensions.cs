@@ -66,7 +66,7 @@ namespace CafeLib.Core.Extensions
                 var parameters = constructorInfo.GetParameters();
                 if (!parameters.Any()) return false;
                 var match = true;
-                parameters.ForEach((p, i) => match &= p.ParameterType.IsInstanceOfType(args[i]));
+                parameters.ForEach((p, i) => match &= i < args.Length ? p.ParameterType.IsInstanceOfType(args[i]) : p.HasDefaultValue);
                 return match;
             }
         }
