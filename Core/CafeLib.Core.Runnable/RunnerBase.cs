@@ -166,7 +166,7 @@ namespace CafeLib.Core.Runnable
                     OnAdvise(new RunnerEventMessage($"{Name} exception: {ex.Message} {ex.InnerException?.Message}"));
                 }
 
-                await Task.Delay(Delay, _cancellationSource.Token);
+                await Task.Delay(Delay, _cancellationSource?.Token ?? default);
             }
         }
 
