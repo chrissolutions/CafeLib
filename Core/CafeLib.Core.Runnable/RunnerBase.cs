@@ -44,7 +44,7 @@ namespace CafeLib.Core.Runnable
         /// <summary>
         /// Determines whether the service is running.
         /// </summary>
-        public bool IsRunning => _cancellationSource != null && !_cancellationSource.IsCancellationRequested;
+        public bool IsRunning => !_cancellationSource?.IsCancellationRequested ?? false;
 
         #endregion
 
@@ -84,7 +84,7 @@ namespace CafeLib.Core.Runnable
             {
                 _cancellationSource = new CancellationTokenSource();
                 OnAdvise(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} started."));
-                BeginLoop();
+                RunLoop();
             }
 
             return Task.CompletedTask;
@@ -127,56 +127,28 @@ namespace CafeLib.Core.Runnable
         #region Helpers
 
         /// <summary>
-        /// Begin the loop in the background.
+        /// Run the loop in the background.
         /// </summary>
-        private void BeginLoop()
+        private void RunLoop()
         {
             Task.Run(async () =>
             {
-                try
+                do
                 {
-                    await RunLoop();
+                    try
+                    {
+                        await Run();
+                    }
+                    catch (Exception ex)
+                    {
+                        OnAdvise(new RunnerEventMessage($"{Name} exception: {ex.Message} {ex.InnerException?.Message}"));
+                    }
+
+                    await Task.Delay(Delay, _cancellationSource?.Token ?? default);
                 }
-                catch
-                {
-                    // ignore
-                }
-                finally
-                {
-                    ExitLoop();
-                }
+                while (IsRunning);
 
             }, _cancellationSource.Token);
-        }
-
-        /// <summary>
-        /// Run loop.
-        /// </summary>
-        /// <returns>awaitable task</returns>
-        private async Task RunLoop()
-        {
-            while (IsRunning)
-            {
-                try
-                {
-                    await Run();
-                }
-                catch (Exception ex)
-                {
-                    OnAdvise(new RunnerEventMessage($"{Name} exception: {ex.Message} {ex.InnerException?.Message}"));
-                }
-
-                await Task.Delay(Delay, _cancellationSource?.Token ?? default);
-            }
-        }
-
-        /// <summary>
-        /// Exit the background loop.
-        /// </summary>
-        private void ExitLoop()
-        {
-            _cancellationSource?.Dispose();
-            _cancellationSource = null;
         }
 
         #endregion

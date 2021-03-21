@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using CafeLib.Core.Collections;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.Runnable;
 using Xunit;
@@ -26,9 +23,9 @@ namespace CafeLib.Core.UnitTests
         {
             _taskCompletionSource = new TaskCompletionSource<bool>();
             _checkTime = DateTime.Now;
-            var recurrentTask = new RecurrentTask(RecurrentCallback, TimeSpan.FromSeconds(5), _checkTime);
+            using var recurrentTask = new RecurrentTask(RecurrentCallback, TimeSpan.FromSeconds(5), _checkTime);
             await recurrentTask.Start();
-            await _taskCompletionSource.Task;
+            var _ = await _taskCompletionSource.Task;
             await recurrentTask.Stop();
         }
     }
