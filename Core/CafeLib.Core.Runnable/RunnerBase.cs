@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Eventing;
-using CafeLib.Core.Support;
 
 namespace CafeLib.Core.Runnable
 {
@@ -13,15 +12,52 @@ namespace CafeLib.Core.Runnable
     {
         #region Private Variables
 
-        private int _delay;
-        private bool _disposed;
-        private CancellationTokenSource _cancellationSource;
+        private readonly AsyncLocal<int> _delay;
+        private readonly AsyncLocal<bool> _disposed;
+        private readonly AsyncLocal<CancellationTokenSource> _cancellationSource;
+        private readonly AsyncLocal<string> _name;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// RunnerBase default constructor.
+        /// </summary>
+        protected RunnerBase()
+        {
+            _delay = new AsyncLocal<int> { Value = 0 };
+            _disposed = new AsyncLocal<bool> { Value = false };
+            _cancellationSource = new AsyncLocal<CancellationTokenSource> { Value = null };
+            _name = new AsyncLocal<string> { Value = GetType().Name };
+        }
+
+        /// <summary>
+        /// ServiceRunnerBase constructor.
+        /// </summary>
+        /// <param name="delay">runner delay duration</param>
+        protected RunnerBase(int delay)
+            : this(null, delay)
+        {
+        }
+
+        /// <summary>
+        /// RunnerBase constructor.
+        /// </summary>
+        /// <param name="name">name of runner base</param>
+        /// <param name="delay">runner delay duration</param>
+        protected RunnerBase(string name, int delay)
+            : this()
+        {
+            Name = name;
+            Delay = delay;
+        }
 
         #endregion
 
         #region Events
 
-        public event Action<IEventMessage> Advised = x => { };
+        protected event Action<IEventMessage> Advised = x => { };
 
         #endregion
 
@@ -30,45 +66,37 @@ namespace CafeLib.Core.Runnable
         /// <summary>
         /// Runner name.
         /// </summary>
-        protected string Name { get; }
+        protected string Name
+        {
+            get => _name.Value;
+            set => _name.Value = !string.IsNullOrWhiteSpace(value) ? value : _name.Value;
+        }
 
         /// <summary>
         /// Runner delay duration in milliseconds.
         /// </summary>
         protected int Delay
         {
-            get => _delay;
-            set => _delay = value > 0 ? value : default;
+            get => _delay.Value;
+            set => _delay.Value = value > 0 ? value : 0;
+        }
+
+        private bool Disposed
+        {
+            get => _disposed.Value;
+            set => _disposed.Value = value;
+        }
+
+        private CancellationTokenSource CancellationSource
+        {
+            get => _cancellationSource.Value;
+            set => _cancellationSource.Value = value;
         }
 
         /// <summary>
         /// Determines whether the service is running.
         /// </summary>
-        public bool IsRunning => !_cancellationSource?.IsCancellationRequested ?? false;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// ServiceRunnerBase constructor.
-        /// </summary>
-        /// <param name="delay">runner delay duration</param>
-        protected RunnerBase(int delay)
-            : this((uint)delay)
-        {
-        }
-
-        /// <summary>
-        /// ServiceRunnerBase constructor.
-        /// </summary>
-        /// <param name="delay">runner delay duration</param>
-        protected RunnerBase(uint delay = default)
-        {
-            Name = GetType().Name;
-            _cancellationSource = null;
-            Delay = (int)delay;
-        }
+        public bool IsRunning => !_cancellationSource.Value?.IsCancellationRequested ?? false;
 
         #endregion
 
@@ -82,8 +110,8 @@ namespace CafeLib.Core.Runnable
         {
             if (!IsRunning)
             {
-                _cancellationSource = new CancellationTokenSource();
-                OnAdvise(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} started."));
+                CancellationSource = new CancellationTokenSource();
+                OnAdvise(new RunnerEventMessage($"{Name} started."));
                 RunLoop();
             }
 
@@ -97,8 +125,8 @@ namespace CafeLib.Core.Runnable
         {
             if (IsRunning)
             {
-                _cancellationSource.Cancel();
-                OnAdvise(new RunnerEventMessage(ErrorLevel.Ignore, $"{Name} stopped."));
+                CancellationSource.Cancel();
+                OnAdvise(new RunnerEventMessage($"{Name} stopped."));
             }
 
             return Task.CompletedTask;
@@ -133,7 +161,7 @@ namespace CafeLib.Core.Runnable
         {
             Task.Run(async () =>
             {
-                do
+                while (IsRunning)
                 {
                     try
                     {
@@ -144,11 +172,10 @@ namespace CafeLib.Core.Runnable
                         OnAdvise(new RunnerEventMessage($"{Name} exception: {ex.Message} {ex.InnerException?.Message}"));
                     }
 
-                    await Task.Delay(Delay, _cancellationSource?.Token ?? default);
+                    await Task.Delay(Delay, CancellationSource.Token);
                 }
-                while (IsRunning);
 
-            }, _cancellationSource.Token);
+            }, CancellationSource.Token);
         }
 
         #endregion
@@ -160,8 +187,8 @@ namespace CafeLib.Core.Runnable
         /// </summary>
         public void Dispose()
         {
-            Dispose(!_disposed);
-            _disposed = true;
+            Dispose(!Disposed);
+            Disposed = true;
             GC.SuppressFinalize(this);
         }
 
@@ -174,7 +201,7 @@ namespace CafeLib.Core.Runnable
             if (!disposing) return;
             try
             {
-                _cancellationSource?.Dispose();
+                CancellationSource?.Dispose();
             }
             catch
             {
@@ -182,7 +209,8 @@ namespace CafeLib.Core.Runnable
             }
             finally
             {
-                _cancellationSource = null;
+                CancellationSource = null;
+                Delay = 0;
             }
         }
 
