@@ -49,7 +49,6 @@ namespace CafeLib.Core.FileIO
             // Verify argument.
             lineIndex = lineIndex >= 0 ? lineIndex : throw new ArgumentException(nameof(lineIndex));
             var target = 0;
-            var index = 0;
 
             switch (lineIndex)
             {
@@ -58,19 +57,18 @@ namespace CafeLib.Core.FileIO
 
                 case var _ when lineIndex < CurrentLine:
                     SeekOrigin();
-                    index = 0;
                     target = lineIndex;
                     break;
 
                 case var _ when lineIndex > CurrentLine:
-                    index = CurrentLine;
                     target = lineIndex;
                     break;
             }
 
-            while (index < target && !_streamReader.EndOfStream)
+            var line = "";
+            while (CurrentLine < target && line != null)
             {
-                var _ = await ReadLineAsync();
+                line = await ReadLineAsync();
             }
         }
 
