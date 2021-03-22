@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Eventing;
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Runnable
 {
@@ -64,6 +65,29 @@ namespace CafeLib.Core.Runnable
         #region Properties
 
         /// <summary>
+        /// Disposed flag.
+        /// </summary>
+        private bool Disposed
+        {
+            get => _disposed.Value;
+            set => _disposed.Value = value;
+        }
+
+        /// <summary>
+        /// CancellationSource
+        /// </summary>
+        private CancellationTokenSource CancellationSource
+        {
+            get => _cancellationSource.Value;
+            set => _cancellationSource.Value = value;
+        }
+
+        /// <summary>
+        /// Runner cancellation token.
+        /// </summary>
+        protected CancellationToken CancellationToken => CancellationSource.Token;
+
+        /// <summary>
         /// Runner name.
         /// </summary>
         protected string Name
@@ -79,18 +103,6 @@ namespace CafeLib.Core.Runnable
         {
             get => _delay.Value;
             set => _delay.Value = value > 0 ? value : 0;
-        }
-
-        private bool Disposed
-        {
-            get => _disposed.Value;
-            set => _disposed.Value = value;
-        }
-
-        private CancellationTokenSource CancellationSource
-        {
-            get => _cancellationSource.Value;
-            set => _cancellationSource.Value = value;
         }
 
         /// <summary>
