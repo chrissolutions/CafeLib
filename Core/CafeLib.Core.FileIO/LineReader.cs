@@ -5,18 +5,18 @@ using System.Threading.Tasks;
 
 namespace CafeLib.Core.FileIO
 {
-    public class TextFileReader : IDisposable
+    public class LineReader : IDisposable
     {
         private StreamReader _streamReader;
         private bool _disposed;
 
-        public int CurrentIndex { get; private set; }
+        public int CurrentLine { get; private set; }
 
         public bool EndOfStream => _streamReader.EndOfStream;
 
         public string FilePath { get; }
 
-        public TextFileReader(string filePath)
+        public LineReader(string filePath)
         {
             FilePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
             _streamReader = File.OpenText(FilePath);
@@ -25,12 +25,21 @@ namespace CafeLib.Core.FileIO
 
         public async Task<string> ReadLineAsync()
         {
-            return !EndOfStream ? (await _streamReader.ReadLineAsync().ConfigureAwait(false)).Trim() : null;
+            if (!EndOfStream)
+            {
+                var line = await _streamReader.ReadLineAsync().ConfigureAwait(false);
+                ++CurrentLine;
+                return line;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public void SeekOrigin()
         {
-            CurrentIndex = 0;
+            CurrentLine = 0;
             _streamReader.DiscardBufferedData();
             _streamReader.BaseStream.Seek(0, System.IO.SeekOrigin.Begin);
         }
@@ -44,17 +53,17 @@ namespace CafeLib.Core.FileIO
 
             switch (lineIndex)
             {
-                case var _ when lineIndex == CurrentIndex:
+                case var _ when lineIndex == CurrentLine:
                     return;
 
-                case var _ when lineIndex < CurrentIndex:
+                case var _ when lineIndex < CurrentLine:
                     SeekOrigin();
                     index = 0;
                     target = lineIndex;
                     break;
 
-                case var _ when lineIndex > CurrentIndex:
-                    index = CurrentIndex;
+                case var _ when lineIndex > CurrentLine:
+                    index = CurrentLine;
                     target = lineIndex;
                     break;
             }
@@ -62,7 +71,6 @@ namespace CafeLib.Core.FileIO
             while (index < target && !_streamReader.EndOfStream)
             {
                 var _ = await ReadLineAsync();
-                CurrentIndex = ++index;
             }
         }
 
