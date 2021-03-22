@@ -21,6 +21,7 @@ set sourcepath=C:\Projects\ChrisSolutions\CafeLib\%lib%
 %nuget% push %sourcepath%\CafeLib.Core.Data\%libPath%\CafeLib.Core.Data.%version%.nupkg %apikey% -source %nugetRepo%
 %nuget% push %sourcepath%\CafeLib.Core.Dynamic\%libPath%\CafeLib.Core.Dynamic.%version%.nupkg %apikey% -source %nugetRepo%
 %nuget% push %sourcepath%\CafeLib.Core.Eventing\%libPath%\CafeLib.Core.Eventing.%version%.nupkg %apikey% -source %nugetRepo%
+%nuget% push %sourcepath%\CafeLib.Core.FileIO\%libPath%\CafeLib.Core.FileIO.%version%.nupkg %apikey% -source %nugetRepo%
 %nuget% push %sourcepath%\CafeLib.Core.IoC\%libPath%\CafeLib.Core.IoC.%version%.nupkg %apikey% -source %nugetRepo%
 %nuget% push %sourcepath%\CafeLib.Core.Logging\%libPath%\CafeLib.Core.Logging.%version%.nupkg %apikey% -source %nugetRepo%
 %nuget% push %sourcepath%\CafeLib.Core.Messaging\%libPath%\CafeLib.Core.Messaging.%version%.nupkg %apikey% -source %nugetRepo%

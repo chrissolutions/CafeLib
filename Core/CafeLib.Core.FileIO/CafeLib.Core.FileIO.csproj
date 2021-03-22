@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageProjectUrl>..\..\cafelib.png</PackageProjectUrl>
+    <Description>Simple line based file IO.</Description>
+    <AssemblyVersion>0.8.0.0</AssemblyVersion>
+    <Authors>Chris Solutions</Authors>
+    <Company>Chris Solutions</Company>
+    <FileVersion>0.8.0.0</FileVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+</Project>
