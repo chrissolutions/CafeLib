@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 // ReSharper disable UnusedMember.Global
@@ -25,16 +25,10 @@ namespace CafeLib.Core.FileIO
 
         public async Task<string> ReadLineAsync()
         {
-            if (!EndOfStream)
-            {
-                var line = await _streamReader.ReadLineAsync().ConfigureAwait(false);
-                ++CurrentLine;
-                return line;
-            }
-            else
-            {
-                return null;
-            }
+            if (EndOfStream) return null;
+            var line = await _streamReader.ReadLineAsync().ConfigureAwait(false);
+            ++CurrentLine;
+            return line;
         }
 
         public void SeekOrigin()
