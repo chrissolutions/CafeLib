@@ -3,8 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Extensions;
 
-// ReSharper disable UnusedMember.Global
-
 namespace CafeLib.Core.Runnable
 {
     public class RecurrentTask : RunnerBase
