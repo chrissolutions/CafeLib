@@ -1,25 +1,15 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Extensions;
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Runnable
 {
     public class RecurrentTask : RunnerBase
     {
-        private readonly AsyncLocal<Func<Task>> _task;
-        private readonly AsyncLocal<TimeSpan> _interval;
-        private readonly AsyncLocal<DateTime> _triggerTime;
-
-        private Func<Task> Task => _task.Value;
-
-        private TimeSpan Interval => _interval.Value;
-
-        private DateTime TriggerTime
-        {
-            get => _triggerTime.Value;
-            set => _triggerTime.Value = value;
-        }
+        private readonly Func<Task> _task;
+        private readonly TimeSpan _interval;
+        private DateTime _triggerTime;
 
         /// <summary>
         /// RecurrentTask constructor.
@@ -29,7 +19,7 @@ namespace CafeLib.Core.Runnable
         /// <param name="startTime">start time</param>
         /// <param name="frequency">frequency in milliseconds (default is 1 second)</param>
         public RecurrentTask(Func<Task> task, int interval, DateTime startTime = default, int frequency = 1000)
-                : this(task, TimeSpan.FromMilliseconds(interval), startTime, frequency)
+            : this(task, TimeSpan.FromMilliseconds(interval), startTime, frequency)
         {
         }
 
@@ -55,9 +45,9 @@ namespace CafeLib.Core.Runnable
         public RecurrentTask(Func<Task> task, TimeSpan interval, DateTime startTime = default, int frequency = 1000)
             : base(frequency)
         {
-            _task = new AsyncLocal<Func<Task>> { Value = task ?? (() => System.Threading.Tasks.Task.CompletedTask) };
-            _interval = new AsyncLocal<TimeSpan> { Value = interval };
-            _triggerTime = new AsyncLocal<DateTime> { Value = GetTriggerTime(startTime) };
+            _task = task ?? (() => Task.CompletedTask);
+            _interval = interval;
+            _triggerTime = GetTriggerTime(startTime);
         }
 
         /// <summary>
@@ -66,10 +56,10 @@ namespace CafeLib.Core.Runnable
         /// <returns>asynchronous task</returns>
         protected override async Task Run()
         {
-            if (DateTime.Now >= TriggerTime)
+            if (DateTime.Now >= _triggerTime)
             {
-                await Task();
-                TriggerTime = GetTriggerTime(TriggerTime);
+                await _task();
+                _triggerTime = GetTriggerTime(_triggerTime);
             }
         }
 
@@ -80,7 +70,7 @@ namespace CafeLib.Core.Runnable
         /// <returns></returns>
         private DateTime GetTriggerTime(DateTime startTime)
         {
-            return startTime == default ? DateTime.Now : startTime.NextTime(Interval);
+            return startTime == default ? DateTime.Now : startTime.NextTime(_interval);
         }
     }
 }
