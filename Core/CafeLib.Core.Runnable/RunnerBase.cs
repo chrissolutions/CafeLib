@@ -219,11 +219,9 @@ namespace CafeLib.Core.Runnable
             {
                 // ignore
             }
-            finally
-            {
-                CancellationSource = null;
-                Delay = 0;
-            }
+
+            CancellationSource = null;
+            Delay = 0;
         }
 
         #endregion
