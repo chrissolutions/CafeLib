@@ -9,8 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CafeLib.Authorization.Hash.UnitTests\**" />
     <Compile Remove="CafeLib.Authorization.Hash\**" />
+    <EmbeddedResource Remove="CafeLib.Authorization.Hash.UnitTests\**" />
     <EmbeddedResource Remove="CafeLib.Authorization.Hash\**" />
+    <None Remove="CafeLib.Authorization.Hash.UnitTests\**" />
     <None Remove="CafeLib.Authorization.Hash\**" />
   </ItemGroup>
 
