@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.Extensions.Logging;
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Web.SignalR
 {
@@ -63,9 +64,9 @@ namespace CafeLib.Web.SignalR
                 switch (x)
                 {
                     case RunnerEventMessage runner:
-                        if (runner.ErrorLevel == ErrorLevel.Info) return;
-                        Logger.LogMessage(runner.ErrorLevel, LogEventInfo.Empty, $"{Url}: {runner.Message}");
-                        Advised.Invoke(new SignalRAdviseMessage(runner.Message));
+                        if (runner.Exception == null) return;
+                        Logger.LogError(runner.Exception, runner.Exception.Message);
+                        Advised.Invoke(new SignalRAdviseMessage(runner.Exception));
                         return;
 
                     case LogEventMessage log:

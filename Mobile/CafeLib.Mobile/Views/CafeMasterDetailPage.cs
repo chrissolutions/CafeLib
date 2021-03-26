@@ -97,11 +97,11 @@ namespace CafeLib.Mobile.Views
                 case NavigationPage navPage:
                     return navPage.CurrentPage.GetViewModel<BaseViewModel>();
 
-                case Page _:
-                    return Detail.GetViewModel<BaseViewModel>();
-
                 case null:
                     return GetViewModel<BaseViewModel>();
+
+                case Page _:
+                    return Detail.GetViewModel<BaseViewModel>();
             }
         }
     }

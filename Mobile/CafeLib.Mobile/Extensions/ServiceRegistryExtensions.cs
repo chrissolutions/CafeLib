@@ -28,7 +28,7 @@ namespace CafeLib.Mobile.Extensions
         /// <returns></returns>
         public static IServiceRegistry AddEventService(this IServiceRegistry serviceRegistry)
         {
-            serviceRegistry.AddSingleton<IEventService>(x => EventService.Current);
+            serviceRegistry.AddSingleton<IEventService, EventService>();
             return serviceRegistry;
         }
 
