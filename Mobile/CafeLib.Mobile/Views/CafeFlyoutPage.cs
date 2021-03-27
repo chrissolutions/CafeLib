@@ -6,7 +6,7 @@ using Xamarin.Forms;
 
 namespace CafeLib.Mobile.Views
 {
-    public abstract class CafeMasterDetailPage : MasterDetailPage, IPageBase, ISoftNavigationPage
+    public abstract class CafeFlyoutPage : FlyoutPage, IPageBase, ISoftNavigationPage
     {
         /// <summary>
         /// The viewmodel bound to the page.

@@ -15,7 +15,7 @@
     <FileAlignment>512</FileAlignment>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v10.0</TargetFrameworkVersion>
     <AndroidUseAapt2>true</AndroidUseAapt2>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -48,7 +48,7 @@
     <Compile Include="Renderers\CafeContentPageRenderer.cs" />
     <Compile Include="Renderers\CafeContentViewRenderer.cs" />
     <Compile Include="Renderers\NavigationClickListener.cs" />
-    <Compile Include="Renderers\MasterDetailMenuClickListener.cs" />
+    <Compile Include="Renderers\FlyoutPageMenuClickListener.cs" />
     <Compile Include="Renderers\NavigationPageRenderer.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -57,9 +57,11 @@
     <None Include="Resources\AboutResources.txt" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="28.0.0.3" />
+    <PackageReference Include="Xamarin.AndroidX.DrawerLayout">
+      <Version>1.1.1.2</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Forms">
-      <Version>4.8.0.1560</Version>
+      <Version>5.0.0.2012</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

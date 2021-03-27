@@ -1,10 +1,9 @@
 ﻿using System;
 using Android.Content;
-using Android.Support.V4.App;
-using Android.Support.V7.Widget;
+using AndroidX.AppCompat.Widget;
+using AndroidX.Fragment.App;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
-using Xamarin.Forms.Platform.Android.AppCompat;
 using NavigationPageRenderer = CafeLib.Mobile.Android.Renderers.NavigationPageRenderer;
 
 [assembly: ExportRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer))]
@@ -38,10 +37,10 @@ namespace CafeLib.Mobile.Android.Renderers
             base.OnAttachedToWindow();
 
             // See if the Element is really a master-detail page.
-            var page = FindMasterDetailPage();
+            var page = FindFlyoutPage();
 
             var clickListener = page != null
-                ? new MasterDetailMenuClickListener(Element, Platform.GetRenderer(page) as MasterDetailPageRenderer)
+                ? new FlyoutPageMenuClickListener(Element, Platform.GetRenderer(page) as FlyoutPageRenderer)
                 : (IOnClickListener) new NavigationClickListener(Element);
 
             var toolbar = FindToolbar();
@@ -56,11 +55,11 @@ namespace CafeLib.Mobile.Android.Renderers
                 transaction.SetCustomAnimations(0, global::Android.Resource.Animation.SlideOutRight, 0, 0);
         }
 
-        private Page FindMasterDetailPage()
+        private Page FindFlyoutPage()
         {
             for (var element = Element.Parent; element != null; element = element.Parent)
             {
-                if (element is MasterDetailPage page)
+                if (element is FlyoutPage page)
                 {
                     return page;
                 }

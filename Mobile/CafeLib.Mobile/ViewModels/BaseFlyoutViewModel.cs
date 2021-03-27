@@ -1,13 +1,12 @@
 ﻿using CafeLib.Mobile.Commands;
 using CafeLib.Mobile.Views;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.ViewModels
 {
-    public abstract class BaseMasterDetailViewModel<TObject> : BaseViewModel<TObject> where TObject : class
+    public abstract class BaseFlyoutViewModel<TObject> : BaseViewModel<TObject> where TObject : class
     {
-        protected BaseMasterDetailViewModel()
+        protected BaseFlyoutViewModel()
         {
             PresentedCommand = new XamCommand<bool>(x => { });
         }
@@ -19,7 +18,7 @@ namespace CafeLib.Mobile.ViewModels
             set
             {
                 if (!SetValue(ref _isPresented, value)) return;
-                ResolvePage<CafeMasterDetailPage>().IsPresented = value;
+                ResolvePage<CafeFlyoutPage>().IsPresented = value;
                 _presentedCommand.Execute(_isPresented);
             }
         }
@@ -34,7 +33,7 @@ namespace CafeLib.Mobile.ViewModels
         }
     }
 
-    public abstract class BaseMasterDetailViewModel : BaseMasterDetailViewModel<object>
+    public abstract class BaseFlyoutViewModel : BaseFlyoutViewModel<object>
     {
     }
 }
