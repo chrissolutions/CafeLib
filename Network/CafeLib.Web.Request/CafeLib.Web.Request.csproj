@@ -2,19 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>0.8.0</Version>
+    <Version>0.9.0</Version>
     <Description>HTTP client request library</Description>
     <Copyright></Copyright>
     <PackageReleaseNotes></PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>0.8.0.0</AssemblyVersion>
-    <FileVersion>0.8.0.0</FileVersion>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <FileVersion>0.9.0.0</FileVersion>
     <PackageIcon>cafelib.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Core" Version="0.8.0" />
-    <PackageReference Include="CafeLib.Core.Runnable" Version="0.8.0" />
+    <PackageReference Include="CafeLib.Core" Version="0.9.0" />
+    <PackageReference Include="CafeLib.Core.Runnable" Version="0.9.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 

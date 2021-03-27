@@ -3,7 +3,7 @@ setlocal
 
 :: Configuration
 set lib=Network
-set version=0.8.0
+set version=0.9.0
 
 :: Settings
 set nuget=nuget.exe
