@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using CafeLib.Authorization.Hash;
+using CafeLib.Core.Hashing;
 using CafeLib.Data.Extensions;
 using CafeLib.Data.UnitTest.Identity;
 

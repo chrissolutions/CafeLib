@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.8.0</Version>
+    <Version>0.9.0</Version>
     <Description>Authorization identity model.</Description>
     <PackageIcon>cafelib.png</PackageIcon>
   </PropertyGroup>
@@ -21,11 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Data" Version="0.8.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\CafeLib.Authorization.Hash\CafeLib.Authorization.Hash.csproj" />
+    <PackageReference Include="CafeLib.Core.Hashing" Version="0.9.0" />
+    <PackageReference Include="CafeLib.Data" Version="0.9.0" />
   </ItemGroup>
 
 </Project>

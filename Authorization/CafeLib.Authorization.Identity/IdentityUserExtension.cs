@@ -1,4 +1,4 @@
-﻿using CafeLib.Authorization.Hash;
+﻿using CafeLib.Core.Hashing;
 
 namespace CafeLib.Authorization.Identity
 {

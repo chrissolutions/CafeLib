@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.8.0</Version>
+    <Version>0.9.0</Version>
     <Description>A simple messaging library.</Description>
     <Copyright></Copyright>
     <PackageIconUrl></PackageIconUrl>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <AssemblyVersion>0.8.0.0</AssemblyVersion>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
     <PackageIcon>cafelib.png</PackageIcon>
     <Authors>Chris Solutions</Authors>
     <LangVersion>latest</LangVersion>

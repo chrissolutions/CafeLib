@@ -1,5 +1,5 @@
-﻿using CafeLib.Authorization.Hash;
-using System;
+﻿using System;
+using CafeLib.Core.Hashing;
 using Microsoft.Extensions.Options;
 using Xunit;
 

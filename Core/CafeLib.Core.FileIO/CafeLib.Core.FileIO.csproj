@@ -4,12 +4,12 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageProjectUrl>..\..\cafelib.png</PackageProjectUrl>
     <Description>Simple line based file IO.</Description>
-    <AssemblyVersion>0.8.0.0</AssemblyVersion>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
     <Authors>Chris Solutions</Authors>
     <Company>Chris Solutions</Company>
-    <FileVersion>0.8.0.0</FileVersion>
+    <FileVersion>0.9.0.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.8.0</Version>
+    <Version>0.9.0</Version>
   </PropertyGroup>
 
 </Project>

@@ -3,13 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.8.0</Version>
+    <Version>0.9.0</Version>
     <Description>Authorization token support.</Description>
     <PackageIcon>cafelib.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Core" Version="0.8.0" />
+    <PackageReference Include="CafeLib.Core" Version="0.9.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
   </ItemGroup>
 

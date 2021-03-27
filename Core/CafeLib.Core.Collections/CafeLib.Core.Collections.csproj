@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.8.0</Version>
+    <Version>0.9.0</Version>
     <Description>Provides useful collections and collection services.</Description>
     <PackageIcon>cafelib.png</PackageIcon>
     <LangVersion>latest</LangVersion>

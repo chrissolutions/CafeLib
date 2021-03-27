@@ -2,24 +2,23 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Description>Authorization hash generation.</Description>
     <Version>0.9.0</Version>
-    <PackageIcon>cafelib.png</PackageIcon>
-    <PackageIconUrl />
-    <Description>Provides memory caching support.</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Chris Solutions</Authors>
-    <LangVersion>latest</LangVersion>
+    <Company>Chris Solutions</Company>
+    <PackageIcon>cafelib.png</PackageIcon>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Runtime.Caching" Version="4.7.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\..\cafelib.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.9" />
   </ItemGroup>
 
   <ItemGroup>

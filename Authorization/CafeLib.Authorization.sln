@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Authorization.Token
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Authorization.UnitTests", "CafeLib.Authorization.UnitTests\CafeLib.Authorization.UnitTests.csproj", "{F29F2B90-D54B-403E-8A8D-DC924F1A49E3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Authorization.Hash", "CafeLib.Authorization.Hash\CafeLib.Authorization.Hash.csproj", "{C816A247-533F-458F-90E3-370B191F663B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{F29F2B90-D54B-403E-8A8D-DC924F1A49E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F29F2B90-D54B-403E-8A8D-DC924F1A49E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F29F2B90-D54B-403E-8A8D-DC924F1A49E3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C816A247-533F-458F-90E3-370B191F663B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C816A247-533F-458F-90E3-370B191F663B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C816A247-533F-458F-90E3-370B191F663B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C816A247-533F-458F-90E3-370B191F663B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
