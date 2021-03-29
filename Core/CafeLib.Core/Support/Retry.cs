@@ -61,7 +61,7 @@ namespace CafeLib.Core.Support
             {
                 action(x);
                 return await Task.FromResult(0);
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -75,8 +75,8 @@ namespace CafeLib.Core.Support
             return await Do(async x =>
             {
                 var result = function(x);
-                return await Task.FromResult(result);
-            });
+                return await Task.FromResult(result).ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -93,16 +93,16 @@ namespace CafeLib.Core.Support
             {
                 try
                 {
-                    return await function(retry + 1);
+                    return await function(retry + 1).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException)
                 {
-                    return await Task.FromResult(default(T));
+                    return await Task.FromResult(default(T)).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     exceptions.Add(ex);
-                    await Task.Delay(Interval);
+                    await Task.Delay(Interval).ConfigureAwait(false);
                 }
             }
 

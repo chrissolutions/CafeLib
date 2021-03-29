@@ -58,7 +58,7 @@ namespace CafeLib.Core.Runnable
         {
             if (DateTime.Now >= _triggerTime)
             {
-                await _task();
+                await _task().ConfigureAwait(false);
                 _triggerTime = GetTriggerTime(_triggerTime);
             }
         }

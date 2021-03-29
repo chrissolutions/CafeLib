@@ -177,14 +177,14 @@ namespace CafeLib.Core.Runnable
                 {
                     try
                     {
-                        await Run();
+                        await Run().ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
                         OnAdvise(new RunnerEventMessage($"{Name} exception: {ex.Message} {ex.InnerException?.Message}"));
                     }
 
-                    await Task.Delay(Delay, CancellationSource.Token);
+                    await Task.Delay(Delay, CancellationSource.Token).ConfigureAwait(false);
                 }
 
             }, CancellationSource.Token);

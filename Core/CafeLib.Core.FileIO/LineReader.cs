@@ -62,7 +62,7 @@ namespace CafeLib.Core.FileIO
             var line = "";
             while (CurrentLine < target && line != null)
             {
-                line = await ReadLineAsync();
+                line = await ReadLineAsync().ConfigureAwait(false);
             }
         }
 

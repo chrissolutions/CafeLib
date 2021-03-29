@@ -109,7 +109,7 @@ namespace CafeLib.Core.Caching
         {
             if (!updateNow && _cache.Get(key) is T item) return item;
 
-            item = await getItem;
+            item = await getItem.ConfigureAwait(false);
             var cacheItemPolicy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddMilliseconds(_lifetimeMilliseconds) };
             _cache.Add(key, item, cacheItemPolicy);
             return item;

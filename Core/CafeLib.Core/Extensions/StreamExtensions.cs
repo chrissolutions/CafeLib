@@ -23,7 +23,7 @@ namespace CafeLib.Core.Extensions
         /// <returns>byte array</returns>
         public static async Task<byte[]> ToByteArrayAsync(this Stream stream)
         {
-            await using var memoryStream = await stream.ToMemoryStreamAsync();
+            await using var memoryStream = await stream.ToMemoryStreamAsync().ConfigureAwait(false);
             return memoryStream.ToArray();
         }
 
@@ -87,7 +87,7 @@ namespace CafeLib.Core.Extensions
             {
                 await using (memoryStream = new MemoryStream())
                 {
-                    await stream.CopyToAsync(memoryStream);
+                    await stream.CopyToAsync(memoryStream).ConfigureAwait(false);
                     return memoryStream;
                 }
             }

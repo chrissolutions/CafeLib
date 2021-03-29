@@ -132,10 +132,10 @@ namespace CafeLib.Core.Queueing
         {
             while (_queue.Any())
             {
-                await Task.Delay(Delay);
+                await Task.Delay(Delay).ConfigureAwait(false);
             }
 
-            await base.Stop();
+            await base.Stop().ConfigureAwait(false);
         }
 
         #endregion
@@ -151,7 +151,7 @@ namespace CafeLib.Core.Queueing
             if (!disposing) return;
             Task.Run(async () =>
             {
-                await Stop();
+                await Stop().ConfigureAwait(false);
                 _queue.Dispose();
                 base.Dispose(true);
             });

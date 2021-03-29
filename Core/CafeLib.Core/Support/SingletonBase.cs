@@ -47,7 +47,7 @@ namespace CafeLib.Core.Support
         /// <returns>task</returns>
         public virtual async Task InitAsync()
         {
-            await Task.CompletedTask;
+            await Task.CompletedTask.ConfigureAwait(false);
         }
 
         #endregion 
@@ -81,7 +81,7 @@ namespace CafeLib.Core.Support
                         _singleton = typeof(T).CreateInstance<T>();
 
                         // Asynchronous initialization of singleton.
-                        Task.Run(async () => await _singleton.InitAsync());
+                        Task.Run(async () => await _singleton.InitAsync().ConfigureAwait(false));
                     }
                 }
 
