@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31105.61
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Bitcoin", "CafeLib.Bitcoin\CafeLib.Bitcoin.csproj", "{9F2DF74B-383E-40FE-9654-511B8EF3E24B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Bitcoin.UnitTests", "CafeLib.Bitcoin.UnitTests\CafeLib.Bitcoin.UnitTests.csproj", "{9B3D51FB-B329-42FA-939D-B71886BBFB84}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9F2DF74B-383E-40FE-9654-511B8EF3E24B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F2DF74B-383E-40FE-9654-511B8EF3E24B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F2DF74B-383E-40FE-9654-511B8EF3E24B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F2DF74B-383E-40FE-9654-511B8EF3E24B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B3D51FB-B329-42FA-939D-B71886BBFB84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B3D51FB-B329-42FA-939D-B71886BBFB84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B3D51FB-B329-42FA-939D-B71886BBFB84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B3D51FB-B329-42FA-939D-B71886BBFB84}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C591C479-4DDC-4BF3-B401-F7E964254390}
+	EndGlobalSection
+EndGlobal
