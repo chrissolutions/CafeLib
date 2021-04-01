@@ -1,8 +1,9 @@
 ﻿using System;
 using CafeLib.Core.Eventing;
+
 // ReSharper disable UnusedMember.Global
 
-namespace CafeLib.Core.Runnable
+namespace CafeLib.Core.Runnable.Events
 {
     public class RunnerEventMessage : EventMessage
     {

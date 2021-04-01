@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Eventing;
-// ReSharper disable UnusedMember.Global
+using CafeLib.Core.Runnable.Events;
 
 namespace CafeLib.Core.Runnable
 {
@@ -13,46 +13,9 @@ namespace CafeLib.Core.Runnable
     {
         #region Private Variables
 
-        private readonly AsyncLocal<int> _delay;
-        private readonly AsyncLocal<bool> _disposed;
-        private readonly AsyncLocal<CancellationTokenSource> _cancellationSource;
-        private readonly AsyncLocal<string> _name;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// RunnerBase default constructor.
-        /// </summary>
-        protected RunnerBase()
-        {
-            _delay = new AsyncLocal<int> { Value = 0 };
-            _disposed = new AsyncLocal<bool> { Value = false };
-            _cancellationSource = new AsyncLocal<CancellationTokenSource> { Value = null };
-            _name = new AsyncLocal<string> { Value = GetType().Name };
-        }
-
-        /// <summary>
-        /// ServiceRunnerBase constructor.
-        /// </summary>
-        /// <param name="delay">runner delay duration</param>
-        protected RunnerBase(int delay)
-            : this(null, delay)
-        {
-        }
-
-        /// <summary>
-        /// RunnerBase constructor.
-        /// </summary>
-        /// <param name="name">name of runner base</param>
-        /// <param name="delay">runner delay duration</param>
-        protected RunnerBase(string name, int delay)
-            : this()
-        {
-            Name = name;
-            Delay = delay;
-        }
+        private int _delay;
+        private bool _disposed;
+        private CancellationTokenSource _cancellationSource;
 
         #endregion
 
@@ -65,65 +28,53 @@ namespace CafeLib.Core.Runnable
         #region Properties
 
         /// <summary>
-        /// Disposed flag.
-        /// </summary>
-        private bool Disposed
-        {
-            get => _disposed.Value;
-            set => _disposed.Value = value;
-        }
-
-        /// <summary>
-        /// CancellationSource
-        /// </summary>
-        private CancellationTokenSource CancellationSource
-        {
-            get => _cancellationSource.Value;
-            set => _cancellationSource.Value = value;
-        }
-
-        /// <summary>
-        /// Runner cancellation token.
-        /// </summary>
-        protected CancellationToken CancellationToken => CancellationSource.Token;
-
-        /// <summary>
         /// Runner name.
         /// </summary>
-        protected string Name
-        {
-            get => _name.Value;
-            set => _name.Value = !string.IsNullOrWhiteSpace(value) ? value : _name.Value;
-        }
+        protected string Name { get; }
 
         /// <summary>
         /// Runner delay duration in milliseconds.
         /// </summary>
         protected int Delay
         {
-            get => _delay.Value;
-            set => _delay.Value = value > 0 ? value : 0;
+            get => _delay;
+            set => _delay = value > 0 ? value : 0;
         }
 
         /// <summary>
         /// Determines whether the service is running.
         /// </summary>
-        public bool IsRunning => !_cancellationSource.Value?.IsCancellationRequested ?? false;
+        public bool IsRunning => !_cancellationSource?.IsCancellationRequested ?? false;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// ServiceRunnerBase constructor.
+        /// </summary>
+        /// <param name="delay">runner delay duration</param>
+        protected RunnerBase(int delay = default)
+        {
+            Name = GetType().Name;
+            _cancellationSource = null;
+            Delay = delay;
+        }
 
         #endregion
 
         #region Public Methods
 
         /// <summary>
-        /// Start the service.
+        /// Start the runner.
         /// </summary>
         /// <returns>start task</returns>
         public virtual Task Start()
         {
             if (!IsRunning)
             {
-                CancellationSource = new CancellationTokenSource();
-                OnAdvise(new RunnerEventMessage($"{Name} started."));
+                _cancellationSource = new CancellationTokenSource();
+                OnAdvise(new RunnerStartMessage($"{Name} started."));
                 RunLoop();
             }
 
@@ -137,8 +88,8 @@ namespace CafeLib.Core.Runnable
         {
             if (IsRunning)
             {
-                CancellationSource.Cancel();
-                OnAdvise(new RunnerEventMessage($"{Name} stopped."));
+                _cancellationSource.Cancel();
+                OnAdvise(new RunnerStopMessage($"{Name} stopped."));
             }
 
             return Task.CompletedTask;
@@ -181,13 +132,13 @@ namespace CafeLib.Core.Runnable
                     }
                     catch (Exception ex)
                     {
-                        OnAdvise(new RunnerEventMessage($"{Name} exception: {ex.Message} {ex.InnerException?.Message}"));
+                        OnAdvise(new RunnerEventMessage(ex.Message, ex));
                     }
 
-                    await Task.Delay(Delay, CancellationSource.Token).ConfigureAwait(false);
+                    await Task.Delay(Delay, _cancellationSource.Token).ConfigureAwait(false);
                 }
 
-            }, CancellationSource.Token);
+            }, _cancellationSource.Token);
         }
 
         #endregion
@@ -199,8 +150,8 @@ namespace CafeLib.Core.Runnable
         /// </summary>
         public void Dispose()
         {
-            Dispose(!Disposed);
-            Disposed = true;
+            Dispose(!_disposed);
+            _disposed = true;
             GC.SuppressFinalize(this);
         }
 
@@ -213,15 +164,15 @@ namespace CafeLib.Core.Runnable
             if (!disposing) return;
             try
             {
-                CancellationSource?.Dispose();
+                _cancellationSource?.Dispose();
             }
             catch
             {
                 // ignore
             }
 
-            CancellationSource = null;
-            Delay = 0;
+            _cancellationSource = null;
+            _delay = 0;
         }
 
         #endregion

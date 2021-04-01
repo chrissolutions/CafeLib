@@ -5,6 +5,8 @@ namespace CafeLib.Core.Eventing
 {
     public abstract class EventMessage : IEventMessage
     {
+        private static readonly object Empty = new object();
+
         #region Automatic Properties
 
         /// <summary>
@@ -42,7 +44,7 @@ namespace CafeLib.Core.Eventing
         protected EventMessage(object sender)
             : this()
         {
-            Sender = sender ?? new object();
+            Sender = sender ?? Empty;
         }
 
         /// <summary>
