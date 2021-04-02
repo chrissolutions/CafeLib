@@ -1,10 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageIcon>cafelib.png</PackageIcon>
-    <Version>0.9.0</Version>
+		<TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>Cafelib Signal/R channel hub.</Description>
+    <Version>0.9.0</Version>
+    <Copyright></Copyright>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageIcon>cafelib.png</PackageIcon>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <FileVersion>0.9.0.0</FileVersion>
+    <PackageIconUrl />
+    <Authors>Chris Solutions</Authors>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

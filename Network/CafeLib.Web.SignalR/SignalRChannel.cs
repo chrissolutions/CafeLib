@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CafeLib.Core.Logging;
 using CafeLib.Core.MethodBinding;
 using CafeLib.Core.Runnable;
+using CafeLib.Core.Runnable.Events;
 using CafeLib.Core.Support;
 using CafeLib.Web.SignalR.ConnectionFactory;
 using Microsoft.AspNetCore.Connections;
