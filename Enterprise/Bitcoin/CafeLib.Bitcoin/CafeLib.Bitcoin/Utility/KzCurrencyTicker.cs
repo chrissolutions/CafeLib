@@ -1,4 +1,4 @@
-﻿namespace KzBsv {
+﻿namespace CafeLib.Bitcoin.Utility {
     public enum KzCurrencyTicker : int {
         // "Crypto" currency symbols
         BSV = 1,

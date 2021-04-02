@@ -2,11 +2,12 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 using System.Buffers;
 using System.Linq;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.Encode
 {
     /// <summary>
     /// The string begins with the first byte.

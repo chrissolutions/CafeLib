@@ -2,19 +2,21 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using KzBsv;
-using System;
+
 using System.Threading.Tasks;
+using CafeLib.Bitcoin.APIs.Paymail;
+using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Utility;
 using Xunit;
 
-namespace Tests.KzBsv.APIs {
+namespace CafeLib.Bitcoin.UnitTests.APIs {
     public class KzPaymailClientTests
     {
         [Fact]
         public async Task EnsureCapabililtyFor()
         {
             var domain = "moneybutton.com";
-            var r = new global::KzBsv.KzPaymailClient();
+            var r = new global::CafeLib.Bitcoin.APIs.Paymail.KzPaymailClient();
             var pkiOk = await r.DomainHasCapability(domain, KzPaymail.Capability.pki);
             var pdOk = await r.DomainHasCapability(domain, KzPaymail.Capability.paymentDestination);
             var svOk = await r.DomainHasCapability(domain, KzPaymail.Capability.senderValidation);

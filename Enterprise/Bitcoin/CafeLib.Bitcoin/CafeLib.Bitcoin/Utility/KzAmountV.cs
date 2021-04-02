@@ -2,9 +2,10 @@
 // Copyright (c) 2021 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 
-namespace KzBsv {
+namespace CafeLib.Bitcoin.Utility {
 
     /// <summary>
     /// In practice, the value of an amount is often required in terms of a non-Bitcoin fiat or foreign currency.

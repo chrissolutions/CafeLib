@@ -2,15 +2,18 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using Newtonsoft.Json;
-using System;
+
 using System.Buffers;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using CafeLib.Bitcoin.Chain;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Global;
+using CafeLib.Bitcoin.Utility;
+using Newtonsoft.Json;
 
-namespace KzBsv {
+namespace CafeLib.Bitcoin.APIs {
 
     public class KzApiWhatsOnChain
     {

@@ -2,11 +2,14 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using KzBsv;
-using System;
+
+using CafeLib.Bitcoin.Builder;
+using CafeLib.Bitcoin.Chain;
+using CafeLib.Bitcoin.Global;
+using CafeLib.Bitcoin.Script;
 using Xunit;
 
-namespace Tests.KzBsv.Chain
+namespace CafeLib.Bitcoin.UnitTests.Chain
 {
     public class KzTransactionTests
     {

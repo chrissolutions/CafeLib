@@ -2,14 +2,15 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using Newtonsoft.Json;
+
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
-using System.Text;
+using CafeLib.Bitcoin.Encode;
+using CafeLib.Bitcoin.Global;
+using Newtonsoft.Json;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.Utility
 {
     [JsonConverter(typeof(JsonConverterKzUInt256))]
     public struct KzUInt256 : IComparable<KzUInt256>

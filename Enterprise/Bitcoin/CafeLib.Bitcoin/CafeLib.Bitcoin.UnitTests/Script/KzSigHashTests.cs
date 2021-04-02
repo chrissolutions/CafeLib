@@ -2,16 +2,18 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using System;
-using Xunit;
-using KzBsv;
-using System.Linq;
-using Newtonsoft.Json;
-using System.IO;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 
-namespace Tests.KzBsv.Script
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using CafeLib.Bitcoin.Chain;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Script;
+using CafeLib.Bitcoin.Utility;
+using Newtonsoft.Json.Linq;
+using Xunit;
+
+namespace CafeLib.Bitcoin.UnitTests.Script
 {
     public class KzSigHashTests
     {

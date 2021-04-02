@@ -2,12 +2,13 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 using System.IO;
+using CafeLib.Bitcoin.Persist;
 using Xunit;
-using KzBsv;
 
-namespace Tests.KzBsv.Persist
+namespace CafeLib.Bitcoin.UnitTests.Persist
 {
     public class KzMemoryMappedFileTests : IClassFixture<TempFoldersClassFixture>
     {

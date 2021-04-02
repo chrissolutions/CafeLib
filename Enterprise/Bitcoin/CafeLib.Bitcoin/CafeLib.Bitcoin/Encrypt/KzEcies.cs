@@ -2,15 +2,15 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using Secp256k1Net;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 
-namespace KzBsv
+using System;
+using CafeLib.Bitcoin.Encode;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Utility;
+using Secp256k1Net;
+
+namespace CafeLib.Bitcoin.Encrypt
 {
     /// <summary>
     /// Two parties set matching pairs of priv and pub keys.

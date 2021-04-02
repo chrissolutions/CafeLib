@@ -2,13 +2,14 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using CafeLib.Bitcoin.Encode;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.Script
 {
     /// <summary>
     /// Numeric opcodes (OP_1ADD, etc) are restricted to operating on 4-byte

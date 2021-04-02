@@ -2,16 +2,18 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using Newtonsoft.Json;
-using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 
-namespace KzBsv
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Global;
+using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Script;
+using CafeLib.Bitcoin.Utility;
+
+namespace CafeLib.Bitcoin.Builder
 {
 
     public class KzBScript

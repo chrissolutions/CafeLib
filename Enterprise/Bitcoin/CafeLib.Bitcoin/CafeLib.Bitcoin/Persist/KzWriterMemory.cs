@@ -2,10 +2,13 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 using System.Buffers;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Utility;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.Persist
 {
     public class KzWriterMemory : IKzWriter
     {

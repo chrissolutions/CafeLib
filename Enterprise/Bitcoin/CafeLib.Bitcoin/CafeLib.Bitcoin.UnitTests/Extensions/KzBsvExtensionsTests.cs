@@ -2,11 +2,12 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using Xunit;
-using KzBsv;
-using System;
 
-namespace Tests.KzBsv.Extensions {
+using System;
+using CafeLib.Bitcoin.Extensions;
+using Xunit;
+
+namespace CafeLib.Bitcoin.UnitTests.Extensions {
     public class KzBsvExtensionsTests {
         [Fact]
         public void ToInt32() {

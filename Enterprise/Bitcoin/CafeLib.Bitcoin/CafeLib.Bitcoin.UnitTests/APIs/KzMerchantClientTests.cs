@@ -2,13 +2,17 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using KzBsv;
+
 using System;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using CafeLib.Bitcoin.APIs;
+using CafeLib.Bitcoin.APIs.Merchant;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Utility;
 using Xunit;
 
-namespace Tests.KzBsv.APIs {
+namespace CafeLib.Bitcoin.UnitTests.APIs {
     public class KzMerchantClientTests
     {
 

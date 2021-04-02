@@ -2,13 +2,16 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
+using CafeLib.Bitcoin.Encode;
+using CafeLib.Bitcoin.Utility;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.Chain
 {
     /// <summary>
     /// 

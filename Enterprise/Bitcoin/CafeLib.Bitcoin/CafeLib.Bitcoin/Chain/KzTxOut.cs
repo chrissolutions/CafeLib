@@ -2,11 +2,15 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 using System.Buffers;
 using System.IO;
+using CafeLib.Bitcoin.Persist;
+using CafeLib.Bitcoin.Script;
+using CafeLib.Bitcoin.Utility;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.Chain
 {
     public struct KzTxOut
     {

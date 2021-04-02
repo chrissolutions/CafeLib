@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KzBsv.Storage
+﻿namespace CafeLib.Bitcoin.Storage
 {
     public class KzDiff
     {

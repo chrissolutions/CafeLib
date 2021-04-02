@@ -2,15 +2,12 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Xunit;
-using KzBsv;
 
-namespace Tests.KzBsv.Utility
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Utility;
+using Xunit;
+
+namespace CafeLib.Bitcoin.UnitTests.Utility
 {
 
     public class KzAmountTests
@@ -88,7 +85,7 @@ namespace Tests.KzBsv.Utility
 
             foreach (var tc in tcs) {
                 var v = tc.v.ToKzAmount();
-                var s = v.ToString(group: tc.g, units: tc.units, unit: tc.unit);
+                var s = v.ToString(@group: tc.g, units: tc.units, unit: tc.unit);
                 Assert.Equal(tc.s, s);
             }
         }

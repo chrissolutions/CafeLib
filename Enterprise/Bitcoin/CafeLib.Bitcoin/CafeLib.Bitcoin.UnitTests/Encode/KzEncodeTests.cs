@@ -2,13 +2,11 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using System;
-using System.Buffers;
-using System.IO;
-using Xunit;
-using KzBsv;
 
-namespace Tests.KzBsv.Encode
+using CafeLib.Bitcoin.Encode;
+using Xunit;
+
+namespace CafeLib.Bitcoin.UnitTests.Encode
 {
     public class KzEncodeTests
     {

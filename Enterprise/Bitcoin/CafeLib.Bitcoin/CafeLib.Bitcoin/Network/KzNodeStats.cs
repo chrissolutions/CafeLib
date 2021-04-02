@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KzBsv.Network
+﻿namespace CafeLib.Bitcoin.Network
 {
     /**
      * nServices flags.

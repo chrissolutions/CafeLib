@@ -2,15 +2,21 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using CafeLib.Bitcoin.APIs;
+using CafeLib.Bitcoin.Encode;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Persist;
+using CafeLib.Bitcoin.Utility;
 using Xunit;
-using KzBsv;
 
-namespace Tests.KzBsv.Encode
+namespace CafeLib.Bitcoin.UnitTests.Encode
 {
     class SequenceSegment<T> : ReadOnlySequenceSegment<T> where T : struct
     {

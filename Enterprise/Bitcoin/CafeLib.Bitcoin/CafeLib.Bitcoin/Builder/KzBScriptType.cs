@@ -2,7 +2,7 @@
 // Copyright (c) 2019 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-namespace KzBsv
+namespace CafeLib.Bitcoin.Builder
 {
     public enum KzBScriptType
     {

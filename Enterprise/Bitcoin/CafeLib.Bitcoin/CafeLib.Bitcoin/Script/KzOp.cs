@@ -2,10 +2,14 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 using System.Buffers;
+using CafeLib.Bitcoin.Encode;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Persist;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.Script
 {
     public struct KzOp {
         KzOpcode _code;

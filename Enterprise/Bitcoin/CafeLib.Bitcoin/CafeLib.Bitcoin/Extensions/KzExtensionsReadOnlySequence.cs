@@ -2,14 +2,13 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using System;
-using System.Linq;
-using System.Buffers;
-using System.Runtime.CompilerServices;
-using System.Diagnostics;
-using System.Collections.Generic;
 
-namespace KzBsv
+using System;
+using System.Buffers;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+
+namespace CafeLib.Bitcoin.Extensions
 {
     public class KzSequenceSegment<T> : ReadOnlySequenceSegment<T>
     {

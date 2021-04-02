@@ -2,12 +2,12 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Text;
+using CafeLib.Bitcoin.Extensions;
 
-namespace KzBsv {
+namespace CafeLib.Bitcoin.Utility {
     public interface IKzAmountExchangeRate {
         public decimal ConvertFromAmount(KzAmount value);
         public KzAmount ConvertToAmount(decimal value);
@@ -64,7 +64,7 @@ namespace KzBsv {
         public static implicit operator long(KzAmount value) => value.Satoshis;
         public static implicit operator ulong(KzAmount value) => checked((ulong)value.Satoshis);
 
-        public override string ToString() => ToString(group: true, units: false, unit: KzBitcoinUnit.mBSV);
+        public override string ToString() => ToString(@group: true, units: false, unit: KzBitcoinUnit.mBSV);
 
         public decimal ToBSV() => (decimal)Satoshis / (long)(KzBitcoinUnit.BSV);
 

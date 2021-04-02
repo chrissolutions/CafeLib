@@ -2,11 +2,12 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 using System.Diagnostics;
-using System.Linq;
+using CafeLib.Bitcoin.Global;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.Keys
 {
     public class KzB58PrivKey : KzB58Data
     {

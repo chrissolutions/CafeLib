@@ -2,13 +2,12 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Text;
 
-namespace KzBsv {
+namespace CafeLib.Bitcoin.Keys {
 
 	/// <summary>
 	/// BIP39 based support for converting binary data of specific lengths into sequences of words to facilitate written record keeping and verbal transmission.

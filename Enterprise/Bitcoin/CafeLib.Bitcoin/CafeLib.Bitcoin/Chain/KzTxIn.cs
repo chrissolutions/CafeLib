@@ -2,10 +2,15 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 using System.Buffers;
+using CafeLib.Bitcoin.Builder;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Persist;
+using CafeLib.Bitcoin.Script;
 
-namespace KzBsv {
+namespace CafeLib.Bitcoin.Chain {
 
     /// <summary>
     /// Closely mirrors the data and layout of a Bitcoin transaction input as stored in each block.

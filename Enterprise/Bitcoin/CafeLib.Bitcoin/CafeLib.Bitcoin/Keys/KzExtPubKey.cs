@@ -2,11 +2,12 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using System;
-using System.Buffers;
-using System.Diagnostics;
 
-namespace KzBsv
+using System;
+using System.Diagnostics;
+using CafeLib.Bitcoin.Extensions;
+
+namespace CafeLib.Bitcoin.Keys
 {
 
     public class KzExtPubKey : KzExtKey

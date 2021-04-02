@@ -4,8 +4,12 @@
 #endregion
 
 using System;
+using CafeLib.Bitcoin.Encode;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Persist;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.Utility
 {
     public static class KzMessage
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace KzBsv {
+namespace CafeLib.Bitcoin.Utility {
 
     /// <summary>
     /// Represent the exchange rate of one currency to another at a specific moment in time.

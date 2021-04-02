@@ -2,15 +2,19 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Text;
-using System.Linq;
 
-namespace KzBsv
+using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using CafeLib.Bitcoin.Chain;
+using CafeLib.Bitcoin.Encode;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Global;
+using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Persist;
+using CafeLib.Bitcoin.Utility;
+
+namespace CafeLib.Bitcoin.Script
 {
     [Flags]
     public enum KzSigHash : byte {

@@ -2,13 +2,12 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
-using System.Buffers;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.Encode
 {
     public class KzEncodeB58Check : KzEncode
     {

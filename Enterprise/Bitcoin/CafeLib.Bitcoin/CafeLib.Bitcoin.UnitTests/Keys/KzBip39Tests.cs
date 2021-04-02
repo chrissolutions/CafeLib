@@ -2,14 +2,13 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
-using System.Linq;
-using KzBsv;
 
-namespace Tests.KzBsv.Keys {
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Utility;
+using Xunit;
+
+namespace CafeLib.Bitcoin.UnitTests.Keys {
     public class KzBip39Tests {
         /// <summary>
         /// Test Vector

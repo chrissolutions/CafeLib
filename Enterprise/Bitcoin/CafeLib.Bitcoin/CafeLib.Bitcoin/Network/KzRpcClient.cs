@@ -2,15 +2,18 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using CafeLib.Bitcoin.Encode;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Utility;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace KzBsv {
+namespace CafeLib.Bitcoin.Network {
     public class KzRpcClient {
 		string _auth;
 		Uri _uri;

@@ -6,7 +6,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.APIs.Paymail
 {
     public class KzPaymail
     {

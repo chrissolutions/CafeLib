@@ -2,14 +2,11 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using System;
-using System.Buffers;
-using System.IO;
-using Xunit;
-using System.Linq;
-using KzBsv;
 
-namespace Tests.KzBsv.Utility
+using System;
+using Xunit;
+
+namespace CafeLib.Bitcoin.UnitTests.Utility
 {
     public class KzRangeIndexTests
     {

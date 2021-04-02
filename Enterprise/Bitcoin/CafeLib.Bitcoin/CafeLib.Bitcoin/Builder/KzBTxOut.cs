@@ -2,7 +2,12 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-namespace KzBsv
+
+using CafeLib.Bitcoin.Chain;
+using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Utility;
+
+namespace CafeLib.Bitcoin.Builder
 {
     public class KzBTxOut
     {

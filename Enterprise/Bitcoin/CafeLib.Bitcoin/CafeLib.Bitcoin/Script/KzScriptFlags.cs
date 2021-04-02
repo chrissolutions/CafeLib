@@ -2,11 +2,10 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace KzBsv
+using System;
+
+namespace CafeLib.Bitcoin.Script
 {
     /// <summary>
     /// Script verification flags 

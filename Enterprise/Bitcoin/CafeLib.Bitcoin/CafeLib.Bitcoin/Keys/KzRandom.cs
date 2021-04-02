@@ -2,13 +2,11 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using Secp256k1Net;
+
 using System;
-using System.Buffers;
-using System.Linq;
 using System.Security.Cryptography;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.Keys
 {
     /// <summary>
     /// 

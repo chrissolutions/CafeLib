@@ -2,11 +2,12 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using KzBsv;
+
 using System.Threading.Tasks;
+using CafeLib.Bitcoin.APIs;
 using Xunit;
 
-namespace Tests.KzBsv.APIs {
+namespace CafeLib.Bitcoin.UnitTests.APIs {
     public class KzApiCoinMarketCapTests {
         [Fact]
         public async Task Test1() {

@@ -1,10 +1,7 @@
-﻿using KzBsv;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
+﻿using System;
+using CafeLib.Bitcoin.Network;
 
-namespace Tests.KzBsv.Network {
+namespace CafeLib.Bitcoin.UnitTests.Network {
     public class RpcTests {
 
         public KzRpcClient GetKzRpc() {

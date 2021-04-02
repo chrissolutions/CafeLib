@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using CafeLib.Bitcoin.APIs.Merchant;
+using CafeLib.Bitcoin.Utility;
 
-namespace KzBsv {
+namespace CafeLib.Bitcoin.APIs {
 
     /// <summary>
     /// This class is intended to keep applications independent of specific service APIs.

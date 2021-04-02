@@ -3,7 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-namespace KzBsv {
+namespace CafeLib.Bitcoin.Utility {
     /// <summary>
     /// How many satoshis to each unit.
     /// </summary>

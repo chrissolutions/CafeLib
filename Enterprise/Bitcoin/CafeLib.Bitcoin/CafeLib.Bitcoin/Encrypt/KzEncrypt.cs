@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
-using System.Text;
+using CafeLib.Bitcoin.Encode;
+using CafeLib.Bitcoin.Extensions;
 
-namespace KzBsv {
+namespace CafeLib.Bitcoin.Encrypt {
     public class KzEncrypt {
 
         public static byte[] GenerateIV(ReadOnlySpan<byte> key, ReadOnlySpan<byte> data, int length = 16)

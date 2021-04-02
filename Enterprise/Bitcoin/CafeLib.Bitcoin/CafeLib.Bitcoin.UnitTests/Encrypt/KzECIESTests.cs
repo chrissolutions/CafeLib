@@ -2,15 +2,15 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using System;
-using System.Buffers;
-using System.IO;
-using Xunit;
-using System.Linq;
-using KzBsv;
-using System.Security.Cryptography;
 
-namespace Tests.KzBsv.Encrypt
+using System.IO;
+using System.Security.Cryptography;
+using CafeLib.Bitcoin.Encrypt;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Keys;
+using Xunit;
+
+namespace CafeLib.Bitcoin.UnitTests.Encrypt
 {
     public class KzECIESTests
     {

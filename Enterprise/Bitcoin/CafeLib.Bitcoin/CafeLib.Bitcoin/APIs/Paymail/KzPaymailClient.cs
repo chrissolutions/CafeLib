@@ -2,19 +2,22 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using DnsClient;
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
-using KzBsv;
-using Newtonsoft.Json;
 using System.Text;
-using System.Linq;
+using System.Threading.Tasks;
+using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Script;
+using CafeLib.Bitcoin.Utility;
+using DnsClient;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.APIs.Paymail
 {
     /// <summary>
     /// This class implements the client side of the Paymail / BsvAlias protocol.

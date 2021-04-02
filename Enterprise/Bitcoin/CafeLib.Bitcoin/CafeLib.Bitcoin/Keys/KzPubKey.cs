@@ -2,12 +2,17 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
-using Secp256k1Net;
+
 using System;
 using System.Buffers;
 using System.Linq;
+using CafeLib.Bitcoin.Encode;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Global;
+using CafeLib.Bitcoin.Utility;
+using Secp256k1Net;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.Keys
 {
     /// <summary>
     /// A KzPubKey is fundamentally an array of bytes in one of these states:

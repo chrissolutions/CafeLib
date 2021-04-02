@@ -2,13 +2,13 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace KzBsv {
+namespace CafeLib.Bitcoin.Keys {
 
 	/// <summary>
 	/// Represent a BIP32 style key path.

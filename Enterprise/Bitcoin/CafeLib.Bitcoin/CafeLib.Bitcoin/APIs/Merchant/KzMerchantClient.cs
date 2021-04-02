@@ -2,17 +2,20 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
-using System.ComponentModel.Design;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
+using CafeLib.Bitcoin.Encode;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Utility;
 using Newtonsoft.Json;
 
-namespace KzBsv {
+namespace CafeLib.Bitcoin.APIs.Merchant {
     /// <summary>
     /// </summary>
     public partial class KzMerchantClient

@@ -3,7 +3,9 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-namespace KzBsv {
+using CafeLib.Bitcoin.Script;
+
+namespace CafeLib.Bitcoin.Chain {
     public interface IKzBlockParser {
         void BlockStart(KzBlockHeader bh, long offset);
         void BlockParsed(KzBlockHeader bh, long offset);

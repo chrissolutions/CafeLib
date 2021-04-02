@@ -3,12 +3,14 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using Newtonsoft.Json;
 using System;
-using System.Diagnostics.Contracts;
-using System.Linq;
+using CafeLib.Bitcoin.Encode;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Script;
+using Newtonsoft.Json;
 
-namespace KzBsv {
+namespace CafeLib.Bitcoin.APIs {
     public class KzMinerId {
         static uint _ProtocolPrefix = 0xAC1EED88;
 

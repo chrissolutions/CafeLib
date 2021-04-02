@@ -2,10 +2,14 @@
 // Copyright (c) 2020 TonesNotes
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
+
 using System;
 using System.Buffers;
+using CafeLib.Bitcoin.Global;
+using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Script;
 
-namespace KzBsv
+namespace CafeLib.Bitcoin.Builder
 {
     /// <summary>
     /// The KzScriptBuilder maintains a list of builder Ops "BOps".
