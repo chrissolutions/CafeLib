@@ -1,5 +1,4 @@
-﻿using CafeLib.Core.Extensions;
-using CafeLib.Core.Support;
+﻿using CafeLib.Core.Support;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
@@ -216,9 +215,9 @@ namespace CafeLib.Core.Logging
         /// <param name="logEventInfo">log event info</param>
         /// <param name="message">message</param>
         /// <param name="exception"></param>
-        public static void LogMessage(this ILogger logger, ErrorLevel errorLevel, LogEventInfo logEventInfo, NonNullable<string> message, Exception exception = null)
+        public static void LogMessage(this ILogger logger, ErrorLevel errorLevel, LogEventInfo logEventInfo, string message, Exception exception = null)
         {
-            logger.Log(logger.ToLogLevel(errorLevel), LogEventInfo.ToEventId(logEventInfo), message.Value, exception, (state, ex) =>
+            logger.Log(logger.ToLogLevel(errorLevel), LogEventInfo.ToEventId(logEventInfo), message, exception, (state, ex) =>
             {
                 // Set log message.
                 var logMessage = state?.ToString() ?? string.Empty;
