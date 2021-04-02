@@ -13,18 +13,18 @@ namespace Tests.KzBsv.APIs {
     {
 
         [Theory]
-        [InlineData(null)]
-        [InlineData("https://merchantapi.matterpool.io")]
+        [InlineData(null, "0.1.0")]
+        [InlineData("https://merchantapi.matterpool.io", "0.1.0")]
 //        [InlineData("https://www.ddpurse.com/openapi,561b756d12572020ea9a104c3441b71790acbbce95a6ddbf7e0630971af9424b")]
-        [InlineData("https://merchantapi.taal.com")]
-        public async Task MapiGetFeeQuoteTest(string baseUrl) {
+        [InlineData("https://merchantapi.taal.com", "1.1.0")]
+        public async Task MapiGetFeeQuoteTest(string baseUrl, string version) {
             KzMerchantClient.UserAgent = "KzMerchantClientTest";
             var mapi = KzMerchantClient.GetClient(baseUrl);
             var fq = await mapi.GetFeeQuote();
             Assert.NotNull(fq);
             Assert.True(fq.expiryTime > DateTime.UtcNow);
             Assert.True(Math.Abs((fq.timestamp - DateTime.UtcNow).TotalMinutes) < 1);
-            Assert.Equal("0.1.0", fq.apiVersion);
+            Assert.Equal(version, fq.apiVersion);
             Assert.True(fq.currentHighestBlockHeight > 630000);
             Assert.True(new KzUInt256(fq.currentHighestBlockHash).ToBN() > 0);
             Assert.Equal(2, fq.fees.Length);
@@ -70,11 +70,11 @@ namespace Tests.KzBsv.APIs {
         }
 
         [Theory]
-        [InlineData(null)]
-        [InlineData("https://merchantapi.matterpool.io")]
-//        [InlineData("https://www.ddpurse.com/openapi,561b756d12572020ea9a104c3441b71790acbbce95a6ddbf7e0630971af9424b")]
-        [InlineData("https://merchantapi.taal.com")]
-        public async Task MapiPostTxTest(string baseUrl)
+        [InlineData(null, "0.1.0")]
+        [InlineData("https://merchantapi.matterpool.io", "0.1.0")]
+        //        [InlineData("https://www.ddpurse.com/openapi,561b756d12572020ea9a104c3441b71790acbbce95a6ddbf7e0630971af9424b")]
+        [InlineData("https://merchantapi.taal.com", "1.1.0")]
+        public async Task MapiPostTxTest(string baseUrl, string version)
         {
             KzMerchantClient.UserAgent = "KzMerchantClientTest";
             var mapi = KzMerchantClient.GetClient(baseUrl);
@@ -84,7 +84,7 @@ namespace Tests.KzBsv.APIs {
             var ptr = await mapi.PostTransaction(tx1.HexToBytes(), srl);
             Assert.False(srl.Success);
             Assert.NotNull(ptr);
-            Assert.Equal("0.1.0", ptr.apiVersion);
+            Assert.Equal(version, ptr.apiVersion);
             Assert.True(ptr.currentHighestBlockHeight > 630000);
             Assert.True(new KzUInt256(ptr.currentHighestBlockHash).ToBN() > 0);
             Assert.True(Math.Abs((ptr.timestamp - DateTime.UtcNow).TotalMinutes) < 1);
