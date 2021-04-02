@@ -1,17 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>0.9.0</Version>
-    <Description>Cafelib Signal/R support package supporting method binding.</Description>
-    <Copyright></Copyright>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageReleaseNotes></PackageReleaseNotes>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
-    <FileVersion>0.9.0.0</FileVersion>
-    <Authors />
-    <Company />
-    <PackageIcon>cafelib.png</PackageIcon>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Description>Cafelib Signal/R support package supporting method binding.</Description>
+		<Version>0.9.0</Version>
+		<Copyright></Copyright>
+		<PackageReleaseNotes></PackageReleaseNotes>
+		<PackageIcon>cafelib.png</PackageIcon>
+		<AssemblyVersion>0.9.0.0</AssemblyVersion>
+		<FileVersion>0.9.0.0</FileVersion>
+		<PackageIconUrl />
+		<Authors>Chris Solutions</Authors>
+		<LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
