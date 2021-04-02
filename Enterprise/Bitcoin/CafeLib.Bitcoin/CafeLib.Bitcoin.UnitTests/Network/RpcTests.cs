@@ -17,7 +17,7 @@ namespace Tests.KzBsv.Network {
             return kzrpc;
         }
 
-        [Fact]
+        //[Fact]
         public void GetPeerInfoTest() {
             var rpc = GetKzRpc();
             var pi = rpc.GetPeerInfo();
