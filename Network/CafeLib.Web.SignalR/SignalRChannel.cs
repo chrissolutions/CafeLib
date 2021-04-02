@@ -107,7 +107,7 @@ namespace CafeLib.Web.SignalR
         {
             try
             {
-                 await VerifyConnection();
+                await VerifyConnection();
             }
             catch (Exception ex)
             {
