@@ -1,27 +1,38 @@
 @echo off
 setlocal
 
+if '%1' == '' echo missing version && goto exit
+
 :: Configuration
 set lib=Data
-set version=0.9.0
+set version=%1
 
 :: Settings
+set msbld=msbuild.exe
 set nuget=nuget.exe
-::set nuget=dotnet nuget
 set configuration=Debug
 set libPath=bin\%configuration%
 set apikey=
 set nugetRepo=C:\Nuget\repo
 set sourcepath=C:\Projects\ChrisSolutions\CafeLib\%lib%
+set solution=CafeLib.%lib%
 
+set libs=%solution%
+set libs=%libs% %solution%.Mapping 
+set libs=%libs% %solution%.SqlGenerator
+set libs=%libs% %solution%.Sources 
+set libs=%libs% %solution%.Sources.Sqlite
+set libs=%libs% %solution%.Sources.SqlServer
+
+echo Create Nuget Package for %solution% ...
 @echo on
-%nuget% push %sourcepath%\CafeLib.Data\%libPath%\CafeLib.Data.%version%.nupkg %apikey% -source %nugetRepo%
-%nuget% push %sourcepath%\CafeLib.Data.Mapping\%libPath%\CafeLib.Data.Mapping.%version%.nupkg %apikey% -source %nugetRepo%
-%nuget% push %sourcepath%\CafeLib.Data.SqlGenerator\%libPath%\CafeLib.Data.SqlGenerator.%version%.nupkg %apikey% -source %nugetRepo%
-%nuget% push %sourcepath%\CafeLib.Data.Sources\%libPath%\CafeLib.Data.Sources.%version%.nupkg %apikey% -source %nugetRepo%
-%nuget% push %sourcepath%\CafeLib.Data.Sources.Sqlite\%libPath%\CafeLib.Data.Sources.Sqlite.%version%.nupkg %apikey% -source %nugetRepo%
-%nuget% push %sourcepath%\CafeLib.Data.Sources.SqlServer\%libPath%\CafeLib.Data.Sources.SqlServer.%version%.nupkg %apikey% -source %nugetRepo%
-
+for %%X in (%libs%) DO %msbld% %sourcepath%\%%X\%%X.csproj -t:pack -p:PackageVersion=%version%
 @echo off
 
+echo Push Package to Nuget repository ...
+@echo on
+for %%X in (%libs%) DO %nuget% push %sourcepath%\%%X\%libPath%\%%X.%version%.nupkg %apikey% -source %nugetRepo%
+@echo off
+
+:exit
 endlocal

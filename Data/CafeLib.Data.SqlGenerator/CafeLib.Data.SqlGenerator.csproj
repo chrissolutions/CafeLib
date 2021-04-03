@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <Version>0.9.0</Version>
     <Description>SQL query generation.</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageIcon>cafelib.png</PackageIcon>
     <Authors>Chris Solutions</Authors>
   </PropertyGroup>

@@ -15,7 +15,7 @@ set libPath=bin\%configuration%
 set apikey=
 set nugetRepo=C:\Nuget\repo
 set sourcepath=C:\Projects\ChrisSolutions\CafeLib\%lib%
-set solution=CafeLib.Core
+set solution=CafeLib.%lib%
 
 set libs=%solution%
 set libs=%libs% %solution%.Caching 
