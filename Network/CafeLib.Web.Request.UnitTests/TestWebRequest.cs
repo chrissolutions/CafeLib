@@ -4,14 +4,14 @@ using Newtonsoft.Json.Linq;
 
 namespace CafeLib.Web.Request.UnitTests
 {
-    public class WebRequest<TResponse> : WebRequestBase, IWebRequest<TResponse>
+    public class TestWebRequest<TResponse> : WebRequestBase, IWebRequest<TResponse>
     {
-        public WebRequest(string endpoint, WebHeaders headers = null)
+        public TestWebRequest(string endpoint, WebHeaders headers = null)
             : this(new Uri(endpoint), headers)
         {
         }
 
-        public WebRequest(Uri endpoint, WebHeaders headers = null) 
+        public TestWebRequest(Uri endpoint, WebHeaders headers = null) 
             : base(endpoint, headers)
         {
             SetHeaders();
