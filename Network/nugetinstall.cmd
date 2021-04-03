@@ -1,25 +1,35 @@
 @echo off
 setlocal
 
+if '%1' == '' echo missing version && goto exit
+
 :: Configuration
 set lib=Network
-set version=0.9.0
+set version=%1
 
 :: Settings
+set msbld=msbuild.exe
 set nuget=nuget.exe
-::set nuget=dotnet nuget
 set configuration=Debug
 set libPath=bin\%configuration%
 set apikey=
 set nugetRepo=C:\Nuget\repo
 set sourcepath=C:\Projects\ChrisSolutions\CafeLib\%lib%
 
-@echo on
-%nuget% push %sourcepath%\CafeLib.AspNet.WebSockets\%libPath%\CafeLib.AspNet.WebSockets.%version%.nupkg %apikey% -source %nugetRepo%
-%nuget% push %sourcepath%\CafeLib.Web.Request\%libPath%\CafeLib.Web.Request.%version%.nupkg %apikey% -source %nugetRepo%
-%nuget% push %sourcepath%\CafeLib.Web.SignalR\%libPath%\CafeLib.Web.SignalR.%version%.nupkg %apikey% -source %nugetRepo%
-%nuget% push %sourcepath%\CafeLib.Web.SignalR.Hubs\%libPath%\CafeLib.Web.SignalR.Hubs.%version%.nupkg %apikey% -source %nugetRepo%
+set libs=CafeLib.AspNet.WebSockets
+set libs=%libs% CafeLib.Web.Request 
+set libs=%libs% CafeLib.Web.SignalR
+set libs=%libs% CafeLib.Web.SignalR.Hubs 
 
+echo Create Nuget Package for %lib% ...
+@echo on
+for %%X in (%libs%) DO %msbld% %sourcepath%\%%X\%%X.csproj -t:pack -p:PackageVersion=%version%
 @echo off
 
+echo Push Package to Nuget repository ...
+@echo on
+for %%X in (%libs%) DO %nuget% push %sourcepath%\%%X\%libPath%\%%X.%version%.nupkg %apikey% -source %nugetRepo%
+@echo off
+
+:exit
 endlocal

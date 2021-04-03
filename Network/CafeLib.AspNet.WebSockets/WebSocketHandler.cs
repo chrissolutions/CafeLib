@@ -6,8 +6,8 @@ namespace CafeLib.AspNet.WebSockets
 {
     public abstract class WebSocketHandler : IWebSocketHandler
     {
-        protected readonly IWebSocketConnectionManager _connectionManager;
-        protected readonly IWebSocketSender _sender;
+        private readonly IWebSocketConnectionManager _connectionManager;
+        private readonly IWebSocketSender _sender;
 
         protected WebSocketHandler(IServiceProvider serviceProvider)
         {
