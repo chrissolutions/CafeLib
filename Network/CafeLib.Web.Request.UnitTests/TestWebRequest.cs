@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace CafeLib.Web.Request.UnitTests
 {
-    public class TestWebRequest<TResponse> : WebRequestBase, IWebRequest<TResponse>
+    public class TestWebRequest<TResponse> : WebRequestBase, IWebRequest<TResponse, JToken>
     {
         public TestWebRequest(string endpoint, WebHeaders headers = null)
             : this(new Uri(endpoint), headers)

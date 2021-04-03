@@ -4,14 +4,14 @@ using Newtonsoft.Json.Linq;
 
 namespace CafeLib.Web.Request
 {
-    public class WebRequest<TResponse> : WebRequestBase, IWebRequest<TResponse>
+    public class JsonRequest<TResponse> : WebRequestBase, IWebRequest<TResponse, JToken>
     {
-        public WebRequest(string endpoint, WebHeaders headers = null)
+        public JsonRequest(string endpoint, WebHeaders headers = null)
             : this(new Uri(endpoint), headers)
         {
         }
 
-        public WebRequest(Uri endpoint, WebHeaders headers = null) 
+        public JsonRequest(Uri endpoint, WebHeaders headers = null) 
             : base(endpoint, headers)
         {
         }
