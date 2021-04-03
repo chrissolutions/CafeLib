@@ -6,7 +6,7 @@
     <Description>Provides producer-consumer support.</Description>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Version>0.9.0</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageIconUrl></PackageIconUrl>
     <PackageIcon>cafelib.png</PackageIcon>
     <Authors>Chris Solutions</Authors>

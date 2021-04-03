@@ -8,7 +8,7 @@
     <PackageIconUrl></PackageIconUrl>
     <PackageReleaseNotes>Support for method binding.</PackageReleaseNotes>
     <Version>0.9.0</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <AssemblyVersion>0.9.0.0</AssemblyVersion>
     <FileVersion>0.9.0.0</FileVersion>
     <PackageIcon>cafelib.png</PackageIcon>

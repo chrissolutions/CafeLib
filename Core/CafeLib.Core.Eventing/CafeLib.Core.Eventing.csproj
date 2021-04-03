@@ -6,7 +6,7 @@
     <PackageIcon>cafelib.png</PackageIcon>
     <PackageIconUrl />
     <Description>Provides event messaging support.</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Chris Solutions</Authors>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>

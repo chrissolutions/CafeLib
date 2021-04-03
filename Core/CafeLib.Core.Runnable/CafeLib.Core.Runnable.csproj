@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -6,7 +6,7 @@
     <Description>Provides runloop support.</Description>
     <PackageReleaseNotes>Provides runloop support for a background task.</PackageReleaseNotes>
     <Version>0.9.0</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageIconUrl></PackageIconUrl>
     <PackageIcon>cafelib.png</PackageIcon>
     <Authors>Chris Solutions</Authors>
