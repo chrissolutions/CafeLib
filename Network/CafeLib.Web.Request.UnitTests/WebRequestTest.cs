@@ -3,13 +3,13 @@ using Xunit;
 
 namespace CafeLib.Web.Request.UnitTests
 {
-    public class JsonRequestTest
+    public class WebRequestTest
     {
         [Fact]
-        public async void JsonRequest_GetRequestTest()
+        public async void WebRequest_GetRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
-            var request = new JsonRequest<JToken>(endpoint);
+            var request = new WebRequest<JToken>(endpoint);
             var json = await request.GetAsync();
             Assert.NotNull(json);
             var result = json.ToObject<BinResult>();
@@ -19,7 +19,7 @@ namespace CafeLib.Web.Request.UnitTests
         }
 
         [Fact]
-        public async void JsonRequest_PostRequestTest()
+        public async void WebRequest_PostRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
             const string jsonText = @"{ 
@@ -27,7 +27,7 @@ namespace CafeLib.Web.Request.UnitTests
                     ""Content"": ""StreamValue""
                     }";
 
-            var request = new JsonRequest<JObject>("https://httpbin.org/anything");
+            var request = new WebRequest<JObject>("https://httpbin.org/anything");
 
             var jsonBody = JToken.Parse(jsonText);
 
@@ -43,7 +43,7 @@ namespace CafeLib.Web.Request.UnitTests
         }
 
         [Fact]
-        public async void JsonRequest_PutRequestTest()
+        public async void WebRequest_PutRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
             const string jsonText = @"{ 
@@ -67,7 +67,7 @@ namespace CafeLib.Web.Request.UnitTests
         }
 
         [Fact]
-        public async void JsonRequest_DeleteRequestTest()
+        public async void WebRequest_DeleteRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
             const string jsonText = @"{ 
@@ -75,7 +75,7 @@ namespace CafeLib.Web.Request.UnitTests
                     ""Content"": ""StreamValue""
                     }";
 
-            var request = new JsonRequest<JObject>(endpoint);
+            var request = new WebRequest<JObject>(endpoint);
             var jsonBody = JToken.Parse(jsonText);
             var result = await request.DeleteAsync(jsonBody);
             Assert.True(result);
