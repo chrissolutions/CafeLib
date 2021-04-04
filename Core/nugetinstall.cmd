@@ -30,16 +30,6 @@ goto usage
 if '%version' == '' goto usage
 if '%configuration' == '' goto usage
 
-:: Settings
-set msbld=msbuild.exe
-set nuget=nuget.exe
-set configuration=Debug
-set libPath=bin\%configuration%
-set apikey=
-set nugetRepo=C:\Nuget\repo
-set sourcepath=C:\Projects\ChrisSolutions\CafeLib\%lib%
-set solution=CafeLib.%lib%
-
 set libs=%solution%
 set libs=%libs% %solution%.Caching 
 set libs=%libs% %solution%.Collections
