@@ -3,13 +3,13 @@ using Xunit;
 
 namespace CafeLib.Web.Request.UnitTests
 {
-    public class WebRequestTest
+    public class WebRequestBaseTest
     {
         [Fact]
-        public async void GetRequestTest()
+        public async void WebRequestBase_GetRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
-            var request = new WebRequest<JToken>(endpoint);
+            var request = new TestWebRequest<JToken>(endpoint);
             var json = await request.GetAsync();
             Assert.NotNull(json);
             var result = json.ToObject<BinResult>();
@@ -18,7 +18,7 @@ namespace CafeLib.Web.Request.UnitTests
         }
 
         [Fact]
-        public async void PostRequestTest()
+        public async void WebRequestBase_PostRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
             const string jsonText = @"{ 
@@ -26,7 +26,7 @@ namespace CafeLib.Web.Request.UnitTests
                     ""Content"": ""StreamValue""
                     }";
 
-            var request = new WebRequest<JObject>("https://httpbin.org/anything");
+            var request = new TestWebRequest<JObject>("https://httpbin.org/anything");
 
             var jsonBody = JToken.Parse(jsonText);
 
@@ -41,7 +41,7 @@ namespace CafeLib.Web.Request.UnitTests
         }
 
         [Fact]
-        public async void PutRequestTest()
+        public async void WebRequestBase_PutRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
             const string jsonText = @"{ 
@@ -49,7 +49,7 @@ namespace CafeLib.Web.Request.UnitTests
                     ""Content"": ""StreamValue""
                     }";
 
-            var request = new WebRequest<JObject>(endpoint);
+            var request = new TestWebRequest<JObject>(endpoint);
 
             var jsonBody = JToken.Parse(jsonText);
 
@@ -64,7 +64,7 @@ namespace CafeLib.Web.Request.UnitTests
         }
 
         [Fact]
-        public async void DeleteRequestTest()
+        public async void WebRequestBase_DeleteRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
             const string jsonText = @"{ 
@@ -72,7 +72,7 @@ namespace CafeLib.Web.Request.UnitTests
                     ""Content"": ""StreamValue""
                     }";
 
-            var request = new WebRequest<JObject>(endpoint);
+            var request = new TestWebRequest<JObject>(endpoint);
             var jsonBody = JToken.Parse(jsonText);
             var result = await request.DeleteAsync(jsonBody);
             Assert.True(result);

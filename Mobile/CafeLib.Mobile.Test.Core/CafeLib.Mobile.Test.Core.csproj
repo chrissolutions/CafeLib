@@ -5,7 +5,7 @@
     <Version>0.9.0</Version>
     <PackageIcon>cafelib.png</PackageIcon>
     <Description>Cafe library for Mobile tests.</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

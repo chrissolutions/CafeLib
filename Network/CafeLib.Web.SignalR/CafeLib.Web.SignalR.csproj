@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 		<TargetFramework>netstandard2.1</TargetFramework>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<Description>Cafelib Signal/R support package supporting method binding.</Description>
 		<Version>0.9.0</Version>
 		<Copyright></Copyright>
@@ -25,10 +25,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Include="..\..\cafelib.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
     <None Include="..\..\cafelib.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
