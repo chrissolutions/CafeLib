@@ -223,17 +223,20 @@ namespace CafeLib.Web.Request
 
                     case string _:
                         var data = body.ToString().TrimStart();
-                        if (data.StartsWith("{") || data.StartsWith("["))
+                        switch (data[0])
                         {
-                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(WebContentType.Json));
-                        }
-                        else if (data.StartsWith("<"))
-                        {
-                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(WebContentType.Xml));
-                        }
-                        else
-                        {
-                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(WebContentType.Text));
+                            case '{':
+                            case '[':
+                                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(WebContentType.Json));
+                                break;
+
+                            case '<':
+                                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(WebContentType.Xml));
+                                break;
+
+                            default:
+                                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(WebContentType.Text));
+                                break;
                         }
                         break;
                 }
@@ -332,7 +335,7 @@ namespace CafeLib.Web.Request
                 {
                     var serializer = new XmlSerializer(typeof(T));
                     using var stringReader = new StringReader(content);
-                    return (T) serializer.Deserialize(stringReader);
+                    return (T)serializer.Deserialize(stringReader);
                 }
 
                 default:
