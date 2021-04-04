@@ -47,6 +47,7 @@ echo Create Nuget Package for %solution% ...
 
 echo Push Package to Nuget repository ...
 for %%X in (%libs%) DO @echo on&&%nuget% push %sourcepath%\%%X\%libPath%\%%X.%version%.nupkg %apikey% -source %nugetRepo%&&@echo off
+goto exit
 
 :usage
 echo nugetinstall -v ^<version number^> [-c ^<configuration^> Debug is default]
