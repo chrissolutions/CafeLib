@@ -302,36 +302,38 @@ namespace CafeLib.Web.Request
         /// <returns></returns>
         private static async Task<T> ConvertContent<T>(WebResponse response, Stream contentStream)
         {
-            if (typeof(T) == typeof(bool))
+            switch (typeof(T))
             {
-                return (T)(object)(contentStream != null);
+                case var x when x == typeof(bool):
+                    return (T)(object)(contentStream != null);
+
+                case var _ when contentStream == null:
+                    return default;
+
+                case var x when x == typeof(bool):
+                    return (T)(object)await contentStream.ToByteArrayAsync();
             }
 
-            if (contentStream == null)
-            {
-                return default;
-            }
-
-            if (typeof(T) == typeof(byte[]))
-            {
-                return (T)(object)await contentStream.ToByteArrayAsync();
-            }
-
-            var reader = new StreamReader(contentStream, Encoding.UTF8);
+            using var reader = new StreamReader(contentStream, Encoding.UTF8);
             var content = await reader.ReadToEndAsync();
-            if (content == null) return default;
 
-            switch (response.ContentType)
+            switch (content)
             {
-                case WebContentType.Json:
+                case null:
+                    return default;
+
+                case var _ when typeof(T) == typeof(string):
+                    return (T)(object)content;
+
+                case var _ when response.ContentType == WebContentType.Json:
                     return JsonConvert.DeserializeObject<T>(content);
 
-                case WebContentType.Xml:
-                {
-                    var serializer = new XmlSerializer(typeof(T));
-                    using var stringReader = new StringReader(content);
-                    return (T)serializer.Deserialize(stringReader);
-                }
+                case var _ when response.ContentType == WebContentType.Xml:
+                    {
+                        var serializer = new XmlSerializer(typeof(T));
+                        using var stringReader = new StringReader(content);
+                        return (T)serializer.Deserialize(stringReader);
+                    }
 
                 default:
                     return (T)(object)content;
