@@ -21,7 +21,7 @@ namespace CafeLib.Bitcoin.Api.CoinMarketCap
         public async Task<string> LatestListings()
         {
             var url = $"https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=5000&convert=USD";
-            var request = new JsonRequest<string>(url);
+            var request = new WebRequest<string>(url);
             request.Headers.Add("Accepts", "application/json");
             request.Headers.Add("X-CMC_PRO_API_KEY", _apiKey);
 
