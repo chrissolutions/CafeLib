@@ -3,34 +3,29 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System.Net.Http;
+using System;
 using System.Threading.Tasks;
+using CafeLib.Web.Request;
 
 namespace CafeLib.Bitcoin.Api.CoinMarketCap
 {
     public class CoinMarketCap
     {
+        private readonly string _apiKey;
 
-        string API_KEY = "b54bcf4d-1bca-4e8e-9a24-22ff2c3d462c";
-
-        HttpClient _HttpClient;
-
-        public CoinMarketCap(string api_key)
+        public CoinMarketCap(string apiKey)
         {
-            API_KEY = api_key;
-
-            _HttpClient = new HttpClient();
-            _HttpClient.DefaultRequestHeaders.Accept.Clear();
-            _HttpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            _HttpClient.DefaultRequestHeaders.Add("User-Agent", "KzApiCoinMarketCap");
-            _HttpClient.DefaultRequestHeaders.Add("X-CMC_PRO_API_KEY", api_key);
+            _apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
         }
 
         public async Task<string> LatestListings()
         {
             var url = $"https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=5000&convert=USD";
+            var request = new JsonRequest<string>(url);
+            request.Headers.Add("Accepts", "application/json");
+            request.Headers.Add("X-CMC_PRO_API_KEY", _apiKey);
 
-            var json = await _HttpClient.GetStringAsync(url);
+            var json = await request.GetAsync();
             /*
             {
                 "status": {
@@ -102,6 +97,5 @@ namespace CafeLib.Bitcoin.Api.CoinMarketCap
             } */
             return json;
         }
-
     }
 }
