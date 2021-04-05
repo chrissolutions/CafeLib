@@ -23,7 +23,7 @@ namespace CafeLib.Web.Request
         /// <summary>
         /// WebRequestHeaders constructor.
         /// </summary>
-        internal WebHeaders()
+        public WebHeaders()
         {
             Headers = new ConcurrentDictionary<string, IEnumerable<string>>();
         }

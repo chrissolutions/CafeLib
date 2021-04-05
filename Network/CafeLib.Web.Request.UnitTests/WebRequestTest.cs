@@ -9,8 +9,8 @@ namespace CafeLib.Web.Request.UnitTests
         public async void WebRequest_GetRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
-            var request = new WebRequest<JToken>(endpoint);
-            var json = await request.GetAsync();
+            var request = new ApiRequest<JToken, JToken>();
+            var json = await request.GetAsync(endpoint);
             Assert.NotNull(json);
             var result = json.ToObject<BinResult>();
             Assert.NotNull(result);
@@ -27,11 +27,11 @@ namespace CafeLib.Web.Request.UnitTests
                     ""Content"": ""StreamValue""
                     }";
 
-            var request = new WebRequest<JObject>("https://httpbin.org/anything");
+            var request = new ApiRequest<JObject, JToken>();
 
             var jsonBody = JToken.Parse(jsonText);
 
-            var json = await request.PostAsync(jsonBody);
+            var json = await request.PostAsync(endpoint, jsonBody);
             Assert.NotNull(json);
 
             var result = json.ToObject<BinResult>();
@@ -75,9 +75,9 @@ namespace CafeLib.Web.Request.UnitTests
                     ""Content"": ""StreamValue""
                     }";
 
-            var request = new WebRequest<JObject>(endpoint);
+            var request = new ApiRequest<JObject, JToken>();
             var jsonBody = JToken.Parse(jsonText);
-            var result = await request.DeleteAsync(jsonBody);
+            var result = await request.DeleteAsync(endpoint, jsonBody);
             Assert.True(result);
         }
     }
