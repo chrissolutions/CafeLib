@@ -58,19 +58,6 @@ namespace CafeLib.Core.Logging
         public void Info(LogEventInfo eventInfo, string message) => _logger.Info(eventInfo, message);
 
         /// <summary>
-        /// Log OK event
-        /// </summary>
-        /// <param name="message">log message</param>
-        public void Ok(string message) => _logger.Ok(LogEventInfo.Empty, message);
-
-        /// <summary>
-        /// Log OK event
-        /// </summary>
-        /// <param name="eventInfo">log event info</param>
-        /// <param name="message">log message</param>
-        public void Ok(LogEventInfo eventInfo, string message) => _logger.Ok(eventInfo, message);
-
-        /// <summary>
         /// Log error event.
         /// </summary>
         /// <param name="message">log message</param>
@@ -127,34 +114,6 @@ namespace CafeLib.Core.Logging
         public void Critical(LogEventInfo eventInfo, string message, Exception exception) => _logger.Critical(eventInfo, message, exception);
 
         /// <summary>
-        /// Log missing event.
-        /// </summary>
-        /// <param name="message">log message</param>
-        public void Missing(string message) => _logger.Missing(LogEventInfo.Empty, message);
-
-        /// <summary>
-        /// Log missing event.
-        /// </summary>
-        /// <param name="message">log message</param>
-        /// <param name="exception">exception object</param>
-        public void Missing(string message, Exception exception) => _logger.Missing(LogEventInfo.Empty, message, exception);
-
-        /// <summary>
-        /// Log missing event.
-        /// </summary>
-        /// <param name="eventInfo">log event info</param>
-        /// <param name="message">log message</param>
-        public void Missing(LogEventInfo eventInfo, string message) => _logger.Missing(eventInfo, message);
-
-        /// <summary>
-        /// Log missing event.
-        /// </summary>
-        /// <param name="eventInfo">log event info</param>
-        /// <param name="message">log message</param>
-        /// <param name="exception">exception object</param>
-        public void Missing(LogEventInfo eventInfo, string message, Exception exception) => _logger.Missing(eventInfo, message, exception);
-
-        /// <summary>
         /// Log warning event.
         /// </summary>
         /// <param name="message">event message</param>
@@ -183,23 +142,23 @@ namespace CafeLib.Core.Logging
         /// <summary>
         /// Log the message.
         /// </summary>
-        /// <param name="errorLevel">log level</param>
+        /// <param name="logLevel">log level</param>
         /// <param name="logEventInfo">log event info</param>
         /// <param name="message">message</param>
         /// <param name="exception"></param>
-        public void LogMessage(ErrorLevel errorLevel, LogEventInfo logEventInfo, string message, Exception exception = null)
-            => _logger.LogMessage(errorLevel, logEventInfo, message, exception);
+        public void LogMessage(LogLevel logLevel, LogEventInfo logEventInfo, string message, Exception exception = null)
+            => _logger.LogMessage(logLevel, logEventInfo, message, exception);
 
         /// <summary>
         /// Log the message.
         /// </summary>
-        /// <param name="errorLevel">log level</param>
+        /// <param name="logLevel">log level</param>
         /// <param name="logEventInfo">log event info</param>
         /// <param name="state"></param>
         /// <param name="exception"></param>
         /// <param name="formatter"></param>
-        public void LogMessage(ErrorLevel errorLevel, LogEventInfo logEventInfo, object state, Exception exception, Func<object, Exception, string> formatter)
-            => _logger.Log(_logger.ToLogLevel(errorLevel), LogEventInfo.ToEventId(logEventInfo), state, exception, formatter);
+        public void LogMessage(LogLevel logLevel, LogEventInfo logEventInfo, object state, Exception exception, Func<object, Exception, string> formatter)
+            => _logger.Log(logLevel, LogEventInfo.ToEventId(logEventInfo), state, exception, formatter);
 
         #endregion
     }
