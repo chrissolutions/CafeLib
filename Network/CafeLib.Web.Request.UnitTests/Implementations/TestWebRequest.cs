@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace CafeLib.Web.Request.UnitTests
+namespace CafeLib.Web.Request.UnitTests.Implementations
 {
     public class TestWebRequest<TResponse> : WebRequestBase
     {

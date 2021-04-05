@@ -4,14 +4,14 @@ using Xunit;
 
 namespace CafeLib.Web.Request.UnitTests
 {
-    public class WebRequestBaseTest
+    public class JsonRequestTest
     {
         [Fact]
-        public async void WebRequestBase_GetRequestTest()
+        public async void ApiRequest_GetRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
-            var request = new TestWebRequest<JToken>(endpoint);
-            var json = await request.GetAsync();
+            var request = new JsonRequest();
+            var json = await request.GetAsync(endpoint);
             Assert.NotNull(json);
             var result = json.ToObject<BinResult>();
             Assert.NotNull(result);
@@ -20,7 +20,7 @@ namespace CafeLib.Web.Request.UnitTests
         }
 
         [Fact]
-        public async void WebRequestBase_PostRequestTest()
+        public async void ApiRequest_PostRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
             const string jsonText = @"{ 
@@ -28,11 +28,11 @@ namespace CafeLib.Web.Request.UnitTests
                     ""Content"": ""StreamValue""
                     }";
 
-            var request = new TestWebRequest<JObject>("https://httpbin.org/anything");
+            var request = new JsonRequest();
 
             var jsonBody = JToken.Parse(jsonText);
 
-            var json = await request.PostAsync(jsonBody);
+            var json = await request.PostAsync(endpoint, jsonBody);
             Assert.NotNull(json);
 
             var result = json.ToObject<BinResult>();
@@ -44,7 +44,7 @@ namespace CafeLib.Web.Request.UnitTests
         }
 
         [Fact]
-        public async void WebRequestBase_PutRequestTest()
+        public async void JsonRequest_PutRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
             const string jsonText = @"{ 
@@ -52,11 +52,11 @@ namespace CafeLib.Web.Request.UnitTests
                     ""Content"": ""StreamValue""
                     }";
 
-            var request = new TestWebRequest<JObject>(endpoint);
+            var request = new JsonRequest();
 
             var jsonBody = JToken.Parse(jsonText);
 
-            var json = await request.PutAsync(jsonBody);
+            var json = await request.PutAsync(endpoint, jsonBody);
             Assert.NotNull(json);
 
             var result = json.ToObject<BinResult>();
@@ -68,7 +68,7 @@ namespace CafeLib.Web.Request.UnitTests
         }
 
         [Fact]
-        public async void WebRequestBase_DeleteRequestTest()
+        public async void JsonRequest_DeleteRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
             const string jsonText = @"{ 
@@ -76,9 +76,9 @@ namespace CafeLib.Web.Request.UnitTests
                     ""Content"": ""StreamValue""
                     }";
 
-            var request = new TestWebRequest<JObject>(endpoint);
+            var request = new JsonRequest();
             var jsonBody = JToken.Parse(jsonText);
-            var result = await request.DeleteAsync(jsonBody);
+            var result = await request.DeleteAsync(endpoint, jsonBody);
             Assert.True(result);
         }
     }
