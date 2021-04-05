@@ -23,7 +23,7 @@ namespace CafeLib.Web.Request
         }
 
         /// <summary>
-        /// ApiRequest constructor
+        /// WebRequestBase constructor
         /// </summary>
         /// <param name="headers">request headers</param>
         protected WebRequestBase(WebHeaders headers)
