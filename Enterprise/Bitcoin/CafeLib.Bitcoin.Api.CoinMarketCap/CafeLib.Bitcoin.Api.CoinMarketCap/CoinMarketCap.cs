@@ -6,11 +6,10 @@
 using System;
 using System.Threading.Tasks;
 using CafeLib.Web.Request;
-using Newtonsoft.Json.Linq;
 
 namespace CafeLib.Bitcoin.Api.CoinMarketCap
 {
-    public class CoinMarketCap : ApiRequest<string, JToken>
+    public class CoinMarketCap : BasicApiRequest
     {
         public CoinMarketCap(string apiKey)
         {

@@ -3,11 +3,10 @@ using System.Threading.Tasks;
 using CafeLib.Bitcoin.Api.CoinGecko.Models.Coins;
 using CafeLib.Web.Request;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace CafeLib.Bitcoin.Api.CoinGecko
 {
-    public class CoinGecko : ApiRequest<string, JToken>
+    public class CoinGecko : BasicApiRequest
     {
         private const string CoinGeckoUrl = "https://api.coingecko.com/api/v3";
  
