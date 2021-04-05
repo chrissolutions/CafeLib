@@ -1,6 +1,9 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CafeLib.Bitcoin.Api.Paymail.Models;
 using CafeLib.Core.Extensions;
 using CafeLib.Web.Request;
 using DnsClient;
@@ -9,8 +12,11 @@ using Newtonsoft.Json.Linq;
 
 namespace CafeLib.Bitcoin.Api.Paymail
 {
-    public class PaymailApi : ApiRequest<string, JToken>
+    public class PaymailApi : BasicApiRequest
     {
+        private const string HandleRegexPattern = @"^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
+        private static readonly Lazy<Regex> HandleRegex = new Lazy<Regex>(() => new Regex(HandleRegexPattern), true);
+
         private readonly IDictionary<string, CapabilitiesResponse> _cache;
 
         public PaymailApi()
@@ -19,15 +25,20 @@ namespace CafeLib.Bitcoin.Api.Paymail
              Headers.Add("User-Agent", "KzPaymailClient");
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="domain"></param>
-        /// <param name="ba"></param>
-        /// <returns></returns>
-        private bool CacheTryGetValue(string domain, out CapabilitiesResponse ba)
+        public async Task<bool> DomainHasCapability(string domain, Capability capability)
         {
-            return _cache.TryGetValue(domain, out ba);
+            var id = ToBrfcId(capability);
+            var ba = await GetApiDescriptionFor(domain);
+            if (ba == null || !ba.Capabilities.ContainsKey(id))
+                return false;
+            var v = ba.Capabilities[id].Value;
+            return !v.Equals(false);
+        }
+
+        public async Task EnsureCapability(string domain, Capability capability)
+        {
+            if (!await DomainHasCapability(domain, capability))
+                throw new InvalidOperationException($"Unknown capability \"{capability}\" for \"{domain}\"");
         }
 
         /// <summary>
@@ -50,7 +61,7 @@ namespace CafeLib.Bitcoin.Api.Paymail
 
         private async Task<CapabilitiesResponse> GetApiDescriptionFor(string domain, bool ignoreCache = false)
         {
-            if (!ignoreCache && CacheTryGetValue(domain, out var ba))
+            if (!ignoreCache && _cache.TryGetValue(domain, out var ba))
                 return ba;
 
             var hostname = domain;
@@ -59,12 +70,39 @@ namespace CafeLib.Bitcoin.Api.Paymail
             if (!r2.HasError && r2.Answers.Count == 1)
             {
                 var srv = r2.Answers[0] as DnsClient.Protocol.SrvRecord;
-                hostname = srv?.Target.Value[0..^1] + ":" + srv?.Port;
+                hostname = srv?.Target.Value[..^1] + ":" + srv?.Port;
             }
 
             var json = await GetAsync($"https://{hostname}/.well-known/bsvalias");
             var results = JsonConvert.DeserializeObject<CapabilitiesResponse>(json);
             return results;
+        }
+
+        private async Task<string> GetCapabilityUrl(Capability capability, string paymail, string pubkey = null)
+        {
+            if (!TryParse(paymail, out var alias, out var domain)) return null;
+
+            await EnsureCapability(domain, capability);
+            var ba = await GetApiDescriptionFor(domain);
+            var url = ba.Capabilities[ToBrfcId(capability)].Value<string>();
+            url = url.Replace("{alias}", alias).Replace("{domain.tld}", domain);
+            if (pubkey != null)
+                url = url.Replace("{pubkey}", pubkey);
+            return url;
+        }
+
+
+        internal static bool TryParse(string paymail, out string alias, out string domain)
+        {
+            alias = null;
+            domain = null;
+
+            if (!HandleRegex.Value.IsMatch(paymail)) return false;
+
+            var parts = paymail.Split('@');
+            alias = parts[0];
+            domain = parts[1];
+            return true;
         }
     }
 }

@@ -2,9 +2,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CafeLib.Bitcoin.Api.Paymail
+namespace CafeLib.Bitcoin.Api.Paymail.Models
 {
-    public class CapabilitiesResponse
+    internal class CapabilitiesResponse
     {
         [JsonProperty("bsvalias")]
         public string BsvAlias { get; set; }
