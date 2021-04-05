@@ -184,7 +184,7 @@ namespace CafeLib.Bitcoin.Keys
         /// <returns>20 byte hash as a KzUInt160</returns>
         public KzUInt160 ToHash160() => KzHashes.HASH160(ReadOnlySpan);
 
-        public string ToAddress() => KzEncoders.B58Check.Encode(Kz.PUBKEY_ADDRESS, ToHash160().Span);
+        public string ToAddress() => KzEncoders.B58Check.Encode(Kz.PubkeyAddress, ToHash160().Span);
 		public string ToHex() => _vch != null ? _hex.Encode(_vch) : "<invalid>";
 
         public override string ToString() => ToAddress();

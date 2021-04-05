@@ -3,7 +3,6 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CafeLib.Bitcoin.Api.CoinGecko;
@@ -37,7 +36,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
             var api = new CoinGecko();
             var bsv = (await api.GetCoinList()).First(x => x.Symbol == "bsv");
             var data = await api.GetCurrentData(bsv.Id);
-            Console.WriteLine(data);
+            Assert.NotNull(data.MarketData.PriceChange24HInCurrency);
         }
     }
 }

@@ -33,8 +33,8 @@ namespace CafeLib.Bitcoin.UnitTests.Script
 
             var address = new KzPubKey(true);
             var e = new KzUInt160("c2eaba3b9c29575322c6e24fdc1b49bdfe405bad", true);
-            var s1 = KzEncoders.B58Check.Encode(Kz.PUBKEY_ADDRESS, e.ReadOnlySpan);
-            var s2 = KzEncoders.B58Check.Encode(Kz.SCRIPT_ADDRESS, e.ReadOnlySpan);
+            var s1 = KzEncoders.B58Check.Encode(Kz.PubkeyAddress, e.ReadOnlySpan);
+            var s2 = KzEncoders.B58Check.Encode(Kz.ScriptAddress, e.ReadOnlySpan);
             //e.Span.CopyTo(address.Span);
             //var id = address.GetID();
         }

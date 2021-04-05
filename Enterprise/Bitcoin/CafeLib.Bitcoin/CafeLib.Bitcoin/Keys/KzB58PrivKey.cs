@@ -14,7 +14,7 @@ namespace CafeLib.Bitcoin.Keys
         public void SetKey(KzPrivKey privKey)
         {
             Debug.Assert(privKey.IsValid);
-            SetData(Kz.SECRET_KEY, privKey.ReadOnlySpan, privKey.IsCompressed);
+            SetData(Kz.SecretKey, privKey.ReadOnlySpan, privKey.IsCompressed);
         }
 
         public KzPrivKey GetKey()
@@ -31,12 +31,12 @@ namespace CafeLib.Bitcoin.Keys
                 var d = Data;
                 var fExpectedFormat = d.Length == 32 || d.Length == 33 && d[^1] == 1;
                 var v = Version;
-                var fCorrectVersion = v.SequenceEqual(Kz.SECRET_KEY);
+                var fCorrectVersion = v.SequenceEqual(Kz.SecretKey);
                 return fExpectedFormat && fCorrectVersion;
             }
         }
 
-        public bool SetString(string b58) => base.SetString(b58, Kz.SECRET_KEY.Length) && IsValid;
+        public bool SetString(string b58) => base.SetString(b58, Kz.SecretKey.Length) && IsValid;
 
         public KzB58PrivKey() { }
         public KzB58PrivKey(KzPrivKey privKey) { SetKey(privKey); }

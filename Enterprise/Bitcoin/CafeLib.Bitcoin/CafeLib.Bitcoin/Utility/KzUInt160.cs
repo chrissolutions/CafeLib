@@ -76,7 +76,7 @@ namespace CafeLib.Bitcoin.Utility
             s.Read(Span);
         }
 
-        public string ToPubKeyAddress() => KzEncoders.B58Check.Encode(Kz.PUBKEY_ADDRESS, ReadOnlySpan);
+        public string ToPubKeyAddress() => KzEncoders.B58Check.Encode(Kz.PubkeyAddress, ReadOnlySpan);
         public BigInteger ToBN() => new BigInteger(ReadOnlySpan, isUnsigned:true, isBigEndian:true);
         public byte[] ToBytes() => Span.ToArray();
 

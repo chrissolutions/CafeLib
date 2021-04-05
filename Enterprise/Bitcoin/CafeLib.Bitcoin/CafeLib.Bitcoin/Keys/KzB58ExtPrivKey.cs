@@ -12,7 +12,7 @@ namespace CafeLib.Bitcoin.Keys
     {
         public void SetKey(KzExtPrivKey privKey)
         {
-            var prefix = Kz.EXT_SECRET_KEY;
+            var prefix = Kz.ExtSecretKey;
             var data = new byte[prefix.Length + KzExtKey.BIP32_EXTKEY_SIZE];
             prefix.CopyTo(data.Slice(0, prefix.Length));
             privKey.Encode(data.Slice(prefix.Length));
@@ -28,7 +28,7 @@ namespace CafeLib.Bitcoin.Keys
             return privKey;
         }
 
-        public bool SetString(string b58) => base.SetString(b58, Kz.EXT_SECRET_KEY.Length);
+        public bool SetString(string b58) => base.SetString(b58, Kz.ExtSecretKey.Length);
 
         public KzB58ExtPrivKey() { }
         public KzB58ExtPrivKey(KzExtPrivKey privKey) { SetKey(privKey); }
