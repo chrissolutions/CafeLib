@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\CafeLib.Bitcoin.Api.CoinMarketCap\CafeLib.Bitcoin.Api.CoinMarketCap\CafeLib.Bitcoin.Api.CoinMarketCap.csproj" />
+    <ProjectReference Include="..\CafeLib.Bitcoin.Api.CoinGecko\CafeLib.Bitcoin.Api.CoinGecko.csproj" />
     <ProjectReference Include="..\CafeLib.Bitcoin\CafeLib.Bitcoin.csproj" />
   </ItemGroup>
   
