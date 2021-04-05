@@ -6,26 +6,23 @@
 using System;
 using System.Threading.Tasks;
 using CafeLib.Web.Request;
+using Newtonsoft.Json.Linq;
 
 namespace CafeLib.Bitcoin.Api.CoinMarketCap
 {
-    public class CoinMarketCap
+    public class CoinMarketCap : ApiRequest<string, JToken>
     {
-        private readonly string _apiKey;
-
         public CoinMarketCap(string apiKey)
         {
-            _apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
+            var key = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
+            Headers.Add("Accepts", "application/json");
+            Headers.Add("X-CMC_PRO_API_KEY", key);
         }
 
         public async Task<string> LatestListings()
         {
             var url = $"https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=5000&convert=USD";
-            var request = new WebRequest<string>(url);
-            request.Headers.Add("Accepts", "application/json");
-            request.Headers.Add("X-CMC_PRO_API_KEY", _apiKey);
-
-            var json = await request.GetAsync();
+            var json = await GetAsync(url);
             /*
             {
                 "status": {
