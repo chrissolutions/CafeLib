@@ -27,24 +27,16 @@ namespace CafeLib.Web.Request
         public Task<TResponse> PostAsync(Uri endpoint, TBody body, WebHeaders headers = null, object parameters = null) =>
             PostAsync<TBody, TResponse>(endpoint, body, headers, parameters);
 
-        public Task<TResponse> PutAsync(string endpoint, TBody body, WebHeaders headers = null, object parameters = null)
-        {
-            return PutAsync(new Uri(endpoint), body, headers, parameters);
-        }
+        public Task<TResponse> PutAsync(string endpoint, TBody body, WebHeaders headers = null, object parameters = null) =>
+            PutAsync(new Uri(endpoint), body, headers, parameters);
 
-        public Task<TResponse> PutAsync(Uri endpoint, TBody body, WebHeaders headers = null, object parameters = null)
-        {
-            return PutAsync<TBody, TResponse>(endpoint, body, headers, parameters);
-        }
+        public Task<TResponse> PutAsync(Uri endpoint, TBody body, WebHeaders headers = null, object parameters = null) =>
+            PutAsync<TBody, TResponse>(endpoint, body, headers, parameters);
 
-        public Task<bool> DeleteAsync(string endpoint, TBody body, WebHeaders headers = null, object parameters = null)
-        {
-            return DeleteAsync(new Uri(endpoint), body, headers, parameters);
-        }
+        public Task<bool> DeleteAsync(string endpoint, TBody body, WebHeaders headers = null, object parameters = null) =>
+            DeleteAsync(new Uri(endpoint), body, headers, parameters);
 
-        public Task<bool> DeleteAsync(Uri endpoint, TBody body, WebHeaders headers = null, object parameters = null)
-        {
-            return DeleteAsync<TBody>(endpoint, body, headers, parameters);
-        }
+        public Task<bool> DeleteAsync(Uri endpoint, TBody body, WebHeaders headers = null, object parameters = null) =>
+            DeleteAsync<TBody>(endpoint, body, headers, parameters);
     }
 }
