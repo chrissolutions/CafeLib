@@ -44,7 +44,7 @@ namespace CafeLib.Core.Logging
         {
             var message = formatter?.Invoke(state, exception);
             var messageInfo = state.GetType().IsAnonymousType() ? new LogMessageInfo(state.ToObjectMap()) : null;
-            Receiver.LogMessage(new LogEventMessage(Category, this.ToErrorLevel(logLevel), new LogEventInfo(eventId), message, messageInfo, exception));
+            Receiver.LogMessage(new LogEventMessage(Category, logLevel, new LogEventInfo(eventId), message, messageInfo, exception));
         }
 
         /// <summary>

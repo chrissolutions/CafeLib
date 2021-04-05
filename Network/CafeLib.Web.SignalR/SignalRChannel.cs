@@ -5,7 +5,6 @@ using CafeLib.Core.Logging;
 using CafeLib.Core.MethodBinding;
 using CafeLib.Core.Runnable;
 using CafeLib.Core.Runnable.Events;
-using CafeLib.Core.Support;
 using CafeLib.Web.SignalR.ConnectionFactory;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -71,7 +70,7 @@ namespace CafeLib.Web.SignalR
                         return;
 
                     case LogEventMessage log:
-                        Logger.LogMessage(log.ErrorLevel, log.EventInfo, log.Message, log.Exception);
+                        Logger.LogMessage(log.LogLevel, log.EventInfo, log.Message, log.Exception);
                         Advised.Invoke(new SignalRAdviseMessage(log.Message, log.Exception));
                         return;
 
@@ -128,7 +127,7 @@ namespace CafeLib.Web.SignalR
             }
             catch (Exception ex)
             {
-                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                OnAdvise(new LogEventMessage(GetType().FullName, LogLevel.Error, LogEventInfo.Empty, ex.Message, ex));
             }
         }
 
@@ -140,7 +139,7 @@ namespace CafeLib.Web.SignalR
             }
             catch (Exception ex)
             {
-                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                OnAdvise(new LogEventMessage(GetType().FullName, LogLevel.Error, LogEventInfo.Empty, ex.Message, ex));
             }
         }
 
@@ -152,7 +151,7 @@ namespace CafeLib.Web.SignalR
             }
             catch (Exception ex)
             {
-                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                OnAdvise(new LogEventMessage(GetType().FullName, LogLevel.Error, LogEventInfo.Empty, ex.Message, ex));
             }
         }
 
@@ -164,7 +163,7 @@ namespace CafeLib.Web.SignalR
             }
             catch (Exception ex)
             {
-                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                OnAdvise(new LogEventMessage(GetType().FullName, LogLevel.Error, LogEventInfo.Empty, ex.Message, ex));
             }
         }
 
@@ -176,7 +175,7 @@ namespace CafeLib.Web.SignalR
             }
             catch (Exception ex)
             {
-                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                OnAdvise(new LogEventMessage(GetType().FullName, LogLevel.Error, LogEventInfo.Empty, ex.Message, ex));
             }
         }
 
@@ -188,7 +187,7 @@ namespace CafeLib.Web.SignalR
             }
             catch (Exception ex)
             {
-                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                OnAdvise(new LogEventMessage(GetType().FullName, LogLevel.Error, LogEventInfo.Empty, ex.Message, ex));
             }
         }
 
@@ -200,7 +199,7 @@ namespace CafeLib.Web.SignalR
             }
             catch (Exception ex)
             {
-                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                OnAdvise(new LogEventMessage(GetType().FullName, LogLevel.Error, LogEventInfo.Empty, ex.Message, ex));
             }
         }
 
@@ -212,7 +211,7 @@ namespace CafeLib.Web.SignalR
             }
             catch (Exception ex)
             {
-                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                OnAdvise(new LogEventMessage(GetType().FullName, LogLevel.Error, LogEventInfo.Empty, ex.Message, ex));
             }
         }
 
@@ -224,7 +223,7 @@ namespace CafeLib.Web.SignalR
             }
             catch (Exception ex)
             {
-                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                OnAdvise(new LogEventMessage(GetType().FullName, LogLevel.Error, LogEventInfo.Empty, ex.Message, ex));
             }
         }
 
@@ -236,7 +235,7 @@ namespace CafeLib.Web.SignalR
             }
             catch (Exception ex)
             {
-                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                OnAdvise(new LogEventMessage(GetType().FullName, LogLevel.Error, LogEventInfo.Empty, ex.Message, ex));
             }
         }
 
@@ -248,7 +247,7 @@ namespace CafeLib.Web.SignalR
             }
             catch (Exception ex)
             {
-                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                OnAdvise(new LogEventMessage(GetType().FullName, LogLevel.Error, LogEventInfo.Empty, ex.Message, ex));
             }
         }
 
@@ -260,7 +259,7 @@ namespace CafeLib.Web.SignalR
             }
             catch (Exception ex)
             {
-                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                OnAdvise(new LogEventMessage(GetType().FullName, LogLevel.Error, LogEventInfo.Empty, ex.Message, ex));
             }
         }
 
@@ -272,7 +271,7 @@ namespace CafeLib.Web.SignalR
             }
             catch (Exception ex)
             {
-                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                OnAdvise(new LogEventMessage(GetType().FullName, LogLevel.Error, LogEventInfo.Empty, ex.Message, ex));
             }
         }
 
@@ -322,7 +321,7 @@ namespace CafeLib.Web.SignalR
             }
             catch (Exception ex)
             {
-                OnAdvise(new LogEventMessage(GetType().FullName, ErrorLevel.Error, LogEventInfo.Empty, ex.Message, ex));
+                OnAdvise(new LogEventMessage(GetType().FullName, LogLevel.Error, LogEventInfo.Empty, ex.Message, ex));
                 return false;
             }
         }

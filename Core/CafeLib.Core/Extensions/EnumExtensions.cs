@@ -24,7 +24,7 @@ namespace CafeLib.Core.Extensions
         /// Get enum field names.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <returns>array of enum field names</returns>
         public static string[] GetNames<T>() where T : Enum
         {
             return Enum.GetNames(typeof(T));
@@ -49,25 +49,36 @@ namespace CafeLib.Core.Extensions
         public static string Humanize(this Enum value)
         {
             var fieldInfo = value.GetType().GetField(value.GetName());
-            return GetDescriptor(fieldInfo);
+            return GetFieldDescriptor(fieldInfo);
         }
 
         /// <summary>
-        /// Obtains the enum descriptor values.
+        /// Returns the enum descriptor values.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">enum type</typeparam>
         /// <returns>array of enum descriptor values</returns>
         public static string[] GetDescriptors<T>() where T : Enum
         {
-            return typeof(T).GetEnumNames().Select(x => GetDescriptor(typeof(T).GetField(x))).ToArray();
+            return typeof(T).GetEnumNames().Select(x => GetFieldDescriptor(typeof(T).GetField(x))).ToArray();
         }
 
         /// <summary>
-        /// Get the descriptor value associated with the enum field.
+        /// Returns the descriptor value associated to the enum field. 
+        /// </summary>
+        /// <param name="value">enum value</param>
+        /// <returns></returns>
+        public static string GetDescriptor(this Enum value)
+        {
+            var fieldInfo = value.GetType().GetField(value.GetName());
+            return GetFieldDescriptor(fieldInfo);
+        }
+
+        /// <summary>
+        /// Get the descriptor value associated to the enum field.
         /// </summary>
         /// <param name="fieldInfo"></param>
         /// <returns></returns>
-        private static string GetDescriptor(MemberInfo fieldInfo)
+        private static string GetFieldDescriptor(MemberInfo fieldInfo)
         {
             var attr = fieldInfo.GetCustomAttribute<DescriptionAttribute>();
             if (attr != null)
@@ -81,3 +92,4 @@ namespace CafeLib.Core.Extensions
         }
     }
 }
+

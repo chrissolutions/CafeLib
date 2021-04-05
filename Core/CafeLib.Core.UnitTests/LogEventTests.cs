@@ -63,7 +63,7 @@ namespace CafeLib.Core.UnitTests
                     .AddProvider(new LoggerProvider(x =>
                     {
                         Assert.Equal(typeof(HttpClient).FullName, x.Category);
-                        Assert.Equal(ErrorLevel.Info, x.ErrorLevel);
+                        Assert.Equal(LogLevel.Information, x.LogLevel);
                         Assert.Equal("Hello World", x.Message);
                     }));
             });
@@ -84,7 +84,7 @@ namespace CafeLib.Core.UnitTests
                     .AddProvider(new LoggerProvider(x =>
                     {
                         Assert.Equal(typeof(HttpClient).FullName, x.Category);
-                        Assert.Equal(ErrorLevel.Info, x.ErrorLevel);
+                        Assert.Equal(LogLevel.Information, x.LogLevel);
                         Assert.Equal("Hello World", x.Message);
                     }));
             });
@@ -107,7 +107,7 @@ namespace CafeLib.Core.UnitTests
         public void LogEventWriterLogEventMessageTest()
         {
             var writer = new LogEventWriter(typeof(HttpClient).FullName, TestLoggerFactoryListener);
-            writer.LogMessage(ErrorLevel.Info,
+            writer.LogMessage(LogLevel.Information,
                 new LogEventInfo(id: 3, name: "TestEvent"),
                 new { tag = 20, state = 40 },
                 null,
@@ -119,7 +119,7 @@ namespace CafeLib.Core.UnitTests
         public void LogEventWriterOfGenericTypeTest()
         {
             var writer = new LogEventWriter<HttpClient>(TestLoggerFactoryListener);
-            writer.LogMessage(ErrorLevel.Info,
+            writer.LogMessage(LogLevel.Information,
                 new LogEventInfo(id: 3, name: "TestEvent"),
                 new { tag = 20, state = 40 },
                 null,
