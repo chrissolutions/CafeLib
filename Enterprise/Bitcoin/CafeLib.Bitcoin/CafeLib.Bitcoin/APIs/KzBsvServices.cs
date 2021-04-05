@@ -12,7 +12,7 @@ namespace CafeLib.Bitcoin.APIs {
     /// Clients (applications) can configure an instance to use specific or default service implementations.
     /// This class encapsulates service provider selection logic, usage limits, and authentication. 
     /// For some APIs such as GetExchangeRate, averaging service responses may be preferred.
-    /// For some APIs such as SendTransaction, one or mulitple providers may be preferred for fee rate or privacy reasons.
+    /// For some APIs such as SendTransaction, one or multiple providers may be preferred for fee rate or privacy reasons.
     /// </summary>
     public class KzBsvServices {
         // Providers
