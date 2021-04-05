@@ -16,7 +16,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
         public async Task GetSupportedCoins_Test() 
         {
             var api = new CoinGecko();
-            var coins = await api.GetSupportedCoins();
+            var coins = await api.GetCoinList();
             Assert.NotNull(coins);
             Assert.True(coins.Any());
         }
@@ -25,10 +25,19 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
         public async Task GetBitcoinSV_Test()
         {
             var api = new CoinGecko();
-            var bsv = (await api.GetSupportedCoins()).First(x => x.Symbol == "bsv");
+            var bsv = (await api.GetCoinList()).First(x => x.Symbol == "bsv");
             Assert.Equal("bitcoin-cash-sv", bsv.Id);
             Assert.Equal("bsv", bsv.Symbol);
             Assert.Equal("Bitcoin SV", bsv.Name);
+        }
+
+        [Fact]
+        public async Task GetCurrentData_Test()
+        {
+            var api = new CoinGecko();
+            var bsv = (await api.GetCoinList()).First(x => x.Symbol == "bsv");
+            var data = await api.GetCurrentData(bsv.Id);
+            Console.WriteLine(data);
         }
     }
 }
