@@ -2,39 +2,49 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace CafeLib.Web.Request.UnitTests
+namespace CafeLib.Web.Request.UnitTests.Implementations
 {
-    public class TestWebRequest<TResponse> : WebRequestBase, IWebRequest<TResponse, JToken>
+    public class TestWebRequest<TResponse> : WebRequestBase
     {
-        public TestWebRequest(string endpoint, WebHeaders headers = null)
-            : this(new Uri(endpoint), headers)
+        public Uri Endpoint { get; protected set; }
+
+        /// <summary>
+        /// ApiRequest constructor
+        /// </summary>
+        /// <param name="endpoint">service endpoint</param>
+        public TestWebRequest(string endpoint)
+            : this(new Uri(endpoint))
         {
         }
 
-        public TestWebRequest(Uri endpoint, WebHeaders headers = null) 
-            : base(endpoint, headers)
+        /// <summary>
+        /// WebRequestBase constructor
+        /// </summary>
+        /// <param name="endpoint">service endpoint</param>
+        public TestWebRequest(Uri endpoint)
         {
+            Endpoint = endpoint;
             SetHeaders();
         }
 
         public Task<TResponse> GetAsync(WebHeaders headers = null, object parameters = null)
         {
-            return GetAsync<TResponse>(headers, parameters);
+            return GetAsync<TResponse>(Endpoint, headers, parameters);
         }
 
         public Task<TResponse> PostAsync(JToken body, WebHeaders headers = null, object parameters = null)
         {
-            return PostAsync<JToken, TResponse>(body, headers, parameters);
+            return PostAsync<JToken, TResponse>(Endpoint, body, headers, parameters);
         }
 
         public Task<TResponse> PutAsync(JToken body, WebHeaders headers = null, object parameters = null)
         {
-            return PutAsync<JToken, TResponse>(body, headers, parameters);
+            return PutAsync<JToken, TResponse>(Endpoint, body, headers, parameters);
         }
 
         public Task<bool> DeleteAsync(JToken body, WebHeaders headers = null, object parameters = null)
         {
-            return DeleteAsync<JToken>(body, headers, parameters);
+            return DeleteAsync(Endpoint, body, headers, parameters);
         }
 
         private void SetHeaders()
