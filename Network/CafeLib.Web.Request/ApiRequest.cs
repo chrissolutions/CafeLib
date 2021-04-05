@@ -15,25 +15,17 @@ namespace CafeLib.Web.Request
             Headers = headers ?? new WebHeaders();
         }
 
-        public Task<TResponse> GetAsync(string endpoint, WebHeaders headers = null, object parameters = null)
-        {
-            return GetAsync(new Uri(endpoint), headers, parameters);
-        }
+        public Task<TResponse> GetAsync(string endpoint, WebHeaders headers = null, object parameters = null) =>
+            GetAsync(new Uri(endpoint), headers, parameters);
 
-        public Task<TResponse> GetAsync(Uri endpoint, WebHeaders headers = null, object parameters = null)
-        {
-            return GetAsync<TResponse>(endpoint, headers, parameters);
-        }
+        public Task<TResponse> GetAsync(Uri endpoint, WebHeaders headers = null, object parameters = null) =>
+            GetAsync<TResponse>(endpoint, headers, parameters);
 
-        public Task<TResponse> PostAsync(string endpoint, TBody body, WebHeaders headers = null, object parameters = null)
-        {
-            return PostAsync(new Uri(endpoint), body, headers, parameters);
-        }
+        public Task<TResponse> PostAsync(string endpoint, TBody body, WebHeaders headers = null, object parameters = null) =>
+            PostAsync(new Uri(endpoint), body, headers, parameters);
 
-        public Task<TResponse> PostAsync(Uri endpoint, TBody body, WebHeaders headers = null, object parameters = null)
-        {
-            return PostAsync<TBody, TResponse>(endpoint, body, headers, parameters);
-        }
+        public Task<TResponse> PostAsync(Uri endpoint, TBody body, WebHeaders headers = null, object parameters = null) =>
+            PostAsync<TBody, TResponse>(endpoint, body, headers, parameters);
 
         public Task<TResponse> PutAsync(string endpoint, TBody body, WebHeaders headers = null, object parameters = null)
         {
@@ -42,7 +34,7 @@ namespace CafeLib.Web.Request
 
         public Task<TResponse> PutAsync(Uri endpoint, TBody body, WebHeaders headers = null, object parameters = null)
         {
-            return PutAsync<TBody, TResponse>(body, headers, parameters);
+            return PutAsync<TBody, TResponse>(endpoint, body, headers, parameters);
         }
 
         public Task<bool> DeleteAsync(string endpoint, TBody body, WebHeaders headers = null, object parameters = null)
