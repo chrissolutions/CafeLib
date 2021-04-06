@@ -451,7 +451,7 @@ namespace CafeLib.Bitcoin.Keys {
         /// <returns>Returns the entropy as a byte[] from a string of base 6 digits.</returns>
         static byte[] Base6ToEntropy(string base6, int length = 128)
         {
-            var needDigits = (int)Math.Ceiling(length / Math.Log2(6));
+            var needDigits = (int)Math.Ceiling(length / Math.Log(6, 2));
             if (base6.Length < needDigits)
                 throw new ArgumentException($"For {length} bits of entropy, at least {needDigits} digits of base 6 are needed.");
             return BigIntegerToEntropy(Base6ToBigInteger(base6), length);
@@ -468,7 +468,7 @@ namespace CafeLib.Bitcoin.Keys {
         /// <returns>Returns the entropy as a byte[] from a string of base 10 digits.</returns>
         static byte[] Base10ToEntropy(string base10, int length = 128)
         {
-            var needDigits = (int)Math.Ceiling(length / Math.Log2(10));
+            var needDigits = (int)Math.Ceiling(length / Math.Log(10, 2));
             if (base10.Length < needDigits)
                 throw new ArgumentException($"For {length} bits of entropy, at least {needDigits} digits of base 10 are needed.");
             return BigIntegerToEntropy(Base10ToBigInteger(base10), length);
