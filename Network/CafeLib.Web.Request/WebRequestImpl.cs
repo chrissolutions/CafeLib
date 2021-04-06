@@ -261,36 +261,35 @@ namespace CafeLib.Web.Request
             using var client = new HttpClient();
             SetupRequestHeader(client, uri, headers, body);
 
-            if (method.Method == HttpMethod.Get.Method)
+            switch (method.Method)
             {
-                return await client.GetAsync(uri.PathAndQuery);
-            }
+                case var x when x == HttpMethod.Get.Method:
+                    return await client.GetAsync(uri.PathAndQuery);
 
-            if (method.Method == HttpMethod.Post.Method)
-            {
-                var content = body != null
-                    ? body is byte[] bytes
-                        ? new ByteArrayContent(bytes)
-                        : new StringContent(body.ToString(), Encoding.UTF8, WebContentType.Json)
-                    : null;
+                case var x when x == HttpMethod.Post.Method:
+                {
+                    var content = body != null
+                        ? body is byte[] bytes
+                            ? new ByteArrayContent(bytes)
+                            : new StringContent(body.ToString(), Encoding.UTF8, WebContentType.Json)
+                        : null;
 
-                return await client.PostAsync(uri.PathAndQuery, content);
-            }
+                    return await client.PostAsync(uri.PathAndQuery, content);
+                }
 
-            if (method.Method == HttpMethod.Put.Method)
-            {
-                var content = body != null
-                    ? body is byte[] bytes
-                        ? new ByteArrayContent(bytes)
-                        : new StringContent(body.ToString(), Encoding.UTF8, WebContentType.Json)
-                    : null;
+                case var x when x == HttpMethod.Put.Method:
+                {
+                    var content = body != null
+                        ? body is byte[] bytes
+                            ? new ByteArrayContent(bytes)
+                            : new StringContent(body.ToString(), Encoding.UTF8, WebContentType.Json)
+                        : null;
 
-                return await client.PutAsync(uri.PathAndQuery, content);
-            }
+                    return await client.PutAsync(uri.PathAndQuery, content);
+                }
 
-            if (method.Method == HttpMethod.Delete.Method)
-            {
-                return await client.DeleteAsync(uri.PathAndQuery);
+                case var x when x == HttpMethod.Delete.Method:
+                    return await client.DeleteAsync(uri.PathAndQuery);
             }
 
             throw new MissingMethodException(nameof(method));
