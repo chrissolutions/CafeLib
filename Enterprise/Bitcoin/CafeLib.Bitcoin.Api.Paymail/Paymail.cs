@@ -193,7 +193,7 @@ namespace CafeLib.Bitcoin.Api.Paymail
             if (!r2.HasError && r2.Answers.Count == 1)
             {
                 var srv = r2.Answers[0] as DnsClient.Protocol.SrvRecord;
-                hostname = srv?.Target.Value[..^1] + ":" + srv?.Port;
+                hostname = $"{srv?.Target.Value[..^1]}:{srv?.Port}";
             }
 
             try
