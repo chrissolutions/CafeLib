@@ -2,13 +2,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CafeLib.Bitcoin.Api.Paymail.Models;
-using CafeLib.Bitcoin.APIs.Paymail;
 using CafeLib.Bitcoin.Keys;
 using CafeLib.Bitcoin.Script;
 using CafeLib.Bitcoin.Utility;
@@ -20,19 +16,28 @@ using Newtonsoft.Json.Linq;
 
 namespace CafeLib.Bitcoin.Api.Paymail
 {
-    public class PaymailApi : BasicApiRequest
+    public class Paymail : BasicApiRequest
     {
         private const string HandleRegexPattern = @"^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
         private static readonly Lazy<Regex> HandleRegex = new Lazy<Regex>(() => new Regex(HandleRegexPattern), true);
 
         private readonly IDictionary<string, CapabilitiesResponse> _cache;
 
-        public PaymailApi()
+        /// <summary>
+        /// Paymail api default constructor.
+        /// </summary>
+        public Paymail()
         {
              _cache = new ConcurrentDictionary<string, CapabilitiesResponse>();
              Headers.Add("User-Agent", "KzPaymailClient");
         }
 
+        /// <summary>
+        /// Determine whether domain has capability.
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="capability"></param>
+        /// <returns></returns>
         public async Task<bool> DomainHasCapability(string domain, Capability capability)
         {
             var id = ToBrfcId(capability);
@@ -43,12 +48,40 @@ namespace CafeLib.Bitcoin.Api.Paymail
             return v != null && !v.Equals(false);
         }
 
+        /// <summary>
+        /// Ensure capability
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="capability"></param>
+        /// <returns></returns>
         public async Task EnsureCapability(string domain, Capability capability)
         {
             if (!await DomainHasCapability(domain, capability))
                 throw new InvalidOperationException($"Unknown capability \"{capability}\" for \"{domain}\"");
         }
 
+        /// <summary>
+        /// Get public key.
+        /// </summary>
+        /// <param name="receiverHandle"></param>
+        /// <returns></returns>
+        public async Task<KzPubKey> GetPubKey(string receiverHandle)
+        {
+            var url = await GetIdentityUrl(receiverHandle);
+            var json = await GetAsync(url);
+            var response = JsonConvert.DeserializeObject<GetPubKeyResponse>(json);
+            var pubkey = new KzPubKey(response.PubKey);
+            return pubkey.IsCompressed && new[] { 2, 3 }.ToArray().Contains(pubkey.ReadOnlySpan[0])
+                ? pubkey
+                : null;
+        }
+
+        /// <summary>
+        /// Verify public key.
+        /// </summary>
+        /// <param name="receiverHandle"></param>
+        /// <param name="pubKey"></param>
+        /// <returns></returns>
         public async Task<bool> VerifyPubKey(string receiverHandle, KzPubKey pubKey)
         {
             var url = await GetVerifyUrl(receiverHandle, pubKey.ToHex());
@@ -60,7 +93,6 @@ namespace CafeLib.Bitcoin.Api.Paymail
 
         /// <summary>
         /// Implements brfc 759684b1a19a, paymentDestination: bsvalias Payment Addressing (Basic Address Resolution)
-        /// 
         /// </summary>
         /// <param name="key">Private key with which to sign this request. If null, signature will be blank. Else, must match public key returned by GetPubKey(senderHandle).</param>
         /// <param name="receiverHandle"></param>
@@ -98,13 +130,56 @@ namespace CafeLib.Bitcoin.Api.Paymail
         }
 
         /// <summary>
-        /// 
+        /// Verifies that the message was signed by the private key corresponding to the paymail public key.
         /// </summary>
-        /// <param name="domain"></param>
-        /// <param name="ba"></param>
-        private void CacheUpdateValue(string domain, CapabilitiesResponse ba)
+        /// <param name="message">A copy of the message which was originally signed.</param>
+        /// <param name="signature">The signature received for validation.</param>
+        /// <param name="paymail">The paymail claiming to have signed the message.</param>
+        /// <param name="pubkey">If known, the public key corresponding to the private key used by the paymail to sign messages.</param>
+        /// <returns>(ok, pubkey) where ok is true only if both the public key and signature were confirmed as valid.
+        /// If ok is true, the returned public key is valid and can be saved for future validations.
+        /// </returns>
+        public async Task<(bool ok, KzPubKey pubkey)> IsValidSignature(string message, string signature, string paymail, KzPubKey pubkey = null)
         {
-            _cache[domain] = ba;
+            if (!TryParse(paymail, out _, out var domain)) return (false, pubkey);
+
+            if (pubkey != null)
+            {
+                // If a pubkey is provided and the domain is capable, verify that it is correct
+                // If it is not correct, forget the input value and attempt to obtain the valid key.
+                if (await DomainHasCapability(domain, Capability.VerifyPublicKeyOwner))
+                {
+                    if (!await VerifyPubKey(paymail, pubkey))
+                        pubkey = null;
+                }
+            }
+
+            if (pubkey == null)
+            {
+                // Attempt to determine the correct pubkey for the paymail.
+                if (await DomainHasCapability(domain, Capability.Pki))
+                {
+                    pubkey = await GetPubKey(paymail);
+                }
+            }
+
+            return pubkey != null 
+                ? (pubkey.VerifyMessage(message, signature), pubkey)
+                : (false, null);
+        }
+
+        #region Helpers
+
+        private async Task<string> GetIdentityUrl(string paymail) => await GetCapabilityUrl(Capability.Pki, paymail);
+        private async Task<string> GetAddressUrl(string paymail) => await GetCapabilityUrl(Capability.PaymentDestination, paymail);
+        private async Task<string> GetVerifyUrl(string paymail, string pubkey) => await GetCapabilityUrl(Capability.VerifyPublicKeyOwner, paymail, pubkey);
+
+        /// <summary>
+        /// BRFC identifiers are partially defined here: http://bsvalias.org
+        /// </summary>
+        private static string ToBrfcId(Capability capability)
+        {
+            return capability.GetDescriptor();
         }
 
         private async Task<CapabilitiesResponse> GetApiDescriptionFor(string domain, bool ignoreCache = false)
@@ -121,34 +196,17 @@ namespace CafeLib.Bitcoin.Api.Paymail
                 hostname = srv?.Target.Value[..^1] + ":" + srv?.Port;
             }
 
-            var json = await GetAsync($"https://{hostname}/.well-known/bsvalias");
-            var results = JsonConvert.DeserializeObject<CapabilitiesResponse>(json);
-            return results;
-        }
-
-        public async Task<KzPubKey> GetPubKey(string receiverHandle)
-        {
-            var url = await GetIdentityUrl(receiverHandle);
-            var json = await GetAsync(url);
-            var response = JsonConvert.DeserializeObject<GetPubKeyResponse>(json);
-            var pubkey = new KzPubKey(response.PubKey);
-            return pubkey.IsCompressed && new[] {2, 3}.ToArray().Contains(pubkey.ReadOnlySpan[0])
-                ? pubkey
-                : null;
-        }
-
-        #region Helpers
-
-        private async Task<string> GetIdentityUrl(string paymail) => await GetCapabilityUrl(Capability.Pki, paymail);
-        public async Task<string> GetAddressUrl(string paymail) => await GetCapabilityUrl(Capability.PaymentDestination, paymail);
-        public async Task<string> GetVerifyUrl(string paymail, string pubkey) => await GetCapabilityUrl(Capability.VerifyPublicKeyOwner, paymail, pubkey);
-
-        /// <summary>
-        /// BRFC identifiers are partially defined here: http://bsvalias.org
-        /// </summary>
-        private static string ToBrfcId(Capability capability)
-        {
-            return capability.GetDescriptor();
+            try
+            {
+                var json = await GetAsync($"https://{hostname}/.well-known/bsvalias");
+                var capabilities = JsonConvert.DeserializeObject<CapabilitiesResponse>(json);
+                _cache[domain] = capabilities;
+                return capabilities;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         private async Task<string> GetCapabilityUrl(Capability capability, string paymail, string pubkey = null)
