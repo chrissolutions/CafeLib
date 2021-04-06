@@ -5,7 +5,6 @@
 
 using System.Threading.Tasks;
 using CafeLib.Bitcoin.Api.Paymail;
-using CafeLib.Bitcoin.APIs.Paymail;
 using CafeLib.Bitcoin.Keys;
 using CafeLib.Bitcoin.Utility;
 using Xunit;
@@ -65,7 +64,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
         }
 
         [Fact]
-        public async Task GetOutputScript()
+        public async Task GetOutputScript_Test()
         {
             // Paymail server configuration for testpaymail@kizmet.org:
             // testpaymail@kizmet.org
@@ -76,7 +75,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
             // var key = KzElectrumSv.GetMasterPrivKey("<replace with actual wallet seed>").Derive($"0/{int.MaxValue}").PrivKey;
             var key = KzPrivKey.FromB58("KxXvocKqZtdHvZP5HHNShrwDQVz2muNPisrzoyeyhXc4tZhBj1nM");
 
-            var r = new KzPaymailClient();
+            var r = new Paymail();
             var s = await r.GetOutputScript(key, "tonesnotes@moneybutton.com", "testpaymail@kizmet.org");
             Assert.True(s.Length > 0);
         }
@@ -99,18 +98,18 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
         {
             //var To = "testpaymail@kizmet.org";
             //var PubKey = "";
-            var From = "tone@simply.cash";
-            var When = "2019-07-11T12:24:04.260Z";
-            var Amount = "";
-            var Purpose = "";
-            var Signature = "IJ1C3gXhnUxKpU8JOIjGHC8talwIgfIXKMmRZ5mjysb0eHjLPQP5Tlx29Xi5KNDZuOsOPk8HiVtwKAefq1pJVDs=";
+            const string from = "tone@simply.cash";
+            const string when = "2019-07-11T12:24:04.260Z";
+            const string amount = "";
+            const string purpose = "";
+            const string signature = "IJ1C3gXhnUxKpU8JOIjGHC8talwIgfIXKMmRZ5mjysb0eHjLPQP5Tlx29Xi5KNDZuOsOPk8HiVtwKAefq1pJVDs=";
 
-            var pub = await new KzPaymailClient().GetPubKey("tone@simply.cash");
+            var pub = await new Paymail().GetPubKey("tone@simply.cash");
             // var pub = new KzPubKey();
             // pub.Set("02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef".HexToBytes());
 
-            var message = $"{From}{(Amount == "" ? "0" : Amount)}{When}{Purpose}";
-            var ok = pub.VerifyMessage(message, Signature);
+            var message = $"{from}{(amount == "" ? "0" : amount)}{when}{purpose}";
+            var ok = pub.VerifyMessage(message, signature);
 
             Assert.True(ok);
         }
@@ -118,10 +117,10 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
         [Fact]
         public void SignatureTest2()
         {
-            var paymail = "some@paymail.com";
-            var amount = "500";
-            var when = "2019-03-01T05:00:00.000Z";
-            var purpose = "some reason";
+            const string paymail = "some@paymail.com";
+            const string amount = "500";
+            const string when = "2019-03-01T05:00:00.000Z";
+            const string purpose = "some reason";
 
             var message = $"{paymail}{amount}{when}{purpose}";
 
