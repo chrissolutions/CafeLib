@@ -13,80 +13,55 @@ using Xunit;
 namespace CafeLib.Bitcoin.UnitTests.APIs {
     public class PaymailApiTests
     {
+        public Paymail Paymail { get; } = new Paymail();
+
         [Theory]
         [InlineData("moneybutton.com", Capability.Pki, true)]
         [InlineData("moneybutton.com", Capability.PaymentDestination, true)]
         [InlineData("moneybutton.com", Capability.SenderValidation, false)]
         [InlineData("moneybutton.com", Capability.VerifyPublicKeyOwner, true)]
         [InlineData("moneybutton.com", Capability.ReceiverApprovals, false)]
-        public async Task EnsureCapabilityFor(string domain, Capability c, bool expectedResult)
+        public async Task EnsureCapabilityFor_Test(string domain, Capability c, bool expectedResult)
         {
-            var paymail = new Paymail();
-            var result = await paymail.DomainHasCapability(domain, c);
+            var result = await Paymail.DomainHasCapability(domain, c);
             Assert.Equal(expectedResult, result);
         }
 
-        [Fact]
-        public async Task GetPubKey()
+        [Theory]
+        [InlineData("kzpaymailasp@kzbsv.org", "02c4aa80834a289b43870b56a6483c924b57650eebe6e5185b19258c76656baa35")]
+        [InlineData("testpaymail@kizmet.org", "02fe6a13c0734578b77d28680aac58a78eb1722dd654117451b8820c9380b10e68")]
+        [InlineData("tonesnotes@moneybutton.com", "02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef")]
+        public async Task GetPubKey_Test(string paymail, string pubkey)
         {
-            var r = new Paymail();
-
-            foreach (var tc in new []
-            {
-                new { p = "kzpaymailasp@kzbsv.org", k = "02c4aa80834a289b43870b56a6483c924b57650eebe6e5185b19258c76656baa35" },
-                new { p = "testpaymail@kizmet.org", k = "02fe6a13c0734578b77d28680aac58a78eb1722dd654117451b8820c9380b10e68" },
-                new { p = "tonesnotes@moneybutton.com", k = "02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef" },   
-            })
-            {
-                //var privkey = KzElectrumSv.GetMasterPrivKey("<replace with actual wallet seed>").Derive($"0/{int.MaxValue}").PrivKey;
-                //var privkey = KzPrivKey.FromB58("KxXvocKqZtdHvZP5HHNShrwDQVz2muNPisrzoyeyhXc4tZhBj1nM");
-                //var pubkey = privkey.GetPubKey();
-                var pubkey = new KzPubKey(tc.k);
-                var k = await r.GetPubKey(tc.p);
-                Assert.Equal(k, pubkey);
-            }
+            //var privkey = KzElectrumSv.GetMasterPrivKey("<replace with actual wallet seed>").Derive($"0/{int.MaxValue}").PrivKey;
+            //var privkey = KzPrivKey.FromB58("KxXvocKqZtdHvZP5HHNShrwDQVz2muNPisrzoyeyhXc4tZhBj1nM");
+            //var pubkey = privkey.GetPubKey();
+            var paymailKey = await Paymail.GetPubKey(paymail);
+            var expectedKey = new KzPubKey(pubkey);
+            Assert.Equal(expectedKey, paymailKey);
         }
 
-        [Fact]
-        public async Task VerifyPubKey()
+        [Theory]
+        [InlineData("kzpaymailasp@kzbsv.org", "02c4aa80834a289b43870b56a6483c924b57650eebe6e5185b19258c76656baa35", true)]
+        [InlineData("testpaymail@kizmet.org", "02fe6a13c0734578b77d28680aac58a78eb1722dd654117451b8820c9380b10e68", true)]
+        [InlineData("tonesnotes@moneybutton.com", "02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef", true)]
+        [InlineData("testpaymail@kizmet.org", "02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef", false)]
+        [InlineData("tonesnotes@moneybutton.com", "02fe6a13c0734578b77d28680aac58a78eb1722dd654117451b8820c9380b10e68", false)]
+        public async Task VerifyPubKey(string paymail, string pubkey, bool expectedResult)
         {
-            var r = new KzPaymailClient();
-
-            foreach (var tc in new []
-            {
-                new { r = true, p = "kzpaymailasp@kzbsv.org", k = "02c4aa80834a289b43870b56a6483c924b57650eebe6e5185b19258c76656baa35" },
-                new { r = true, p = "testpaymail@kizmet.org", k = "02fe6a13c0734578b77d28680aac58a78eb1722dd654117451b8820c9380b10e68" },
-                new { r = true, p = "tonesnotes@moneybutton.com", k = "02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef" },   
-                new { r = false, p = "testpaymail@kizmet.org", k = "02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef" },
-                new { r = false, p = "tonesnotes@moneybutton.com", k = "02fe6a13c0734578b77d28680aac58a78eb1722dd654117451b8820c9380b10e68" },   
-            })
-            {
-                var pubkey = new KzPubKey(tc.k);
-                var ok = await r.VerifyPubKey(tc.p, pubkey);
-                if (tc.r)
-                    Assert.True(ok);
-                else
-                    Assert.False(ok);
-            }
+            var result = await Paymail.VerifyPubKey(paymail, new KzPubKey(pubkey));
+            Assert.Equal(expectedResult, result);
         }
 
-        [Fact]
-        public async Task VerifyMessageSignature()
+        [Theory]
+        [InlineData("tonesnotes@moneybutton.com", "147@moneybutton.com02019-06-07T20:55:57.562ZPayment with Money Button", "H4Q8tvj632hXiirmiiDJkuUN9Z20zDu3KaFuwY8cInZiLhgVJKJdKrZx1RZN06E/AARnFX7Fn618OUBQigCis4M=", true)]
+        [InlineData("tone@simply.cash", "tone@simply.cash02019-07-11T12:24:04.260Z", "IJ1C3gXhnUxKpU8JOIjGHC8talwIgfIXKMmRZ5mjysb0eHjLPQP5Tlx29Xi5KNDZuOsOPk8HiVtwKAefq1pJVDs=", true)]
+        public async Task VerifyMessageSignature(string paymail, string message, string signature, bool expectedResult)
         {
-            var r = new KzPaymailClient();
-
-            foreach (var tc in new[]
-            {
-                //new { p = "testpaymail@kizmet.org", k = "02fe6a13c0734578b77d28680aac58a78eb1722dd654117451b8820c9380b10e68" },
-                new { r = true, p = "tonesnotes@moneybutton.com", m = "147@moneybutton.com02019-06-07T20:55:57.562ZPayment with Money Button", s = "H4Q8tvj632hXiirmiiDJkuUN9Z20zDu3KaFuwY8cInZiLhgVJKJdKrZx1RZN06E/AARnFX7Fn618OUBQigCis4M=" },
-                new { r = true, p = "tone@simply.cash", m = "tone@simply.cash02019-07-11T12:24:04.260Z", s = "IJ1C3gXhnUxKpU8JOIjGHC8talwIgfIXKMmRZ5mjysb0eHjLPQP5Tlx29Xi5KNDZuOsOPk8HiVtwKAefq1pJVDs=" },
-            })
-            {
-                var (ok, pubkey) = await r.IsValidSignature(tc.m, tc.s, tc.p, null);
-                Assert.True(ok);
-                (ok, _) = await r.IsValidSignature(tc.m, tc.s, tc.p, pubkey);
-                Assert.True(ok);
-            }
+            var (result, pubkey) = await Paymail.IsValidSignature(message, signature, paymail);
+            Assert.Equal(expectedResult, result);
+            (result, _) = await Paymail.IsValidSignature(message, signature, paymail, pubkey);
+            Assert.Equal(expectedResult, result);
         }
 
         [Fact]
