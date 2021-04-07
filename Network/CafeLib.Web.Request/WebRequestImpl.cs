@@ -213,9 +213,9 @@ namespace CafeLib.Web.Request
         /// <param name="body">body data</param>
         private static void SetupRequestHeader(HttpClient client, Uri uri, WebHeaders headers, object body)
         {
-            var index = uri.AbsoluteUri.IndexOf(uri.AbsolutePath, StringComparison.Ordinal);
             if (client.BaseAddress == null)
             {
+                var index = uri.AbsoluteUri.IndexOf(uri.AbsolutePath, StringComparison.Ordinal);
                 client.BaseAddress = new Uri(uri.AbsoluteUri.Remove(index));
             }
 

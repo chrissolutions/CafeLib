@@ -1,8 +1,8 @@
 @echo off
 setlocal
 
-:: Library
-set lib=Data
+:: Type
+set type=Data
 
 :: Settings
 set msbld=msbuild.exe
@@ -11,8 +11,8 @@ set configuration=Debug
 set libPath=bin\%configuration%
 set apikey=
 set nugetRepo=C:\Nuget\repo
-set sourcepath=C:\Projects\ChrisSolutions\CafeLib\%lib%
-set solution=CafeLib.%lib%
+set sourcepath=C:\Projects\ChrisSolutions\CafeLib\%type%
+set solution=CafeLib.%type%
 set version=
 
 :: Parse arguments
