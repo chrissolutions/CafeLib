@@ -25,14 +25,15 @@ namespace CafeLib.Web.Request
         /// <summary>
         /// Perform a GET call
         /// </summary>
+        /// <param name="client">HTTP client</param>
         /// <param name="endpoint">uri endpoint</param>
         /// <param name="headers">http headers</param>
         /// <param name="parameters">parameters</param>
         /// <returns>web response</returns>
-        public static async Task<T> GetAsync<T>(Uri endpoint, WebHeaders headers, object parameters = null)
+        public static async Task<T> GetAsync<T>(HttpClient client, Uri endpoint, WebHeaders headers, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
-            using var httpResponse = await SendRequest(uri, HttpMethod.Get, headers, null);
+            using var httpResponse = await SendRequest(client, uri, HttpMethod.Get, headers, null);
             var response = new WebResponse(httpResponse);
             response.EnsureSuccessStatusCode(httpResponse);
             return await ConvertContent<T>(response, await httpResponse.Content.ReadAsStreamAsync());
@@ -41,15 +42,16 @@ namespace CafeLib.Web.Request
         /// <summary>
         /// Perform a POST call
         /// </summary>
+        /// <param name="client">HTTP client</param>
         /// <param name="endpoint">uri endpoint</param>
         /// <param name="headers">http headers</param>
         /// <param name="body">body data</param>
         /// <param name="parameters">parameters</param>
         /// <returns>web response</returns>
-        public static async Task<T> PostAsync<T>(Uri endpoint, WebHeaders headers, object body, object parameters = null)
+        public static async Task<T> PostAsync<T>(HttpClient client, Uri endpoint, WebHeaders headers, object body, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
-            using var httpResponse = await SendRequest(uri, HttpMethod.Post, headers, body);
+            using var httpResponse = await SendRequest(client, uri, HttpMethod.Post, headers, body);
             var response = new WebResponse(httpResponse);
             response.EnsureSuccessStatusCode(httpResponse);
             return await ConvertContent<T>(response, await httpResponse.Content.ReadAsStreamAsync());
@@ -58,15 +60,16 @@ namespace CafeLib.Web.Request
         /// <summary>
         /// Perform a PUT call
         /// </summary>
+        /// <param name="client">HTTP client</param>
         /// <param name="endpoint">uri endpoint</param>
         /// <param name="headers">http headers</param>
         /// <param name="body">body data</param>
         /// <param name="parameters">parameters</param>
         /// <returns>web response</returns>
-        public static async Task<T> PutAsync<T>(Uri endpoint, WebHeaders headers, object body, object parameters = null)
+        public static async Task<T> PutAsync<T>(HttpClient client, Uri endpoint, WebHeaders headers, object body, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
-            using var httpResponse = await SendRequest(uri, HttpMethod.Put, headers, body);
+            using var httpResponse = await SendRequest(client, uri, HttpMethod.Put, headers, body);
             var response = new WebResponse(httpResponse);
             response.EnsureSuccessStatusCode(httpResponse);
             return await ConvertContent<T>(response, await httpResponse.Content.ReadAsStreamAsync());
@@ -75,15 +78,16 @@ namespace CafeLib.Web.Request
         /// <summary>
         /// Perform a DELETE call
         /// </summary>
+        /// <param name="client">HTTP client</param>
         /// <param name="endpoint">uri endpoint</param>
         /// <param name="headers">authentication cookie</param>
         /// <param name="body">body data</param>
         /// <param name="parameters">parameters</param>
         /// <returns>web response</returns>
-        public static async Task<bool> DeleteAsync(Uri endpoint, WebHeaders headers, object body, object parameters = null)
+        public static async Task<bool> DeleteAsync(HttpClient client, Uri endpoint, WebHeaders headers, object body, object parameters = null)
         {
             var uri = CombineUri(endpoint, parameters);
-            using var httpResponse = await SendRequest(uri, HttpMethod.Delete, headers, body);
+            using var httpResponse = await SendRequest(client, uri, HttpMethod.Delete, headers, body);
             var response = new WebResponse(httpResponse);
             response.EnsureSuccessStatusCode(httpResponse);
             return await ConvertContent<bool>(response, await httpResponse.Content.ReadAsStreamAsync());
@@ -210,7 +214,11 @@ namespace CafeLib.Web.Request
         private static void SetupRequestHeader(HttpClient client, Uri uri, WebHeaders headers, object body)
         {
             var index = uri.AbsoluteUri.IndexOf(uri.AbsolutePath, StringComparison.Ordinal);
-            client.BaseAddress = new Uri(uri.AbsoluteUri.Remove(index));
+            if (client.BaseAddress == null)
+            {
+                client.BaseAddress = new Uri(uri.AbsoluteUri.Remove(index));
+            }
+
             client.DefaultRequestHeaders.Accept.Clear();
 
             if (body != null)
@@ -250,15 +258,15 @@ namespace CafeLib.Web.Request
         /// <summary>
         /// Issue a http request
         /// </summary>
+        /// <param name="client">HTTP client</param>
         /// <param name="uri">endpoint uri</param>
         /// <param name="method">http method</param>
         /// <param name="headers">http headers</param>
         /// <param name="body">body data</param>
         /// <exception cref="NotImplementedException"></exception>
         /// <returns>response message</returns>
-        private static async Task<HttpResponseMessage> SendRequest(Uri uri, HttpMethod method, WebHeaders headers, object body)
+        private static async Task<HttpResponseMessage> SendRequest(HttpClient client, Uri uri, HttpMethod method, WebHeaders headers, object body)
         {
-            using var client = new HttpClient();
             SetupRequestHeader(client, uri, headers, body);
 
             switch (method.Method)
