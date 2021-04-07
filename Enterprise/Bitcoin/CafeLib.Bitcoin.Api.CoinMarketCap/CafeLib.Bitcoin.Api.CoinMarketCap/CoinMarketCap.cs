@@ -14,7 +14,7 @@ namespace CafeLib.Bitcoin.Api.CoinMarketCap
         public CoinMarketCap(string apiKey)
         {
             var key = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
-            Headers.Add("Accepts", "application/json");
+            Headers.Add("Accepts", WebContentType.Json);
             Headers.Add("X-CMC_PRO_API_KEY", key);
         }
 

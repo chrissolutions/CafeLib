@@ -30,6 +30,7 @@ namespace CafeLib.Bitcoin.Api.Paymail
         {
              _cache = new ConcurrentDictionary<string, CapabilitiesResponse>();
              Headers.Add("User-Agent", "KzPaymailClient");
+             Headers.Add("Accept", WebContentType.Json);
         }
 
         /// <summary>

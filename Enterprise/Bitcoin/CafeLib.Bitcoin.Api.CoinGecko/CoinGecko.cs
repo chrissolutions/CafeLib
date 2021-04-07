@@ -12,7 +12,7 @@ namespace CafeLib.Bitcoin.Api.CoinGecko
  
         public CoinGecko()
         {
-            Headers.Add("Accept", "application/json");
+            Headers.Add("Accept", WebContentType.Json);
         }
 
         public async Task<IEnumerable<Coin>> GetCoinList()
