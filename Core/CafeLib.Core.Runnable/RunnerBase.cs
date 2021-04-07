@@ -88,7 +88,7 @@ namespace CafeLib.Core.Runnable
         {
             if (IsRunning)
             {
-                _cancellationSource.Cancel();
+                Cancel();
                 OnAdvise(new RunnerStopMessage($"{Name} stopped."));
             }
 
@@ -141,6 +141,13 @@ namespace CafeLib.Core.Runnable
             }, _cancellationSource.Token);
         }
 
+        private void Cancel()
+        {
+            _cancellationSource.Cancel();
+            _cancellationSource.Dispose();
+            _cancellationSource = null;
+        }
+
         #endregion
 
         #region IDisposible
@@ -170,9 +177,6 @@ namespace CafeLib.Core.Runnable
             {
                 // ignore
             }
-
-            _cancellationSource = null;
-            _delay = 0;
         }
 
         #endregion
