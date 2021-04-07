@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Bitcoin.Api.CoinMar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Bitcoin.Api.CoinGecko", "..\CafeLib.Bitcoin.Api.CoinGecko\CafeLib.Bitcoin.Api.CoinGecko.csproj", "{8500A64C-78B1-4FBD-A8E6-DE30A8214C48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Bitcoin.Api.Paymail", "..\CafeLib.Bitcoin.Api.Paymail\CafeLib.Bitcoin.Api.Paymail.csproj", "{DDB4D85A-9D69-4C1A-9153-4B5CCB471CDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Bitcoin.Api.Paymail", "..\CafeLib.Bitcoin.Api.Paymail\CafeLib.Bitcoin.Api.Paymail.csproj", "{DDB4D85A-9D69-4C1A-9153-4B5CCB471CDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Bitcoin.Api.WhatsOnChain", "..\CafeLib.Bitcoin.Api.WhatsOnChain\CafeLib.Bitcoin.Api.WhatsOnChain.csproj", "{64505248-2010-4C97-B900-947FA0F5EC93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{DDB4D85A-9D69-4C1A-9153-4B5CCB471CDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDB4D85A-9D69-4C1A-9153-4B5CCB471CDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDB4D85A-9D69-4C1A-9153-4B5CCB471CDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64505248-2010-4C97-B900-947FA0F5EC93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64505248-2010-4C97-B900-947FA0F5EC93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64505248-2010-4C97-B900-947FA0F5EC93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64505248-2010-4C97-B900-947FA0F5EC93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{7F62B961-56F5-4EA0-9564-74C78387374E} = {7AD9D237-BCC8-4148-A44E-3D1E515CD402}
 		{8500A64C-78B1-4FBD-A8E6-DE30A8214C48} = {7AD9D237-BCC8-4148-A44E-3D1E515CD402}
 		{DDB4D85A-9D69-4C1A-9153-4B5CCB471CDB} = {7AD9D237-BCC8-4148-A44E-3D1E515CD402}
+		{64505248-2010-4C97-B900-947FA0F5EC93} = {7AD9D237-BCC8-4148-A44E-3D1E515CD402}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C591C479-4DDC-4BF3-B401-F7E964254390}
