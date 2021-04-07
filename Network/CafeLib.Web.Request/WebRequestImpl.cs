@@ -272,7 +272,7 @@ namespace CafeLib.Web.Request
             switch (method.Method)
             {
                 case var x when x == HttpMethod.Get.Method:
-                    return await client.GetAsync(uri.PathAndQuery);
+                    return await client.GetAsync(uri.AbsoluteUri);
 
                 case var x when x == HttpMethod.Post.Method:
                 {
@@ -282,7 +282,7 @@ namespace CafeLib.Web.Request
                             : new StringContent(body.ToString(), Encoding.UTF8, WebContentType.Json)
                         : null;
 
-                    return await client.PostAsync(uri.PathAndQuery, content);
+                    return await client.PostAsync(uri.AbsoluteUri, content);
                 }
 
                 case var x when x == HttpMethod.Put.Method:
@@ -293,11 +293,11 @@ namespace CafeLib.Web.Request
                             : new StringContent(body.ToString(), Encoding.UTF8, WebContentType.Json)
                         : null;
 
-                    return await client.PutAsync(uri.PathAndQuery, content);
+                    return await client.PutAsync(uri.AbsoluteUri, content);
                 }
 
                 case var x when x == HttpMethod.Delete.Method:
-                    return await client.DeleteAsync(uri.PathAndQuery);
+                    return await client.DeleteAsync(uri.AbsoluteUri);
             }
 
             throw new MissingMethodException(nameof(method));
