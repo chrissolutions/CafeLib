@@ -26,9 +26,8 @@ namespace CafeLib.Web.Request
         /// WebRequestBase default constructor.
         /// </summary>
         protected WebRequestBase()
+            : this(null)
         {
-            _client = new HttpClient();
-            Headers = new WebHeaders();
         }
 
         /// <summary>
@@ -37,6 +36,7 @@ namespace CafeLib.Web.Request
         /// <param name="headers">request headers</param>
         protected WebRequestBase(WebHeaders headers)
         {
+            _client = new HttpClient();
             Headers = headers ?? new WebHeaders();
         }
 
