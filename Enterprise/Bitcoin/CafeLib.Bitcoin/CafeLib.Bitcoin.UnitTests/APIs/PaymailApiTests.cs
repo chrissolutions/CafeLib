@@ -41,7 +41,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
         }
 
         [Fact]
-        public async Task GetPubKey_Performance_Test()
+        public async Task GetPubKey_List_Test()
         {
             foreach (var tc in new[]
             {
