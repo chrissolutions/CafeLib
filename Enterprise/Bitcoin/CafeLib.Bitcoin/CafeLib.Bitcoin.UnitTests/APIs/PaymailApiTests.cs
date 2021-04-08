@@ -40,6 +40,22 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
             Assert.Equal(expectedKey, paymailKey);
         }
 
+        [Fact]
+        public async Task GetPubKey_Performance_Test()
+        {
+            foreach (var tc in new[]
+            {
+                new { p = "kzpaymailasp@kzbsv.org", k = "02c4aa80834a289b43870b56a6483c924b57650eebe6e5185b19258c76656baa35" },
+                new { p = "testpaymail@kizmet.org", k = "02fe6a13c0734578b77d28680aac58a78eb1722dd654117451b8820c9380b10e68" },
+                new { p = "tonesnotes@moneybutton.com", k = "02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef" },
+            })
+            {
+                var paymailKey = await Paymail.GetPubKey(tc.p);
+                var expectedKey = new KzPubKey(tc.k);
+                Assert.Equal(expectedKey, paymailKey);
+            }
+        }
+
         [Theory]
         [InlineData("kzpaymailasp@kzbsv.org", "02c4aa80834a289b43870b56a6483c924b57650eebe6e5185b19258c76656baa35", true)]
         [InlineData("testpaymail@kizmet.org", "02fe6a13c0734578b77d28680aac58a78eb1722dd654117451b8820c9380b10e68", true)]
