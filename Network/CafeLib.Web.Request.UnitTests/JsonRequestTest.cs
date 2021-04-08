@@ -7,7 +7,7 @@ namespace CafeLib.Web.Request.UnitTests
     public class JsonRequestTest
     {
         [Fact]
-        public async void ApiRequest_GetRequestTest()
+        public async void JsonRequest_GetRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
             var request = new JsonRequest();
@@ -20,7 +20,7 @@ namespace CafeLib.Web.Request.UnitTests
         }
 
         [Fact]
-        public async void ApiRequest_PostRequestTest()
+        public async void JsonRequest_PostRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
             const string jsonText = @"{ 

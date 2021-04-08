@@ -105,20 +105,18 @@ namespace CafeLib.Web.Request
         /// <returns>combined uri</returns>
         private static Uri CombineUri(Uri endpoint, object parameters)
         {
-            var queryParameters = new StringBuilder();
+            if (parameters == null) return endpoint;
+
             var parameterMap = ToObjectMap(parameters);
-            if (parameterMap.Any())
+            if (!parameterMap.Any()) return endpoint;
+
+            var queryParameters = new StringBuilder("?");
+            foreach (var (key, value) in parameterMap)
             {
-                queryParameters = new StringBuilder("?");
-
-                foreach (var param in parameterMap)
-                {
-                    queryParameters.Append($"{param.Key}={param.Value}&");
-                }
-
-                queryParameters.Remove(queryParameters.Length - 1, 1);
+                queryParameters.Append($"{key}={value}&");
             }
 
+            queryParameters.Remove(queryParameters.Length - 1, 1);
             return new Uri(endpoint, queryParameters.ToString());
         }
 
