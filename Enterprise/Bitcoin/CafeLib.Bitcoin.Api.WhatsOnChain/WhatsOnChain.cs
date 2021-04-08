@@ -40,8 +40,7 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain
             return tx;
 
             //var tx = new KzTransaction();
-            ////var ros = new ReadOnlySequence<byte>(woctx.Hex.HexToBytes());
-            //var ros = new ReadOnlySequence<byte>(woctx.VectorOutput[0].ScriptPubKey.Hex.HexToBytes());
+            //var ros = new ReadOnlySequence<byte>(woctx.Hex.HexToBytes());
             //if (!tx.TryReadTransaction(ref ros))
             //    tx = null;
             //return tx;
