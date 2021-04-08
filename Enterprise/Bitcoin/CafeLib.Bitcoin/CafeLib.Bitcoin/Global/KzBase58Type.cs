@@ -1,13 +1,13 @@
 ﻿namespace CafeLib.Bitcoin.Global
 {
-    public enum KzBase58Type : int
+    public enum KzBase58Type
     {
-        PUBKEY_ADDRESS,
-        SCRIPT_ADDRESS,
-        SECRET_KEY,
-        EXT_PUBLIC_KEY,
-        EXT_SECRET_KEY,
+        PubkeyAddress,
+        ScriptAddress,
+        SecretKey,
+        ExtPublicKey,
+        ExtSecretKey,
 
-        MAX_BASE58_TYPES
+        MaxBase58Types
     };
 }

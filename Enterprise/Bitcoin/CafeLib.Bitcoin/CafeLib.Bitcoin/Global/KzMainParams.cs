@@ -59,11 +59,11 @@ namespace CafeLib.Bitcoin.Global
 
             // Deployment of BIP68, BIP112, and BIP113.
 
-            Base58Prefixes[(int)KzBase58Type.PUBKEY_ADDRESS] = new byte[] { (0) };
-            Base58Prefixes[(int)KzBase58Type.SCRIPT_ADDRESS] = new byte[] { (5) };
-            Base58Prefixes[(int)KzBase58Type.SECRET_KEY] = new byte[] { (128) };
-            Base58Prefixes[(int)KzBase58Type.EXT_PUBLIC_KEY] = new byte[] { (0x04), (0x88), (0xB2), (0x1E) };
-            Base58Prefixes[(int)KzBase58Type.EXT_SECRET_KEY] = new byte[] { (0x04), (0x88), (0xAD), (0xE4) };
+            Base58Prefixes[(int)KzBase58Type.PubkeyAddress] = new byte[] { (0) };
+            Base58Prefixes[(int)KzBase58Type.ScriptAddress] = new byte[] { (5) };
+            Base58Prefixes[(int)KzBase58Type.SecretKey] = new byte[] { (128) };
+            Base58Prefixes[(int)KzBase58Type.ExtPublicKey] = new byte[] { (0x04), (0x88), (0xB2), (0x1E) };
+            Base58Prefixes[(int)KzBase58Type.ExtSecretKey] = new byte[] { (0x04), (0x88), (0xAD), (0xE4) };
         }
     }
 }

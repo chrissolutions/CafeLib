@@ -2,10 +2,10 @@
 {
     public enum KzChain
     {
-        unkown,
-        main,
-        test,
-        regtest,
-        stn
+        Unknown,
+        Main,
+        Test,
+        Regtest,
+        Stn
     }
 }

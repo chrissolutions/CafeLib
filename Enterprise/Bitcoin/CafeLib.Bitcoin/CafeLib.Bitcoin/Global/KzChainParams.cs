@@ -17,7 +17,7 @@ namespace CafeLib.Bitcoin.Global
 
         protected KzChainParams()
         {
-            Base58Prefixes = new byte[(int)KzBase58Type.MAX_BASE58_TYPES][];
+            Base58Prefixes = new byte[(int)KzBase58Type.MaxBase58Types][];
         }
 
         public ReadOnlySpan<byte> Base58Prefix(KzBase58Type type) => Base58Prefixes[(int)type].AsSpan();
