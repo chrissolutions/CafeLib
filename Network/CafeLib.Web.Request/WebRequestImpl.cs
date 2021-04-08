@@ -208,17 +208,10 @@ namespace CafeLib.Web.Request
         /// Sets up the HttpClient request header.
         /// </summary>
         /// <param name="client">http client</param>
-        /// <param name="uri">endpoint uri</param>
         /// <param name="headers">http headers</param>
         /// <param name="body">body data</param>
-        private static void SetupRequestHeader(HttpClient client, Uri uri, WebHeaders headers, object body)
+        private static void SetupRequestHeader(HttpClient client, WebHeaders headers, object body)
         {
-            if (client.BaseAddress == null)
-            {
-                var index = uri.AbsoluteUri.IndexOf(uri.AbsolutePath, StringComparison.Ordinal);
-                client.BaseAddress = new Uri(uri.AbsoluteUri.Remove(index));
-            }
-
             client.DefaultRequestHeaders.Accept.Clear();
 
             if (body != null)
@@ -267,12 +260,12 @@ namespace CafeLib.Web.Request
         /// <returns>response message</returns>
         private static async Task<HttpResponseMessage> SendRequest(HttpClient client, Uri uri, HttpMethod method, WebHeaders headers, object body)
         {
-            SetupRequestHeader(client, uri, headers, body);
+            SetupRequestHeader(client, headers, body);
 
             switch (method.Method)
             {
                 case var x when x == HttpMethod.Get.Method:
-                    return await client.GetAsync(uri.AbsoluteUri);
+                    return await client.GetAsync(uri);
 
                 case var x when x == HttpMethod.Post.Method:
                 {
@@ -282,7 +275,7 @@ namespace CafeLib.Web.Request
                             : new StringContent(body.ToString(), Encoding.UTF8, WebContentType.Json)
                         : null;
 
-                    return await client.PostAsync(uri.AbsoluteUri, content);
+                    return await client.PostAsync(uri, content);
                 }
 
                 case var x when x == HttpMethod.Put.Method:
@@ -293,11 +286,11 @@ namespace CafeLib.Web.Request
                             : new StringContent(body.ToString(), Encoding.UTF8, WebContentType.Json)
                         : null;
 
-                    return await client.PutAsync(uri.AbsoluteUri, content);
+                    return await client.PutAsync(uri, content);
                 }
 
                 case var x when x == HttpMethod.Delete.Method:
-                    return await client.DeleteAsync(uri.AbsoluteUri);
+                    return await client.DeleteAsync(uri);
             }
 
             throw new MissingMethodException(nameof(method));
