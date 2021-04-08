@@ -6,7 +6,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CafeLib.Bitcoin.Api.WhatsOnChain.Models;
-using CafeLib.Bitcoin.Global;
+using CafeLib.Bitcoin.Shared;
+using CafeLib.Core.Extensions;
 using CafeLib.Web.Request;
 using Newtonsoft.Json;
 
@@ -14,15 +15,18 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain
 {
     public class WhatsOnChain : BasicApiRequest
     {
-        public WhatsOnChain()
+        public string Network { get; }
+
+        public WhatsOnChain(ChainType chainType)
         {
+            Network = chainType.GetDescriptor();
             Headers.Add("Content-Type", WebContentType.Json);
             Headers.Add("User-Agent", "KzApiWhatsOnChain");
         }
 
         public async Task<List<ByAddressUnspent>> GetUnspentTransactionsByAddress(string address)
         {
-            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.NetworkId}/address/{address}/unspent";
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/address/{address}/unspent";
             var json = await GetAsync(url);
             var unspent = JsonConvert.DeserializeObject<List<ByAddressUnspent>>(json);
             return unspent;
@@ -30,7 +34,7 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain
 
         public async Task<Transaction> GetTransactionsByHash(string txId)
         {
-            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.NetworkId}/tx/hash/{txId}";
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/tx/hash/{txId}";
             var json = await GetAsync(url);
             var tx = JsonConvert.DeserializeObject<Transaction>(json);
             return tx;
@@ -45,7 +49,7 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain
 
         public async Task<decimal> GetExchangeRate()
         {
-            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.NetworkId}/exchangerate";
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/exchangerate";
             var json = await GetAsync(url);
 
             // json == {"currency":"USD","rate":"174.04999999999998"}
