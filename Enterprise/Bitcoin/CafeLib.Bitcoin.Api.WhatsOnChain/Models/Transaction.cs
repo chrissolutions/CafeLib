@@ -4,20 +4,20 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain.Models
 {
     public class Transaction
     {
-        [JsonProperty("txid")]
-        public string TxId { get; set; }
-
         [JsonProperty("hex")]
         public string Hex { get; set; }
+
+        [JsonProperty("txid")]
+        public string TxId { get; set; }
 
         [JsonProperty("hash")]
         public string Hash { get; set; }
 
-        [JsonProperty("size")]
-        public int Size { get; set; }
-
         [JsonProperty("version")]
         public int Version { get; set; }
+
+        [JsonProperty("size")]
+        public int Size { get; set; }
 
         [JsonProperty("locktime")]
         public uint LockTime { get; set; }

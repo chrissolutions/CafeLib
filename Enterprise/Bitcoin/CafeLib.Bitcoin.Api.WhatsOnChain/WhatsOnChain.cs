@@ -31,16 +31,19 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain
             return unspent;
         }
 
-        public async Task<KzTransaction> GetTransactionsByHash(KzUInt256 txId)
+        public async Task<Transaction> GetTransactionsByHash(string txId)
         {
             var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.NetworkId}/tx/hash/{txId}";
             var json = await GetAsync(url);
-            var woctx = JsonConvert.DeserializeObject<Transaction>(json);
-            var tx = new KzTransaction();
-            var ros = new ReadOnlySequence<byte>(woctx.Hex.HexToBytes());
-            if (!tx.TryReadTransaction(ref ros))
-                tx = null;
+            var tx = JsonConvert.DeserializeObject<Transaction>(json);
             return tx;
+
+            //var tx = new KzTransaction();
+            ////var ros = new ReadOnlySequence<byte>(woctx.Hex.HexToBytes());
+            //var ros = new ReadOnlySequence<byte>(woctx.VectorOutput[0].ScriptPubKey.Hex.HexToBytes());
+            //if (!tx.TryReadTransaction(ref ros))
+            //    tx = null;
+            //return tx;
         }
 
         public async Task<decimal> GetExchangeRate()

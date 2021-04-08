@@ -14,7 +14,7 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain.Models
         public int ReqSigs { get; set; }
 
         [JsonProperty("type")]
-        public int Type { get; set; }
+        public string Type { get; set; }
 
         [JsonProperty("addresses")]
         public string[] Addresses { get; set; }

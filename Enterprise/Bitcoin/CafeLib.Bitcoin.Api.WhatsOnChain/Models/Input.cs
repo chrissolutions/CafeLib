@@ -4,6 +4,9 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain.Models
 {
     public class Input
     {
+        [JsonProperty("coinbase")]
+        public string CoinBase { get; set; }
+
         [JsonProperty("txid")]
         public string TxId { get; set; }
 
@@ -15,8 +18,5 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain.Models
 
         [JsonProperty("sequence")]
         public uint Sequence { get; set; }
-
-        [JsonProperty("coinbase")]
-        public string CoinBase { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain.Models
         public decimal Value { get; set; }
 
         [JsonProperty("n")]
-        public int Count { get; set; }
+        public int Index { get; set; }
 
         [JsonProperty("scriptPubKey")]
         public ScriptPubKey ScriptPubKey { get; set; }
