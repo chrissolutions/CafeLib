@@ -3,14 +3,10 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System.Buffers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CafeLib.Bitcoin.Api.WhatsOnChain.Models;
-using CafeLib.Bitcoin.Chain;
-using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Global;
-using CafeLib.Bitcoin.Utility;
 using CafeLib.Web.Request;
 using Newtonsoft.Json;
 
@@ -20,6 +16,7 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain
     {
         public WhatsOnChain()
         {
+            Headers.Add("Content-Type", WebContentType.Json);
             Headers.Add("User-Agent", "KzApiWhatsOnChain");
         }
 
