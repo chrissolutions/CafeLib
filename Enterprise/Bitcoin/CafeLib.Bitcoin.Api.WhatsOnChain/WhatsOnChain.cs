@@ -6,6 +6,7 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CafeLib.Bitcoin.Api.WhatsOnChain.Models;
 using CafeLib.Bitcoin.Chain;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Global;
@@ -15,9 +16,9 @@ using Newtonsoft.Json;
 
 namespace CafeLib.Bitcoin.Api.WhatsOnChain 
 {
-    public class KzApiWhatsOnChain : BasicApiRequest
+    public class WhatsOnChain : BasicApiRequest
     {
-        public KzApiWhatsOnChain()
+        public WhatsOnChain()
         {
             Headers.Add("User-Agent", "KzApiWhatsOnChain");
         }
@@ -36,7 +37,7 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain
             var json = await GetAsync(url);
             var woctx = JsonConvert.DeserializeObject<Transaction>(json);
             var tx = new KzTransaction();
-            var ros = new ReadOnlySequence<byte>(woctx.hex.HexToBytes());
+            var ros = new ReadOnlySequence<byte>(woctx.Hex.HexToBytes());
             if (!tx.TryReadTransaction(ref ros))
                 tx = null;
             return tx;
@@ -50,7 +51,7 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain
             // json == {"currency":"USD","rate":"174.04999999999998"}
 
             var er = JsonConvert.DeserializeObject<ExchangeRate>(json);
-            return er.rate;
+            return er.Rate;
         }
     }
 }

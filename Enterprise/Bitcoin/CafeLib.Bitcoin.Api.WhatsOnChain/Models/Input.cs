@@ -1,20 +1,14 @@
 ﻿using Newtonsoft.Json;
 
-namespace CafeLib.Bitcoin.Api.WhatsOnChain
+namespace CafeLib.Bitcoin.Api.WhatsOnChain.Models
 {
-    public class Vout
+    public class Input
     {
-        [JsonProperty("value")]
-        public decimal Value { get; set; }
-
-        [JsonProperty("n")]
-        public int n { get; set; }
-
         [JsonProperty("txid")]
         public string TxId { get; set; }
 
         [JsonProperty("vout")]
-        public int Vout { get; set; }
+        public int VectorOutput { get; set; }
 
         [JsonProperty("scriptSig")]
         public ScriptSig ScriptSig { get; set; }

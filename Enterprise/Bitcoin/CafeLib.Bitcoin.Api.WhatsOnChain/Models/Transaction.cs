@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace CafeLib.Bitcoin.Api.WhatsOnChain
+namespace CafeLib.Bitcoin.Api.WhatsOnChain.Models
 {
     public class Transaction
     {
@@ -23,10 +23,10 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain
         public uint LockTime { get; set; }
 
         [JsonProperty("vin")]
-        public Vin[] Vin { get; set; }
+        public Input[] VectorInput { get; set; }
 
         [JsonProperty("vout")]
-        public Vout[] Vout { get; set; }
+        public VectorOutput VectorOutput { get; set; }
 
         [JsonProperty("blockhash")]
         public string BlockHash { get; set; }

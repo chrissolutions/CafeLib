@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace CafeLib.Bitcoin.Api.WhatsOnChain
+namespace CafeLib.Bitcoin.Api.WhatsOnChain.Models
 {
     public class ByAddressUnspent
     {
