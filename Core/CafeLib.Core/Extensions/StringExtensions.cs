@@ -9,6 +9,47 @@ namespace CafeLib.Core.Extensions
 {
     public static class StringExtensions
     {
+        #region Constants
+
+        /// <summary>
+        /// An empty string constant.
+        /// </summary>
+        public const string Empty = "";
+
+        #endregion
+
+        #region Extensions
+
+        /// <summary>
+        /// Determines whether a string is null or contain whitespaces.
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>true: string is null or whitespace, false otherwise</returns>
+        public static bool IsNullOrWhiteSpace(this string s) => string.IsNullOrWhiteSpace(s);
+
+        /// <summary>
+        /// Determines whether a string is null or an empty string.
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>true: string is null or empty, false otherwise</returns>
+        public static bool IsNullOrEmpty(this string s) => string.IsNullOrEmpty(s);
+
+        /// <summary>
+        /// Determines whether the string only contains whitespace characters.
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>true: string is blank, false if string is not blank</returns>
+        public static bool IsBlank(this string s) => string.IsNullOrWhiteSpace(s);
+
+        /// <summary>
+        /// Determines whether the string contains non whitespace characters.
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>true: string is not blank, false if string is blank</returns>
+        public static bool IsNotBlank(this string s) => !string.IsNullOrWhiteSpace(s);
+
+        #endregion
+
         #region Converters
 
         public static bool ToBool(this string s)
