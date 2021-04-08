@@ -10,15 +10,17 @@ namespace CafeLib.Bitcoin.Global
     public class KzChainParams
     {
         public KzConsensus Consensus { get; protected set; }
-        public string strNetworkID { get; protected set; }
-        protected byte[][] base58Prefixes;
+
+        public string NetworkId { get; protected set; }
+
+        protected byte[][] Base58Prefixes { get; }
 
         protected KzChainParams()
         {
-            base58Prefixes = new byte[(int)KzBase58Type.MAX_BASE58_TYPES][];
+            Base58Prefixes = new byte[(int)KzBase58Type.MAX_BASE58_TYPES][];
         }
 
-        public ReadOnlySpan<byte> Base58Prefix(KzBase58Type type) => base58Prefixes[(int)type].AsSpan();
+        public ReadOnlySpan<byte> Base58Prefix(KzBase58Type type) => Base58Prefixes[(int)type].AsSpan();
     }
 
 }

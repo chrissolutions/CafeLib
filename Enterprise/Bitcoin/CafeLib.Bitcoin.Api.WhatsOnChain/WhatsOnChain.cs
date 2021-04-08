@@ -5,41 +5,29 @@
 
 using System.Buffers;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using CafeLib.Bitcoin.Chain;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Global;
+using CafeLib.Bitcoin.Services;
 using CafeLib.Bitcoin.Utility;
+using CafeLib.Web.Request;
 using Newtonsoft.Json;
 
-namespace CafeLib.Bitcoin.APIs {
+namespace CafeLib.Bitcoin.Api.WhatsOnChain {
 
-    public class KzApiWhatsOnChain
+    public class KzApiWhatsOnChain : BasicApiRequest
     {
-        HttpClient _HttpClient;
-
-        public class ByAddressUnspent
-        {
-            public int height;
-            public int tx_pos;
-            public string tx_hash;
-            public long value;
-        }
-
         public KzApiWhatsOnChain()
         {
-            _HttpClient = new HttpClient();
-            _HttpClient.DefaultRequestHeaders.Accept.Clear();
-            _HttpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            _HttpClient.DefaultRequestHeaders.Add("User-Agent", "KzApiWhatsOnChain");
+            Headers.Add("User-Agent", "KzApiWhatsOnChain");
         }
 
-        async public Task<List<ByAddressUnspent>> GetUnspentTransactionsByAddress(string address)
+        public async Task<List<ByAddressUnspent>> GetUnspentTransactionsByAddress(string address)
         {
-            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.strNetworkID}/address/{address}/unspent";
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.NetworkId}/address/{address}/unspent";
 
-            var json = await _HttpClient.GetStringAsync(url);
+            var json = await GetAsync(url);
 
             var unspent = JsonConvert.DeserializeObject<List<ByAddressUnspent>>(json);
 
@@ -103,11 +91,11 @@ namespace CafeLib.Bitcoin.APIs {
             public decimal rate;
         }
 
-        async public Task<KzTransaction> GetTransactionsByHash(KzUInt256 txId)
+        public async Task<KzTransaction> GetTransactionsByHash(KzUInt256 txId)
         {
-            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.strNetworkID}/tx/hash/{txId}";
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.NetworkId}/tx/hash/{txId}";
 
-            var json = await _HttpClient.GetStringAsync(url);
+            var json = await GetAsync(url);
 
             var woctx = JsonConvert.DeserializeObject<Transaction>(json);
 
@@ -118,11 +106,11 @@ namespace CafeLib.Bitcoin.APIs {
             return tx;
         }
 
-        async public Task<decimal> GetExchangeRate()
+        public async Task<decimal> GetExchangeRate()
         {
-            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.strNetworkID}/exchangerate";
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.NetworkId}/exchangerate";
 
-            var json = await _HttpClient.GetStringAsync(url);
+            var json = await GetAsync(url);
 
             // json == {"currency":"USD","rate":"174.04999999999998"}
 

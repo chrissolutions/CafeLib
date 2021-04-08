@@ -35,9 +35,9 @@ namespace CafeLib.Bitcoin.APIs {
             _HttpClient.DefaultRequestHeaders.Add("User-Agent", "KzApiWhatsOnChain");
         }
 
-        async public Task<List<ByAddressUnspent>> GetUnspentTransactionsByAddress(string address)
+        public async Task<List<ByAddressUnspent>> GetUnspentTransactionsByAddress(string address)
         {
-            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.strNetworkID}/address/{address}/unspent";
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.NetworkId}/address/{address}/unspent";
 
             var json = await _HttpClient.GetStringAsync(url);
 
@@ -103,9 +103,9 @@ namespace CafeLib.Bitcoin.APIs {
             public decimal rate;
         }
 
-        async public Task<KzTransaction> GetTransactionsByHash(KzUInt256 txId)
+        public async Task<KzTransaction> GetTransactionsByHash(KzUInt256 txId)
         {
-            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.strNetworkID}/tx/hash/{txId}";
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.NetworkId}/tx/hash/{txId}";
 
             var json = await _HttpClient.GetStringAsync(url);
 
@@ -118,9 +118,9 @@ namespace CafeLib.Bitcoin.APIs {
             return tx;
         }
 
-        async public Task<decimal> GetExchangeRate()
+        public async Task<decimal> GetExchangeRate()
         {
-            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.strNetworkID}/exchangerate";
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Kz.Params.NetworkId}/exchangerate";
 
             var json = await _HttpClient.GetStringAsync(url);
 

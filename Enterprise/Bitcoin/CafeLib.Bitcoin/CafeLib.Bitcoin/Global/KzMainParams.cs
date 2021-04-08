@@ -4,11 +4,12 @@ namespace CafeLib.Bitcoin.Global
 {
     public class KzMainParams : KzChainParams
     {
-        public KzMainParams() : base()
+        public KzMainParams()
         {
-            strNetworkID = "main";
+            NetworkId = "main";
 
-            Consensus = new KzConsensus() {
+            Consensus = new KzConsensus
+            {
                 nSubsidyHalvingInterval = 210000,
                 BIP34Height = 227931,
                 BIP34Hash = new KzUInt256("000000000000024b89b42a942fe0d9fea3bb44ab7bd1b19115dd6a759c0808b8"),
@@ -38,26 +39,31 @@ namespace CafeLib.Bitcoin.Global
 
                 // November 13, 2017 hard fork
                 daaHeight = 504031,
+                vDeployments =
+                {
+                    [(int) KzDeploymentPos.DEPLOYMENT_TESTDUMMY] = new KzBIP9Deployment()
+                    {
+                        bit = 28,
+                        nStartTime = 1199145601, // January 1, 2008
+                        nTimeout = 1230767999 // December 31, 2008
+                    },
+                    [(int) KzDeploymentPos.DEPLOYMENT_CSV] = new KzBIP9Deployment()
+                    {
+                        bit = 0,
+                        nStartTime = 1462060800, // May 1st, 2016
+                        nTimeout = 1493596800 // May 1st, 2017
+                    }
+                },
             };
 
-            Consensus.vDeployments[(int)KzDeploymentPos.DEPLOYMENT_TESTDUMMY] = new KzBIP9Deployment() {
-                bit = 28,
-                nStartTime = 1199145601,    // January 1, 2008
-                nTimeout = 1230767999       // December 31, 2008
-            };
 
             // Deployment of BIP68, BIP112, and BIP113.
-            Consensus.vDeployments[(int)KzDeploymentPos.DEPLOYMENT_CSV] = new KzBIP9Deployment() {
-                bit = 0,
-                nStartTime = 1462060800,    // May 1st, 2016
-                nTimeout = 1493596800       // May 1st, 2017
-            };
 
-            base58Prefixes[(int)KzBase58Type.PUBKEY_ADDRESS] = new byte[] { (0) };
-            base58Prefixes[(int)KzBase58Type.SCRIPT_ADDRESS] = new byte[] { (5) };
-            base58Prefixes[(int)KzBase58Type.SECRET_KEY] = new byte[] { (128) };
-            base58Prefixes[(int)KzBase58Type.EXT_PUBLIC_KEY] = new byte[] { (0x04), (0x88), (0xB2), (0x1E) };
-            base58Prefixes[(int)KzBase58Type.EXT_SECRET_KEY] = new byte[] { (0x04), (0x88), (0xAD), (0xE4) };
+            Base58Prefixes[(int)KzBase58Type.PUBKEY_ADDRESS] = new byte[] { (0) };
+            Base58Prefixes[(int)KzBase58Type.SCRIPT_ADDRESS] = new byte[] { (5) };
+            Base58Prefixes[(int)KzBase58Type.SECRET_KEY] = new byte[] { (128) };
+            Base58Prefixes[(int)KzBase58Type.EXT_PUBLIC_KEY] = new byte[] { (0x04), (0x88), (0xB2), (0x1E) };
+            Base58Prefixes[(int)KzBase58Type.EXT_SECRET_KEY] = new byte[] { (0x04), (0x88), (0xAD), (0xE4) };
         }
     }
 }
