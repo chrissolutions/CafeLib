@@ -17,7 +17,7 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain
     {
         public string Network { get; }
 
-        public WhatsOnChain(NetworkType networkType)
+        public WhatsOnChain(NodeType networkType)
         {
             Network = networkType.GetDescriptor();
             Headers.Add("Content-Type", WebContentType.Json);

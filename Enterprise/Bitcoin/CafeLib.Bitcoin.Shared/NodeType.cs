@@ -2,7 +2,7 @@
 
 namespace CafeLib.Bitcoin.Shared
 {
-    public enum NetworkType
+    public enum NodeType
     {
         Unknown,
         [Description("main")]
