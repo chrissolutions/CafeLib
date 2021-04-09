@@ -11,13 +11,18 @@ namespace CafeLib.Bitcoin.Shared.Services
         /// <summary>
         /// BitcoinService constructor.
         /// </summary>
-        /// <param name="network"></param>
+        /// <param name="networkType"></param>
         public BitcoinService(NetworkType networkType)
         {
-            //Network = networkType switch
-            //{
-            //    NetworkType.Main => new    
-            //}
+            Network = networkType switch
+            {
+                NetworkType.Unknown => new MainNetwork(),
+                NetworkType.Main => new MainNetwork(),
+                NetworkType.Test => throw new System.NotImplementedException(),
+                NetworkType.Regression => throw new System.NotImplementedException(),
+                NetworkType.Scaling => throw new System.NotImplementedException(),
+                _ => throw new System.NotImplementedException()
+            };
         }
 
         /// <summary>

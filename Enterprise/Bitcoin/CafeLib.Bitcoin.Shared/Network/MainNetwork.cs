@@ -1,11 +1,12 @@
-﻿using CafeLib.Bitcoin.Shared.Encoding;
+﻿using System;
+using CafeLib.Bitcoin.Shared.Encoding;
 
 namespace CafeLib.Bitcoin.Shared.Network
 {
     public class MainNetwork : BitcoinNetwork
     {
         public MainNetwork()
-            : base(NetworkType.Main, GetPrefixes())
+            : base(NetworkType.Main, new Lazy<byte[][]>(GetPrefixes).Value)
         {
             //Consensus = new KzConsensus
             //{
