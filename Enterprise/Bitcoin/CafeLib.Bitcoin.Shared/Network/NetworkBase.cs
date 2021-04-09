@@ -6,17 +6,17 @@
 using System;
 using CafeLib.Bitcoin.Shared.Encoding;
 
-namespace CafeLib.Bitcoin.Shared.Node
+namespace CafeLib.Bitcoin.Shared.Network
 {
-    public class NodeMode
+    public abstract class NetworkBase
     {
         //public KzConsensus Consensus { get; protected set; }
 
-        public NodeType NodeType { get; }
+        public NetworkType NodeType { get; }
 
         protected byte[][] Base58Prefixes { get; }
 
-        protected NodeMode(NodeType nodeType, byte[][] base58Prefixes)
+        protected NetworkBase(NetworkType nodeType, byte[][] base58Prefixes)
         {
             NodeType = nodeType;
             Base58Prefixes = base58Prefixes;

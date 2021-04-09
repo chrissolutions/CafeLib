@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 
-namespace CafeLib.Bitcoin.Shared.Node
+namespace CafeLib.Bitcoin.Shared.Network
 {
-    public enum NodeType
+    public enum NetworkType
     {
         Unknown,
         [Description("main")]
