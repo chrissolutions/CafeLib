@@ -5,6 +5,7 @@
 
 using System;
 using CafeLib.Bitcoin.Shared.Encoding;
+using CafeLib.Core.Extensions;
 
 namespace CafeLib.Bitcoin.Shared.Network
 {
@@ -12,13 +13,13 @@ namespace CafeLib.Bitcoin.Shared.Network
     {
         //public KzConsensus Consensus { get; protected set; }
 
-        public NetworkType NodeType { get; }
+        public string NetworkId { get; }
 
         protected byte[][] Base58Prefixes { get; }
 
         protected BitcoinNetwork(NetworkType nodeType, byte[][] base58Prefixes)
         {
-            NodeType = nodeType;
+            NetworkId = nodeType.GetDescriptor();
             Base58Prefixes = base58Prefixes;
         }
 

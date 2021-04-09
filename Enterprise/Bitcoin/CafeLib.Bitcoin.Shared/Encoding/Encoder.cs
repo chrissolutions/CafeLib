@@ -15,7 +15,7 @@ namespace CafeLib.Bitcoin.Shared.Encoding
     /// Only two methods are abstract, one Encode and one TryDecode methods.
     /// Additional overloads of each are virtual to allow optimizations to be provided.
     /// </summary>
-    public abstract class KzEncode
+    public abstract class Encoder
     {
         public string Encode(ReadOnlySpan<byte> bytes1, ReadOnlySpan<byte> bytes2)
         {
@@ -89,8 +89,5 @@ namespace CafeLib.Bitcoin.Shared.Encoding
                 throw new ArgumentException(nameof(encoded));
             return span.ToArray();
         }
-
     }
-
-
 }

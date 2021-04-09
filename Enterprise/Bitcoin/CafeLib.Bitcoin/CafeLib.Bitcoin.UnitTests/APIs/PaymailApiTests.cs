@@ -86,7 +86,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
         {
             var pubKey = await Paymail.GetPubKey(paymail);
             Assert.True(pubKey.IsValid);
-            Assert.True(pubKey.VerifyMessage(message, signature));
+            Assert.Equal(expectedResult, pubKey.VerifyMessage(message, signature));
         }
 
         [Fact]
