@@ -37,13 +37,13 @@ namespace CafeLib.Bitcoin.Shared.Encoding
         /// is easily computed from size of string input.
         /// </summary>
         /// <param name="encoded">Encoded string representation of the desired byte sequence.</param>
+        /// <param name="bytes">decoded byte sequence</param>
         /// <returns>
-        /// A tuple consisting of (ok, bytes):
-        /// ok is true on success in which case bytes is non-null and valid.
-        /// ok is false on failure in which case bytes may be null and is not valid.
-        /// bytes is the decoded byte sequence.
+        ///     true on success in which case bytes is non-null and valid.
+        ///     false on failure in which case bytes may be null and is not valid.
+        ///     bytes is the decoded byte sequence.
         /// </returns>
-        public abstract (bool ok, byte[] bytes) TryDecode(string encoded);
+        public abstract bool TryDecode(string encoded, out byte[] bytes);
 
         public virtual string Encode(byte[] bytes) => Encode(bytes.AsSpan());
 
@@ -57,7 +57,7 @@ namespace CafeLib.Bitcoin.Shared.Encoding
         /// <returns></returns>
         public virtual bool TryDecode(string encoded, ref Span<byte> bytes)
         {
-            var (ok, ba) = TryDecode(encoded);
+            var ok = TryDecode(encoded, out var ba);
             if (ok && ba.Length < bytes.Length)
                 bytes = bytes.Slice(0, ba.Length);
             if (ok && ba.Length <= bytes.Length)
@@ -84,9 +84,7 @@ namespace CafeLib.Bitcoin.Shared.Encoding
 
         public virtual byte[] Decode(string encoded)
         {
-            var (ok, span) = TryDecode(encoded);
-            if (!ok)
-                throw new ArgumentException(nameof(encoded));
+            if (!TryDecode(encoded, out var span)) throw new ArgumentException(nameof(encoded));
             return span.ToArray();
         }
     }
