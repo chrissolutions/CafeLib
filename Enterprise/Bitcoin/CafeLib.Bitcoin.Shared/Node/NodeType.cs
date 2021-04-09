@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace CafeLib.Bitcoin.Shared
+namespace CafeLib.Bitcoin.Shared.Node
 {
     public enum NodeType
     {

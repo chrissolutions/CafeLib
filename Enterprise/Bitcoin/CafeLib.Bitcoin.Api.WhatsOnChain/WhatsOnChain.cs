@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CafeLib.Bitcoin.Api.WhatsOnChain.Models;
 using CafeLib.Bitcoin.Shared;
+using CafeLib.Bitcoin.Shared.Node;
 using CafeLib.Core.Extensions;
 using CafeLib.Web.Request;
 using Newtonsoft.Json;

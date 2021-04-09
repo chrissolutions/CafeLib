@@ -79,6 +79,16 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
             Assert.Equal(expectedResult, result);
         }
 
+        [Theory]
+        [InlineData("tonesnotes@moneybutton.com", "147@moneybutton.com02019-06-07T20:55:57.562ZPayment with Money Button", "H4Q8tvj632hXiirmiiDJkuUN9Z20zDu3KaFuwY8cInZiLhgVJKJdKrZx1RZN06E/AARnFX7Fn618OUBQigCis4M=", true)]
+        [InlineData("tone@simply.cash", "tone@simply.cash02019-07-11T12:24:04.260Z", "IJ1C3gXhnUxKpU8JOIjGHC8talwIgfIXKMmRZ5mjysb0eHjLPQP5Tlx29Xi5KNDZuOsOPk8HiVtwKAefq1pJVDs=", true)]
+        public async Task VerifyMessageSignatureViaPublicKey(string paymail, string message, string signature, bool expectedResult)
+        {
+            var pubKey = await Paymail.GetPubKey(paymail);
+            Assert.True(pubKey.IsValid);
+            Assert.True(pubKey.VerifyMessage(message, signature));
+        }
+
         [Fact]
         public async Task GetOutputScript_Test()
         {

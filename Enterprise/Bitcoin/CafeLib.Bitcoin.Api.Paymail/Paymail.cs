@@ -64,11 +64,11 @@ namespace CafeLib.Bitcoin.Api.Paymail
         /// <summary>
         /// Get public key.
         /// </summary>
-        /// <param name="receiverHandle"></param>
+        /// <param name="paymailAddress"></param>
         /// <returns></returns>
-        public async Task<KzPubKey> GetPubKey(string receiverHandle)
+        public async Task<KzPubKey> GetPubKey(string paymailAddress)
         {
-            var url = await GetIdentityUrl(receiverHandle);
+            var url = await GetIdentityUrl(paymailAddress);
             var json = await GetAsync(url);
             var response = JsonConvert.DeserializeObject<GetPubKeyResponse>(json);
             var pubkey = new KzPubKey(response.PubKey);
