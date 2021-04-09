@@ -8,7 +8,7 @@ using CafeLib.Bitcoin.Shared.Encoding;
 
 namespace CafeLib.Bitcoin.Shared.Network
 {
-    public abstract class NetworkBase
+    public abstract class BitcoinNetwork
     {
         //public KzConsensus Consensus { get; protected set; }
 
@@ -16,7 +16,7 @@ namespace CafeLib.Bitcoin.Shared.Network
 
         protected byte[][] Base58Prefixes { get; }
 
-        protected NetworkBase(NetworkType nodeType, byte[][] base58Prefixes)
+        protected BitcoinNetwork(NetworkType nodeType, byte[][] base58Prefixes)
         {
             NodeType = nodeType;
             Base58Prefixes = base58Prefixes;
