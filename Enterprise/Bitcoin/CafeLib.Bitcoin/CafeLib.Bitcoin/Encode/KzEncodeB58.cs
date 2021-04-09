@@ -25,17 +25,14 @@ namespace CafeLib.Bitcoin.Encode
             return KzEncoders.B58.Encode(buf);
         }
 
-        public override (bool ok, byte[] bytes) TryDecode(string encoded)
+        public override bool TryDecode(string encoded, out byte[] bytes)
         {
-            var (ok, bytes) = KzEncoders.B58.TryDecode(encoded);
-            if (ok) {
-                var span = bytes.AsSpan();
-                var checksum = span.Slice(span.Length - 4);
-                bytes = span.Slice(0, span.Length - 4).ToArray();
-                var hash = KzHashes.HASH256(bytes);
-                ok = checksum.SequenceEqual(hash.Span.Slice(0, 4));
-            }
-            return (ok, bytes);
+            if (!KzEncoders.B58.TryDecode(encoded, out bytes)) return false;
+            var span = bytes.AsSpan();
+            var checksum = span.Slice(span.Length - 4);
+            bytes = span.Slice(0, span.Length - 4).ToArray();
+            var hash = KzHashes.HASH256(bytes);
+            return checksum.SequenceEqual(hash.Span.Slice(0, 4));
         }
     }
 
@@ -60,8 +57,9 @@ namespace CafeLib.Bitcoin.Encode
         /** All alphanumeric characters except for "0", "I", "O", and "l" */
         const string pszBase58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
-        public override (bool ok, byte[] bytes) TryDecode(string encoded)
+        public override bool TryDecode(string encoded, out byte[] bytes)
         {
+            bytes = null;
             var s = encoded.AsSpan();
 
             while (!s.IsEmpty && IsSpace(s[0])) s = s.Slice(1);
@@ -81,7 +79,7 @@ namespace CafeLib.Bitcoin.Encode
                 // Decode base58 character
                 var carry = pszBase58.IndexOf(s[0]);
                 if (carry < 0)
-                    return (false, null);
+                    return false;
                 // Apply "b256 = b256 * 58 + carry".
                 var i = 0;
                 for (var it = 0; (carry != 0 || i < length) && it < b256.Length; it++, i++) {
@@ -96,7 +94,7 @@ namespace CafeLib.Bitcoin.Encode
             // Skip trailing spaces.
             while (!s.IsEmpty && IsSpace(s[0])) s = s.Slice(1);
             if (!s.IsEmpty)
-                return (false, null);
+                return false;
 
             // Skip trailing zeroes in b256.
             while (length > 0 && b256[length - 1] == 0) length--;
@@ -107,7 +105,8 @@ namespace CafeLib.Bitcoin.Encode
             while (zeroes-- > 0) vch[zeroes] = 0;
             while (length-- > 0) vch[nz++] = b256[length];
 
-            return (true, vch);
+            bytes = vch;
+            return true;
         }
 
         public override string Encode(ReadOnlySpan<byte> bytes)

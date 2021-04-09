@@ -59,17 +59,16 @@ namespace CafeLib.Bitcoin.Keys
 
         protected bool SetString(string b58, int nVersionBytes)
         {
-            var (ok, bytes) = _b58c.TryDecode(b58);
-            if (!ok || bytes.Length < nVersionBytes) goto fail;
+            if (!_b58c.TryDecode(b58, out var bytes) || bytes.Length < nVersionBytes)
+            {
+                _VersionData = new byte[0];
+                _VersionLength = 0;
+                return false;
+            }
 
             _VersionData = bytes;
             _VersionLength = nVersionBytes;
             return true;
-
-        fail:
-            _VersionData = new byte[0];
-            _VersionLength = 0;
-            return false;
         }
 
         public override string ToString() => _b58c.Encode(_VersionData);

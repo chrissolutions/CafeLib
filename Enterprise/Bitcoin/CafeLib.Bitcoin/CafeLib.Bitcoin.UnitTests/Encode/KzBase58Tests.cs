@@ -100,7 +100,7 @@ namespace CafeLib.Bitcoin.UnitTests.Encode
             var e = KzEncoders.B58Check;
             foreach (var tc in tcs) {
                 var hex = h.Decode(tc.hex);
-                var (ok, buf) = e.TryDecode(tc.b58);
+                var ok = e.TryDecode(tc.b58, out var buf);
                 Assert.Equal(tc.ok, ok);
                 if (ok) {
                     var ver = buf[0];

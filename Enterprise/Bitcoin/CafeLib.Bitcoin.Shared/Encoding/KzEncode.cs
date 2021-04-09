@@ -6,9 +6,9 @@
 using System;
 using System.Buffers;
 using System.Linq;
-using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Shared.Extensions;
 
-namespace CafeLib.Bitcoin.Encode
+namespace CafeLib.Bitcoin.Shared.Encoding
 {
     /// <summary>
     /// Base class for encoders converting between strings and byte sequences.
@@ -37,13 +37,13 @@ namespace CafeLib.Bitcoin.Encode
         /// is easily computed from size of string input.
         /// </summary>
         /// <param name="encoded">Encoded string representation of the desired byte sequence.</param>
-        /// <param name="bytes">the decoded byte sequence</param>
         /// <returns>
-        ///     true on success in which case bytes is non-null and valid.
-        ///     false on failure in which case bytes may be null and is not valid.
-        ///     bytes as the decoded byte sequence.
+        /// A tuple consisting of (ok, bytes):
+        /// ok is true on success in which case bytes is non-null and valid.
+        /// ok is false on failure in which case bytes may be null and is not valid.
+        /// bytes is the decoded byte sequence.
         /// </returns>
-        public abstract bool TryDecode(string encoded, out byte[] bytes);
+        public abstract (bool ok, byte[] bytes) TryDecode(string encoded);
 
         public virtual string Encode(byte[] bytes) => Encode(bytes.AsSpan());
 
@@ -57,7 +57,7 @@ namespace CafeLib.Bitcoin.Encode
         /// <returns></returns>
         public virtual bool TryDecode(string encoded, ref Span<byte> bytes)
         {
-            var ok = TryDecode(encoded, out var ba);
+            var (ok, ba) = TryDecode(encoded);
             if (ok && ba.Length < bytes.Length)
                 bytes = bytes.Slice(0, ba.Length);
             if (ok && ba.Length <= bytes.Length)
@@ -84,8 +84,13 @@ namespace CafeLib.Bitcoin.Encode
 
         public virtual byte[] Decode(string encoded)
         {
-            if (!TryDecode(encoded, out var span)) throw new ArgumentException(nameof(encoded));
+            var (ok, span) = TryDecode(encoded);
+            if (!ok)
+                throw new ArgumentException(nameof(encoded));
             return span.ToArray();
         }
+
     }
+
+
 }

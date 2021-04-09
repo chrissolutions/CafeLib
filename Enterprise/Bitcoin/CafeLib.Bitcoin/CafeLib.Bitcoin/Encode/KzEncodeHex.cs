@@ -81,12 +81,11 @@ namespace CafeLib.Bitcoin.Encode
             return false;
         }
 
-        public override (bool, byte[]) TryDecode(string hex)
+        public override bool TryDecode(string hex, out byte[] bytes)
         {
-            var bytes = new byte[hex.Length / 2];
+            bytes = new byte[hex.Length / 2];
             var span = bytes.AsSpan();
-            var ok = TryDecode(hex, span);
-            return (ok, bytes);
+            return TryDecode(hex, span);
         }
     }
 
