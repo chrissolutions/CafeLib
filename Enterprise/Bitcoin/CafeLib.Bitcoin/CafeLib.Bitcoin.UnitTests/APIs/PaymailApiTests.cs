@@ -73,7 +73,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
         [InlineData("tone@simply.cash", "tone@simply.cash02019-07-11T12:24:04.260Z", "IJ1C3gXhnUxKpU8JOIjGHC8talwIgfIXKMmRZ5mjysb0eHjLPQP5Tlx29Xi5KNDZuOsOPk8HiVtwKAefq1pJVDs=", true)]
         public async Task VerifyMessageSignature(string paymail, string message, string signature, bool expectedResult)
         {
-            var (result, pubkey) = await Paymail.IsValidSignature(message, signature, paymail);
+            var (result, pubkey) = await Paymail.IsValidSignature(message, signature, paymail, null);
             Assert.Equal(expectedResult, result);
             (result, _) = await Paymail.IsValidSignature(message, signature, paymail, pubkey);
             Assert.Equal(expectedResult, result);

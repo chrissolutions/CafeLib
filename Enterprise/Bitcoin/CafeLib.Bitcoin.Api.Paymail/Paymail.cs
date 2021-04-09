@@ -16,7 +16,7 @@ using Newtonsoft.Json.Linq;
 
 namespace CafeLib.Bitcoin.Api.Paymail
 {
-    public class Paymail : BasicApiRequest
+    public class Paymail : BasicApiRequest, IPaymail
     {
         private const string HandleRegexPattern = @"^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
         private static readonly Lazy<Regex> HandleRegex = new Lazy<Regex>(() => new Regex(HandleRegexPattern), true);
@@ -133,6 +133,19 @@ namespace CafeLib.Bitcoin.Api.Paymail
         /// <summary>
         /// Verifies that the message was signed by the private key corresponding to the paymail public key.
         /// </summary>
+        /// <param name="paymail">The paymail claiming to have signed the message.</param>
+        /// <param name="message">A copy of the message which was originally signed.</param>
+        /// <param name="signature">The signature received for validation.</param>
+        /// <returns>true if both the public key and signature were confirmed as valid.</returns>
+        public async Task<bool> IsValidSignature(string paymail, string message, string signature)
+        {
+            var pubKey = await GetPubKey(paymail);
+            return pubKey.IsValid && pubKey.VerifyMessage(message, signature);
+        }
+
+        /// <summary>
+        /// Verifies that the message was signed by the private key corresponding to the paymail public key.
+        /// </summary>
         /// <param name="message">A copy of the message which was originally signed.</param>
         /// <param name="signature">The signature received for validation.</param>
         /// <param name="paymail">The paymail claiming to have signed the message.</param>
@@ -140,7 +153,7 @@ namespace CafeLib.Bitcoin.Api.Paymail
         /// <returns>(ok, pubkey) where ok is true only if both the public key and signature were confirmed as valid.
         /// If ok is true, the returned public key is valid and can be saved for future validations.
         /// </returns>
-        public async Task<(bool ok, KzPubKey pubkey)> IsValidSignature(string message, string signature, string paymail, KzPubKey pubkey = null)
+        public async Task<(bool ok, KzPubKey pubkey)> IsValidSignature(string message, string signature, string paymail, KzPubKey pubkey)
         {
             if (!TryParse(paymail, out _, out var domain)) return (false, pubkey);
 
