@@ -2,7 +2,7 @@
 
 namespace CafeLib.Bitcoin.Shared
 {
-    public enum ChainType
+    public enum NetworkType
     {
         Unknown,
         [Description("main")]
@@ -12,9 +12,9 @@ namespace CafeLib.Bitcoin.Shared
         Test,
 
         [Description("regtest")]
-        Regtest,
+        Regression,
 
         [Description("stn")]
-        Stn
+        Scaling
     }
 }
