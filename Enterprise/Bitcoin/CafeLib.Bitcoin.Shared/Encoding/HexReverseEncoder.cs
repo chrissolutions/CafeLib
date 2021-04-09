@@ -9,7 +9,7 @@ namespace CafeLib.Bitcoin.Shared.Encoding
     /// Character 0 corresponds to the high nibble of the last byte. 
     /// Character 1 corresponds to the low nibble of the last byte. 
     /// </summary>
-    public class ReverseHexEncoder : HexEncoder
+    public class HexReverseEncoder : HexEncoder
     {
         public override string Encode(ReadOnlySequence<byte> bytes)
         {
