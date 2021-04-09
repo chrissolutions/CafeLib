@@ -8,7 +8,7 @@ using CafeLib.Bitcoin.Shared.Encoding;
 
 namespace CafeLib.Bitcoin.Shared.Node
 {
-    public class NodeParameters
+    public class NodeMode
     {
         //public KzConsensus Consensus { get; protected set; }
 
@@ -16,7 +16,7 @@ namespace CafeLib.Bitcoin.Shared.Node
 
         protected byte[][] Base58Prefixes { get; }
 
-        protected NodeParameters(NodeType nodeType, byte[][] base58Prefixes)
+        protected NodeMode(NodeType nodeType, byte[][] base58Prefixes)
         {
             NodeType = nodeType;
             Base58Prefixes = base58Prefixes;
