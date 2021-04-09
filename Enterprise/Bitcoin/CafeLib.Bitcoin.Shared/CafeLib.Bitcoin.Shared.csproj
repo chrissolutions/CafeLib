@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Numeric\" />
+    <Folder Include="Numerics\" />
   </ItemGroup>
 
 </Project>

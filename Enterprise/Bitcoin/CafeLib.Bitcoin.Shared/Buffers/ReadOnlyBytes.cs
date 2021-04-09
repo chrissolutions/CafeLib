@@ -20,5 +20,10 @@ namespace CafeLib.Bitcoin.Shared.Buffers
         {
             return new ReadOnlyBytes(rhs);
         }
+
+        public static implicit operator ReadOnlyBytes(Span<byte> rhs)
+        {
+            return new ReadOnlyBytes(rhs);
+        }
     }
 }

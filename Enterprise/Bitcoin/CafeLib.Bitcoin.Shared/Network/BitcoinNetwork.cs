@@ -4,12 +4,13 @@
 #endregion
 
 using System;
+using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Encoding;
 using CafeLib.Core.Extensions;
 
 namespace CafeLib.Bitcoin.Shared.Network
 {
-    public abstract class BitcoinNetwork
+    public abstract class BitcoinNetwork : IBitcoinNetwork
     {
         //public KzConsensus Consensus { get; protected set; }
 
@@ -23,6 +24,6 @@ namespace CafeLib.Bitcoin.Shared.Network
             Base58Prefixes = base58Prefixes;
         }
 
-        public ReadOnlySpan<byte> Base58Prefix(Base58Type type) => Base58Prefixes[(int)type].AsSpan();
+        public ReadOnlyBytes Base58Prefix(Base58Type type) => Base58Prefixes[(int)type].AsSpan();
     }
 }

@@ -1,10 +1,30 @@
 ﻿using CafeLib.Bitcoin.Shared.Buffers;
+using CafeLib.Bitcoin.Shared.Encoding;
 using CafeLib.Bitcoin.Shared.Network;
 
 namespace CafeLib.Bitcoin.Shared.Services
 {
     public interface IBitcoinService
     {
+        /// <summary>
+        /// Encodes a sequence of bytes as hexadecimal digits where:
+        /// First byte first: The encoded string begins with the first byte.
+        /// Character 0 corresponds to the high nibble of the first byte. 
+        /// Character 1 corresponds to the low nibble of the first byte. 
+        /// </summary>
+        HexEncoder Hex { get; }
+
+        /// <summary>
+        /// Encodes a sequence of bytes as hexadecimal digits where:
+        /// Last byte first: The encoded string begins with the last byte.
+        /// Character 0 corresponds to the high nibble of the last byte. 
+        /// Character 1 corresponds to the low nibble of the last byte. 
+        /// </summary>
+        HexReverseEncoder HexReverse { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         BitcoinNetwork Network { get; }
 
         /// <summary>

@@ -6,6 +6,12 @@ namespace CafeLib.Bitcoin.Shared.Services
 {
     public class BitcoinService : IBitcoinService
     {
+        private readonly IEncodeService _encodeService;
+
+        public HexEncoder Hex => _encodeService.Hex;
+
+        public HexReverseEncoder HexReverse => _encodeService.HexReverse;
+
         public BitcoinNetwork Network { get; }
 
         /// <summary>
@@ -14,6 +20,8 @@ namespace CafeLib.Bitcoin.Shared.Services
         /// <param name="networkType"></param>
         public BitcoinService(NetworkType networkType)
         {
+            _encodeService = new EncodeService();
+
             Network = networkType switch
             {
                 NetworkType.Unknown => new MainNetwork(),
