@@ -6,13 +6,12 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography;
-using CafeLib.Bitcoin.Encode;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Utility;
 
-namespace CafeLib.Bitcoin.Shared.Encoding
+namespace CafeLib.Bitcoin.Shared.Crypto
 {
-    public static class Hashes
+    public static partial class Hashes
     {
         private const int MaxBufferSize = 1 << 20; // Max ArrayPool<byte>.Shared buffer size.
 

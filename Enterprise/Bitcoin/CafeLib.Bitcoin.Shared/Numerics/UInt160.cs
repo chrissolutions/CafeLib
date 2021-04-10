@@ -115,7 +115,17 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         public static bool operator ==(UInt160 x, UInt160 y) => x.Equals(y);
         public static bool operator !=(UInt160 x, UInt160 y) => !(x == y);
 
-        int IComparable<UInt160>.CompareTo(UInt160 o)
+        public static implicit operator UInt160(ReadOnlyByteSpan rhs)
+        {
+            return new UInt160(rhs);
+        }
+
+        public static implicit operator ReadOnlyByteSpan(UInt160 rhs)
+        {
+            return rhs.Bytes;
+        }
+
+        public int CompareTo(UInt160 o)
         {
             var r = N2.CompareTo(o.N2);
             if (r == 0) r = N1.CompareTo(o.N1);
