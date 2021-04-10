@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Security.Cryptography;
 using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Shared.Numerics;
 using CafeLib.Bitcoin.Utility;
 
 namespace CafeLib.Bitcoin.Shared.Crypto
@@ -43,7 +44,7 @@ namespace CafeLib.Bitcoin.Shared.Crypto
         /// <param name="header"></param>
         /// <param name="data"></param>
         /// <param name="output">512 bit, 64 byte hash.</param>
-        public static void Bip32Hash(KzUInt256 chainCode, uint nChild, byte header, ReadOnlySpan<byte> data, Span<byte> output)
+        public static void Bip32Hash(UInt256 chainCode, uint nChild, byte header, ReadOnlySpan<byte> data, Span<byte> output)
         {
             var len = data.Length;
             var buf = new byte[1 + len + 4]; // header, data, nChild
@@ -54,9 +55,10 @@ namespace CafeLib.Bitcoin.Shared.Crypto
             num[0] = (byte)((nChild >> 24) & 0xFF);
             num[1] = (byte)((nChild >> 16) & 0xFF);
             num[2] = (byte)((nChild >> 8) & 0xFF);
+            // ReSharper disable once ShiftExpressionRealShiftCountIsZero
             num[3] = (byte)((nChild >> 0) & 0xFF);
 
-            //HMACSHA512(chainCode.Span, s, output);
+            HmacSha512(chainCode.Bytes, s, output);
         }
 
         /// <summary>
@@ -75,33 +77,33 @@ namespace CafeLib.Bitcoin.Shared.Crypto
             if (iterations < 1)
                 throw new ArgumentException();
 
-            var _password = password.ToArray();
+            var passwordBytes = password.ToArray();
 
             using var inner = new SHA512Managed();
             using var outer = new SHA512Managed();
 
             var blocksize = 128; // match python hashlib's sha512 blocksize.
 
-            if (_password.Length > blocksize)
+            if (passwordBytes.Length > blocksize)
             {
-                inner.TransformFinalBlock(_password, 0, _password.Length);
-                _password = inner.Hash;
+                inner.TransformFinalBlock(passwordBytes, 0, passwordBytes.Length);
+                passwordBytes = inner.Hash;
                 //inner.Initialize();
             }
 
-            if (_password.Length < blocksize)
-                Array.Resize(ref _password, blocksize);
+            if (passwordBytes.Length < blocksize)
+                Array.Resize(ref passwordBytes, blocksize);
 
-            var _trans_36 = new byte[256];
-            var _trans_5c = new byte[256];
+            var trans36 = new byte[256];
+            var trans5C = new byte[256];
             for (var i = 0; i < 256; i++)
             {
-                _trans_36[i] = (byte)(i ^ 0x36);
-                _trans_5c[i] = (byte)(i ^ 0x5c);
+                trans36[i] = (byte)(i ^ 0x36);
+                trans5C[i] = (byte)(i ^ 0x5c);
             }
 
-            var innerSeed = _password.Select(pb => _trans_36[pb]).ToArray();
-            var outerSeed = _password.Select(pb => _trans_5c[pb]).ToArray();
+            var innerSeed = passwordBytes.Select(pb => trans36[pb]).ToArray();
+            var outerSeed = passwordBytes.Select(pb => trans5C[pb]).ToArray();
 
             var hash = new KzUInt512();
             var xhash = new KzUInt512();
