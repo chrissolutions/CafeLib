@@ -14,6 +14,6 @@ namespace CafeLib.Bitcoin.Shared.Network
 
         string NetworkId { get; }
 
-        ReadOnlyBytes Base58Prefix(Base58Type type);
+        ReadOnlyByteSpan Base58Prefix(Base58Type type);
     }
 }

@@ -6,12 +6,6 @@ namespace CafeLib.Bitcoin.Shared.Services
 {
     public class BitcoinService : IBitcoinService
     {
-        private readonly IEncodeService _encodeService;
-
-        public HexEncoder Hex => _encodeService.Hex;
-
-        public HexReverseEncoder HexReverse => _encodeService.HexReverse;
-
         public BitcoinNetwork Network { get; }
 
         /// <summary>
@@ -20,8 +14,6 @@ namespace CafeLib.Bitcoin.Shared.Services
         /// <param name="networkType"></param>
         public BitcoinService(NetworkType networkType)
         {
-            _encodeService = new EncodeService();
-
             Network = networkType switch
             {
                 NetworkType.Unknown => new MainNetwork(),
@@ -36,14 +28,14 @@ namespace CafeLib.Bitcoin.Shared.Services
         /// <summary>
         /// Base58 encoding prefix for public key addresses for the active network.
         /// </summary>
-        public ReadOnlyBytes PubkeyAddress => Network.Base58Prefix(Base58Type.PubkeyAddress);
+        public ReadOnlyByteSpan PubkeyAddress => Network.Base58Prefix(Base58Type.PubkeyAddress);
 
-        public ReadOnlyBytes ScriptAddress => Network.Base58Prefix(Base58Type.ScriptAddress);
+        public ReadOnlyByteSpan ScriptAddress => Network.Base58Prefix(Base58Type.ScriptAddress);
 
-        public ReadOnlyBytes SecretKey => Network.Base58Prefix(Base58Type.SecretKey);
+        public ReadOnlyByteSpan SecretKey => Network.Base58Prefix(Base58Type.SecretKey);
 
-        public ReadOnlyBytes ExtPublicKey => Network.Base58Prefix(Base58Type.ExtPublicKey);
+        public ReadOnlyByteSpan ExtPublicKey => Network.Base58Prefix(Base58Type.ExtPublicKey);
 
-        public ReadOnlyBytes ExtSecretKey => Network.Base58Prefix(Base58Type.ExtSecretKey);
+        public ReadOnlyByteSpan ExtSecretKey => Network.Base58Prefix(Base58Type.ExtSecretKey);
     }
 }

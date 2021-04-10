@@ -24,6 +24,6 @@ namespace CafeLib.Bitcoin.Shared.Network
             Base58Prefixes = base58Prefixes;
         }
 
-        public ReadOnlyBytes Base58Prefix(Base58Type type) => Base58Prefixes[(int)type].AsSpan();
+        public ReadOnlyByteSpan Base58Prefix(Base58Type type) => Base58Prefixes[(int)type].AsSpan();
     }
 }
