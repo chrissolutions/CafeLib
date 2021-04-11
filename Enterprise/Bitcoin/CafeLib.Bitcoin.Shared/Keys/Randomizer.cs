@@ -34,7 +34,6 @@ namespace CafeLib.Bitcoin.Shared.Keys
             return buf;
         }
 
-
         /// <summary>
         /// Returns a non-cryptographically strong random number
         /// greater than or equal to zero
