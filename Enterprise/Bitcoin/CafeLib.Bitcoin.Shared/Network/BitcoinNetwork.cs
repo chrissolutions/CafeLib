@@ -6,7 +6,7 @@
 using System;
 using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Encoding;
-using CafeLib.Core.Extensions;
+using CafeLib.Bitcoin.Shared.Extensions;
 
 namespace CafeLib.Bitcoin.Shared.Network
 {

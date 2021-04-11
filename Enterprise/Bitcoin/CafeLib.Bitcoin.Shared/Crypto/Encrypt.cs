@@ -2,7 +2,6 @@
 using System.IO;
 using System.Security.Cryptography;
 using CafeLib.Bitcoin.Shared.Extensions;
-using CafeLib.Core.Support;
 
 namespace CafeLib.Bitcoin.Shared.Crypto
 {
