@@ -70,7 +70,8 @@ namespace CafeLib.Bitcoin.Shared.Keys
         public ExtendedKey DeriveBase(KeyPath kp)
         {
             var k = this;
-            foreach (var i in kp.Indices) {
+            foreach (var i in kp.Indices)
+            {
                 k = k.DeriveBase((int)(i & ~HardenedBit), (i & HardenedBit) != 0);
                 if (k == null) break;
             }
