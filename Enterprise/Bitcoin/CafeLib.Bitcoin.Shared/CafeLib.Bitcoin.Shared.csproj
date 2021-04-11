@@ -21,4 +21,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CafeLib.Bitcoin\libs\KzSecp256k1.Net\KzSecp256k1.Net.csproj" />
+  </ItemGroup>
+
 </Project>
