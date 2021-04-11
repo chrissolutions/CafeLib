@@ -79,7 +79,7 @@ namespace CafeLib.Bitcoin.Shared.Crypto
         {
             if (iv == null) {
                 iv = data.Slice(0, 16).ToArray();
-                data = data.Slice(16);
+                data = data[16..];
             }
 
             using var aes = new AesCryptoServiceProvider { Padding = PaddingMode.PKCS7, Mode = CipherMode.CBC, Key = key, IV = iv };
