@@ -14,7 +14,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         private static readonly Random Random = new Random();
 
         /// <summary>
-        /// Centralized source of cryptographically strong random entropy.
+        /// Centralized source of a cryptographic strong random entropy.
         /// </summary>
         /// <param name="entropy">Output bytes.</param>
         public static void GetStrongRandBytes(Span<byte> entropy)
@@ -23,7 +23,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         }
 
         /// <summary>
-        /// Centralized source of cryptocgraphically strong random entropy.
+        /// Centralized source of a cryptographic strong random entropy.
         /// </summary>
         /// <param name="length">How many bytes.</param>
         public static Span<byte> GetStrongRandBytes(int length)
@@ -35,7 +35,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         }
 
         /// <summary>
-        /// Returns a non-cryptographically strong random number
+        /// Returns a non-cryptographic strong random number
         /// greater than or equal to zero
         /// less than one.
         /// </summary>
