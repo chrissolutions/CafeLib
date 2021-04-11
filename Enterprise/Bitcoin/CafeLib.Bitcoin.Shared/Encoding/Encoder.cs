@@ -4,9 +4,8 @@
 #endregion
 
 using System;
-using System.Buffers;
 using System.Linq;
-using CafeLib.Bitcoin.Shared.Extensions;
+using CafeLib.Bitcoin.Shared.Buffers;
 
 namespace CafeLib.Bitcoin.Shared.Encoding
 {
@@ -17,7 +16,7 @@ namespace CafeLib.Bitcoin.Shared.Encoding
     /// </summary>
     public abstract class Encoder
     {
-        public string Encode(ReadOnlySpan<byte> bytes1, ReadOnlySpan<byte> bytes2)
+        public string Encode(ReadOnlyByteSpan bytes1, ReadOnlyByteSpan bytes2)
         {
             var bytes = new byte[bytes1.Length + bytes2.Length].AsSpan();
             bytes1.CopyTo(bytes);
@@ -30,7 +29,21 @@ namespace CafeLib.Bitcoin.Shared.Encoding
         /// </summary>
         /// <param name="bytes">Byte sequence to be encoded.</param>
         /// <returns>String representation of byte sequence capable of being decoded back into a byte sequence.</returns>
-        public abstract string Encode(ReadOnlySpan<byte> bytes);
+        public abstract string Encode(ReadOnlyByteSpan bytes);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public abstract string Encode(ReadOnlyByteSequence data);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public virtual string Encode(byte[] bytes) => Encode(bytes.AsSpan());
 
         /// <summary>
         /// Returns false on most failures and does not assume size of byte sequence output
@@ -45,9 +58,6 @@ namespace CafeLib.Bitcoin.Shared.Encoding
         /// </returns>
         public abstract bool TryDecode(string encoded, out byte[] bytes);
 
-        public virtual string Encode(byte[] bytes) => Encode(bytes.AsSpan());
-
-        public virtual string Encode(ReadOnlySequence<byte> bytes) => Encode(bytes.ToSpan());
 
         /// <summary>
         /// 

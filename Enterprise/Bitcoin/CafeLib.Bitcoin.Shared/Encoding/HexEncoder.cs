@@ -4,8 +4,8 @@
 #endregion
 
 using System;
-using System.Buffers;
 using System.Linq;
+using CafeLib.Bitcoin.Shared.Buffers;
 
 namespace CafeLib.Bitcoin.Shared.Encoding
 {
@@ -32,11 +32,11 @@ namespace CafeLib.Bitcoin.Shared.Encoding
             }
         }
 
-        public override string Encode(ReadOnlySequence<byte> bytes)
+        public override string Encode(ReadOnlyByteSequence bytes)
         {
             var s = new char[bytes.Length * 2];
             var i = 0;
-            foreach (var m in bytes)
+            foreach (var m in bytes.Data)
             {
                 foreach (var b in m.Span)
                 {
@@ -48,11 +48,11 @@ namespace CafeLib.Bitcoin.Shared.Encoding
             return new string(s);
         }
 
-        public override string Encode(ReadOnlySpan<byte> bytes)
+        public override string Encode(ReadOnlyByteSpan bytes)
         {
             var s = new char[bytes.Length * 2];
             var i = 0;
-            foreach (var b in bytes)
+            foreach (var b in bytes.Data)
             {
                 var chs = ByteToChs[b];
                 s[i++] = chs[0];

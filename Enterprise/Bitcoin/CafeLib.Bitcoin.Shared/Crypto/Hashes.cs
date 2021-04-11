@@ -7,6 +7,8 @@ using System;
 using System.Linq;
 using System.Security.Cryptography;
 using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Shared.Buffers;
+using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Numerics;
 using CafeLib.Bitcoin.Utility;
 
@@ -72,7 +74,7 @@ namespace CafeLib.Bitcoin.Shared.Crypto
         /// <param name="salt"></param>
         /// <param name="iterations"></param>
         /// <returns></returns>
-        public static KzUInt512 PbKdf2HmacSha512(ReadOnlySpan<byte> password, ReadOnlySpan<byte> salt, int iterations)
+        public static UInt512 PbKdf2HmacSha512(ReadOnlySpan<byte> password, ReadOnlyByteSpan salt, int iterations)
         {
             if (iterations < 1)
                 throw new ArgumentException();
@@ -82,7 +84,7 @@ namespace CafeLib.Bitcoin.Shared.Crypto
             using var inner = new SHA512Managed();
             using var outer = new SHA512Managed();
 
-            var blocksize = 128; // match python hashlib's sha512 blocksize.
+            var blocksize = 128; // match python hash library sha512 block size.
 
             if (passwordBytes.Length > blocksize)
             {
@@ -105,8 +107,8 @@ namespace CafeLib.Bitcoin.Shared.Crypto
             var innerSeed = passwordBytes.Select(pb => trans36[pb]).ToArray();
             var outerSeed = passwordBytes.Select(pb => trans5C[pb]).ToArray();
 
-            var hash = new KzUInt512();
-            var xhash = new KzUInt512();
+            var hash = new UInt512();
+            var xhash = new UInt512();
 
             var data = new byte[salt.Length + 4];
             salt.CopyTo(data);

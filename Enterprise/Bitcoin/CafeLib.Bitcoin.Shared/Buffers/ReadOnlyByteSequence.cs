@@ -1,4 +1,6 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
+using System.Data;
 
 namespace CafeLib.Bitcoin.Shared.Buffers
 {
@@ -10,6 +12,8 @@ namespace CafeLib.Bitcoin.Shared.Buffers
         {
             Data = bytes;
         }
+
+        public long Length => Data.Length;
 
         public static implicit operator ReadOnlySequence<byte>(ReadOnlyByteSequence rhs)
         {

@@ -13,6 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Crypto\Hashes.ReadOnlySpan.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CafeLib.Core" Version="0.9.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>

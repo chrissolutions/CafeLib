@@ -115,7 +115,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         /// The bytes appear in big-endian order, as a large hexadecimal encoded number.
         /// </summary>
         /// <returns></returns>
-		public override string ToString() => Encoders.HexReverse.Encode(Bytes);
+		public override string ToString() => Encoders.HexReverse.Encode(ReadOnlySpan);
 
         /// <summary>
         /// The bytes appear in little-endian order, first byte in memory first.
@@ -123,14 +123,14 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         /// Equivalent to ToHex.
         /// </summary>
         /// <returns></returns>
-		public string ToStringFirstByteFirst() => Encoders.Hex.Encode(Bytes);
+		public string ToStringFirstByteFirst() => Encoders.Hex.Encode(ReadOnlySpan);
 
         /// <summary>
         /// The bytes appear in little-endian order, first byte in memory first.
         /// But the high nibble, first hex digit, of the each byte still apears before the low nibble (big-endian by nibble order).
         /// </summary>
         /// <returns></returns>
-		public string ToHex() => Encoders.Hex.Encode(Bytes);
+		public string ToHex() => Encoders.Hex.Encode(ReadOnlySpan);
 
         public override int GetHashCode() => N0.GetHashCode() ^ N1.GetHashCode() ^ N2.GetHashCode() ^ N3.GetHashCode();
 
