@@ -5,7 +5,7 @@
 
 using System;
 using System.Buffers;
-using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Shared.Extensions;
 
 namespace CafeLib.Bitcoin.Shared.Numerics
 {
@@ -77,19 +77,29 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 		/// <returns>False if there wasn't enough data for an <see cref="UInt64"/>.</returns>
 		public static bool TryRead(ref SequenceReader<byte> reader, out long value) {
 			value = 0L;
-			var b = reader.TryRead(out byte b0);
+
+            var b = reader.TryRead(out var b0);
 			if (!b) return false;
-			if (b0 <= 0xfc) {
+
+			if (b0 <= 0xfc) 
+            {
 				value = b0;
-			} else if (b0 == 0xfd) {
-				b = reader.TryReadLittleEndian(out UInt16 v16);
+			}
+            else if (b0 == 0xfd) 
+            {
+				b = reader.TryReadLittleEndian(out short v16);
 				value = v16;
-			} else if (b0 == 0xfe) {
-				b = reader.TryReadLittleEndian(out UInt32 v32);
+			}
+            else if (b0 == 0xfe) 
+            {
+				b = reader.TryReadLittleEndian(out int v32);
 				value = v32;
-			} else {
+			}
+            else 
+            {
 				b = reader.TryReadLittleEndian(out value);
 			}
+
 			return b;
 		}
     }

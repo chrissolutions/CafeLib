@@ -8,7 +8,6 @@ using System.Buffers;
 using System.Security.Cryptography;
 using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Numerics;
-using CafeLib.Bitcoin.Utility;
 
 namespace CafeLib.Bitcoin.Shared.Crypto
 {
@@ -76,10 +75,10 @@ namespace CafeLib.Bitcoin.Shared.Crypto
         /// </summary>
         /// <param name="data">Input: bytes to be hashed.</param>
         /// <returns>SHA256 of SHA256 of data.</returns>
-        public static KzUInt256 Hash256(this ReadOnlyByteSequence data)
+        public static UInt256 Hash256(this ReadOnlyByteSequence data)
         {
-            var h2 = new KzUInt256();
-            data.Hash256(h2.Span);
+            var h2 = new UInt256();
+            data.Hash256(h2.Bytes);
             return h2;
         }
 
@@ -111,9 +110,9 @@ namespace CafeLib.Bitcoin.Shared.Crypto
 
         public static UInt256 HmacSha256(this ReadOnlyByteSpan key, ReadOnlyByteSequence data)
         {
-            var h = new UInt256();
-            new HMACSHA256(key).TransformFinalBlock(data, h.Bytes);
-            return h;
+            var hash = new UInt256();
+            new HMACSHA256(key).TransformFinalBlock(data, hash.Bytes);
+            return hash;
         }
 
         public static void HmacSha512(this ReadOnlyByteSpan key, ReadOnlyByteSequence data, ByteSpan hash)
@@ -121,11 +120,11 @@ namespace CafeLib.Bitcoin.Shared.Crypto
             new HMACSHA512(key).TransformFinalBlock(data, hash);
         }
 
-        public static KzUInt512 HmacSha512(this ReadOnlyByteSpan key, ReadOnlyByteSequence data)
+        public static UInt512 HmacSha512(this ReadOnlyByteSpan key, ReadOnlyByteSequence data)
         {
-            var h = new KzUInt512();
-            new HMACSHA512(key).TransformFinalBlock(data, h.Span);
-            return h;
+            var hash = new UInt512();
+            new HMACSHA512(key).TransformFinalBlock(data, hash.Bytes);
+            return hash;
         }
 
         public static byte[] ComputeHash(this HashAlgorithm alg, ReadOnlyByteSequence buffer)

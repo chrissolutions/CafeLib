@@ -6,8 +6,8 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography;
-using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Buffers;
+using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Numerics;
 
 namespace CafeLib.Bitcoin.Shared.Crypto
@@ -118,9 +118,9 @@ namespace CafeLib.Bitcoin.Shared.Crypto
             {
                 inner.TransformBlock(innerSeed);
                 outer.TransformBlock(outerSeed);
-                inner.TransformFinalBlock(dataSpan, hash.Span);
-                outer.TransformFinalBlock(hash.Span, hash.Span);
-                dataSpan = hash.Span;
+                inner.TransformFinalBlock(dataSpan, hash.Bytes);
+                outer.TransformFinalBlock(hash.Bytes, hash.Bytes);
+                dataSpan = hash.Bytes;
                 xhash = i == 0 ? hash : xhash ^ hash;
             }
 

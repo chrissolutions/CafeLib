@@ -5,23 +5,23 @@
 
 using System;
 using System.Buffers;
-using CafeLib.Bitcoin.Utility;
+using CafeLib.Bitcoin.Shared.Numerics;
 
 namespace CafeLib.Bitcoin.Shared.Crypto
 {
     public class Ripemd
     {
-        public static KzUInt160 Ripemd160(ReadOnlySpan<byte> data)
+        public static UInt160 Ripemd160(ReadOnlySpan<byte> data)
         {
-            var h = new KzUInt160();
-            Ripemd160(data, h.Span);
+            var h = new UInt160();
+            Ripemd160(data, h.Bytes);
             return h;
         }
 
-        public static KzUInt160 Ripemd160(ReadOnlySequence<byte> data)
+        public static UInt160 Ripemd160(ReadOnlySequence<byte> data)
         {
-            var h = new KzUInt160();
-            Ripemd160(data, h.Span);
+            var h = new UInt160();
+            Ripemd160(data, h.Bytes);
             return h;
         }
 
@@ -46,7 +46,7 @@ namespace CafeLib.Bitcoin.Shared.Crypto
             var d = new Ripemd160Digest();
             d.BlockUpdate(data.AsSpan(offset, count));
             var rv = new byte[20];
-            d.DoFinal(rv.AsSpan<byte>());
+            d.DoFinal(rv);
             return rv;
         }
     }

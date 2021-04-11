@@ -64,9 +64,12 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         }
 
         public UInt32Span Span32 {
-            get {
-                unsafe {
-                    fixed (UInt64* p = &N0) {
+            get 
+            {
+                unsafe
+                {
+                    fixed (UInt64* p = &N0)
+                    {
                         UInt32* pb = (UInt32*)p;
                         var uint32s = new Span<UInt32>(pb, 8);
                         return uint32s;
@@ -75,10 +78,14 @@ namespace CafeLib.Bitcoin.Shared.Numerics
             }
         }
 
-        public ByteSpan Bytes {
-            get {
-                unsafe {
-                    fixed (UInt64* p = &N0) {
+        public ByteSpan Bytes 
+        {
+            get 
+            {
+                unsafe 
+                {
+                    fixed (UInt64* p = &N0) 
+                    {
                         byte* pb = (byte*)p;
                         var bytes = new Span<byte>(pb, 32);
                         return bytes;
@@ -96,8 +103,9 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         public BigInteger ToBigInteger() => new BigInteger(ReadOnlySpan, isUnsigned:true, isBigEndian:true);
 
-        public byte[] ToBytes(bool reverse = false) {
-            var bytes = Bytes.Data.ToArray();
+        public byte[] ToBytes(bool reverse = false) 
+        {
+            byte[] bytes = Bytes;
             if (reverse)
                 bytes.AsSpan().Reverse();
             return bytes;

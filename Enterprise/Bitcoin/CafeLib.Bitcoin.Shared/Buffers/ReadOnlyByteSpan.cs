@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 
 namespace CafeLib.Bitcoin.Shared.Buffers
 {
@@ -23,6 +24,9 @@ namespace CafeLib.Bitcoin.Shared.Buffers
 
         public void CopyTo(ByteSpan destination) => Data.CopyTo(destination);
 
+        public byte this[int index] => Data[index];
+        public ReadOnlyByteSpan this[Range range] => Data[range];
+
         public static implicit operator ByteSpan(ReadOnlyByteSpan rhs) => rhs.Data;
 
         public static implicit operator ReadOnlySpan<byte>(ReadOnlyByteSpan rhs) => rhs.Data;
@@ -33,5 +37,13 @@ namespace CafeLib.Bitcoin.Shared.Buffers
 
         public static implicit operator byte[](ReadOnlyByteSpan rhs) => rhs.Data.ToArray();
         public static implicit operator ReadOnlyByteSpan(byte[] rhs) => new ReadOnlyByteSpan(rhs);
+
+        public static implicit operator ReadOnlyByteSpan(ReadOnlyByteSequence rhs)
+        {
+            return rhs.Data.IsSingleSegment
+                ? new SequenceReader<byte>(rhs.Data).UnreadSpan
+                : rhs.Data.ToArray();
+        }
+
     }
 }

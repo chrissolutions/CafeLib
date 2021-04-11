@@ -3,7 +3,7 @@ using System.Buffers;
 
 namespace CafeLib.Bitcoin.Shared.Buffers
 {
-    public ref struct ByteSpan
+    public readonly ref struct ByteSpan
     {
         public Span<byte> Data { get; }
 
@@ -23,10 +23,9 @@ namespace CafeLib.Bitcoin.Shared.Buffers
             set => Data[index] = value;
         }
 
-        public void Reverse()
-        {
-            Data.Reverse();
-        }
+        public ByteSpan this[Range range] => Data[range];
+
+        public void Reverse() => Data.Reverse();
 
         public int Length => Data.Length;
 

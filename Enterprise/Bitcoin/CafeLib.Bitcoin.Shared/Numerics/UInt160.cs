@@ -13,7 +13,6 @@ using Newtonsoft.Json;
 
 namespace CafeLib.Bitcoin.Shared.Numerics
 {
-
     [JsonConverter(typeof(JsonConverterUInt160))]
     public struct UInt160 : IComparable<UInt160>
     {
