@@ -27,6 +27,7 @@ namespace CafeLib.Bitcoin.Shared.Buffers
 
         public void Reverse() => Data.Reverse();
 
+        public bool IsEmpty => Data.IsEmpty;
         public int Length => Data.Length;
 
         public ByteSpan Slice(int start) => Data[start..];

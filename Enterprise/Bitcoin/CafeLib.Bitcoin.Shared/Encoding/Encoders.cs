@@ -11,14 +11,8 @@ namespace CafeLib.Bitcoin.Shared.Encoding
     {
         private static readonly Lazy<HexEncoder> LazyHex = new Lazy<HexEncoder>(() => new HexEncoder(), true);
         private static readonly Lazy<HexReverseEncoder> LazyHexReverse = new Lazy<HexReverseEncoder>(() => new HexReverseEncoder(), true);
-        //static Lazy<KzEncodeB58> lazyB58;
-        //static Lazy<KzEncodeB58Check> lazyB58Check;
-
-        static Encoders()
-        {
-            //lazyB58 = new Lazy<KzEncodeB58>(() => new KzEncodeB58(), true);
-            //lazyB58Check = new Lazy<KzEncodeB58Check>(() => new KzEncodeB58Check(), true);
-        }
+        private static readonly Lazy<Base58Encoder> LazyBase58Encoder = new Lazy<Base58Encoder>(() => new Base58Encoder());
+        private static readonly Lazy<Base58CheckEncoder> LazyBase58CheckEncoder = new Lazy<Base58CheckEncoder>(() => new Base58CheckEncoder());
 
         /// <summary>
         /// Encodes a sequence of bytes as hexadecimal digits where:
@@ -36,17 +30,17 @@ namespace CafeLib.Bitcoin.Shared.Encoding
         /// </summary>
         public static HexReverseEncoder HexReverse => LazyHexReverse.Value;
 
-        /// <summary>
-        /// Base58 encoder.
-        /// </summary>
-        //public static KzEncodeB58 B58 => lazyB58.Value;
+        // <summary>
+        // Base58 encoder.
+        // </summary>
+        public static Base58Encoder Base58 => LazyBase58Encoder.Value;
 
-        /// <summary>
-        /// Base58 plus checksum encoder.
-        /// Checksum is first 4 bytes of double SHA256 hash of byte sequence.
-        /// Checksum is appended to byte sequence.
-        /// </summary>
-        //public static KzEncodeB58Check B58Check => lazyB58Check.Value;
+        // <summary>
+        // Base58 plus checksum encoder.
+        // Checksum is first 4 bytes of double SHA256 hash of byte sequence.
+        // Checksum is appended to byte sequence.
+        // </summary>
+        public static Base58CheckEncoder Base58Check => LazyBase58CheckEncoder.Value;
     }
 
 }

@@ -17,6 +17,7 @@ namespace CafeLib.Bitcoin.Shared.Buffers
             Data = data;
         }
 
+        public bool IsEmpty => Data.IsEmpty;
         public int Length => Data.Length;
 
         public ReadOnlyByteSpan Slice(int start) => Data[start..];

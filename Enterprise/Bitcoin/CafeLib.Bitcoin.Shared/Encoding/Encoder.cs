@@ -25,18 +25,18 @@ namespace CafeLib.Bitcoin.Shared.Encoding
         }
 
         /// <summary>
-        /// Encodes a sequence of bytes as a string.
+        /// Encodes a span of bytes as a string.
         /// </summary>
         /// <param name="bytes">Byte sequence to be encoded.</param>
         /// <returns>String representation of byte sequence capable of being decoded back into a byte sequence.</returns>
         public abstract string Encode(ReadOnlyByteSpan bytes);
 
         /// <summary>
-        /// 
+        /// Encodes a sequence of bytes as a string./// 
         /// </summary>
-        /// <param name="data"></param>
+        /// <param name="bytes">Byte sequence to be encoded.</param>
         /// <returns></returns>
-        public abstract string Encode(ReadOnlyByteSequence data);
+        public virtual string Encode(ReadOnlyByteSequence bytes) => Encode(bytes: (ReadOnlyByteSpan) bytes);
 
         /// <summary>
         /// 
