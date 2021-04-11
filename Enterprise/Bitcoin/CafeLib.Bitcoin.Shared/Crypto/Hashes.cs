@@ -8,9 +8,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Shared.Buffers;
-using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Numerics;
-using CafeLib.Bitcoin.Utility;
 
 namespace CafeLib.Bitcoin.Shared.Crypto
 {
@@ -46,7 +44,7 @@ namespace CafeLib.Bitcoin.Shared.Crypto
         /// <param name="header"></param>
         /// <param name="data"></param>
         /// <param name="output">512 bit, 64 byte hash.</param>
-        public static void Bip32Hash(UInt256 chainCode, uint nChild, byte header, ReadOnlySpan<byte> data, Span<byte> output)
+        public static void Bip32Hash(UInt256 chainCode, uint nChild, byte header, ReadOnlyByteSpan data, ByteSpan output)
         {
             var len = data.Length;
             var buf = new byte[1 + len + 4]; // header, data, nChild
@@ -64,9 +62,9 @@ namespace CafeLib.Bitcoin.Shared.Crypto
         }
 
         /// <summary>
-        /// Duplicates Python hashlib's pbkdf2_hmac for hash_name = 'sha512' and dklen = None
+        /// Duplicates Python hash library pbkdf2_hmac for hash_name = 'sha512' and dklen = None
         ///
-        /// Performance can be improved by precomputing _trans_36 and _trans_5c.
+        /// Performance can be improved by pre-computing _trans_36 and _trans_5c.
         /// Unlike Python's hash functions, .NET doesn't currently support copying state between blocks.
         /// This results in having to recompute hash of innerSeed and outerSeed on each iteration.
         /// </summary>
@@ -74,17 +72,17 @@ namespace CafeLib.Bitcoin.Shared.Crypto
         /// <param name="salt"></param>
         /// <param name="iterations"></param>
         /// <returns></returns>
-        public static UInt512 PbKdf2HmacSha512(ReadOnlySpan<byte> password, ReadOnlyByteSpan salt, int iterations)
+        public static UInt512 PbKdf2HmacSha512(ReadOnlyByteSpan password, ReadOnlyByteSpan salt, int iterations)
         {
             if (iterations < 1)
                 throw new ArgumentException();
 
-            var passwordBytes = password.ToArray();
+            byte[] passwordBytes = password;
 
             using var inner = new SHA512Managed();
             using var outer = new SHA512Managed();
 
-            var blocksize = 128; // match python hash library sha512 block size.
+            const int blocksize = 128; // match python hash library sha512 block size.
 
             if (passwordBytes.Length > blocksize)
             {
