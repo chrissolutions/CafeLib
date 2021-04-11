@@ -44,10 +44,10 @@ namespace CafeLib.Bitcoin.Shared.Crypto
             sha.TransformFinalBlock(data, hash);
         }
 
-        public static KzUInt256 Sha256(this ReadOnlySpan<byte> data)
+        public static UInt256 Sha256(this ReadOnlySpan<byte> data)
         {
-            var hash = new KzUInt256();
-            Sha256(data, hash.Span);
+            var hash = new UInt256();
+            Sha256(data, hash.Bytes);
             return hash;
         }
 
@@ -98,7 +98,7 @@ namespace CafeLib.Bitcoin.Shared.Crypto
         public static void Hash160(this ReadOnlySpan<byte> data, Span<byte> hash)
         {
             var h = data.Sha256();
-            Ripemd160(h.Span, hash);
+            Ripemd160(h.Bytes, hash);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace CafeLib.Bitcoin.Shared.Crypto
         /// <returns>KzHash160 RIPEMD160 of SHA256 of data.</returns>
         public static UInt160 Hash160(this ReadOnlySpan<byte> data)
         {
-            return Ripemd160(Sha256(data).Span);
+            return Ripemd160(Sha256(data).Bytes);
         }
 
         public static void HmacSha256(this ReadOnlySpan<byte> key, ReadOnlySpan<byte> data, Span<byte> hash)
