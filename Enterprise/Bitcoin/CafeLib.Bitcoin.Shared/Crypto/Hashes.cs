@@ -6,7 +6,7 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography;
-using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Numerics;
 
