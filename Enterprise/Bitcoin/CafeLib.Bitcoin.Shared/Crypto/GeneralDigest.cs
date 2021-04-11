@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace CafeLib.Bitcoin.Shared
+namespace CafeLib.Bitcoin.Shared.Crypto
 {
     internal abstract class GeneralDigest
     {

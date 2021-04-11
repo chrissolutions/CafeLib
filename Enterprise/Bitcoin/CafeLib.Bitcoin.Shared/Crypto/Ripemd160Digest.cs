@@ -20,7 +20,7 @@ namespace CafeLib.Bitcoin.Shared.Crypto
         */
         public Ripemd160Digest()
         {
-            Reset();
+            Clear();
         }
 
         /**
@@ -113,7 +113,11 @@ namespace CafeLib.Bitcoin.Shared.Crypto
         public override void Reset()
         {
             base.Reset();
+            Clear();
+        }
 
+        public void Clear()
+        {
             H0 = unchecked((int)0x67452301);
             H1 = unchecked((int)0xefcdab89);
             H2 = unchecked((int)0x98badcfe);
