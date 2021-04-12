@@ -35,12 +35,12 @@ namespace CafeLib.Bitcoin.Shared.Keys
 
         public ExtPrivateKey GetKey()
         {
-            var privKey = new ExtPrivateKey();
+            var privateKey = new ExtPrivateKey();
             if (Data.Length == ExtKey.Bip32KeySize)
             {
-                privKey.Decode(Data);
+                privateKey.Decode(Data);
             }
-            return privKey;
+            return privateKey;
         }
 
         public bool SetString(string b58) => base.SetString(b58, RootService.Network.ExtSecretKey.Length);
