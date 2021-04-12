@@ -46,7 +46,6 @@ namespace CafeLib.Bitcoin.Shared.Extensions
             return bytes;
         }
 
-
         ///// <summary>
         ///// Returns access to an integer as a span of bytes.
         ///// Reflects the endian of the underlying implementation.
