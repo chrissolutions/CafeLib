@@ -15,7 +15,9 @@ namespace CafeLib.Bitcoin.Shared.Keys
     {
         public PublicKey PublicKey { get; private set; }
 
-        public ExtPublicKey() { }
+        public ExtPublicKey()
+        {
+        }
 
         public ExtPublicKey(ReadOnlyByteSpan code)
         {
@@ -104,7 +106,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         public override int GetHashCode() => base.GetHashCode() ^ PublicKey.GetHashCode();
         public bool Equals(ExtPublicKey o) => (object)o != null && base.Equals(o) && PublicKey == o.PublicKey;
         public override bool Equals(object obj) => obj is ExtPublicKey key && this == key;
-        public static bool operator ==(ExtPublicKey x, ExtPublicKey y) => object.ReferenceEquals(x, y) || (object)x == null && (object)y == null || x.Equals(y);
+        public static bool operator ==(ExtPublicKey x, ExtPublicKey y) => x != null && (ReferenceEquals(x, y) || x.Equals(y));
         public static bool operator !=(ExtPublicKey x, ExtPublicKey y) => !(x == y);
     }
 }

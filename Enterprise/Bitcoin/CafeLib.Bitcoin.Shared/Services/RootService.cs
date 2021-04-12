@@ -8,6 +8,7 @@ namespace CafeLib.Bitcoin.Shared.Services
         private static BitcoinNetwork _bitcoinNetwork;
         private static readonly object Mutex = new object();
 
+        public const string MasterBip32Key = "Bitcoin seed";
 
         public static void Initialize(NetworkType networkType)
         {

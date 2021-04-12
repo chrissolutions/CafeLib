@@ -10,6 +10,7 @@ using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Crypto;
 using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Numerics;
+using CafeLib.Bitcoin.Shared.Services;
 
 namespace CafeLib.Bitcoin.Shared.Keys
 {
@@ -70,10 +71,9 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// <returns>Returns this key unless required key paths aren't valid for generated key.</returns>
         public ExtPrivateKey SetMasterBip32(ReadOnlySpan<byte> hmacData, IEnumerable<KeyPath> required = null, string hmacKey = null)
         {
-            //hmacKey = hmacKey ?? Kz.MasterBip32Key;
-            //var vout = Hashes.HmacSha512(hmacKey.UTF8NFKDToBytes(), hmacData);
-            //return SetMaster(vout, required);
-            return null;
+            hmacKey ??= RootService.MasterBip32Key;
+            var vout = Hashes.HmacSha512(hmacKey.Utf8NormalizedToBytes(), hmacData);
+            return SetMaster(vout, required);
         }
 
         /// <summary>
