@@ -1,6 +1,5 @@
 ﻿using System;
 using CafeLib.Bitcoin.Shared.Buffers;
-using CafeLib.Bitcoin.Shared.Numerics;
 
 namespace CafeLib.Bitcoin.Shared.Extensions
 {
@@ -145,18 +144,5 @@ namespace CafeLib.Bitcoin.Shared.Extensions
         /// <param name="i"></param>
         /// <returns></returns>
         public static ReadOnlySpan<byte> AsReadOnlySpan(this ref UInt64 i) => i.AsSpan();
-
-        /// <summary>
-        /// Converts a ReadOnlyByteSpan to a UInt256.
-        /// Reflects the endian of the underlying implementation.
-        /// </summary>
-        /// <param name="bytes">read only span of bytes</param>
-        /// <returns></returns>
-        public static UInt256 ToUInt256(this ReadOnlyByteSpan bytes)
-        {
-            var value = new UInt256();
-            bytes.CopyTo(value.Bytes);
-            return value;
-        }
     }
 }

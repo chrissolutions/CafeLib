@@ -57,8 +57,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// <returns>Returns this key unless required key paths aren't valid for specified key.</returns>
         public ExtPrivateKey SetMaster(UInt512 vout, IEnumerable<KeyPath> required = null)
         {
-            //return SetMaster(vout.ReadOnlySpan.Slice(0, 32).ToKzUInt256(), vout.ReadOnlySpan.Slice(32, 32).ToKzUInt256(), required);
-            return default;
+            return SetMaster(vout.ReadOnlySpan.Slice(0, 32), vout.ReadOnlySpan.Slice(32, 32), required);
         }
 
         /// <summary>
