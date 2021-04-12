@@ -16,7 +16,7 @@ namespace CafeLib.Bitcoin.Shared.Network
         /// <summary>
         /// Base58 encoding prefix for public key addresses for the active network.
         /// </summary>
-        ReadOnlyByteSpan PubkeyAddress { get; }
+        ReadOnlyByteSpan PublicKeyAddress { get; }
 
         /// <summary>
         /// Base58 encoding prefix for script addresses for the active network.

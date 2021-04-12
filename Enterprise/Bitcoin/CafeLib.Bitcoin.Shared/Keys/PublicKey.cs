@@ -203,7 +203,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// <returns>20 byte hash as a KzUInt160</returns>
         public UInt160 ToHash160() => ReadOnlySpan.Hash160();
 
-        public string ToAddress() => Encoders.Base58Check.Encode(RootService.Network.PubkeyAddress, ToHash160().Bytes);
+        public string ToAddress() => Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress, ToHash160().Bytes);
 
         public string ToHex() => _bytes != null ? Encoders.Hex.Encode(_bytes) : "<invalid>";
 

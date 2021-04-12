@@ -26,7 +26,7 @@ namespace CafeLib.Bitcoin.Shared.Network
             Base58Prefixes = base58Prefixes;
         }
 
-        public ReadOnlyByteSpan PubkeyAddress => new Lazy<byte[]>(() => CreateKey(Base58Type.PubkeyAddress)).Value;
+        public ReadOnlyByteSpan PublicKeyAddress => new Lazy<byte[]>(() => CreateKey(Base58Type.PubkeyAddress)).Value;
 
         public ReadOnlyByteSpan ScriptAddress => new Lazy<byte[]>(() => CreateKey(Base58Type.ScriptAddress)).Value;
 
