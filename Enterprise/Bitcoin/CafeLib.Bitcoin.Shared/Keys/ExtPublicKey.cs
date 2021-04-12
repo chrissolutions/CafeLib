@@ -22,18 +22,19 @@ namespace CafeLib.Bitcoin.Shared.Keys
             Decode(code);
         }
 
-        //public static ExtPublicKey FromPriv(ExtPrivateKey priv)
-        //{
-        //    var key = new ExtPublicKey {
-        //        _depth = priv.Depth,
-        //        _fingerprint = priv.Fingerprint,
-        //        _child = priv.IndexWithHardened,
-        //        _chaincode = priv.Chaincode,
-        //        PublicKey = priv.PrivKey.GetPubKey()
-        //    };
+        public static ExtPublicKey FromPrivate(ExtPrivateKey priv)
+        {
+            var key = new ExtPublicKey
+            {
+                Depth = priv.Depth,
+                Fingerprint = priv.Fingerprint,
+                Child = priv.IndexWithHardened,
+                ChainCode = priv.ChainCode,
+                PublicKey = priv.PrivateKey.GetPublicKey()
+            };
 
-        //    return key;
-        //}
+            return key;
+        }
 
         /// <summary>
         /// Computes the public key specified by a key path.

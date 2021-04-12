@@ -43,6 +43,10 @@ namespace CafeLib.Bitcoin.Shared.Keys
             return library.SecretKeyVerify(vch);
         }
 
+        public PrivateKey()
+        {
+        }
+
         public PrivateKey(UInt256 keyData)
         {
             _keyData = keyData;
