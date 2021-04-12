@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using CafeLib.Bitcoin.Shared.Buffers;
+using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Numerics;
 using Secp256k1Net;
 
@@ -53,6 +55,19 @@ namespace CafeLib.Bitcoin.Shared.Keys
             var (ok, sig) = Library.PrivateKeySign(hash.Bytes, privateKey.ReadOnlySpan);
 
             return (ok, sig);
+        }
+
+        public static bool TweakAdd(this PrivateKey privateKey, ByteSpan bytes, out PrivateKey childKey)
+        {
+            childKey = null;
+            var dataChild = privateKey.ReadOnlySpan.ToUInt256();
+            var result = Library.PrivKeyTweakAdd(dataChild.Bytes, bytes.Slice(0, 32));
+            if (result)
+            {
+                childKey = new PrivateKey(dataChild);
+            }
+
+            return result;
         }
     }
 }

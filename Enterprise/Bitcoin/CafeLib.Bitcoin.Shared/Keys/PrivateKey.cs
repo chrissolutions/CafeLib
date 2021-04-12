@@ -21,6 +21,8 @@ namespace CafeLib.Bitcoin.Shared.Keys
     {
         private readonly UInt256 _keyData;
 
+        private const uint HardenedBit = 0x80000000;
+
         public bool IsValid { get; private set; }
 
         /// <summary>
@@ -28,7 +30,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// </summary>
         public bool IsCompressed { get; private set; }
 
-        public ReadOnlySpan<byte> ReadOnlySpan => _keyData.ReadOnlySpan;
+        public ReadOnlyByteSpan ReadOnlySpan => _keyData.ReadOnlySpan;
 
         public BigInteger BigInteger => _keyData.ToBigInteger();
 
@@ -149,12 +151,8 @@ namespace CafeLib.Bitcoin.Shared.Keys
             var ccChild = new UInt256();
             sout.Slice(32, 32).CopyTo(ccChild.Bytes);
 
-            var dataChild = new UInt256();
-            _keyData.Bytes.CopyTo(dataChild.Bytes);
-
-            var ok = Secp256k1.PrivKeyTweakAdd(dataChild.Bytes, sout.Slice(0, 32));
+            var ok = this.TweakAdd( sout.Slice(0, 32), out var keyChild);
             if (!ok) goto fail;
-            var keyChild = new PrivateKey(dataChild);
             return (true, keyChild, ccChild);
 
         fail:
@@ -170,20 +168,5 @@ namespace CafeLib.Bitcoin.Shared.Keys
         public override bool Equals(object obj) => obj is PrivateKey key && this == key;
         public static bool operator ==(PrivateKey x, PrivateKey y) => object.ReferenceEquals(x, y) || (object)x == null && (object)y == null || x.Equals(y);
         public static bool operator !=(PrivateKey x, PrivateKey y) => !(x == y);
-
-        private const uint HardenedBit = 0x80000000;
-
-        private static readonly Lazy<Secp256k1> LazySecp256k1;
-        private Secp256k1 Secp256k1 => LazySecp256k1.Value;
-
-        static PrivateKey()
-        {
-            LazySecp256k1 = new Lazy<Secp256k1>(() => {
-                var ctx = new Secp256k1(sign: true, verify: false);
-                ctx.Randomize(Randomizer.GetStrongRandBytes(32));
-                return ctx;
-            }, true);
-        }
-
     }
 }

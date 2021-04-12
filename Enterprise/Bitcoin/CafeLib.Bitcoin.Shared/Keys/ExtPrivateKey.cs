@@ -229,7 +229,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
             code.Slice(1, 4).CopyTo(Fingerprint.AsSpan());
             Child = (uint)code[5] << 24 | (uint)code[6] << 16 | (uint)code[7] << 8 | (uint)(code[8]);
             code.Slice(9, 32).CopyTo(ChainCode.Bytes);
-            PrivateKey.Set(code.Slice(42, 32), true);
+            PrivateKey.Set(code.Slice(42, 32));
         }
 
         //public KzB58ExtPrivKey ToB58() => new KzB58ExtPrivKey(this);
@@ -237,8 +237,8 @@ namespace CafeLib.Bitcoin.Shared.Keys
 
         public override int GetHashCode() => base.GetHashCode() ^ PrivateKey.GetHashCode();
         public bool Equals(ExtPrivateKey o) => (object)o != null && base.Equals(o) && PrivateKey == o.PrivateKey;
-        public override bool Equals(object obj) => obj is ExtPrivateKey && this == (ExtPrivateKey)obj;
-        public static bool operator ==(ExtPrivateKey x, ExtPrivateKey y) => object.ReferenceEquals(x, y) || (object)x == null && (object)y == null || x.Equals(y);
+        public override bool Equals(object obj) => obj is ExtPrivateKey key && this == key;
+        public static bool operator ==(ExtPrivateKey x, ExtPrivateKey y) => x != null && (ReferenceEquals(x, y) || x.Equals(y));
         public static bool operator !=(ExtPrivateKey x, ExtPrivateKey y) => !(x == y);
     }
 }
