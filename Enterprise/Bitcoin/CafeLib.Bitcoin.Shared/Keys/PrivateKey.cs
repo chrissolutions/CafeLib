@@ -19,20 +19,19 @@ namespace CafeLib.Bitcoin.Shared.Keys
     /// </summary>
     public class PrivateKey
     {
-        private bool _fCompressed;
-        private UInt256 _keyData;
+        private readonly UInt256 _keyData;
 
-        private Flags IsCompressedFlag => _fCompressed ? Flags.SECP256K1_EC_COMPRESSED : Flags.SECP256K1_EC_UNCOMPRESSED;
+        private Flags IsCompressedFlag => IsCompressed ? Flags.SECP256K1_EC_COMPRESSED : Flags.SECP256K1_EC_UNCOMPRESSED;
 
         public bool IsValid { get; private set; }
 
         private static int PublicKeyLength => Secp256k1.PUBKEY_LENGTH;
-        int SerializedPublicKeyLength => _fCompressed ? Secp256k1.SERIALIZED_COMPRESSED_PUBKEY_LENGTH : Secp256k1.SERIALIZED_UNCOMPRESSED_PUBKEY_LENGTH;
+        private int SerializedPublicKeyLength => IsCompressed ? Secp256k1.SERIALIZED_COMPRESSED_PUBKEY_LENGTH : Secp256k1.SERIALIZED_UNCOMPRESSED_PUBKEY_LENGTH;
 
         /// <summary>
         /// True if the corresponding public key is compressed.
         /// </summary>
-        public bool IsCompressed => _fCompressed;
+        public bool IsCompressed { get; private set; }
 
         public ReadOnlySpan<byte> ReadOnlySpan => _keyData.ReadOnlySpan;
 
@@ -44,14 +43,14 @@ namespace CafeLib.Bitcoin.Shared.Keys
             return library.SecretKeyVerify(vch);
         }
 
-        public PrivateKey(UInt256 keydata)
+        public PrivateKey(UInt256 keyData)
         {
-            _keyData = keydata;
+            _keyData = keyData;
         }
 
-        public PrivateKey(ReadOnlySpan<byte> span, UInt256 keydata, bool compressed = true)
+        public PrivateKey(ReadOnlySpan<byte> span, UInt256 keyData, bool compressed = true)
         {
-            _keyData = keydata;
+            _keyData = keyData;
             Set(span, compressed);
         }
 
@@ -73,7 +72,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
                 IsValid = false;
             else {
                 data.CopyTo(_keyData.Bytes);
-                _fCompressed = compressed;
+                IsCompressed = compressed;
                 IsValid = true;
             }
         }
@@ -86,7 +85,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
             } 
             while (!Check(_keyData.ReadOnlySpan));
             IsValid = true;
-            _fCompressed = compressed;
+            IsCompressed = compressed;
         }
 
         public PublicKey GetPublicKey()
@@ -95,7 +94,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
             var pubKeySecp256K1 = new byte[PublicKeyLength];
             var ok = Secp256K1.PublicKeyCreate(pubKeySecp256K1, _keyData.ReadOnlySpan);
             Trace.Assert(ok);
-            var pubKey = new PublicKey(_fCompressed);
+            var pubKey = new PublicKey(IsCompressed);
             Secp256K1.PublicKeySerialize(pubKey.Span, pubKeySecp256K1, IsCompressedFlag);
             Trace.Assert(pubKey.IsValid);
             return pubKey;
@@ -132,7 +131,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// <returns></returns>
         public bool VerifyPubKey(PublicKey publicKey)
         {
-            if (publicKey.IsCompressed != _fCompressed)
+            if (publicKey.IsCompressed != IsCompressed)
                 return false;
 
             var rnd = Randomizer.GetStrongRandBytes(8).ToArray();
@@ -176,7 +175,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
             var ok = Secp256K1.PrivKeyTweakAdd(dataChild.Bytes, sout.Slice(0, 32));
             if (!ok) goto fail;
             var keyChild = new PrivateKey(dataChild);
-            return (ok, keyChild, ccChild);
+            return (true, keyChild, ccChild);
 
         fail:
             return (false, null, UInt256.Zero);
@@ -187,14 +186,14 @@ namespace CafeLib.Bitcoin.Shared.Keys
         //public override string ToString() => ToB58().ToString();
 
         public override int GetHashCode() => _keyData.GetHashCode();
-        public bool Equals(PrivateKey o) => (object)o != null && _fCompressed.Equals(o._fCompressed) && _keyData.Equals(o._keyData);
+        public bool Equals(PrivateKey o) => (object)o != null && IsCompressed.Equals(o.IsCompressed) && _keyData.Equals(o._keyData);
         public override bool Equals(object obj) => obj is PrivateKey && this == (PrivateKey)obj;
         public static bool operator ==(PrivateKey x, PrivateKey y) => object.ReferenceEquals(x, y) || (object)x == null && (object)y == null || x.Equals(y);
         public static bool operator !=(PrivateKey x, PrivateKey y) => !(x == y);
 
-        const uint HardenedBit = 0x80000000;
+        private const uint HardenedBit = 0x80000000;
 
-        private static readonly Lazy<Secp256k1> LazySecp256K1 = null;
+        private static readonly Lazy<Secp256k1> LazySecp256K1;
         private Secp256k1 Secp256K1 => LazySecp256K1.Value;
 
         static PrivateKey()

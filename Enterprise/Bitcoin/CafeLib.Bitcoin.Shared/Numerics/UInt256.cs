@@ -127,7 +127,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         /// <summary>
         /// The bytes appear in little-endian order, first byte in memory first.
-        /// But the high nibble, first hex digit, of the each byte still apears before the low nibble (big-endian by nibble order).
+        /// But the high nibble, first hex digit, of the each byte still appears before the low nibble (big-endian by nibble order).
         /// Equivalent to ToHex.
         /// </summary>
         /// <returns></returns>
@@ -135,7 +135,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         /// <summary>
         /// The bytes appear in little-endian order, first byte in memory first.
-        /// But the high nibble, first hex digit, of the each byte still apears before the low nibble (big-endian by nibble order).
+        /// But the high nibble, first hex digit, of the each byte still appears before the low nibble (big-endian by nibble order).
         /// </summary>
         /// <returns></returns>
 		public string ToHex() => Encoders.Hex.Encode(ReadOnlySpan);
