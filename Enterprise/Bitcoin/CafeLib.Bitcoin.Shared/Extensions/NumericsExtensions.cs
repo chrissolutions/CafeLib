@@ -5,24 +5,26 @@ namespace CafeLib.Bitcoin.Shared.Extensions
 {
     public static class NumericsExtensions
     {
-        /// <summary>
-        /// Returns access to an integer as a span of bytes.
-        /// Reflects the endian of the underlying implementation.
-        /// </summary>
-        /// <param name="i"></param>
-        /// <returns></returns>
-        public static ByteSpan AsSpan(this ref Int32 i)
-        {
-            unsafe
-            {
-                fixed (Int32* p = &i)
-                {
-                    byte* pb = (byte*)p;
-                    var bytes = new Span<byte>(pb, 4);
-                    return bytes;
-                }
-            }
-        }
+        public static ByteSpan AsSpan(this int i) => BitConverter.GetBytes(i);
+
+        // <summary>
+        // Returns access to an integer as a span of bytes.
+        // Reflects the endian of the underlying implementation.
+        // </summary>
+        // <param name = "i" ></param >
+        // < returns ></returns >
+        //public static ByteSpan AsSpan(this ref Int32 i)
+        //{
+        //    unsafe
+        //    {
+        //        fixed (Int32* p = &i)
+        //        {
+        //            byte* pb = (byte*)p;
+        //            var bytes = new Span<byte>(pb, 4);
+        //            return bytes;
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Returns access to an integer as a span of bytes.
@@ -31,9 +33,9 @@ namespace CafeLib.Bitcoin.Shared.Extensions
         /// <param name="i"></param>
         /// <param name="bigEndian"></param>
         /// <returns></returns>
-        public static ReadOnlyByteSpan AsReadOnlySpan(this ref Int32 i, bool bigEndian = false)
+        public static ReadOnlyByteSpan AsReadOnlySpan(this int i, bool bigEndian = false)
         {
-            byte[] bytes = i.AsSpan();
+            var bytes = BitConverter.GetBytes(i);
 
             if (BitConverter.IsLittleEndian == bigEndian)
             {
@@ -43,17 +45,37 @@ namespace CafeLib.Bitcoin.Shared.Extensions
             return bytes;
         }
 
+
+        ///// <summary>
+        ///// Returns access to an integer as a span of bytes.
+        ///// Reflects the endian of the underlying implementation.
+        ///// </summary>
+        ///// <param name="i"></param>
+        ///// <param name="bigEndian"></param>
+        ///// <returns></returns>
+        //public static ReadOnlyByteSpan AsReadOnlySpan(this ref Int32 i, bool bigEndian = false)
+        //{
+        //    byte[] bytes = i.AsSpan();
+
+        //    if (BitConverter.IsLittleEndian == bigEndian)
+        //    {
+        //        Array.Reverse(bytes);
+        //    }
+
+        //    return bytes;
+        //}
+
         /// <summary>
         /// Returns access to an integer as a span of bytes.
         /// Reflects the endian of the underlying implementation.
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public static ByteSpan AsSpan(this ref UInt32 i)
+        public static ByteSpan AsSpan(this ref uint i)
         {
             unsafe
             {
-                fixed (UInt32* p = &i)
+                fixed (uint* p = &i)
                 {
                     byte* pb = (byte*)p;
                     var bytes = new Span<byte>(pb, 4);
@@ -68,7 +90,7 @@ namespace CafeLib.Bitcoin.Shared.Extensions
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public static ReadOnlyByteSpan AsReadOnlySpan(this ref UInt32 i) => i.AsSpan();
+        public static ReadOnlyByteSpan AsReadOnlySpan(this ref uint i) => i.AsSpan();
 
         /// <summary>
         /// Returns access to an integer as a span of bytes.

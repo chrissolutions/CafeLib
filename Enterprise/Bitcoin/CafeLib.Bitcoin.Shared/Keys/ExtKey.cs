@@ -3,13 +3,12 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System;
 using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Numerics;
 
 namespace CafeLib.Bitcoin.Shared.Keys
 {
-    public abstract class ExtendedKey
+    public abstract class ExtKey
     {
         public const uint HardenedBit = 0x80000000;
         public const int Bip32KeySize = 74;
@@ -58,7 +57,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// <param name="index"></param>
         /// <param name="hardened"></param>
         /// <returns></returns>
-        public abstract ExtendedKey DeriveBase(int index, bool hardened);
+        public abstract ExtKey DeriveBase(int index, bool hardened);
 
         /// <summary>
         /// Computes the key specified by a key path.
@@ -67,7 +66,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// </summary>
         /// <param name="kp"></param>
         /// <returns>null on derivation failure. Otherwise the derived private key.</returns>
-        public ExtendedKey DeriveBase(KeyPath kp)
+        public ExtKey DeriveBase(KeyPath kp)
         {
             var k = this;
             foreach (var i in kp.Indices)
@@ -79,9 +78,9 @@ namespace CafeLib.Bitcoin.Shared.Keys
         }
 
         public override int GetHashCode() => Depth.GetHashCode() ^ Fingerprint.GetHashCode() ^ Child.GetHashCode() ^ ChainCode.GetHashCode();
-        public bool Equals(ExtendedKey o) => (object)o != null && Depth == o.Depth && Fingerprint == o.Fingerprint && Child == o.Child && ChainCode == o.ChainCode;
-        public override bool Equals(object obj) => obj is ExtendedKey key && Equals(key);
-        public static bool operator ==(ExtendedKey x, ExtendedKey y) => object.ReferenceEquals(x, y) || (object)x == null && (object)y == null || x.Equals(y);
-        public static bool operator !=(ExtendedKey x, ExtendedKey y) => !(x == y);
+        public bool Equals(ExtKey o) => (object)o != null && Depth == o.Depth && Fingerprint == o.Fingerprint && Child == o.Child && ChainCode == o.ChainCode;
+        public override bool Equals(object obj) => obj is ExtKey key && Equals(key);
+        public static bool operator ==(ExtKey x, ExtKey y) => object.ReferenceEquals(x, y) || (object)x == null && (object)y == null || x.Equals(y);
+        public static bool operator !=(ExtKey x, ExtKey y) => !(x == y);
     }
 }
