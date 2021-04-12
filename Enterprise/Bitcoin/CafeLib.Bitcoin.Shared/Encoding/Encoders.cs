@@ -42,5 +42,4 @@ namespace CafeLib.Bitcoin.Shared.Encoding
         // </summary>
         public static Base58CheckEncoder Base58Check => LazyBase58CheckEncoder.Value;
     }
-
 }

@@ -87,11 +87,11 @@ namespace CafeLib.Bitcoin.Shared.Keys
         public static int MaxLength => 65;
 
         public ReadOnlyByteSpan ReadOnlySpan => _bytes;
-        public Span<byte> Span => _bytes;
+        public ByteSpan Bytes => _bytes;
 
         public byte[] GetBytes() => ReadOnlySpan;
 
-        public void Set(ReadOnlySpan<byte> data)
+        public void Set(ReadOnlyByteSpan data)
         {
             var len = data.Length == 0 ? 0 : PredictLength(data[0]);
             if (len > 0 && len == data.Length)
@@ -229,7 +229,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
             if (!Secp256K1.PublicKeySerialize(dataChild.AsSpan(), pkbs, Flags.SECP256K1_EC_COMPRESSED)) goto fail;
 
             var keyChild = new PublicKey(true);
-            dataChild.AsSpan().CopyTo(keyChild.Span);
+            dataChild.AsSpan().CopyTo(keyChild.Bytes);
 
             return (true, keyChild, ccChild);
 

@@ -115,7 +115,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
             var ok = Secp256k1.PublicKeyCreate(pubKeySecp256K1, _keyData.ReadOnlySpan);
             Trace.Assert(ok);
             var pubKey = new PublicKey(IsCompressed);
-            Secp256k1.PublicKeySerialize(pubKey.Span, pubKeySecp256K1, IsCompressedFlag);
+            Secp256k1.PublicKeySerialize(pubKey.Bytes, pubKeySecp256K1, IsCompressedFlag);
             Trace.Assert(pubKey.IsValid);
             return pubKey;
         }
