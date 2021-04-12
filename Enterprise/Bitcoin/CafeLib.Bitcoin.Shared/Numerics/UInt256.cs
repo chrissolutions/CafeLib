@@ -102,7 +102,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         public UInt160 ToHash160() => Hashes.Hash160(ReadOnlySpan);
 
-        public BigInteger ToBigInteger() => new BigInteger(ReadOnlySpan, isUnsigned:true, isBigEndian:true);
+        public readonly BigInteger ToBigInteger() => new BigInteger(ReadOnlySpan, isUnsigned:true, isBigEndian:true);
 
         public byte[] ToBytes(bool reverse = false) 
         {

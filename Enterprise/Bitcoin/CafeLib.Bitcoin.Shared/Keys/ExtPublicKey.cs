@@ -30,7 +30,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
                 Fingerprint = priv.Fingerprint,
                 Child = priv.IndexWithHardened,
                 ChainCode = priv.ChainCode,
-                PublicKey = priv.PrivateKey.GetPublicKey()
+                PublicKey = priv.PrivateKey.CreatePublicKey()
             };
 
             return key;

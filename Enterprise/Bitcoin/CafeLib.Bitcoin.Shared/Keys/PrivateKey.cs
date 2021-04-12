@@ -21,12 +21,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
     {
         private readonly UInt256 _keyData;
 
-        private Flags IsCompressedFlag => IsCompressed ? Flags.SECP256K1_EC_COMPRESSED : Flags.SECP256K1_EC_UNCOMPRESSED;
-
         public bool IsValid { get; private set; }
-
-        private static int PublicKeyLength => Secp256k1.PUBKEY_LENGTH;
-        private int SerializedPublicKeyLength => IsCompressed ? Secp256k1.SERIALIZED_COMPRESSED_PUBKEY_LENGTH : Secp256k1.SERIALIZED_UNCOMPRESSED_PUBKEY_LENGTH;
 
         /// <summary>
         /// True if the corresponding public key is compressed.
@@ -108,41 +103,6 @@ namespace CafeLib.Bitcoin.Shared.Keys
             IsCompressed = compressed;
         }
 
-        public PublicKey GetPublicKey()
-        {
-            Trace.Assert(IsValid);
-            var pubKeySecp256K1 = new byte[PublicKeyLength];
-            var ok = Secp256k1.PublicKeyCreate(pubKeySecp256K1, _keyData.ReadOnlySpan);
-            Trace.Assert(ok);
-            var pubKey = new PublicKey(IsCompressed);
-            Secp256k1.PublicKeySerialize(pubKey.Bytes, pubKeySecp256K1, IsCompressedFlag);
-            Trace.Assert(pubKey.IsValid);
-            return pubKey;
-        }
-
-        /// <summary>
-        /// The complement function is KzPubKey's RecoverCompact or KzPubKey.FromRecoverCompact.
-        /// </summary>
-        /// <param name="hash"></param>
-        /// <returns></returns>
-        public (bool ok, byte[] sig) SignCompact(UInt256 hash)
-        {
-            if (!IsValid) return (false, null);
-
-            var (ok, sig) = Secp256k1.PrivateKeySignCompact(hash.Bytes, _keyData.Bytes, IsCompressed);
-
-            return (ok, sig);
-        }
-
-        public (bool ok, byte[] sig) Sign(UInt256 hash)
-        {
-            if (!IsValid) return (false, null);
-
-            var (ok, sig) = Secp256k1.PrivateKeySign(hash.Bytes, _keyData.Bytes);
-
-            return (ok, sig);
-        }
-
         /// <summary>
         /// Verify thoroughly whether a private key and a public key match.
         /// This is done using a different mechanism than just regenerating it.
@@ -159,7 +119,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
 
             var hash = Hashes.Hash256(System.Text.Encoding.ASCII.GetBytes(str).Concat(rnd).ToArray());
 
-            var (ok, sig) = Sign(hash);
+            var (ok, sig) = this.CreateSignature(hash);
 
             if (!ok) return false;
 
@@ -174,7 +134,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
 
             if (nChild < HardenedBit) {
                 // Not hardened.
-                var pubkey = GetPublicKey();
+                var pubkey = this.CreatePublicKey();
                 Debug.Assert(pubkey.ReadOnlySpan.Length == 33);
                 Hashes.Bip32Hash(cc, nChild, pubkey.ReadOnlySpan[0], pubkey.ReadOnlySpan.Slice(1), vout);
             } 

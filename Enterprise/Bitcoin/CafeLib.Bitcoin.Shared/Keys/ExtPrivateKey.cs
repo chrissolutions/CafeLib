@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using CafeLib.Bitcoin.Shared.Buffers;
+using CafeLib.Bitcoin.Shared.Crypto;
 using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Numerics;
 
@@ -101,8 +102,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// <param name="passwordPrefix">password and passwordPrefix are combined to generate salt bytes. Default is "mnemonic".</param>
         /// <returns>Computes 512 bit Bip39 seed.</returns>
         public static UInt512 Bip39Seed(string passphrase, string password = null, string passwordPrefix = "mnemonic") {
-            //return Hashes.PbKdf2HmacSha512(passphrase.UTF8NFKDToBytes(), $"{passwordPrefix}{password}".UTF8NFKDToBytes(), 2048);
-            return default;
+            return Hashes.PbKdf2HmacSha512(passphrase.Utf8NormalizedToBytes(), $"{passwordPrefix}{password}".Utf8NormalizedToBytes(), 2048);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// </summary>
         /// <returns></returns>
         public ExtPublicKey GetExtPublicKey() => ExtPublicKey.FromPrivate(this);
-        public PublicKey GetPublicKey() => PrivateKey.GetPublicKey();
+        public PublicKey GetPublicKey() => PrivateKey.CreatePublicKey();
 
         /// <summary>
         /// Computes the private key specified by a key path.
@@ -199,7 +199,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
             var cek = new ExtPrivateKey {
                 Depth = (byte)(Depth + 1),
                 Child = (uint)index | (hardened ? HardenedBit : 0),
-                Fingerprint = BitConverter.ToInt32(PrivateKey.GetPublicKey().GetId().Bytes.Slice(0, 4))
+                Fingerprint = BitConverter.ToInt32(PrivateKey.CreatePublicKey().GetId().Bytes.Slice(0, 4))
             };
 
             bool ok;
