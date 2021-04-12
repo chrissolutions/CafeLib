@@ -43,6 +43,6 @@ namespace CafeLib.Bitcoin.Shared.Keys
             return privateKey;
         }
 
-        public bool SetString(string b58) => base.SetString(b58, RootService.Network.ExtSecretKey.Length);
+        public bool SetString(string b58) => SetString(b58, RootService.Network.ExtSecretKey.Length);
     }
 }
