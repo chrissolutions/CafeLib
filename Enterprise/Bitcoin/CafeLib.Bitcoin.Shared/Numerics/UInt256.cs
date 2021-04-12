@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Numerics;
 using CafeLib.Bitcoin.Shared.Buffers;
+using CafeLib.Bitcoin.Shared.Crypto;
 using CafeLib.Bitcoin.Shared.Encoding;
 using CafeLib.Bitcoin.Shared.Numerics.Converters;
 using Newtonsoft.Json;
@@ -49,7 +50,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         public static UInt256 Zero { get; } = new UInt256(0);
         public static UInt256 One { get; } = new UInt256(1);
 
-        public ReadOnlySpan<byte> ReadOnlySpan => Bytes;
+        public readonly ReadOnlySpan<byte> ReadOnlySpan => Bytes;
 
         public UInt64Span Span64 {
             get {
@@ -78,7 +79,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
             }
         }
 
-        public ByteSpan Bytes 
+        public readonly ByteSpan Bytes 
         {
             get 
             {
@@ -99,7 +100,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
             s.Read(Bytes);
         }
 
-        //public KzUInt160 ToHash160() => KzHashes.HASH160(ReadOnlySpan);
+        public UInt160 ToHash160() => Hashes.Hash160(ReadOnlySpan);
 
         public BigInteger ToBigInteger() => new BigInteger(ReadOnlySpan, isUnsigned:true, isBigEndian:true);
 
@@ -131,7 +132,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         /// Equivalent to ToHex.
         /// </summary>
         /// <returns></returns>
-		public string ToStringFirstByteFirst() => Encoders.Hex.Encode(ReadOnlySpan);
+		public readonly string ToStringFirstByteFirst() => Encoders.Hex.Encode(ReadOnlySpan);
 
         /// <summary>
         /// The bytes appear in little-endian order, first byte in memory first.

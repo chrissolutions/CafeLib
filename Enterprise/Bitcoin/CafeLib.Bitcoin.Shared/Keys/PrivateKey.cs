@@ -47,9 +47,9 @@ namespace CafeLib.Bitcoin.Shared.Keys
         {
         }
 
-        public PrivateKey(UInt256 keyData)
+        public PrivateKey(ReadOnlySpan<byte> span, bool compressed = true)
         {
-            _keyData = keyData;
+            Set(span, compressed);
         }
 
         public PrivateKey(ReadOnlySpan<byte> span, UInt256 keyData, bool compressed = true)
@@ -58,17 +58,33 @@ namespace CafeLib.Bitcoin.Shared.Keys
             Set(span, compressed);
         }
 
-        public PrivateKey(UInt256 v, UInt256 keydata, bool compressed = true)
+        public PrivateKey(UInt256 keyData)
         {
-            _keyData = keydata;
+            _keyData = keyData;
+        }
+
+        public PrivateKey(UInt256 v, bool compressed = true)
+        {
             Set(v.ReadOnlySpan, compressed);
         }
 
-        public PrivateKey(string hex, UInt256 keydata, bool compressed = true) : this(new UInt256(hex, firstByteFirst:true), keydata, compressed) { }
+        public PrivateKey(UInt256 v, UInt256 keyData, bool compressed = true)
+        {
+            _keyData = keyData;
+            Set(v.ReadOnlySpan, compressed);
+        }
 
-        //public static PrivateKey FromHex(string hex, bool compressed = true) => new PrivateKey(new UInt256(hex, firstByteFirst: true), compressed);
-        //public static PrivateKey FromB58(string b58) => new Base58PrivateKey(b58).GetKey();
-        //public static PrivateKey FromWIF(string wif) => new KzB58PrivKey(wif).GetKey();
+        public PrivateKey(string hex, bool compressed = true)
+            : this(new UInt256(hex, true), compressed)
+        {
+        }
+
+        public PrivateKey(string hex, UInt256 keyData, bool compressed = true)
+            : this(new UInt256(hex, true), keyData, compressed) { }
+
+        public static PrivateKey FromHex(string hex, bool compressed = true) => new PrivateKey(new UInt256(hex, true), compressed);
+        //public static KzPrivKey FromB58(string b58) => new KzB58PrivKey(b58).GetKey();
+        //public static KzPrivKey FromWIF(string wif) => new KzB58PrivKey(wif).GetKey();
 
         public void Set(ReadOnlyByteSpan data, bool compressed = true)
         {
@@ -96,10 +112,10 @@ namespace CafeLib.Bitcoin.Shared.Keys
         {
             Trace.Assert(IsValid);
             var pubKeySecp256K1 = new byte[PublicKeyLength];
-            var ok = Secp256K1.PublicKeyCreate(pubKeySecp256K1, _keyData.ReadOnlySpan);
+            var ok = Secp256k1.PublicKeyCreate(pubKeySecp256K1, _keyData.ReadOnlySpan);
             Trace.Assert(ok);
             var pubKey = new PublicKey(IsCompressed);
-            Secp256K1.PublicKeySerialize(pubKey.Span, pubKeySecp256K1, IsCompressedFlag);
+            Secp256k1.PublicKeySerialize(pubKey.Span, pubKeySecp256K1, IsCompressedFlag);
             Trace.Assert(pubKey.IsValid);
             return pubKey;
         }
@@ -113,7 +129,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         {
             if (!IsValid) return (false, null);
 
-            var (ok, sig) = Secp256K1.PrivateKeySignCompact(hash.Bytes, _keyData.Bytes, IsCompressed);
+            var (ok, sig) = Secp256k1.PrivateKeySignCompact(hash.Bytes, _keyData.Bytes, IsCompressed);
 
             return (ok, sig);
         }
@@ -122,7 +138,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         {
             if (!IsValid) return (false, null);
 
-            var (ok, sig) = Secp256K1.PrivateKeySign(hash.Bytes, _keyData.Bytes);
+            var (ok, sig) = Secp256k1.PrivateKeySign(hash.Bytes, _keyData.Bytes);
 
             return (ok, sig);
         }
@@ -176,7 +192,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
             var dataChild = new UInt256();
             _keyData.Bytes.CopyTo(dataChild.Bytes);
 
-            var ok = Secp256K1.PrivKeyTweakAdd(dataChild.Bytes, sout.Slice(0, 32));
+            var ok = Secp256k1.PrivKeyTweakAdd(dataChild.Bytes, sout.Slice(0, 32));
             if (!ok) goto fail;
             var keyChild = new PrivateKey(dataChild);
             return (true, keyChild, ccChild);
@@ -191,18 +207,18 @@ namespace CafeLib.Bitcoin.Shared.Keys
 
         public override int GetHashCode() => _keyData.GetHashCode();
         public bool Equals(PrivateKey o) => (object)o != null && IsCompressed.Equals(o.IsCompressed) && _keyData.Equals(o._keyData);
-        public override bool Equals(object obj) => obj is PrivateKey && this == (PrivateKey)obj;
+        public override bool Equals(object obj) => obj is PrivateKey key && this == key;
         public static bool operator ==(PrivateKey x, PrivateKey y) => object.ReferenceEquals(x, y) || (object)x == null && (object)y == null || x.Equals(y);
         public static bool operator !=(PrivateKey x, PrivateKey y) => !(x == y);
 
         private const uint HardenedBit = 0x80000000;
 
-        private static readonly Lazy<Secp256k1> LazySecp256K1;
-        private Secp256k1 Secp256K1 => LazySecp256K1.Value;
+        private static readonly Lazy<Secp256k1> LazySecp256k1;
+        private Secp256k1 Secp256k1 => LazySecp256k1.Value;
 
         static PrivateKey()
         {
-            LazySecp256K1 = new Lazy<Secp256k1>(() => {
+            LazySecp256k1 = new Lazy<Secp256k1>(() => {
                 var ctx = new Secp256k1(sign: true, verify: false);
                 ctx.Randomize(Randomizer.GetStrongRandBytes(32));
                 return ctx;
