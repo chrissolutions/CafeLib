@@ -5,7 +5,7 @@ namespace CafeLib.Bitcoin.Shared.Services
 {
     public static class RootService
     {
-        private static BitcoinNetwork _bitcoinNetwork;
+        private static IBitcoinNetwork _bitcoinNetwork;
         private static readonly object Mutex = new object();
 
         public const string MasterBip32Key = "Bitcoin seed";
@@ -16,14 +16,20 @@ namespace CafeLib.Bitcoin.Shared.Services
 
             lock (Mutex)
             {
-                _bitcoinNetwork = networkType switch
+                switch (networkType)
                 {
-                    NetworkType.Main => new MainNetwork(),
-                    NetworkType.Test => throw new NotImplementedException(),
-                    NetworkType.Regression => throw new NotImplementedException(),
-                    NetworkType.Scaling => throw new NotImplementedException(),
-                    _ => throw new NotImplementedException()
-                };
+                    case NetworkType.Main:
+                        _bitcoinNetwork = new MainNetwork();
+                        break;
+
+                    case NetworkType.Test:
+                        _bitcoinNetwork = new TestNetwork();
+                        break;
+
+                    case NetworkType.Regression:
+                    case NetworkType.Scaling:
+                        throw new NotImplementedException();
+                }
             }
         }
 
