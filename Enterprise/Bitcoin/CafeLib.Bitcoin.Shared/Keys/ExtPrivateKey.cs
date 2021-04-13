@@ -85,11 +85,10 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// <returns>Returns this key unless required key paths aren't valid for generated key.</returns>
         public ExtPrivateKey SetMasterBip32(string mnemonicWords, IEnumerable<KeyPath> required = null, string hmacKey = null)
         {
-            //var e = KzMnemonic.FromWords(mnemonicWords).Entropy;
-            //if (e == null || e.Length < 32)
-            //    throw new ArgumentException($"{nameof(mnemonicWords)} must provide at least 32 bytes of BIP39 mnemonic entropy.");
-            //return SetMasterBip32(e, required, hmacKey);
-            return null;
+            var e = Mnemonic.FromWords(mnemonicWords).Entropy;
+            if (e == null || e.Length < 32)
+                throw new ArgumentException($"{nameof(mnemonicWords)} must provide at least 32 bytes of BIP39 mnemonic entropy.");
+            return SetMasterBip32(e, required, hmacKey);
         }
 
         /// <summary>
@@ -231,8 +230,8 @@ namespace CafeLib.Bitcoin.Shared.Keys
             PrivateKey.Set(code.Slice(42, 32));
         }
 
-        //public KzB58ExtPrivKey ToB58() => new KzB58ExtPrivKey(this);
-        //public override string ToString() => ToB58().ToString();
+        public Base58ExtPrivateKey ToBase58() => new Base58ExtPrivateKey(this);
+        public override string ToString() => ToBase58().ToString();
 
         public override int GetHashCode() => base.GetHashCode() ^ PrivateKey.GetHashCode();
         public bool Equals(ExtPrivateKey o) => (object)o != null && base.Equals(o) && PrivateKey == o.PrivateKey;
