@@ -7,29 +7,33 @@ using System;
 
 namespace CafeLib.Bitcoin.Shared.Units
 {
-    public struct Amount : IComparable<Amount>, IComparable
+    public readonly struct Amount : IComparable<Amount>, IComparable
     {
         private readonly Guid _hashGuid;
 
         public static IAmountExchangeRate ExchangeRate { get; set; }
 
         public static Amount Zero = new Amount(0L);
+        public static Amount Null => new Amount(Guid.Empty);
+        public bool IsNull => _hashGuid == Guid.Empty;
+
         /// <summary>
-        /// This is a value slightly higher than the maximum number of satoshis that will ever be in circulation: 21 million coins, 2.1 gigameg satoshis.
+        /// This is a value slightly higher than the maximum number of satoshis that will ever be in circulation: 21 million coins, 2.1 quadrillion satoshis.
         /// 2_100_000_000_000_000
         /// </summary>
         public static Amount MaxValue = new Amount(2_100_000_000_000_000);
+
         /// <summary>
-        /// This is the negated value slightly higher than the maximum number of satoshis that will ever be in circulation: -21 million coins, -2.1 gigameg satoshis.
+        /// This is the negated value slightly higher than the maximum number of satoshis that will ever be in circulation: -21 million coins, -2.1 quadrillion satoshis.
         /// -2_100_000_000_000_000
         /// </summary>
         public static Amount MinValue = new Amount(-2_100_000_000_000_000);
 
         /// <summary>
         /// long.MaxValue is 9_223_372_036_854_775_807
-        /// max satoshis         2_100_000_000_000_000  (2.1 gigamegs :-)
+        /// max satoshis         2_100_000_000_000_000  (2.1 quadrillion)
         /// </summary>
-        public long Satoshis { get; private set; }
+        public long Satoshis { get; }
 
         private Amount(Guid guid)
         {
@@ -50,7 +54,7 @@ namespace CafeLib.Bitcoin.Shared.Units
         }
 
         /// <summary>
-        /// decimal has 28-29 significant digts with a exponent range to shift that either
+        /// decimal has 28-29 significant digits with a exponent range to shift that either
         /// all to the left of the decimal or to the right.
         /// </summary>
         /// <param name="amount"></param>
@@ -78,7 +82,7 @@ namespace CafeLib.Bitcoin.Shared.Units
 
         public static bool TryParse(string text, BitcoinUnit unit, out Amount amount)
         {
-            amount = default;
+            amount = Null;
             if (!decimal.TryParse(text.Replace("_", ""), out var value)) return false;
             amount = new Amount(value, unit);
             return true;
@@ -92,9 +96,9 @@ namespace CafeLib.Bitcoin.Shared.Units
         {
             // Satoshis
             // 2_100_000_000_000_000
-            // mBSV
+            // MilliBitcoin
             // 21_000_000_000.000_00
-            // BSV
+            // Bitcoin
             // 21_000_000.000_000_00
             var s = Satoshis;
             var m = false;
@@ -129,7 +133,7 @@ namespace CafeLib.Bitcoin.Shared.Units
 
         public override int GetHashCode() => _hashGuid.GetHashCode();
         public override bool Equals(object obj) => obj is Amount amount && this == amount;
-        public bool Equals(Amount o) => Satoshis == o.Satoshis;
+        public bool Equals(Amount o) => !IsNull && !o.IsNull && Satoshis == o.Satoshis;
 
         public static implicit operator Amount(long value) => new Amount(value);
         public static implicit operator Amount(ulong value) => new Amount(checked((long)value));
@@ -159,9 +163,9 @@ namespace CafeLib.Bitcoin.Shared.Units
             };
         }
 
-        //public static Amount operator -(Amount a, Amount b) => a + -b;
-        //public static Amount operator +(Amount a, long b) => a + new Amount(b);
-        //public static Amount operator +(Amount a, Amount b) => (a.Satoshis + b.Satoshis).ToAmount();
-        //public static Amount operator -(Amount a) => (-a.Satoshis).ToAmount();
+        public static Amount operator -(Amount a, Amount b) => a + -b;
+        public static Amount operator +(Amount a, long b) => a + new Amount(b);
+        public static Amount operator +(Amount a, Amount b) => (a.Satoshis + b.Satoshis);
+        public static Amount operator -(Amount a) => (-a.Satoshis);
     }
 }
