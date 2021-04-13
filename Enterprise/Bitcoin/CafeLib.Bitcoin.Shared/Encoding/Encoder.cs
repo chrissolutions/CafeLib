@@ -36,14 +36,7 @@ namespace CafeLib.Bitcoin.Shared.Encoding
         /// </summary>
         /// <param name="bytes">Byte sequence to be encoded.</param>
         /// <returns></returns>
-        public virtual string Encode(ReadOnlyByteSequence bytes) => Encode(bytes: (ReadOnlyByteSpan) bytes);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="bytes"></param>
-        /// <returns></returns>
-        public virtual string Encode(byte[] bytes) => Encode(bytes.AsSpan());
+        public virtual string Encode(ReadOnlyByteSequence bytes) => Encode((ReadOnlyByteSpan) bytes);
 
         /// <summary>
         /// Returns false on most failures and does not assume size of byte sequence output

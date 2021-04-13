@@ -23,7 +23,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         public int Length => 20;
 
-		public UInt160(ReadOnlySpan<byte> span, bool reverse = false) : this()
+		public UInt160(ReadOnlyByteSpan span, bool reverse = false) : this()
         {
             if (span.Length < 20)
                 throw new ArgumentException("20 bytes are required.");
@@ -54,8 +54,6 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         public static UInt160 Zero { get; } = new UInt160(0);
         public static UInt160 One { get; } = new UInt160(1);
 
-        public ReadOnlyByteSpan ReadOnlyBytes => Bytes;
-
         public ByteSpan Bytes {
             get {
                 unsafe {
@@ -73,8 +71,8 @@ namespace CafeLib.Bitcoin.Shared.Numerics
             s.Read(Bytes);
         }
 
-        public string ToPublicKeyAddress() => Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress, ReadOnlyBytes);
-        public BigInteger ToBigInteger() => new BigInteger(ReadOnlyBytes, isUnsigned:true, isBigEndian:true);
+        public string ToPublicKeyAddress() => Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress, Bytes);
+        public BigInteger ToBigInteger() => new BigInteger(Bytes, isUnsigned:true, isBigEndian:true);
 
         public byte[] ToBytes() => Bytes.ToArray();
 
@@ -90,7 +88,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         /// The bytes appear in big-endian order, as a large hexadecimally encoded number.
         /// </summary>
         /// <returns></returns>
-		public override string ToString() => Encoders.HexReverse.Encode(ReadOnlyBytes);
+		public override string ToString() => Encoders.HexReverse.Encode(Bytes);
 
         /// <summary>
         /// The bytes appear in little-endian order, first byte in memory first.
@@ -98,14 +96,14 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         /// Equivalent to ToHex.
         /// </summary>
         /// <returns></returns>
-		public string ToStringFirstByteFirst() => Encoders.Hex.Encode(ReadOnlyBytes);
+		public string ToStringFirstByteFirst() => Encoders.Hex.Encode(Bytes);
 
         /// <summary>
         /// The bytes appear in little-endian order, first byte in memory first.
         /// But the high nibble, first hex digit, of the each byte still appears before the low nibble (big-endian by nibble order).
         /// </summary>
         /// <returns></returns>
-		public string ToHex() => Encoders.Hex.Encode(ReadOnlyBytes);
+		public string ToHex() => Encoders.Hex.Encode(Bytes);
 
         public override int GetHashCode() => N0.GetHashCode() ^ N1.GetHashCode() ^ N2.GetHashCode();
 

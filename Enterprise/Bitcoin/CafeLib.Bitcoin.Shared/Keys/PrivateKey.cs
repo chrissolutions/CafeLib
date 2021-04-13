@@ -30,7 +30,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// </summary>
         public bool IsCompressed { get; private set; }
 
-        public ReadOnlyByteSpan ReadOnlySpan => _keyData.ReadOnlySpan;
+        public ReadOnlyByteSpan ReadOnlySpan => _keyData.Bytes;
 
         public BigInteger BigInteger => _keyData.ToBigInteger();
 
@@ -62,13 +62,13 @@ namespace CafeLib.Bitcoin.Shared.Keys
 
         public PrivateKey(UInt256 v, bool compressed = true)
         {
-            Set(v.ReadOnlySpan, compressed);
+            Set(v.Bytes, compressed);
         }
 
         public PrivateKey(UInt256 v, UInt256 keyData, bool compressed = true)
         {
             _keyData = keyData;
-            Set(v.ReadOnlySpan, compressed);
+            Set(v.Bytes, compressed);
         }
 
         public PrivateKey(string hex, bool compressed = true)
@@ -100,7 +100,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
             {
                 Randomizer.GetStrongRandBytes(_keyData.Bytes);
             } 
-            while (!Check(_keyData.ReadOnlySpan));
+            while (!Check(_keyData.Bytes));
             IsValid = true;
             IsCompressed = compressed;
         }

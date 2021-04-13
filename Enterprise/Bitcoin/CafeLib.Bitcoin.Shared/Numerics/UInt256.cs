@@ -24,7 +24,8 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         public int Length => 32;
 
-		public UInt256(ReadOnlySpan<byte> span, bool reverse = false) : this()
+		public UInt256(ReadOnlySpan<byte> span, bool reverse = false)
+            : this()
         {
             if (span.Length < 32)
                 throw new ArgumentException("32 bytes are required.");
@@ -42,15 +43,14 @@ namespace CafeLib.Bitcoin.Shared.Numerics
             N3 = v3;
 		}
 
-        public UInt256(string hex, bool firstByteFirst = false) : this()
+        public UInt256(string hex, bool firstByteFirst = false)
+            : this()
         {
             (firstByteFirst ? Encoders.Hex : Encoders.HexReverse).TryDecode(hex, Bytes);
         }
 
         public static UInt256 Zero { get; } = new UInt256(0);
         public static UInt256 One { get; } = new UInt256(1);
-
-        public readonly ReadOnlySpan<byte> ReadOnlySpan => Bytes;
 
         public UInt64Span Span64 {
             get {
@@ -100,9 +100,9 @@ namespace CafeLib.Bitcoin.Shared.Numerics
             s.Read(Bytes);
         }
 
-        public UInt160 ToHash160() => Hashes.Hash160(ReadOnlySpan);
+        public UInt160 ToHash160() => Hashes.Hash160(Bytes);
 
-        public readonly BigInteger ToBigInteger() => new BigInteger(ReadOnlySpan, isUnsigned:true, isBigEndian:true);
+        public readonly BigInteger ToBigInteger() => new BigInteger(Bytes, isUnsigned:true, isBigEndian:true);
 
         public byte[] ToBytes(bool reverse = false) 
         {
@@ -124,7 +124,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         /// The bytes appear in big-endian order, as a large hexadecimal encoded number.
         /// </summary>
         /// <returns></returns>
-		public override string ToString() => Encoders.HexReverse.Encode(ReadOnlySpan);
+		public override string ToString() => Encoders.HexReverse.Encode(Bytes);
 
         /// <summary>
         /// The bytes appear in little-endian order, first byte in memory first.
@@ -132,14 +132,14 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         /// Equivalent to ToHex.
         /// </summary>
         /// <returns></returns>
-		public readonly string ToStringFirstByteFirst() => Encoders.Hex.Encode(ReadOnlySpan);
+		public readonly string ToStringFirstByteFirst() => Encoders.Hex.Encode(Bytes);
 
         /// <summary>
         /// The bytes appear in little-endian order, first byte in memory first.
         /// But the high nibble, first hex digit, of the each byte still appears before the low nibble (big-endian by nibble order).
         /// </summary>
         /// <returns></returns>
-		public string ToHex() => Encoders.Hex.Encode(ReadOnlySpan);
+		public string ToHex() => Encoders.Hex.Encode(Bytes);
 
         public override int GetHashCode() => N0.GetHashCode() ^ N1.GetHashCode() ^ N2.GetHashCode() ^ N3.GetHashCode();
 
@@ -155,6 +155,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         public static bool operator >=(UInt256 x, UInt256 y) => x.CompareTo(y) >= 0;
         public static bool operator <=(UInt256 x, UInt256 y) => x.CompareTo(y) <= 0;
 
+        public static implicit operator UInt256(ByteSpan rhs) => new UInt256(rhs);
         public static implicit operator UInt256(ReadOnlyByteSpan rhs) => new UInt256(rhs);
         public static implicit operator ReadOnlyByteSpan(UInt256 rhs) => rhs.Bytes;
 

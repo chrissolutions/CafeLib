@@ -57,7 +57,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// <returns>Returns this key unless required key paths aren't valid for specified key.</returns>
         public ExtPrivateKey SetMaster(UInt512 vout, IEnumerable<KeyPath> required = null)
         {
-            return SetMaster(vout.ReadOnlySpan.Slice(0, 32), vout.ReadOnlySpan.Slice(32, 32), required);
+            return SetMaster(vout.Bytes.Slice(0, 32), vout.Bytes.Slice(32, 32), required);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// <param name="required">if not null, each key path will be verified as valid on the generated key or returns null.</param>
         /// <param name="hmacKey">Default is current global Kz.MasterBip32Key which may default to "Bitcoin seed".</param>
         /// <returns>Returns this key unless required key paths aren't valid for generated key.</returns>
-        public ExtPrivateKey SetMasterBip32(ReadOnlySpan<byte> hmacData, IEnumerable<KeyPath> required = null, string hmacKey = null)
+        public ExtPrivateKey SetMasterBip32(ReadOnlyByteSpan hmacData, IEnumerable<KeyPath> required = null, string hmacKey = null)
         {
             hmacKey ??= RootService.MasterBip32Key;
             var vout = Hashes.HmacSha512(hmacKey.Utf8NormalizedToBytes(), hmacData);
@@ -113,7 +113,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// <param name="passwordPrefix">password and passwordPrefix are combined to generate salt bytes. Default is "mnemonic".</param>
         /// <returns>Returns this key unless required key paths aren't valid for generated key.</returns>
         public ExtPrivateKey SetMasterBip39(string passphrase, string password = null, IEnumerable<KeyPath> required = null, string passwordPrefix = "mnemonic") {
-            var seed = Bip39Seed(passphrase, password, passwordPrefix).ReadOnlySpan;
+            var seed = Bip39Seed(passphrase, password, passwordPrefix);
             return SetMasterBip32(seed, required);
         }
 
@@ -146,7 +146,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         /// <param name="required">if not null, each key path will be verified as valid on the generated key or returns null.</param>
         /// <param name="hmacKey">Default is current global Kz.MasterBip32Key which may default to "Bitcoin seed".</param>
         /// <returns>Returns new key unless required key paths aren't valid for specified key in which case null is returned.</returns>
-        public static ExtPrivateKey MasterBip32(ReadOnlySpan<byte> hmacData, IEnumerable<KeyPath> required = null, string hmacKey = null)
+        public static ExtPrivateKey MasterBip32(ReadOnlyByteSpan hmacData, IEnumerable<KeyPath> required = null, string hmacKey = null)
             => new ExtPrivateKey().SetMasterBip32(hmacData, required, hmacKey);
 
         /// <summary>

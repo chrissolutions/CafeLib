@@ -30,7 +30,18 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         public int Length => 64;
 
-		public UInt512(UInt64 v0 = 0, UInt64 v1 = 0, UInt64 v2 = 0, UInt64 v3 = 0, UInt64 v4 = 0, UInt64 v5 = 0, UInt64 v6 = 0, UInt64 v7 = 0)
+        public UInt512(ReadOnlySpan<byte> span, bool reverse = false)
+            : this()
+        {
+            if (span.Length < 64)
+                throw new ArgumentException("54 bytes are required.");
+
+            span.Slice(0, 64).CopyTo(Bytes);
+            if (reverse)
+                Bytes.Reverse();
+        }
+
+        public UInt512(UInt64 v0 = 0, UInt64 v1 = 0, UInt64 v2 = 0, UInt64 v3 = 0, UInt64 v4 = 0, UInt64 v5 = 0, UInt64 v6 = 0, UInt64 v7 = 0)
 		{
             N0 = v0;
             _n1 = v1;
@@ -42,16 +53,14 @@ namespace CafeLib.Bitcoin.Shared.Numerics
             _n7 = v7;
 		}
 
-        public UInt512(string hex, bool firstByteFirst = false) : this()
+        public UInt512(string hex, bool firstByteFirst = false)
+            : this()
         {
             (firstByteFirst ? Hex : HexReverse).TryDecode(hex, Bytes);
         }
 
         public static UInt512 Zero { get; } = new UInt512(0);
         public static UInt512 One { get; } = new UInt512(1);
-
-
-        public ReadOnlyByteSpan ReadOnlySpan => Bytes;
 
         public ByteSpan Bytes
         {
@@ -74,20 +83,20 @@ namespace CafeLib.Bitcoin.Shared.Numerics
             s.Read(Bytes);
         }
 
-        public BigInteger ToBigInteger() => new BigInteger(ReadOnlySpan);
+        public BigInteger ToBigInteger() => new BigInteger(Bytes);
 
         /// <summary>
         /// The bytes appear in big-endian order, as a large hexadecimal encoded number.
         /// </summary>
         /// <returns></returns>
-		public override string ToString() => HexReverse.Encode(ReadOnlySpan);
+		public override string ToString() => HexReverse.Encode(Bytes);
 
         /// <summary>
         /// The bytes appear in little-endian order, first byte in memory first.
         /// But the high nibble, first hex digit, of the each byte still appears before the low nibble (big-endian by nibble order).
         /// </summary>
         /// <returns></returns>
-		public string ToStringFirstByteFirst() => Hex.Encode(ReadOnlySpan);
+		public string ToStringFirstByteFirst() => Hex.Encode(Bytes);
 
         /// <summary>
         /// The bytes appear in little-endian order, first byte in memory first.
@@ -101,7 +110,11 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         public override bool Equals(object obj) => obj is UInt512 int512 && this == int512;
 
         public bool Equals(UInt512 o) => N0 == o.N0 && _n1 == o._n1 && _n2 == o._n2 && _n3 == o._n3 && _n4 == o._n4 && _n5 == o._n5 && _n6 == o._n6 && _n7 == o._n7;
-        
+
+        public static implicit operator UInt512(ByteSpan rhs) => new UInt512(rhs);
+        public static implicit operator UInt512(ReadOnlyByteSpan rhs) => new UInt512(rhs);
+        public static implicit operator ReadOnlyByteSpan(UInt512 rhs) => rhs.Bytes;
+
         public static bool operator ==(UInt512 x, UInt512 y) => x.Equals(y);
         public static bool operator !=(UInt512 x, UInt512 y) => !(x == y);
 
