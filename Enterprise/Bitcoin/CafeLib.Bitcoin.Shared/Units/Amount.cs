@@ -86,9 +86,9 @@ namespace CafeLib.Bitcoin.Shared.Units
 
         public override string ToString() => ToString(true, false);
 
-        public decimal ToBitcoin() => (decimal)Satoshis / (long)(BitcoinUnit.BSV);
+        public decimal ToBitcoin() => (decimal)Satoshis / (long)(BitcoinUnit.Bitcoin);
 
-        public string ToString(bool group, bool units, BitcoinUnit unit = BitcoinUnit.mBSV)
+        public string ToString(bool group, bool units, BitcoinUnit unit = BitcoinUnit.MilliBitcoin)
         {
             // Satoshis
             // 2_100_000_000_000_000
@@ -107,8 +107,8 @@ namespace CafeLib.Bitcoin.Shared.Units
             var i = s / (long)unit;
             var r = unit switch
             {
-                BitcoinUnit.BSV => $"{(m ? "-" : " ")}{i:#,0}.{f:000_000_00}",
-                BitcoinUnit.mBSV => $"{(m ? "-" : " ")}{i:#,0}.{f:000_00}",
+                BitcoinUnit.Bitcoin => $"{(m ? "-" : " ")}{i:#,0}.{f:000_000_00}",
+                BitcoinUnit.MilliBitcoin => $"{(m ? "-" : " ")}{i:#,0}.{f:000_00}",
                 BitcoinUnit.Bit => $"{(m ? "-" : " ")}{i:#,0}.{f:00}",
                 BitcoinUnit.Satoshi => $"{(m ? "-" : " ")}{i:#,0}",
                 _ => string.Empty

@@ -10,8 +10,8 @@ namespace CafeLib.Bitcoin.Shared.Units
     /// </summary>
     public enum BitcoinUnit : long
     {
-        BSV = 100_000_000,
-        mBSV = 100_000,
+        Bitcoin = 100_000_000,
+        MilliBitcoin = 100_000,
         Bit = 100,
         Satoshi = 1
     }
