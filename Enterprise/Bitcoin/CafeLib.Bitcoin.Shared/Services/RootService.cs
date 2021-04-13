@@ -16,20 +16,14 @@ namespace CafeLib.Bitcoin.Shared.Services
 
             lock (Mutex)
             {
-                switch (networkType)
+                _bitcoinNetwork = networkType switch
                 {
-                    case NetworkType.Main:
-                        _bitcoinNetwork = new MainNetwork();
-                        break;
-
-                    case NetworkType.Test:
-                        _bitcoinNetwork = new TestNetwork();
-                        break;
-
-                    case NetworkType.Regression:
-                    case NetworkType.Scaling:
-                        throw new NotImplementedException();
-                }
+                    NetworkType.Main => new MainNetwork(),
+                    NetworkType.Test => new TestNetwork(),
+                    NetworkType.Regression => throw new NotImplementedException(),
+                    NetworkType.Scaling => throw new NotImplementedException(),
+                    _ => _bitcoinNetwork
+                };
             }
         }
 
