@@ -1,4 +1,5 @@
 ﻿using System;
+using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Network;
 
 namespace CafeLib.Bitcoin.Shared.Services
@@ -7,26 +8,44 @@ namespace CafeLib.Bitcoin.Shared.Services
     {
         private static IBitcoinNetwork _bitcoinNetwork;
         private static readonly object Mutex = new object();
+        private static readonly Lazy<IBitcoinNetwork[]> Networks = new Lazy<IBitcoinNetwork[]>(() => new IBitcoinNetwork[EnumExtensions.GetNames<NetworkType>().Length]);
 
         public const string MasterBip32Key = "Bitcoin seed";
 
-        public static void Initialize(NetworkType networkType)
+        public static IBitcoinNetwork Network => _bitcoinNetwork ?? throw new InvalidOperationException();
+
+        public static void Bootstrap() => Bootstrap(NetworkType.Main);
+        public static void Bootstrap(NetworkType networkType)
         {
             if (_bitcoinNetwork != null) throw new InvalidOperationException();
-
             lock (Mutex)
             {
-                _bitcoinNetwork = networkType switch
-                {
-                    NetworkType.Main => new MainNetwork(),
-                    NetworkType.Test => new TestNetwork(),
-                    NetworkType.Regression => new RegressionTestNetwork(),
-                    NetworkType.Scaling => new ScalingTestNetwork(),
-                    _ => _bitcoinNetwork
-                };
+                _bitcoinNetwork = CreateNetwork(networkType);
             }
         }
 
-        public static IBitcoinNetwork Network => _bitcoinNetwork ?? throw new InvalidOperationException();
+        public static void AssignNetwork(NetworkType networkType)
+        {
+            if (!Networks.IsValueCreated) throw new InvalidOperationException("RootService is not bootstrapped");
+            _bitcoinNetwork = CreateNetwork(networkType);
+        }
+
+        private static IBitcoinNetwork CreateNetwork(NetworkType networkType)
+        {
+            return Networks.Value[(int)networkType] ??= CreateNetworkInternal(networkType);
+        }
+
+        private static IBitcoinNetwork CreateNetworkInternal(NetworkType networkType)
+        {
+            return networkType switch
+            {
+                NetworkType.Main => new MainNetwork(),
+                NetworkType.Test => new TestNetwork(),
+                NetworkType.Regression => new RegressionTestNetwork(),
+                NetworkType.Scaling => new ScalingTestNetwork(),
+                _ => throw new ArgumentOutOfRangeException(nameof(networkType), networkType, null)
+            };
+        }
+
     }
 }
