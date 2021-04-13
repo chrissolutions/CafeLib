@@ -176,12 +176,10 @@ namespace CafeLib.Bitcoin.Shared.Keys
             return ok;
         }
 
-        public static (bool ok, PublicKey key) FromRecoverCompact(UInt256 hash, ReadOnlyByteSpan sig)
+        public static PublicKey FromRecoverCompact(UInt256 hash, ReadOnlyByteSpan sig)
         {
             var key = new PublicKey();
-            var ok = key.RecoverCompact(hash, sig);
-            if (!ok) key = null;
-            return (ok, key);
+            return key.RecoverCompact(hash, sig) ? key : null;
         }
 
         public bool Verify(UInt256 hash, ReadOnlySpan<byte> sig)
