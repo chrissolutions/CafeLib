@@ -9,13 +9,9 @@ namespace CafeLib.Bitcoin.Shared.Units
 {
     public struct Amount : IComparable<Amount>, IComparable
     {
-        public static IAmountExchangeRate ExchangeRate { get; set; }
+        private readonly Guid _hashGuid;
 
-        /// <summary>
-        /// long.MaxValue is 9_223_372_036_854_775_807
-        /// max satoshis         2_100_000_000_000_000  (2.1 gigamegs :-)
-        /// </summary>
-        long _satoshis;
+        public static IAmountExchangeRate ExchangeRate { get; set; }
 
         public static Amount Zero = new Amount(0L);
         /// <summary>
@@ -29,18 +25,28 @@ namespace CafeLib.Bitcoin.Shared.Units
         /// </summary>
         public static Amount MinValue = new Amount(-2_100_000_000_000_000);
 
-        public long Satoshis { get => _satoshis; private set => _satoshis = value; }
+        /// <summary>
+        /// long.MaxValue is 9_223_372_036_854_775_807
+        /// max satoshis         2_100_000_000_000_000  (2.1 gigamegs :-)
+        /// </summary>
+        public long Satoshis { get; private set; }
 
-        public Amount(long satoshis) => _satoshis = satoshis;
-
-        public Amount(ulong satoshis) { checked { _satoshis = (long)satoshis; } }
-
-        public static bool TryParse(string text, BitcoinUnit unit, out Amount amount)
+        private Amount(Guid guid)
         {
-            amount = default;
-            if (!decimal.TryParse(text.Replace("_", ""), out var value)) return false;
-            amount = new Amount(value, unit);
-            return true;
+            _hashGuid = guid;
+            Satoshis = 0L;
+        }
+
+        public Amount(long satoshis)
+            : this (Guid.NewGuid())
+        {
+            Satoshis = satoshis;
+        }
+
+        public Amount(ulong satoshis)
+            : this(Guid.NewGuid())
+        {
+            checked { Satoshis = (long)satoshis; }
         }
 
         /// <summary>
@@ -50,29 +56,35 @@ namespace CafeLib.Bitcoin.Shared.Units
         /// <param name="amount"></param>
         /// <param name="unit"></param>
         public Amount(decimal amount, BitcoinUnit unit)
+            : this(Guid.NewGuid())
         {
             checked
             {
-                _satoshis = (long)(amount * (long)unit);
+                Satoshis = (long)(amount * (long)unit);
             }
         }
 
         public Amount(long amount, BitcoinUnit unit)
+            : this(Guid.NewGuid())
         {
-            checked { _satoshis = amount * (long)unit; }
+            checked { Satoshis = amount * (long)unit; }
         }
 
         public Amount(ulong amount, BitcoinUnit unit)
+            : this(Guid.NewGuid())
         {
-            checked { _satoshis = (long)amount * (long)unit; }
+            checked { Satoshis = (long)amount * (long)unit; }
         }
 
-        public static implicit operator Amount(long value) => new Amount(value);
-        public static implicit operator Amount(ulong value) => new Amount(checked((long)value));
-        public static implicit operator long(Amount value) => value.Satoshis;
-        public static implicit operator ulong(Amount value) => checked((ulong)value.Satoshis);
+        public static bool TryParse(string text, BitcoinUnit unit, out Amount amount)
+        {
+            amount = default;
+            if (!decimal.TryParse(text.Replace("_", ""), out var value)) return false;
+            amount = new Amount(value, unit);
+            return true;
+        }
 
-        public override string ToString() => ToString(@group: true, units: false, unit: BitcoinUnit.mBSV);
+        public override string ToString() => ToString(true, false);
 
         public decimal ToBitcoin() => (decimal)Satoshis / (long)(BitcoinUnit.BSV);
 
@@ -84,32 +96,46 @@ namespace CafeLib.Bitcoin.Shared.Units
             // 21_000_000_000.000_00
             // BSV
             // 21_000_000.000_000_00
-            var s = _satoshis;
+            var s = Satoshis;
             var m = false;
-            if (s < 0) {
+            if (s < 0)
+            {
                 m = true;
                 s = -s;
             }
             var f = s % (long)unit;
             var i = s / (long)unit;
-            var r = unit switch {
-             BitcoinUnit.BSV     => $"{(m ? "-" : " ")}{i:#,0}.{f:000_000_00}",
-             BitcoinUnit.mBSV    => $"{(m ? "-" : " ")}{i:#,0}.{f:000_00}",
-             BitcoinUnit.Bit     => $"{(m ? "-" : " ")}{i:#,0}.{f:00}",
-             BitcoinUnit.Satoshi => $"{(m ? "-" : " ")}{i:#,0}",
-             _ => throw new NotImplementedException()
+            var r = unit switch
+            {
+                BitcoinUnit.BSV => $"{(m ? "-" : " ")}{i:#,0}.{f:000_000_00}",
+                BitcoinUnit.mBSV => $"{(m ? "-" : " ")}{i:#,0}.{f:000_00}",
+                BitcoinUnit.Bit => $"{(m ? "-" : " ")}{i:#,0}.{f:00}",
+                BitcoinUnit.Satoshi => $"{(m ? "-" : " ")}{i:#,0}",
+                _ => string.Empty
             };
+
             r = r.Replace(',', '_');
-            if (!group) r = r.Replace("_", "");
-            if (units) r = r += $" {unit}";
+
+            if (!group) 
+                r = r.Replace("_", "");
+
+            if (units) 
+                r += $" {unit}";
+
             return r;
         }
 
         public static string ToString(long value) => new Amount(value).ToString();
 
-        public override int GetHashCode() => _satoshis.GetHashCode();
+        public override int GetHashCode() => _hashGuid.GetHashCode();
         public override bool Equals(object obj) => obj is Amount amount && this == amount;
-        public bool Equals(Amount o) => _satoshis == o._satoshis;
+        public bool Equals(Amount o) => Satoshis == o.Satoshis;
+
+        public static implicit operator Amount(long value) => new Amount(value);
+        public static implicit operator Amount(ulong value) => new Amount(checked((long)value));
+        public static implicit operator long(Amount value) => value.Satoshis;
+        public static implicit operator ulong(Amount value) => checked((ulong)value.Satoshis);
+
         public static bool operator ==(Amount x, Amount y) => x.Equals(y);
         public static bool operator !=(Amount x, Amount y) => !(x == y);
 
@@ -129,7 +155,7 @@ namespace CafeLib.Bitcoin.Shared.Units
                 ulong ul => Satoshis.CompareTo(ul),
                 int i => Satoshis.CompareTo(i),
                 uint ui => Satoshis.CompareTo(ui),
-                _ => throw new NotImplementedException()
+                _ => throw new NotImplementedException(nameof(obj))
             };
         }
 
