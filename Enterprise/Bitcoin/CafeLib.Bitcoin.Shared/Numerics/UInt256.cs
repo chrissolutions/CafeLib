@@ -115,7 +115,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         public void ToBytes(Span<byte> destination, bool reverse = false) {
             if (destination.Length < 32)
                 throw new ArgumentException("32 byte destination is required.");
-            Bytes.Data.CopyTo(destination);
+            Bytes.CopyTo(destination);
             if (reverse)
                 destination.Reverse();
         }

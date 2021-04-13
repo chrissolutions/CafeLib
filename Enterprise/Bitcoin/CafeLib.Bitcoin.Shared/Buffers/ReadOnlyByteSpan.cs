@@ -24,6 +24,8 @@ namespace CafeLib.Bitcoin.Shared.Buffers
         public ReadOnlyByteSpan Slice(int start, int length) => Data.Slice(start, length);
 
         public void CopyTo(ByteSpan destination) => Data.CopyTo(destination);
+        public ReadOnlySpan<byte>.Enumerator GetEnumerator() => Data.GetEnumerator();
+        public byte[] ToArray() => Data.ToArray();
 
         public byte this[int index] => Data[index];
         public ReadOnlyByteSpan this[Range range] => Data[range];

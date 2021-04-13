@@ -13,6 +13,8 @@ namespace CafeLib.Bitcoin.Shared.Buffers
             Data = bytes;
         }
 
+        public ReadOnlySequence<byte>.Enumerator GetEnumerator() => Data.GetEnumerator();
+
         public long Length => Data.Length;
 
         public static implicit operator ReadOnlySequence<byte>(ReadOnlyByteSequence rhs)

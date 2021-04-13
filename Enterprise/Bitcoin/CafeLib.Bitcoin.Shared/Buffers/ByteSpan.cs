@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace CafeLib.Bitcoin.Shared.Buffers
 {
@@ -30,10 +32,14 @@ namespace CafeLib.Bitcoin.Shared.Buffers
         public bool IsEmpty => Data.IsEmpty;
         public int Length => Data.Length;
 
+
         public ByteSpan Slice(int start) => Data[start..];
         public ByteSpan Slice(int start, int length) => Data.Slice(start, length);
 
         public void CopyTo(ByteSpan destination) => Data.CopyTo(destination);
+        public Span<byte>.Enumerator GetEnumerator() => Data.GetEnumerator();
+        public byte[] ToArray() => Data.ToArray();
+
 
         public static implicit operator ReadOnlyByteSpan(ByteSpan rhs) => rhs.Data;
 

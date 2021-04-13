@@ -36,7 +36,7 @@ namespace CafeLib.Bitcoin.Shared.Encoding
         {
             var s = new char[bytes.Length * 2];
             var i = 0;
-            foreach (var m in bytes.Data)
+            foreach (var m in bytes)
             {
                 foreach (var b in m.Span)
                 {
@@ -52,7 +52,7 @@ namespace CafeLib.Bitcoin.Shared.Encoding
         {
             var s = new char[bytes.Length * 2];
             var i = 0;
-            foreach (var b in bytes.Data)
+            foreach (var b in bytes)
             {
                 var chs = ByteToChs[b];
                 s[i++] = chs[0];

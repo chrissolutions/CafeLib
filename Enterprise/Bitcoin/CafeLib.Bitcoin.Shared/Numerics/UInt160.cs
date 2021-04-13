@@ -9,6 +9,7 @@ using System.Numerics;
 using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Encoding;
 using CafeLib.Bitcoin.Shared.Numerics.Converters;
+using CafeLib.Bitcoin.Shared.Services;
 using Newtonsoft.Json;
 
 namespace CafeLib.Bitcoin.Shared.Numerics
@@ -72,15 +73,15 @@ namespace CafeLib.Bitcoin.Shared.Numerics
             s.Read(Bytes);
         }
 
-        //public string ToPubKeyAddress() => KzEncoders.B58Check.Encode(Kz.PubkeyAddress, ReadOnlySpan);
+        public string ToPublicKeyAddress() => Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress, ReadOnlyBytes);
         public BigInteger ToBigInteger() => new BigInteger(ReadOnlyBytes, isUnsigned:true, isBigEndian:true);
 
-        public byte[] ToBytes() => Bytes.Data.ToArray();
+        public byte[] ToBytes() => Bytes.ToArray();
 
         public void ToBytes(Span<byte> destination, bool reverse = false) {
             if (destination.Length < 20)
                 throw new ArgumentException("20 byte destination is required.");
-            Bytes.Data.CopyTo(destination);
+            Bytes.CopyTo(destination);
             if (reverse)
                 destination.Reverse();
         }

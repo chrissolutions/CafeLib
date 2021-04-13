@@ -224,7 +224,7 @@ namespace CafeLib.Bitcoin.Shared.Keys {
             var cs = bits / 32;
 
             var sb = new StringBuilder();
-            foreach (var b in hash.Bytes.Data) {
+            foreach (var b in hash.Bytes) {
                 sb.Append(Convert.ToString(b, 2).PadLeft(8, '0'));
                 cs -= 8;
                 if (cs <= 0) break;
