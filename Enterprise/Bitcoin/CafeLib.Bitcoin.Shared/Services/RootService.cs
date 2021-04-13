@@ -20,8 +20,8 @@ namespace CafeLib.Bitcoin.Shared.Services
                 {
                     NetworkType.Main => new MainNetwork(),
                     NetworkType.Test => new TestNetwork(),
-                    NetworkType.Regression => throw new NotImplementedException(),
-                    NetworkType.Scaling => throw new NotImplementedException(),
+                    NetworkType.Regression => new RegressionTestNetwork(),
+                    NetworkType.Scaling => new ScalingTestNetwork(),
                     _ => _bitcoinNetwork
                 };
             }
