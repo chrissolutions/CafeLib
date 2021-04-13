@@ -3,11 +3,12 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-namespace CafeLib.Bitcoin.Utility {
+namespace CafeLib.Bitcoin.Shared.Units
+{
     /// <summary>
     /// How many satoshis to each unit.
     /// </summary>
-    public enum KzBitcoinUnit : long
+    public enum BitcoinUnit : long
     {
         BSV = 100_000_000,
         mBSV = 100_000,
