@@ -4,9 +4,9 @@
 #endregion
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 
-namespace CafeLib.Bitcoin.Shared.Units {
+namespace CafeLib.Bitcoin.Shared.Units
+{
     public struct Amount : IComparable<Amount>, IComparable
     {
         public static IAmountExchangeRate ExchangeRate { get; set; }
@@ -119,7 +119,7 @@ namespace CafeLib.Bitcoin.Shared.Units {
         public static bool operator >=(Amount x, Amount y) => x.CompareTo(y) >= 0;
         public static bool operator <=(Amount x, Amount y) => x.CompareTo(y) <= 0;
 
-        public int CompareTo([AllowNull] Amount other) => Satoshis.CompareTo(other.Satoshis);
+        public int CompareTo(Amount other) => Satoshis.CompareTo(other.Satoshis);
 
         public int CompareTo(object obj) {
             return obj switch
