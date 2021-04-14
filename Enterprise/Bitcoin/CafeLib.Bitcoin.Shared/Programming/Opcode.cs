@@ -3,7 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 // ReSharper disable InconsistentNaming
-namespace CafeLib.Bitcoin.Shared.Script
+namespace CafeLib.Bitcoin.Shared.Programming
 {
     /// <summary>
     /// Script opcodes 

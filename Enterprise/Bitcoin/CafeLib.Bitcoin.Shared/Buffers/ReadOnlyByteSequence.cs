@@ -4,7 +4,7 @@ using System.Data;
 
 namespace CafeLib.Bitcoin.Shared.Buffers
 {
-    public readonly ref struct ReadOnlyByteSequence
+    public readonly struct ReadOnlyByteSequence
     {
         public ReadOnlySequence<byte> Data { get; }
 
