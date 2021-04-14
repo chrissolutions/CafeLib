@@ -11,6 +11,7 @@ using CafeLib.Bitcoin.Shared.Encoding;
 using CafeLib.Bitcoin.Shared.Numerics.Converters;
 using CafeLib.Bitcoin.Shared.Services;
 using Newtonsoft.Json;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.Bitcoin.Shared.Numerics
 {
@@ -85,7 +86,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         }
 
         /// <summary>
-        /// The bytes appear in big-endian order, as a large hexadecimally encoded number.
+        /// The bytes appear in big-endian order, as a large hexadecimal encoded number.
         /// </summary>
         /// <returns></returns>
 		public override string ToString() => Encoders.HexReverse.Encode(Bytes);
