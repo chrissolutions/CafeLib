@@ -12,6 +12,7 @@ using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Numerics;
 using CafeLib.Bitcoin.Shared.Services;
 using Secp256k1Net;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.Bitcoin.Shared.Keys
 {
@@ -44,6 +45,9 @@ namespace CafeLib.Bitcoin.Shared.Keys
         private const uint HardenedBit = 0x80000000;
 
         private static Secp256k1 Secp256K1 => LazySecp256K1.Value;
+
+        public const int MinLength = 33;
+        public const int MaxLength = 65;
 
         /// <summary>
         /// Creates a copy of this key.
@@ -82,9 +86,6 @@ namespace CafeLib.Bitcoin.Shared.Keys
             if (firstByte == 4 || firstByte == 6 || firstByte == 7) return 65;
             return 0;
         }
-
-        public static int MinLength => 33;
-        public static int MaxLength => 65;
 
         public ReadOnlyByteSpan ReadOnlySpan => _bytes;
         public ByteSpan Bytes => _bytes;
@@ -240,8 +241,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         public bool Equals(PublicKey o) => (object) o != null && _bytes.SequenceEqual(o._bytes);
         public override bool Equals(object obj) => obj is PublicKey key && this == key;
 
-        public static bool operator ==(PublicKey x, PublicKey y) =>
-            object.ReferenceEquals(x, y) || (object) x == null && (object) y == null || x.Equals(y);
+        public static bool operator ==(PublicKey x, PublicKey y) => x != null && (ReferenceEquals(x, y) || x.Equals(y));
 
         public static bool operator !=(PublicKey x, PublicKey y) => !(x == y);
     }
