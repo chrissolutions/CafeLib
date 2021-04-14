@@ -39,11 +39,11 @@ namespace CafeLib.Bitcoin.Shared.Chain
         public UInt256 HashPrevBlock { get; private set; }
 
         public UInt256 HashMerkleRoot { get; private set; }
-        public UInt32 Time { get; private set; }
+        public uint Time { get; private set; }
 
-        public UInt32 Bits { get; private set; }
+        public uint Bits { get; private set; }
     
-        public UInt32 Nonce { get; private set; }
+        public uint Nonce { get; private set; }
 
         public BlockHeader(UInt256 hash)
         {
