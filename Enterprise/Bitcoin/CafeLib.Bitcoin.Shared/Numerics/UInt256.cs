@@ -145,7 +145,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         public override int GetHashCode() => N0.GetHashCode() ^ N1.GetHashCode() ^ N2.GetHashCode() ^ N3.GetHashCode();
 
         public override bool Equals(object obj) => obj is UInt256 int256 && this == int256;
-        public bool Equals(UInt256 o) => N0 == o.N0 && N1 == o.N1 && N2 == o.N2 && N3 == o.N3;
+        public readonly bool Equals(UInt256 o) => N0 == o.N0 && N1 == o.N1 && N2 == o.N2 && N3 == o.N3;
 
         public static bool operator ==(UInt256 x, UInt256 y) => x.Equals(y);
         public static bool operator !=(UInt256 x, UInt256 y) => !(x == y);

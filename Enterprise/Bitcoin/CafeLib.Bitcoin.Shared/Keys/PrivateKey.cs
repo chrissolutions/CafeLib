@@ -10,7 +10,6 @@ using System.Numerics;
 using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Crypto;
 using CafeLib.Bitcoin.Shared.Numerics;
-using Secp256k1Net;
 
 namespace CafeLib.Bitcoin.Shared.Keys
 {
@@ -34,10 +33,9 @@ namespace CafeLib.Bitcoin.Shared.Keys
 
         public BigInteger BigInteger => _keyData.ToBigInteger();
 
-        private static bool Check(ReadOnlySpan<byte> vch)
+        private static bool Check(ReadOnlyByteSpan vch)
         {
-            using var library = new Secp256k1();
-            return library.SecretKeyVerify(vch);
+            return KeyService.SecretKeyVerify(vch);
         }
 
         public PrivateKey()
@@ -160,8 +158,8 @@ namespace CafeLib.Bitcoin.Shared.Keys
         }
 
         public string ToHex() => _keyData.ToStringFirstByteFirst();
-        //public KzB58PrivKey ToB58() => new KzB58PrivKey(this);
-        //public override string ToString() => ToB58().ToString();
+        public Base58ExtPrivateKey ToBase58() => new Base58ExtPrivateKey();
+        public override string ToString() => ToBase58().ToString();
 
         public override int GetHashCode() => _keyData.GetHashCode();
         public bool Equals(PrivateKey o) => (object)o != null && IsCompressed.Equals(o.IsCompressed) && _keyData.Equals(o._keyData);

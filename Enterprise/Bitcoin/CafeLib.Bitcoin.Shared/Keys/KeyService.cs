@@ -56,6 +56,11 @@ namespace CafeLib.Bitcoin.Shared.Keys
             return (ok, sig);
         }
 
+        public static bool SecretKeyVerify(ReadOnlyByteSpan secretKey)
+        {
+            return Library.SecretKeyVerify(secretKey);
+        }
+
         public static bool TweakAdd(this PrivateKey privateKey, ByteSpan bytes, out PrivateKey childKey)
         {
             childKey = null;
