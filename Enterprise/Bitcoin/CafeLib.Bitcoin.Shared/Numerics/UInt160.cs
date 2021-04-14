@@ -114,8 +114,9 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         public static bool operator ==(UInt160 x, UInt160 y) => x.Equals(y);
         public static bool operator !=(UInt160 x, UInt160 y) => !(x == y);
 
-        public static implicit operator UInt160(ReadOnlyByteSpan rhs) => new UInt160(rhs);
-        public static implicit operator ReadOnlyByteSpan(UInt160 rhs) =>  rhs.Bytes;
+        public static explicit operator UInt160(ByteSpan rhs) => new UInt160(rhs);
+        public static explicit operator UInt160(ReadOnlyByteSpan rhs) => new UInt160(rhs);
+        public static implicit operator ReadOnlyByteSpan(UInt160 rhs) => rhs.Bytes;
 
         public int CompareTo(UInt160 o)
         {

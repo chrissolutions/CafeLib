@@ -157,7 +157,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         public static bool operator <=(UInt256 x, UInt256 y) => x.CompareTo(y) <= 0;
 
         public static explicit operator UInt256(ByteSpan rhs) => new UInt256(rhs);
-        public static implicit operator UInt256(ReadOnlyByteSpan rhs) => new UInt256(rhs);
+        public static explicit operator UInt256(ReadOnlyByteSpan rhs) => new UInt256(rhs);
         public static implicit operator ReadOnlyByteSpan(UInt256 rhs) => rhs.Bytes;
 
         public int CompareTo(UInt256 o)
