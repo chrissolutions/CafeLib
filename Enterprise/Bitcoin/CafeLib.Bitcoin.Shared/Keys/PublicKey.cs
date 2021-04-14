@@ -235,7 +235,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
             return (false, null, UInt256.Zero);
         }
 
-        public override int GetHashCode() => _bytes.GetHashCodeOfValues();
+        public override int GetHashCode() => _bytes.AggregateHashCode();
 
         public bool Equals(PublicKey o) => (object) o != null && _bytes.SequenceEqual(o._bytes);
         public override bool Equals(object obj) => obj is PublicKey key && this == key;

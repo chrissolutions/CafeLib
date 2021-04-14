@@ -1,6 +1,6 @@
 ﻿namespace CafeLib.Bitcoin.Shared.Persistence
 {
-    public static class KzExtensionsIWriter
+    public static class BitcoinWriterExtensions
     {
         //public static IKzWriter Add(this IKzWriter w, KzScript script, bool withoutCodeSeparators = false) => script.AddTo(w, withoutCodeSeparators);
         //public static IKzWriter Add(this IKzWriter w, KzOutPoint op) => op.AddTo(w);

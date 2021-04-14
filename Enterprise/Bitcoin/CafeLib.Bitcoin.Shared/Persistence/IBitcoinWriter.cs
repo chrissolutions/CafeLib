@@ -4,23 +4,23 @@
 #endregion
 
 using System;
-using System.Buffers;
+using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Numerics;
 
 namespace CafeLib.Bitcoin.Shared.Persistence
 {
-    public interface IKzWriter
+    public interface IBitcoinWriter
     {
-        public IKzWriter Add(ReadOnlySpan<byte> data);
-        public IKzWriter Add(ReadOnlySequence<byte> data);
+        public IBitcoinWriter Add(ReadOnlyByteSpan data);
+        public IBitcoinWriter Add(ReadOnlyByteSequence data);
 
-        public IKzWriter Add(UInt64 v);
-        public IKzWriter Add(Int64 v);
-        public IKzWriter Add(UInt32 v);
-        public IKzWriter Add(Int32 v);
-        public IKzWriter Add(byte v);
-        public IKzWriter Add(UInt160 v);
-        public IKzWriter Add(UInt256 v);
-        public IKzWriter Add(UInt512 v);
+        public IBitcoinWriter Add(UInt64 v);
+        public IBitcoinWriter Add(Int64 v);
+        public IBitcoinWriter Add(UInt32 v);
+        public IBitcoinWriter Add(Int32 v);
+        public IBitcoinWriter Add(byte v);
+        public IBitcoinWriter Add(UInt160 v);
+        public IBitcoinWriter Add(UInt256 v);
+        public IBitcoinWriter Add(UInt512 v);
     }
 }
