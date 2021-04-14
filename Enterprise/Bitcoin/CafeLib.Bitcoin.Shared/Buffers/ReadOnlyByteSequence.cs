@@ -17,6 +17,8 @@ namespace CafeLib.Bitcoin.Shared.Buffers
 
         public long Length => Data.Length;
 
+        public void CopyTo(ByteSpan destination) => Data.CopyTo(destination);
+
         public static implicit operator ReadOnlySequence<byte>(ReadOnlyByteSequence rhs)
         {
             return rhs.Data;

@@ -9,11 +9,8 @@ namespace CafeLib.Bitcoin.Shared.Units
 {
     public readonly struct Amount : IComparable<Amount>, IComparable
     {
-        private readonly Guid _hashGuid;
-
         public static Amount Zero = new Amount(0L);
-        public static Amount Null => new Amount(Guid.Empty);
-        public bool IsNull => _hashGuid == Guid.Empty;
+        public static Amount Null => MinValue;
 
         /// <summary>
         /// This is a value slightly higher than the maximum number of satoshis that will ever be in circulation: 21 million coins, 2.1 quadrillion satoshis.
@@ -33,20 +30,12 @@ namespace CafeLib.Bitcoin.Shared.Units
         /// </summary>
         public long Satoshis { get; }
 
-        private Amount(Guid guid)
-        {
-            _hashGuid = guid;
-            Satoshis = 0L;
-        }
-
-        public Amount(long satoshis)
-            : this (Guid.NewGuid())
+        public Amount(long satoshis = long.MinValue)
         {
             Satoshis = satoshis;
         }
 
         public Amount(ulong satoshis)
-            : this(Guid.NewGuid())
         {
             checked { Satoshis = (long)satoshis; }
         }
@@ -58,7 +47,6 @@ namespace CafeLib.Bitcoin.Shared.Units
         /// <param name="amount"></param>
         /// <param name="unit"></param>
         public Amount(decimal amount, BitcoinUnit unit)
-            : this(Guid.NewGuid())
         {
             checked
             {
@@ -67,13 +55,11 @@ namespace CafeLib.Bitcoin.Shared.Units
         }
 
         public Amount(long amount, BitcoinUnit unit)
-            : this(Guid.NewGuid())
         {
             checked { Satoshis = amount * (long)unit; }
         }
 
         public Amount(ulong amount, BitcoinUnit unit)
-            : this(Guid.NewGuid())
         {
             checked { Satoshis = (long)amount * (long)unit; }
         }
@@ -129,9 +115,9 @@ namespace CafeLib.Bitcoin.Shared.Units
 
         public static string ToString(long value) => new Amount(value).ToString();
 
-        public override int GetHashCode() => _hashGuid.GetHashCode();
+        public override int GetHashCode() => Satoshis.GetHashCode();
         public override bool Equals(object obj) => obj is Amount amount && this == amount;
-        public bool Equals(Amount o) => !IsNull && !o.IsNull && Satoshis == o.Satoshis;
+        public bool Equals(Amount o) => Satoshis == o.Satoshis;
 
         public static implicit operator Amount(long value) => new Amount(value);
         public static implicit operator long(Amount value) => value.Satoshis;

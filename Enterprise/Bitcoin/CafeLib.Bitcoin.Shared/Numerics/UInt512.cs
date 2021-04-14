@@ -28,9 +28,9 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         private static readonly Encoder Hex = Encoders.Hex;
         private static readonly Encoder HexReverse = Encoders.HexReverse;
 
-        public int Length => 64;
+        public const int Length = 64;
 
-        public UInt512(ReadOnlySpan<byte> span, bool reverse = false)
+        public UInt512(ReadOnlyByteSpan span, bool reverse = false)
             : this()
         {
             if (span.Length < 64)

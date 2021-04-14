@@ -22,7 +22,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         public UInt64 N1;
         public UInt32 N2;
 
-        public int Length => 20;
+        public const int Length = 20;
 
 		public UInt160(ReadOnlyByteSpan span, bool reverse = false) : this()
         {

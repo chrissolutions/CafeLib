@@ -22,9 +22,9 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         public UInt64 N2;
         public UInt64 N3;
 
-        public int Length => 32;
+        public const int Length = 32;
 
-		public UInt256(ReadOnlySpan<byte> span, bool reverse = false)
+		public UInt256(ReadOnlyByteSpan span, bool reverse = false)
             : this()
         {
             if (span.Length < 32)

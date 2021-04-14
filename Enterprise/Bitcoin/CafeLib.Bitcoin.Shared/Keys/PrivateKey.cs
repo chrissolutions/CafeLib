@@ -85,7 +85,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
 
         public void Set(ReadOnlyByteSpan data, bool compressed = true)
         {
-            if (data.Length != _keyData.Length || !Check(data))
+            if (data.Length != UInt256.Length || !Check(data))
                 IsValid = false;
             else {
                 data.CopyTo(_keyData.Bytes);
