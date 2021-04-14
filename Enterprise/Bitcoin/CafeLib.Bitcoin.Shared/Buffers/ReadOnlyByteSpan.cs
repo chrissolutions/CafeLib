@@ -47,6 +47,5 @@ namespace CafeLib.Bitcoin.Shared.Buffers
                 ? new SequenceReader<byte>(rhs.Data).UnreadSpan
                 : rhs.Data.ToArray();
         }
-
     }
 }

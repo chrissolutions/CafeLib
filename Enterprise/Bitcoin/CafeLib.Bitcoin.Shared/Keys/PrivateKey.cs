@@ -42,12 +42,12 @@ namespace CafeLib.Bitcoin.Shared.Keys
         {
         }
 
-        public PrivateKey(ReadOnlySpan<byte> span, bool compressed = true)
+        public PrivateKey(ReadOnlyByteSpan span, bool compressed = true)
         {
             Set(span, compressed);
         }
 
-        public PrivateKey(ReadOnlySpan<byte> span, UInt256 keyData, bool compressed = true)
+        public PrivateKey(ReadOnlyByteSpan span, UInt256 keyData, bool compressed = true)
         {
             _keyData = keyData;
             Set(span, compressed);
@@ -58,7 +58,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
             _keyData = keyData;
         }
 
-        public PrivateKey(UInt256 v, bool compressed = true)
+        public PrivateKey(UInt256 v, bool compressed)
         {
             Set(v.Bytes, compressed);
         }
@@ -78,8 +78,8 @@ namespace CafeLib.Bitcoin.Shared.Keys
             : this(new UInt256(hex, true), keyData, compressed) { }
 
         public static PrivateKey FromHex(string hex, bool compressed = true) => new PrivateKey(new UInt256(hex, true), compressed);
-        //public static KzPrivKey FromB58(string b58) => new KzB58PrivKey(b58).GetKey();
-        //public static KzPrivKey FromWIF(string wif) => new KzB58PrivKey(wif).GetKey();
+        public static PrivateKey FromBase58(string base58) => new Base58PrivateKey(base58).GetKey();
+        public static PrivateKey FromWIF(string wif) => new Base58PrivateKey(wif).GetKey();
 
         public void Set(ReadOnlyByteSpan data, bool compressed = true)
         {
@@ -164,7 +164,7 @@ namespace CafeLib.Bitcoin.Shared.Keys
         public override int GetHashCode() => _keyData.GetHashCode();
         public bool Equals(PrivateKey o) => (object)o != null && IsCompressed.Equals(o.IsCompressed) && _keyData.Equals(o._keyData);
         public override bool Equals(object obj) => obj is PrivateKey key && this == key;
-        public static bool operator ==(PrivateKey x, PrivateKey y) => object.ReferenceEquals(x, y) || (object)x == null && (object)y == null || x.Equals(y);
+        public static bool operator ==(PrivateKey x, PrivateKey y) => x != null && (ReferenceEquals(x, y) || x.Equals(y));
         public static bool operator !=(PrivateKey x, PrivateKey y) => !(x == y);
     }
 }
