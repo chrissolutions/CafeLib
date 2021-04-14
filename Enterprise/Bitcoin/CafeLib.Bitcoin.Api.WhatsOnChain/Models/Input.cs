@@ -8,7 +8,7 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain.Models
         public string CoinBase { get; set; }
 
         [JsonProperty("txid")]
-        public string TxId { get; set; }
+        public string Txid { get; set; }
 
         [JsonProperty("vout")]
         public int VectorOutput { get; set; }

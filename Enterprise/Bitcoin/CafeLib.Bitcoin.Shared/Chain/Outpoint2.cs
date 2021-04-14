@@ -3,7 +3,6 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System;
 using System.Buffers;
 using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Numerics;
@@ -15,34 +14,32 @@ namespace CafeLib.Bitcoin.Shared.Chain
     /// Closely mirrors the data and layout of a Bitcoin transaction input's previous output reference as stored in each block.
     /// Focus is on performance when processing large numbers of transactions, including blocks of transactions.
     /// </summary>
-    public struct OutPoint
+    public struct Outpoint
     {
-        private UInt256 _hashTx;
-        Int32 _n;
+        public UInt256 Txid { get; private set; }
 
-        public UInt256 HashTx => _hashTx;
+        public uint Index { get; private set; }
 
-        public Int32 N => _n;
-
-        public OutPoint(UInt256 hashTx, Int32 n)
+        public Outpoint(UInt256 hashTx, uint index)
         {
-            _hashTx = hashTx; 
-            _n = n;
+            Txid = hashTx; 
+            Index = index;
         }
 
-        public bool TryReadOutPoint(ref SequenceReader<byte> r)
+        public bool TryReadOutpoint(ref SequenceReader<byte> r)
         {
-            if (!r.TryCopyToA(ref _hashTx)) goto fail;
-            if (!r.TryReadLittleEndian(out _n)) goto fail;
+            var txid = Txid;
 
+            if (!r.TryCopyToA(ref txid) || !r.TryReadLittleEndian(out uint index)) return false;
+
+            Txid = txid;
+            Index = index;
             return true;
-        fail:
-            return false;
         }
 
         public IBitcoinWriter AddTo(IBitcoinWriter writer)
         {
-            writer.Add(_hashTx).Add(_n);
+            writer.Add(Txid).Add(Index);
             return writer;
         }
     }

@@ -13,27 +13,27 @@ namespace CafeLib.Bitcoin.Shared.Chain {
     public struct UtxoKey
     {
 
-        public UInt256 TxId;
+        public UInt256 Txid;
         public Int32 N;
 
         public override string ToString() {
-            return $"{TxId} {N}";
+            return $"{Txid} {N}";
         }
 
         public void Write(BinaryWriter s) {
             s.Write(N);
-            s.Write(TxId.Bytes);
+            s.Write(Txid.Bytes);
         }
 
         public void Read(BinaryReader s) {
             N = s.ReadInt32();
-            TxId.Read(s);
+            Txid.Read(s);
         }
 
         public override bool Equals(object obj) => obj is UtxoKey key && this == key;
-        public override int GetHashCode() => TxId.GetHashCode() ^ N;
+        public override int GetHashCode() => Txid.GetHashCode() ^ N;
 
-        public bool Equals(UtxoKey o) => TxId == o.TxId && N == o.N;
+        public bool Equals(UtxoKey o) => Txid == o.Txid && N == o.N;
         public static bool operator ==(UtxoKey x, UtxoKey y) => x.Equals(y);
         public static bool operator !=(UtxoKey x, UtxoKey y) => !(x == y);
     }

@@ -33,9 +33,9 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain
             return unspent;
         }
 
-        public async Task<Transaction> GetTransactionsByHash(string txId)
+        public async Task<Transaction> GetTransactionsByHash(string txid)
         {
-            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/tx/hash/{txId}";
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/tx/hash/{txid}";
             var json = await GetAsync(url);
             var tx = JsonConvert.DeserializeObject<Transaction>(json);
             return tx;
