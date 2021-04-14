@@ -11,6 +11,7 @@ using CafeLib.Bitcoin.Shared.Crypto;
 using CafeLib.Bitcoin.Shared.Encoding;
 using CafeLib.Bitcoin.Shared.Numerics.Converters;
 using Newtonsoft.Json;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.Bitcoin.Shared.Numerics
 {
@@ -88,7 +89,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
                     fixed (UInt64* p = &N0) 
                     {
                         byte* pb = (byte*)p;
-                        var bytes = new Span<byte>(pb, 32);
+                        var bytes = new Span<byte>(pb, Length);
                         return bytes;
                     }
                 }
@@ -249,23 +250,24 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         }
 
         public static UInt256 operator -(UInt256 a) {
-            const int WIDTH = 4;
+            const int width = 4;
             var r = UInt256.Zero;
             var rpn = r.Span64;
             var apn = a.Span64;
-            for (int i = 0; i < WIDTH; i++)
+            for (int i = 0; i < width; i++)
                 rpn[i] = ~apn[i];
             r++;
             return r;
         }
 
-        public static UInt256 operator |(UInt256 a, UInt256 b) {
-            const int WIDTH = 4;
+        public static UInt256 operator |(UInt256 a, UInt256 b) 
+        {
+            const int width = 4;
             var r = UInt256.Zero;
             var rpn = r.Span64;
             var apn = a.Span64;
             var bpn = b.Span64;
-            for (int i = 0; i<WIDTH; i++)
+            for (int i = 0; i<width; i++)
                 rpn[i] = apn[i] | bpn[i];
             return r;
         }
@@ -275,15 +277,15 @@ namespace CafeLib.Bitcoin.Shared.Numerics
             var div = b;
             var r = UInt256.Zero;
 
-            int num_bits = num.Bits();
-            int div_bits = div.Bits();
-            if (div_bits == 0) throw new ArgumentException("Division by zero");
+            int numBits = num.Bits();
+            int divBits = div.Bits();
+            if (divBits == 0) throw new ArgumentException("Division by zero");
             // the result is certainly 0.
-            if (div_bits > num_bits)
+            if (divBits > numBits)
                 return r;
 
             var rpn = r.Span32;
-            int shift = num_bits - div_bits;
+            int shift = numBits - divBits;
             // shift so that div and num align.
             div <<= shift;
             while (shift >= 0) {

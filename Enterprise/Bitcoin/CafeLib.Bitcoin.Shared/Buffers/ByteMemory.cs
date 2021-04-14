@@ -16,6 +16,11 @@ namespace CafeLib.Bitcoin.Shared.Buffers
             Data = new Memory<byte>(data);
         }
 
+        public ByteMemory(Memory<byte> data)
+        {
+            Data = data;
+        }
+
         public byte this[int index]
         {
             get => Data.Span[index];
@@ -36,11 +41,14 @@ namespace CafeLib.Bitcoin.Shared.Buffers
         public Span<byte>.Enumerator GetEnumerator() => Data.Span.GetEnumerator();
         public byte[] ToArray() => Data.ToArray();
 
+        public static implicit operator Memory<byte>(ByteMemory rhs) => rhs.Data;
+        public static implicit operator ByteMemory(Memory<byte> rhs) => new ByteMemory(rhs);
+
         public static implicit operator ByteSpan(ByteMemory rhs) => rhs.Data.Span;
         public static implicit operator ByteMemory(ByteSpan rhs) => new ByteMemory(rhs);
 
-        public static implicit operator ByteMemory(byte[] rhs) => new ByteSpan(rhs);
         public static implicit operator byte[](ByteMemory rhs) => rhs.Data.ToArray();
+        public static implicit operator ByteMemory(byte[] rhs) => new ByteSpan(rhs);
 
         //public static ByteMemory operator +(ByteMemory a, ByteMemory b) => a + new UInt256(b);
     }

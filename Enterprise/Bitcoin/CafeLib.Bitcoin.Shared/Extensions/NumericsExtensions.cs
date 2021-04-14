@@ -77,7 +77,7 @@ namespace CafeLib.Bitcoin.Shared.Extensions
                 fixed (uint* p = &i)
                 {
                     byte* pb = (byte*)p;
-                    var bytes = new Span<byte>(pb, 4);
+                    var bytes = new Span<byte>(pb, sizeof(int));
                     return bytes;
                 }
             }
@@ -97,14 +97,14 @@ namespace CafeLib.Bitcoin.Shared.Extensions
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public static ByteSpan AsSpan(this ref Int64 i)
+        public static ByteSpan AsSpan(this ref long i)
         {
             unsafe
             {
                 fixed (Int64* p = &i)
                 {
                     byte* pb = (byte*)p;
-                    var bytes = new Span<byte>(pb, 8);
+                    var bytes = new Span<byte>(pb, sizeof(long));
                     return bytes;
                 }
             }
@@ -116,7 +116,7 @@ namespace CafeLib.Bitcoin.Shared.Extensions
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public static ReadOnlyByteSpan AsReadOnlySpan(this ref Int64 i) => i.AsSpan();
+        public static ReadOnlyByteSpan AsReadOnlySpan(this ref long i) => i.AsSpan();
 
         /// <summary>
         /// Returns access to an integer as a span of bytes.
@@ -124,14 +124,14 @@ namespace CafeLib.Bitcoin.Shared.Extensions
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public static Span<byte> AsSpan(this ref UInt64 i)
+        public static Span<byte> AsSpan(this ref ulong i)
         {
             unsafe
             {
                 fixed (UInt64* p = &i)
                 {
                     byte* pb = (byte*)p;
-                    var bytes = new Span<byte>(pb, 8);
+                    var bytes = new Span<byte>(pb, sizeof(ulong));
                     return bytes;
                 }
             }
@@ -143,6 +143,6 @@ namespace CafeLib.Bitcoin.Shared.Extensions
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public static ReadOnlySpan<byte> AsReadOnlySpan(this ref UInt64 i) => i.AsSpan();
+        public static ReadOnlySpan<byte> AsReadOnlySpan(this ref ulong i) => i.AsSpan();
     }
 }

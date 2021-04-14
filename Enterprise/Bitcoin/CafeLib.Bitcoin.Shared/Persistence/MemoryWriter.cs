@@ -4,86 +4,86 @@
 #endregion
 
 using System;
-using System.Buffers;
 using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Numerics;
+// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Bitcoin.Shared.Persistence
 {
     public class MemoryWriter : IBitcoinWriter
     {
-        public int Length;
-        public Memory<byte> Memory;
+        private readonly Memory<byte> _memory;
+        public int Length => _memory.Length;
+
+        public MemoryWriter()
+        {
+            _memory = new Memory<byte>();
+        }
 
         public MemoryWriter(Memory<byte> memory)
         {
-            Memory = memory;
+            _memory = memory;
         }
 
         public IBitcoinWriter Add(ReadOnlyByteSpan data)
         {
-            data.CopyTo(Memory.Span[Length..]); 
-            Length += data.Length; 
+            data.CopyTo(_memory.Span); 
             return this;
         }
 
         public IBitcoinWriter Add(ReadOnlyByteSequence data)
         {
-            data.CopyTo(Memory.Span[Length..]); 
-            Length += (int)data.Length;
+            data.CopyTo(_memory.Span[Length..]);
             return this;
         }
 
         public IBitcoinWriter Add(byte v)
         {
-            Memory.Span[Length] = v; 
-            Length += 1; 
+            _memory.Span[Length] = v; 
             return this;
         }
 
         public IBitcoinWriter Add(int v)
         {
-            v.AsSpan().CopyTo(Memory.Span[Length..]); 
-            Length += sizeof(int); 
+            v.AsSpan().CopyTo(_memory.Span[Length..]); 
             return this;
         }
 
         public IBitcoinWriter Add(uint v)
         {
-            v.AsSpan().CopyTo(Memory.Span[Length..]); 
-            Length += sizeof(uint); 
+            v.AsSpan().CopyTo(_memory.Span[Length..]); 
             return this;
         }
 
         public IBitcoinWriter Add(long v)
         {
-            v.AsSpan().CopyTo(Memory.Span[Length..]); 
-            Length += sizeof(long); 
+            v.AsSpan().CopyTo(_memory.Span[Length..]); 
             return this;
         }
 
         public IBitcoinWriter Add(ulong v)
         {
-            v.AsSpan().CopyTo(Memory.Span[Length..]); 
-            Length += sizeof(ulong); 
+            v.AsSpan().CopyTo(_memory.Span[Length..]); 
             return this;
         }
 
         public IBitcoinWriter Add(UInt160 v)
         {
-            v.Bytes.CopyTo(Memory.Span[Length..]); 
-            Length += UInt160.Length; 
+            v.Bytes.CopyTo(_memory.Span[Length..]); 
             return this;
         }
 
         public IBitcoinWriter Add(UInt256 v)
         {
-            v.Bytes.CopyTo(Memory.Span[Length..]); 
-            Length += 32; 
+            v.Bytes.CopyTo(_memory.Span[Length..]); 
             return this;
-        } 
+        }
 
-        public IBitcoinWriter Add(UInt512 v) { v.Bytes.CopyTo(Memory.Span.Slice(Length)); Length += 64; return this; } 
+        public IBitcoinWriter Add(UInt512 v)
+        {
+            v.Bytes.CopyTo(_memory.Span[Length..]);
+            return this;
+        }
     }
 }
