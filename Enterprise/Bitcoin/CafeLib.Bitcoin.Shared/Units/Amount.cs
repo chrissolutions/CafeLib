@@ -134,9 +134,7 @@ namespace CafeLib.Bitcoin.Shared.Units
         public bool Equals(Amount o) => !IsNull && !o.IsNull && Satoshis == o.Satoshis;
 
         public static implicit operator Amount(long value) => new Amount(value);
-        public static implicit operator Amount(ulong value) => new Amount(checked((long)value));
         public static implicit operator long(Amount value) => value.Satoshis;
-        public static implicit operator ulong(Amount value) => checked((ulong)value.Satoshis);
 
         public static bool operator ==(Amount x, Amount y) => x.Equals(y);
         public static bool operator !=(Amount x, Amount y) => !(x == y);
