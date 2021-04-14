@@ -11,8 +11,6 @@ namespace CafeLib.Bitcoin.Shared.Units
     {
         private readonly Guid _hashGuid;
 
-        public static IAmountExchangeRate ExchangeRate { get; set; }
-
         public static Amount Zero = new Amount(0L);
         public static Amount Null => new Amount(Guid.Empty);
         public bool IsNull => _hashGuid == Guid.Empty;
