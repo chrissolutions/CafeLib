@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CafeLib.Bitcoin.Shared.Buffers;
-using CafeLib.Bitcoin.Shared.Encoding;
 
 namespace CafeLib.Bitcoin.Shared.Extensions
 {
