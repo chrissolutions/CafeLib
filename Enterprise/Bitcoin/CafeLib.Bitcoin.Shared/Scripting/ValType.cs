@@ -9,7 +9,7 @@ using System.Diagnostics;
 using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Encoding;
 
-namespace CafeLib.Bitcoin.Shared.Programming
+namespace CafeLib.Bitcoin.Shared.Scripting
 {
     public struct ValType
     {

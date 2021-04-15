@@ -3,9 +3,9 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-namespace CafeLib.Bitcoin.Shared.Programming 
+namespace CafeLib.Bitcoin.Shared.Scripting 
 {
-    public enum KzScriptTemplateId
+    public enum TemplateId
     {
         /// <summary>
         /// An unspendable OP_RETURN of unknown protocol

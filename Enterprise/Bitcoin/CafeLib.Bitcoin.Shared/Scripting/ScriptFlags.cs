@@ -5,7 +5,7 @@
 
 using System;
 
-namespace CafeLib.Bitcoin.Shared.Programming
+namespace CafeLib.Bitcoin.Shared.Scripting
 {
     /// <summary>
     /// Script verification flags 

@@ -9,7 +9,7 @@ using System.Diagnostics;
 using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Encoding;
 
-namespace CafeLib.Bitcoin.Shared.Programming
+namespace CafeLib.Bitcoin.Shared.Scripting
 {
     /// <summary>
     /// Numeric opcodes (OP_1ADD, etc) are restricted to operating on 4-byte

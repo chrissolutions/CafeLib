@@ -3,10 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System;
-using Newtonsoft.Json;
-
-namespace CafeLib.Bitcoin.Shared.Programming
+namespace CafeLib.Bitcoin.Shared.Scripting
 {
     //internal class ScriptConverter : JsonConverter<Script>
     //{
