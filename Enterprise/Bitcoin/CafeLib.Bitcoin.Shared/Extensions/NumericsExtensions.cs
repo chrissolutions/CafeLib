@@ -6,6 +6,11 @@ namespace CafeLib.Bitcoin.Shared.Extensions
 {
     public static class NumericsExtensions
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
         public static ByteSpan AsSpan(this int i) => BitConverter.GetBytes(i);
 
         // <summary>
@@ -145,6 +150,13 @@ namespace CafeLib.Bitcoin.Shared.Extensions
         /// <param name="i"></param>
         /// <returns></returns>
         public static ReadOnlySpan<byte> AsReadOnlySpan(this ref ulong i) => i.AsSpan();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public static UInt256 AsUInt256(this byte[] bytes) => (UInt256)(ByteSpan)bytes;
 
         /// <summary>
         /// 
