@@ -242,7 +242,7 @@ namespace CafeLib.Bitcoin.Shared.Keys {
         /// <returns></returns>
         public static string GetChecksum(byte[] entropy) => GetChecksum(new ReadOnlySequence<byte>(entropy));
 
-        public static string GetChecksum(Span<byte> entropy) => GetChecksum(new ReadOnlySequence<byte>(entropy.ToArray()));
+        public static string GetChecksum(ByteSpan entropy) => GetChecksum(new ReadOnlySequence<byte>(entropy.ToArray()));
 
         /// <summary>
         /// Returns words converted into a binary string of "0" and "1" based on wordList.

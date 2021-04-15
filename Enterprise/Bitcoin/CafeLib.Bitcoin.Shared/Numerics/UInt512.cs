@@ -113,6 +113,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         public static explicit operator UInt512(ByteSpan rhs) => new UInt512(rhs);
         public static explicit operator UInt512(ReadOnlyByteSpan rhs) => new UInt512(rhs);
+        public static implicit operator ByteSpan(UInt512 rhs) => rhs.Bytes;
         public static implicit operator ReadOnlyByteSpan(UInt512 rhs) => rhs.Bytes;
 
         public static bool operator ==(UInt512 x, UInt512 y) => x.Equals(y);

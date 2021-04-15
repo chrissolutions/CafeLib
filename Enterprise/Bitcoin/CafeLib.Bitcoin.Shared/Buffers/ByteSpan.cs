@@ -38,19 +38,19 @@ namespace CafeLib.Bitcoin.Shared.Buffers
         public Span<byte>.Enumerator GetEnumerator() => Data.GetEnumerator();
         public byte[] ToArray() => Data.ToArray();
 
-
-        public static implicit operator ReadOnlyByteSpan(ByteSpan rhs) => rhs.Data;
-
-        public static implicit operator ByteSpan(ReadOnlySpan<byte> rhs) => new ByteSpan(rhs.ToArray());
-        public static implicit operator ReadOnlySpan<byte>(ByteSpan rhs) => rhs.Data;
-
-        public static implicit operator ByteSpan(ReadOnlySequence<byte> rhs) => new ByteSpan(rhs.ToArray());
-        public static implicit operator ReadOnlySequence<byte>(ByteSpan rhs) => new ReadOnlySequence<byte>(rhs);
+        public static implicit operator ByteSpan(byte[] rhs) => new ByteSpan(rhs);
+        public static implicit operator byte[](ByteSpan rhs) => rhs.Data.ToArray();
 
         public static implicit operator ByteSpan(Span<byte> rhs) => new ByteSpan(rhs);
         public static implicit operator Span<byte>(ByteSpan rhs) => new Span<byte>(rhs.Data.ToArray());
 
-        public static implicit operator ByteSpan(byte[] rhs) => new ByteSpan(rhs);
-        public static implicit operator byte[](ByteSpan rhs) => rhs.Data.ToArray();
+        public static implicit operator ByteSpan(ReadOnlySpan<byte> rhs) => new ByteSpan(rhs.ToArray());
+        public static implicit operator ReadOnlySpan<byte>(ByteSpan rhs) => rhs.Data;
+
+        public static implicit operator ByteSpan(ReadOnlyByteSpan rhs) => new ByteSpan(rhs.ToArray());
+        public static implicit operator ReadOnlyByteSpan(ByteSpan rhs) => rhs.Data;
+
+        public static implicit operator ByteSpan(ReadOnlyByteSequence rhs) => new ByteSpan(rhs.Data.ToArray());
+        public static implicit operator ReadOnlyByteSequence(ByteSpan rhs) => new ReadOnlyByteSequence(rhs);
     }
 }

@@ -116,6 +116,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         public static explicit operator UInt160(ByteSpan rhs) => new UInt160(rhs);
         public static explicit operator UInt160(ReadOnlyByteSpan rhs) => new UInt160(rhs);
+        public static implicit operator ByteSpan(UInt160 rhs) => rhs.Bytes;
         public static implicit operator ReadOnlyByteSpan(UInt160 rhs) => rhs.Bytes;
 
         public int CompareTo(UInt160 o)

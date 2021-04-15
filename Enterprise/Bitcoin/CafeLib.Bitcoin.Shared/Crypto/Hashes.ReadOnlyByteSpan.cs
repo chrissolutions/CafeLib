@@ -69,7 +69,7 @@ namespace CafeLib.Bitcoin.Shared.Crypto
         /// </summary>
         /// <param name="data">Input: bytes to be hashed.</param>
         /// <param name="hash">Output: SHA256 of SHA256 of data.</param>
-        public static void Hash256(this ReadOnlyByteSpan data, Span<byte> hash)
+        public static void Hash256(this ReadOnlyByteSpan data, ByteSpan hash)
         {
             var x = new UInt256();
             using var sha = new SHA256Managed();

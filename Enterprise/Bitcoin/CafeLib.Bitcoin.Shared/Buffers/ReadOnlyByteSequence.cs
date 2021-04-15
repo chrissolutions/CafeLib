@@ -1,6 +1,4 @@
-﻿using System;
-using System.Buffers;
-using System.Data;
+﻿using System.Buffers;
 
 namespace CafeLib.Bitcoin.Shared.Buffers
 {
@@ -8,9 +6,14 @@ namespace CafeLib.Bitcoin.Shared.Buffers
     {
         public ReadOnlySequence<byte> Data { get; }
 
-        public ReadOnlyByteSequence(ReadOnlySequence<byte> bytes)
+        public ReadOnlyByteSequence(byte[] data)
         {
-            Data = bytes;
+            Data = new ReadOnlySequence<byte>(data);
+        }
+
+        public ReadOnlyByteSequence(ReadOnlySequence<byte> data)
+        {
+            Data = data;
         }
 
         public ReadOnlySequence<byte>.Enumerator GetEnumerator() => Data.GetEnumerator();

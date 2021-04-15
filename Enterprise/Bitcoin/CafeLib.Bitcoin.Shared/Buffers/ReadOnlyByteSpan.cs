@@ -7,14 +7,21 @@ namespace CafeLib.Bitcoin.Shared.Buffers
     {
         public ReadOnlySpan<byte> Data { get; }
 
+        public ReadOnlyByteSpan(byte[] data)
+        {
+            Data = data;
+        }
+
         public ReadOnlyByteSpan(ReadOnlySpan<byte> data)
         {
             Data = data;
         }
 
-        public ReadOnlyByteSpan(byte[] data)
+        public ReadOnlyByteSpan(ReadOnlyByteSequence data)
         {
-            Data = data;
+            Data = data.Data.IsSingleSegment
+                ? new SequenceReader<byte>(data.Data).UnreadSpan
+                : data.Data.ToArray();
         }
 
         public bool IsEmpty => Data.IsEmpty;
@@ -41,11 +48,6 @@ namespace CafeLib.Bitcoin.Shared.Buffers
         public static implicit operator byte[](ReadOnlyByteSpan rhs) => rhs.Data.ToArray();
         public static implicit operator ReadOnlyByteSpan(byte[] rhs) => new ReadOnlyByteSpan(rhs);
 
-        public static implicit operator ReadOnlyByteSpan(ReadOnlyByteSequence rhs)
-        {
-            return rhs.Data.IsSingleSegment
-                ? new SequenceReader<byte>(rhs.Data).UnreadSpan
-                : rhs.Data.ToArray();
-        }
+        public static implicit operator ReadOnlyByteSpan(ReadOnlyByteSequence rhs) => new ReadOnlyByteSpan(rhs);
     }
 }
