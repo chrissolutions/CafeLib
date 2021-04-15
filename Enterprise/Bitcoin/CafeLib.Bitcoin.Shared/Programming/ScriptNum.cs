@@ -25,7 +25,7 @@ namespace CafeLib.Bitcoin.Shared.Programming
         public class OverflowError : Exception { public OverflowError(string message) : base(message) { } }
         public class MinEncodeError : Exception { public MinEncodeError(string message) : base(message) { } }
 
-        private Int64 _value;
+        private readonly Int64 _value;
 
         public ScriptNum(Int64 value)
         {
