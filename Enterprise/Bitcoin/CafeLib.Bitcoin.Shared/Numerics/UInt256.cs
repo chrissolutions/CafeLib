@@ -58,8 +58,8 @@ namespace CafeLib.Bitcoin.Shared.Numerics
                 unsafe {
                     fixed (UInt64* p = &N0) {
                         UInt64* pb = (UInt64*)p;
-                        var uint64s = new Span<UInt64>(pb, 4);
-                        return uint64s;
+                        var span = new Span<UInt64>(pb, 4);
+                        return span;
                     }
                 }
             }
@@ -73,8 +73,8 @@ namespace CafeLib.Bitcoin.Shared.Numerics
                     fixed (UInt64* p = &N0)
                     {
                         UInt32* pb = (UInt32*)p;
-                        var uint32s = new Span<UInt32>(pb, 8);
-                        return uint32s;
+                        var span = new Span<UInt32>(pb, 8);
+                        return span;
                     }
                 }
             }
