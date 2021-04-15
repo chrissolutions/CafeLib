@@ -13,6 +13,11 @@ namespace CafeLib.Bitcoin.Shared.Numerics
     {
         public long Value;
 
+        public const int SizeofVarByte = sizeof(byte);
+        public const int SizeofVarChar = sizeof(char) + sizeof(byte) ;
+        public const int SizeofVarInt = sizeof(int) + sizeof(byte);
+        public const int SizeofVarLong = sizeof(long) + sizeof(byte);
+
         public int Length => GetInfo(Value).length;
         public byte Prefix => GetInfo(Value).prefix;
 
@@ -20,28 +25,32 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         public byte[] AsBytes() => AsBytes(Value);
 
-        public static byte[] AsBytes(long value)
+        internal static byte[] AsBytes(long value)
         {
             var (len, prefix) = GetInfo(value);
             var bytes = new byte[len];
             var s = value.AsReadOnlySpan();
-            switch (len) {
-                case 1:
+            switch (len)
+            {
+                case SizeofVarByte:
                     bytes[0] = s[0];
                     break;
-                case 3:
+
+                case SizeofVarChar:
                     bytes[0] = prefix;
                     bytes[1] = s[0];
                     bytes[2] = s[1];
                     break;
-                case 5:
+
+                case SizeofVarInt:
                     bytes[0] = prefix;
                     bytes[1] = s[0];
                     bytes[2] = s[1];
                     bytes[3] = s[2];
                     bytes[4] = s[3];
                     break;
-                case 9:
+
+                case SizeofVarLong:
                     bytes[0] = prefix;
                     bytes[1] = s[0];
                     bytes[2] = s[1];
@@ -52,6 +61,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
                     bytes[7] = s[6];
                     bytes[8] = s[7];
                     break;
+
                 default:
                     throw new InvalidOperationException();
             }
@@ -60,13 +70,13 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         public static (int length, byte prefix) GetInfo(long value)
         {
-            var len = 1;
+            var len = SizeofVarByte;
             var prefix = (byte)0;
             var uv = (ulong)value;
             if (uv <= 0xfc) goto done;
-            if (uv <= 0xffff) { len = 3; prefix = 0xfd; goto done; }
-            if (uv <= 0xffff_ffff) { len = 5; prefix = 0xfe; goto done; }
-            len = 9; prefix = 0xff;
+            if (uv <= 0xffff) { len = SizeofVarChar; prefix = 0xfd; goto done; }
+            if (uv <= 0xffff_ffff) { len = SizeofVarInt; prefix = 0xfe; goto done; }
+            len = SizeofVarLong; prefix = 0xff;
         done:
             return (len, prefix);
         }

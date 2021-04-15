@@ -1,5 +1,6 @@
 ﻿using System;
 using CafeLib.Bitcoin.Shared.Buffers;
+using CafeLib.Bitcoin.Shared.Numerics;
 
 namespace CafeLib.Bitcoin.Shared.Extensions
 {
@@ -144,5 +145,20 @@ namespace CafeLib.Bitcoin.Shared.Extensions
         /// <param name="i"></param>
         /// <returns></returns>
         public static ReadOnlySpan<byte> AsReadOnlySpan(this ref ulong i) => i.AsSpan();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        public static byte[] AsVarIntBytes(this int v) => VarInt.AsBytes(v);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        public static byte[] AsVarIntBytes(this long v) => VarInt.AsBytes(v);
+
     }
 }
