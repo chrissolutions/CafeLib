@@ -14,12 +14,12 @@ namespace CafeLib.Bitcoin.Shared.Extensions
 {
     public static class MessagingExtensions
     {
-        static string _messageMagic = "Bitcoin Signed Message:\n";
+        private const string MessageMagic = "Bitcoin Signed Message:\n";
 
         internal static UInt256 GetMessageHash(this ReadOnlyByteSpan message)
         {
-            var messagehash = message.Sha256().ToHex();
-            return new WriterHash().Add(_messageMagic).Add(messagehash).GetHashFinal();
+            var messageHash = message.Sha256().ToHex();
+            return new WriterHash().Add(MessageMagic).Add(messageHash).GetHashFinal();
         }
 
         public static byte[] SignMessage(this PrivateKey key, ReadOnlySpan<byte> message)
