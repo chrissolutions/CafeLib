@@ -105,17 +105,12 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         public readonly BigInteger ToBigInteger() => new BigInteger(Bytes, isUnsigned:true, isBigEndian:true);
 
-        public byte[] ToBytes(bool reverse = false) 
-        {
-            byte[] bytes = Bytes;
-            if (reverse)
-                bytes.AsSpan().Reverse();
-            return bytes;
-        }
+        public byte[] ToBytes(bool reverse = false)  => (!reverse) ? Bytes : new ByteSpan(Bytes).Reverse();
 
-        public void ToBytes(Span<byte> destination, bool reverse = false) {
-            if (destination.Length < 32)
-                throw new ArgumentException("32 byte destination is required.");
+        public void ToBytes(ByteSpan destination, bool reverse = false)
+        {
+            if (destination.Length < Length)
+                throw new ArgumentException($"{Length} byte destination is required.");
             Bytes.CopyTo(destination);
             if (reverse)
                 destination.Reverse();
