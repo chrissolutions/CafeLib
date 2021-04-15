@@ -105,7 +105,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         public readonly BigInteger ToBigInteger() => new BigInteger(Bytes, isUnsigned:true, isBigEndian:true);
 
-        public byte[] ToBytes(bool reverse = false)  => (!reverse) ? Bytes : new ByteSpan(Bytes).Reverse();
+        public byte[] ToBytes(bool reverse = false)  => !reverse ? Bytes : new ByteSpan(Bytes).Reverse();
 
         public void ToBytes(ByteSpan destination, bool reverse = false)
         {
