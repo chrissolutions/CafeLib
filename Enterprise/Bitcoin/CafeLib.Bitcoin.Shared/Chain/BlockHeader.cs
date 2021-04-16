@@ -96,8 +96,8 @@ namespace CafeLib.Bitcoin.Shared.Chain
             var start = r.Data.Position;
 
             if (!r.TryReadLittleEndian(out _version)) return false;
-            if (!r.Data.TryCopyToA(ref _hashPrevBlock)) return false;
-            if (!r.Data.TryCopyToA(ref _hashMerkleRoot)) return false;
+            if (!r.TryCopyToUInt256(ref _hashPrevBlock)) return false;
+            if (!r.TryCopyToUInt256(ref _hashMerkleRoot)) return false;
             if (!r.TryReadLittleEndian(out _time)) return false;
             if (!r.TryReadLittleEndian(out _bits)) return false;
             if (!r.TryReadLittleEndian(out _nonce)) return false;

@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using System.Buffers;
 using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Encoding;
 using CafeLib.Bitcoin.Shared.Extensions;
@@ -216,23 +215,23 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         public bool TryReadOperand(ref ReadOnlyByteSequence ros, out long consumed)
         {
             consumed = 0L;
-            var r = new SequenceReader<byte>(ros);
+            var r = new ByteSequenceReader(ros);
             if (!TryReadOperand(ref r)) goto fail;
 
-            consumed = r.Consumed;
-            ros = ros.Data.Slice(r.Consumed);
+            consumed = r.Data.Consumed;
+            ros = ros.Data.Slice(r.Data.Consumed);
 
             return true;
         fail:
             return false;
         }
 
-        public bool TryReadOperand(ref SequenceReader<byte> r)
+        public bool TryReadOperand(ref ByteSequenceReader r)
         {
             Code = Opcode.OP_INVALIDOPCODE;
             _data = ValType.None;
 
-            if (!r.TryRead(out byte opcode)) goto fail;
+            if (!r.TryRead(out var opcode)) goto fail;
 
             Code = (Opcode)opcode;
 
@@ -267,9 +266,9 @@ namespace CafeLib.Bitcoin.Shared.Scripting
 
                 if (nSize >= 0)
                 {
-                    if (r.Remaining < nSize) goto fail;
-                    _data = new ValType(r.Sequence.Slice(r.Position, (Int32)nSize));
-                    r.Advance(nSize);
+                    if (r.Data.Remaining < nSize) goto fail;
+                    _data = new ValType(r.Data.Sequence.Slice(r.Data.Position, (Int32)nSize));
+                    r.Data.Advance(nSize);
                 }
             }
             return true;
