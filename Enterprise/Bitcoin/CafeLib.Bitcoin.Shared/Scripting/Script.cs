@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CafeLib.Bitcoin.Shared.Buffers;
+using CafeLib.Bitcoin.Shared.Chain;
 using CafeLib.Bitcoin.Shared.Encoding;
 using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Keys;
@@ -176,26 +177,26 @@ namespace CafeLib.Bitcoin.Shared.Scripting
             ;
         }
 
-        //public bool TryParseScript(ref SequenceReader<byte> r, IKzBlockParser bp, bool withoutLength = false)
-        //{
+        public bool TryParseScript(ref ByteSequenceReader reader, IBlockParser bp, bool withoutLength = false)
+        {
 
-        //    var length = r.Remaining;
+            var length = reader.Data.Remaining;
 
-        //    if (!withoutLength && !r.TryReadVarint(out length)) goto fail;
+            if (!withoutLength && !reader.TryReadVarInt(out length)) goto fail;
 
-        //    bp.ScriptStart(this, r.Consumed);
+            bp.ScriptStart(this, reader.Data.Consumed);
 
-        //    if (r.Remaining < length) goto fail;
+            if (reader.Data.Remaining < length) goto fail;
 
-        //    _script = r.Sequence.Slice(r.Position, length);
-        //    r.Advance(length);
+            _script = reader.Data.Sequence.Slice(reader.Data.Position, length);
+            reader.Data.Advance(length);
 
-        //    bp.ScriptParsed(this, r.Consumed);
+            bp.ScriptParsed(this, reader.Data.Consumed);
 
-        //    return true;
-        //    fail:
-        //    return false;
-        //}
+            return true;
+            fail:
+            return false;
+        }
 
         public bool TryReadScript(ref ByteSequenceReader r, bool withoutLength = false)
         {
@@ -260,7 +261,7 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         /// <summary>
         /// Return the Template String representation of script bytes.
         /// If the returned string does not include all the script opcodes, either because the scriptLen or limitLen
-        /// arguments are greater than zero, or if the script sequence ends with an incomplete multibyte opcode,
+        /// arguments are greater than zero, or if the script sequence ends with an incomplete multi-byte opcode,
         /// then "..." is appended following the last complete opcode.
         ///
         /// scriptLen argument should be used when the actual script is longer than the script sequence provided,
@@ -408,9 +409,9 @@ namespace CafeLib.Bitcoin.Shared.Scripting
 
         /// <summary>
         /// Returns true if the script is an unspendable OP_RETURN.
-        /// Prior to the Genesys upgrade (block 620538), an OP_RETURN script could never eveluate to true.
-        /// After Genesys, the value at the top of the stack when executing an OP_RETURN determines the script result.
-        /// Therefore, after Genesys, a value of zero is pushed before the OP_RETURN (which may be followed by arbitrary push datas)
+        /// Prior to the Genesis upgrade (block 620538), an OP_RETURN script could never evaluate to true.
+        /// After Genesis, the value at the top of the stack when executing an OP_RETURN determines the script result.
+        /// Therefore, after Genesis, a value of zero is pushed before the OP_RETURN (which may be followed by arbitrary push datas)
         /// to create an unspendable output.
         /// Unspendable outputs can be safely pruned by transaction processors.
         /// Unspendable outputs can always be retrieved for a price from archive services.

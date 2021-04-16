@@ -13,8 +13,8 @@ namespace CafeLib.Bitcoin.Shared.Chain
         //void BlockParsed(KzBlockHeader bh, long offset);
         //void TxStart(KzTransaction t, long offset);
         //void TxParsed(KzTransaction t, long offset);
-        //void TxOutStart(KzTxOut to, long offset);
-        //void TxOutParsed(KzTxOut to, long offset);
+        void TxOutStart(TxOut to, long offset);
+        void TxOutParsed(TxOut to, long offset);
         //void TxInStart(KzTxIn ti, long offset);
         //void TxInParsed(KzTxIn ti, long offset);
         void ScriptStart(Script s, long offset);
