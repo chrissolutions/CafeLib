@@ -54,7 +54,7 @@ namespace CafeLib.Bitcoin.Shared.Chain
         void AddTransaction(Transaction tx)
         {
             _count++;
-            var newHash = tx.HashTx;
+            var newHash = tx.Hash;
             if (_count == 1)
             {
                 // First transaction.

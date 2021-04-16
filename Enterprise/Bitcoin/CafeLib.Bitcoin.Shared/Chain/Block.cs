@@ -44,28 +44,24 @@ namespace CafeLib.Bitcoin.Shared.Chain
             Txs = txs;
         }
 
-        public bool TryParseBlock(ref ReadOnlySequence<byte> ros, int height, IBlockParser bp)
+        public bool TryParseBlock(ref ReadOnlyByteSequence ros, int height, IBlockParser bp)
         {
-            var r = new SequenceReader<byte>(ros);
+            var r = new ByteSequenceReader(ros);
             if (!TryParseBlock(ref r, height, bp)) goto fail;
 
-            ros = ros.Slice(r.Consumed);
+            ros = ros.Data.Slice(r.Data.Consumed);
 
             return true;
         fail:
             return false;
         }
 
-        public bool TryReadBlock(ref ReadOnlySequence<byte> ros)
+        public bool TryReadBlock(ref ReadOnlyByteSequence ros)
         {
-            var r = new SequenceReader<byte>(ros);
-            if (!TryReadBlock(ref r)) goto fail;
-
-            ros = ros.Slice(r.Consumed);
-
+            var r = new ByteSequenceReader(ros);
+            if (!TryReadBlock(ref r)) return false;
+            ros = ros.Data.Slice(r.Data.Consumed);
             return true;
-        fail:
-            return false;
         }
 
         public bool TryParseBlock(ref ByteSequenceReader r, int height, IBlockParser bp)
@@ -127,13 +123,18 @@ namespace CafeLib.Bitcoin.Shared.Chain
         public IEnumerable<(Transaction tx, TxOut o, int i)> GetOutputsSendingToAddresses(UInt160[] addresses)
         {
             var v = new UInt160();
-            foreach (var tx in Txs) {
-                foreach (var o in tx.Vout) {
-                    foreach (var op in o.ScriptPub.Decode()) {
-                        if (op.Code == Opcode.OP_PUSH20) {
+            foreach (var tx in Txs)
+            {
+                foreach (var o in tx.Outputs)
+                {
+                    foreach (var op in o.Script.Decode())
+                    {
+                        if (op.Code == Opcode.OP_PUSH20) 
+                        {
                             op.Data.ToSpan().CopyTo(v.Bytes);
                             var i = Array.BinarySearch(addresses, v);
-                            if (i >= 0) {
+                            if (i >= 0) 
+                            {
                                 yield return (tx, o, i);
                             }
                         }

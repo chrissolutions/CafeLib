@@ -3,7 +3,9 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System;
+using CafeLib.Bitcoin.Shared.Buffers;
+using CafeLib.Bitcoin.Shared.Encoding;
+using CafeLib.Bitcoin.Shared.Keys;
 using CafeLib.Bitcoin.Shared.Scripting;
 
 namespace CafeLib.Bitcoin.Shared.Builders
@@ -52,42 +54,37 @@ namespace CafeLib.Bitcoin.Shared.Builders
         public static implicit operator OperandBuilder(Operand op) 
             => new OperandBuilder { IsFinal = true, Operand = op};
 
-        public bool TryCopyTo(ref Span<byte> span)
+        public bool TryCopyTo(ref ByteSpan span)
         {
             if (IsRaw)
             {
                 var len = (int)Length;
                 if (len > span.Length) goto fail;
-                Op.Data.Sequence.CopyTo(span.Slice(0, len));
+                Operand.Data.Sequence.CopyTo(span.Slice(0, len));
                 span = span.Slice(len);
             }
             else
             {
-                if (!Op.TryCopyTo(ref span)) goto fail;
+                if (!Operand.TryCopyTo(ref span)) goto fail;
             }
+
             return true;
 
             fail:
             return false;
         }
 
-        public string ToVerboseString()
-        {
-            if (IsRaw)
-                return Kz.Hex.Encode(Op.Data.Sequence);
-
-            return Op.ToVerboseString();
-        }
+        public string ToVerboseString() => IsRaw ? Encoders.Hex.Encode(Operand.Data.Sequence) : Operand.ToVerboseString();
 
         public override string ToString()
         {
             return ToVerboseString();
         }
 
-        public KzPubKey ToPubKey()
+        public PublicKey ToPubKey()
         {
-            var pubKey = new KzPubKey();
-            pubKey.Set(Op.Data.ToSpan());
+            var pubKey = new PublicKey();
+            pubKey.Set(Operand.Data.ToSpan());
             return pubKey.IsValid ? pubKey : null;
         }
     }

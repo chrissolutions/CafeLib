@@ -6,6 +6,7 @@
 using System;
 using System.Buffers;
 using System.Security.Cryptography;
+using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Numerics;
 
@@ -38,7 +39,7 @@ namespace CafeLib.Bitcoin.Shared.Chain
 
         public DateTime TimeWhen => DateTime.UnixEpoch + TimeSpan.FromSeconds(_time);
 
-        UInt256 _hash;
+        private UInt256 _hash;
         public UInt256 Hash => _hash;
 
         public Int32 Height { get; set; }
@@ -52,16 +53,19 @@ namespace CafeLib.Bitcoin.Shared.Chain
         public UInt32 Bits => _bits;
         public UInt32 Nonce => _nonce;
 
-        public BlockHeader() { }
+        public BlockHeader()
+        {
+        }
 
-        public BlockHeader(
+        public BlockHeader
+        (
             Int32 version,
             UInt256 hashPrevBlock,
             UInt256 hashMerkleRoot,
             UInt32 time,
             UInt32 bits,
             UInt32 nonce
-            )
+        )
         {
             _version = version;
             _hashPrevBlock = hashPrevBlock;
@@ -76,46 +80,36 @@ namespace CafeLib.Bitcoin.Shared.Chain
         /// </summary>
         /// <param name="ros"></param>
         /// <returns></returns>
-        public bool TryReadBlockHeader(ref ReadOnlySequence<byte> ros)
+        public bool TryReadBlockHeader(ref ReadOnlyByteSequence ros)
         {
-            var r = new SequenceReader<byte>(ros);
-            if (!TryReadBlockHeader(ref r)) goto fail;
-
-            ros = ros.Slice(r.Consumed);
-
+            var r = new ByteSequenceReader(ros);
+            if (!TryReadBlockHeader(ref r)) return false;
+            ros = ros.Data.Slice(r.Data.Consumed);
             return true;
-            fail:
-            return false;
         }
 
-        public bool TryReadBlockHeader(ref SequenceReader<byte> r)
+        public bool TryReadBlockHeader(ref ByteSequenceReader r)
         {
-            if (r.Remaining < BlockHeaderSize)
+            if (r.Data.Remaining < BlockHeaderSize)
                 return false;
 
-            var start = r.Position;
+            var start = r.Data.Position;
 
-            if (!r.TryReadLittleEndian(out _version)) goto fail;
-            if (!r.TryCopyToA(ref _hashPrevBlock)) goto fail;
-            if (!r.TryCopyToA(ref _hashMerkleRoot)) goto fail;
-            if (!r.TryReadLittleEndian(out _time)) goto fail;
-            if (!r.TryReadLittleEndian(out _bits)) goto fail;
-            if (!r.TryReadLittleEndian(out _nonce)) goto fail;
+            if (!r.TryReadLittleEndian(out _version)) return false;
+            if (!r.Data.TryCopyToA(ref _hashPrevBlock)) return false;
+            if (!r.Data.TryCopyToA(ref _hashMerkleRoot)) return false;
+            if (!r.TryReadLittleEndian(out _time)) return false;
+            if (!r.TryReadLittleEndian(out _bits)) return false;
+            if (!r.TryReadLittleEndian(out _nonce)) return false;
 
-            var end = r.Position;
+            var end = r.Data.Position;
 
-            var blockBytes = r.Sequence.Slice(start, end).ToArray();
-            using (var sha256 = SHA256.Create())
-            {
-                var hash1 = sha256.ComputeHash(blockBytes);
-                var hash2 = sha256.ComputeHash(hash1);
-                hash2.CopyTo(_hash.Bytes);
-            }
-
+            var blockBytes = r.Data.Sequence.Slice(start, end).ToArray();
+            using var sha256 = SHA256.Create();
+            var hash1 = sha256.ComputeHash(blockBytes);
+            var hash2 = sha256.ComputeHash(hash1);
+            hash2.CopyTo(_hash.Bytes);
             return true;
-            fail:
-            return false;
         }
     }
 }
-
