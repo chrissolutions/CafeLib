@@ -54,10 +54,6 @@ namespace CafeLib.Bitcoin.Shared.Builders
         public TemplateId TemplateId => _TemplateId;
         public long Length => _ops.Sum(o => o.Length);
 
-        //public static KzBScriptSigP2PKH NewSigP2PKH(KzPubKey pubKey) => new KzBScriptSigP2PKH(pubKey);
-        //public static (KzBScriptPubP2PKH pub, KzBScriptSigP2PKH sig) NewP2PKH(KzPubKey pubKey)
-        //    => (new KzBScriptPubP2PKH(pubKey.ToHash160()), new KzBScriptSigP2PKH(pubKey));
-
         public ScriptBuilder()
         {
         }

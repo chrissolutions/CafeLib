@@ -1,4 +1,5 @@
-﻿using CafeLib.Bitcoin.Shared.Numerics;
+﻿using CafeLib.Bitcoin.Shared.Keys;
+using CafeLib.Bitcoin.Shared.Numerics;
 using CafeLib.Bitcoin.Shared.Scripting;
 
 namespace CafeLib.Bitcoin.Shared.Builders
@@ -15,6 +16,12 @@ namespace CafeLib.Bitcoin.Shared.Builders
                 .Add(Opcode.OP_EQUALVERIFY)
                 .Add(Opcode.OP_CHECKSIG)
                 ;
+        }
+
+        public ScriptPubPay2PublicKeyHashBuilder(PublicKey publicKey)
+            : this(publicKey.ToHash160())
+
+        {
         }
     }
 }

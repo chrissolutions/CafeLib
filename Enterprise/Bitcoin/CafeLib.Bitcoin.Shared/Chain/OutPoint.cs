@@ -17,9 +17,9 @@ namespace CafeLib.Bitcoin.Shared.Chain
     {
         public UInt256 Txid { get; private set; }
 
-        public uint Index { get; private set; }
+        public int Index { get; private set; }
 
-        public OutPoint(UInt256 hashTx, uint index)
+        public OutPoint(UInt256 hashTx, int index)
         {
             Txid = hashTx; 
             Index = index;
@@ -29,7 +29,7 @@ namespace CafeLib.Bitcoin.Shared.Chain
         {
             var txid = Txid;
 
-            if (!r.TryCopyToUInt256(ref txid) || !r.TryReadLittleEndian(out uint index)) return false;
+            if (!r.TryCopyToUInt256(ref txid) || !r.TryReadLittleEndian(out int index)) return false;
 
             Txid = txid;
             Index = index;
