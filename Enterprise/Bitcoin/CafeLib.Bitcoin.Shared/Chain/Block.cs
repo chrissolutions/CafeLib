@@ -47,13 +47,9 @@ namespace CafeLib.Bitcoin.Shared.Chain
         public bool TryParseBlock(ref ReadOnlyByteSequence ros, int height, IBlockParser bp)
         {
             var r = new ByteSequenceReader(ros);
-            if (!TryParseBlock(ref r, height, bp)) goto fail;
-
+            if (!TryParseBlock(ref r, height, bp)) return false;
             ros = ros.Data.Slice(r.Data.Consumed);
-
             return true;
-        fail:
-            return false;
         }
 
         public bool TryReadBlock(ref ReadOnlyByteSequence ros)
