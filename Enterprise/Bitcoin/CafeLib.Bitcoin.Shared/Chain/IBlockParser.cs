@@ -9,10 +9,10 @@ namespace CafeLib.Bitcoin.Shared.Chain
 {
     public interface IBlockParser 
     {
-        //void BlockStart(KzBlockHeader bh, long offset);
-        //void BlockParsed(KzBlockHeader bh, long offset);
-        //void TxStart(KzTransaction t, long offset);
-        //void TxParsed(KzTransaction t, long offset);
+        void BlockStart(BlockHeader bh, long offset);
+        void BlockParsed(BlockHeader bh, long offset);
+        void TxStart(Transaction t, long offset);
+        void TxParsed(Transaction t, long offset);
         void TxOutStart(TxOut to, long offset);
         void TxOutParsed(TxOut to, long offset);
         void TxInStart(TxIn ti, long offset);

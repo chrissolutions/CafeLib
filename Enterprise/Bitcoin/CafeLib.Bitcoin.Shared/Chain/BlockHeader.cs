@@ -25,49 +25,50 @@ namespace CafeLib.Bitcoin.Shared.Chain
     {
         public const int BlockHeaderSize = 80;
 
+        /// Essential fields of a Bitcoin SV block header.
+
+        Int32 _version;
+        UInt256 _hashPrevBlock;
+        UInt256 _hashMerkleRoot;
+        UInt32 _time;
+        UInt32 _bits;
+        UInt32 _nonce;
+
         /// The following fields are computed or external, not essential.
-        public DateTime TimeWhen => DateTime.UnixEpoch + TimeSpan.FromSeconds(Time);
 
-        public UInt256 Hash { get; }
+        public DateTime TimeWhen => DateTime.UnixEpoch + TimeSpan.FromSeconds(_time);
 
-        public int Height { get; set; }
+        UInt256 _hash;
+        public UInt256 Hash => _hash;
+
+        public Int32 Height { get; set; }
 
         /// Public access to essential header fields.
 
-        public int Version { get; private set; }
+        public Int32 Version => _version;
+        public UInt256 HashPrevBlock => _hashPrevBlock;
+        public UInt256 HashMerkleRoot => _hashMerkleRoot;
+        public UInt32 Time => _time;
+        public UInt32 Bits => _bits;
+        public UInt32 Nonce => _nonce;
 
-        public UInt256 HashPrevBlock { get; private set; }
+        public BlockHeader() { }
 
-        public UInt256 HashMerkleRoot { get; private set; }
-        public uint Time { get; private set; }
-
-        public uint Bits { get; private set; }
-    
-        public uint Nonce { get; private set; }
-
-        public BlockHeader(UInt256 hash)
-        {
-            Hash = hash;
-        }
-
-        public BlockHeader
-        (
-            int version,
+        public BlockHeader(
+            Int32 version,
             UInt256 hashPrevBlock,
             UInt256 hashMerkleRoot,
             UInt32 time,
             UInt32 bits,
-            UInt32 nonce, 
-            UInt256 hash
-        )
-            : this(hash)
+            UInt32 nonce
+            )
         {
-            Version = version;
-            HashPrevBlock = hashPrevBlock;
-            HashMerkleRoot = hashMerkleRoot;
-            Time = time;
-            Bits = bits;
-            Nonce = nonce;
+            _version = version;
+            _hashPrevBlock = hashPrevBlock;
+            _hashMerkleRoot = hashMerkleRoot;
+            _time = time;
+            _bits = bits;
+            _nonce = nonce;
         }
 
         /// <summary>
@@ -78,10 +79,13 @@ namespace CafeLib.Bitcoin.Shared.Chain
         public bool TryReadBlockHeader(ref ReadOnlySequence<byte> ros)
         {
             var r = new SequenceReader<byte>(ros);
-            if (!TryReadBlockHeader(ref r)) return false;
+            if (!TryReadBlockHeader(ref r)) goto fail;
 
             ros = ros.Slice(r.Consumed);
+
             return true;
+            fail:
+            return false;
         }
 
         public bool TryReadBlockHeader(ref SequenceReader<byte> r)
@@ -91,31 +95,26 @@ namespace CafeLib.Bitcoin.Shared.Chain
 
             var start = r.Position;
 
-            var hashPrevBlock = HashPrevBlock;
-            var hashMerkleRoot = HashMerkleRoot;
-
-            if (!r.TryReadLittleEndian(out int version)) return false;
-            if (!r.TryCopyToA(ref hashPrevBlock)) return false;
-            if (!r.TryCopyToA(ref hashMerkleRoot)) return false;
-            if (!r.TryReadLittleEndian(out uint time)) return false;
-            if (!r.TryReadLittleEndian(out uint bits)) return false;
-            if (!r.TryReadLittleEndian(out uint nonce)) return false;
-
-            Version = version;
-            HashPrevBlock = hashPrevBlock;
-            HashMerkleRoot = hashMerkleRoot;
-            Time = time;
-            Bits = bits;
-            Nonce = nonce;
+            if (!r.TryReadLittleEndian(out _version)) goto fail;
+            if (!r.TryCopyToA(ref _hashPrevBlock)) goto fail;
+            if (!r.TryCopyToA(ref _hashMerkleRoot)) goto fail;
+            if (!r.TryReadLittleEndian(out _time)) goto fail;
+            if (!r.TryReadLittleEndian(out _bits)) goto fail;
+            if (!r.TryReadLittleEndian(out _nonce)) goto fail;
 
             var end = r.Position;
 
             var blockBytes = r.Sequence.Slice(start, end).ToArray();
-            using var sha256 = SHA256.Create();
-            var hash1 = sha256.ComputeHash(blockBytes);
-            var hash2 = sha256.ComputeHash(hash1);
-            hash2.CopyTo(Hash.Bytes);
+            using (var sha256 = SHA256.Create())
+            {
+                var hash1 = sha256.ComputeHash(blockBytes);
+                var hash2 = sha256.ComputeHash(hash1);
+                hash2.CopyTo(_hash.Bytes);
+            }
+
             return true;
+            fail:
+            return false;
         }
     }
 }
