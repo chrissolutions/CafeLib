@@ -42,5 +42,8 @@ namespace CafeLib.Bitcoin.Shared.Builders
         {
             return new TxOut(Value, ScriptPubBuilder);
         }
+
+        public static implicit operator TxOut(TxOutBuilder rhs) => rhs.ToTxOut();
+        public static explicit operator TxOutBuilder(TxOut rhs) => new TxOutBuilder(rhs);
     }
 }

@@ -113,5 +113,8 @@ namespace CafeLib.Bitcoin.Shared.Builders
         {
             return new TxIn(PrevOut, ScriptSig, Sequence);
         }
+
+        public static implicit operator TxIn(TxInBuilder rhs) => rhs.ToTxIn();
+        public static explicit operator TxInBuilder(TxIn rhs) => new TxInBuilder(rhs);
     }
 }
