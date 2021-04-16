@@ -18,13 +18,13 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         /// <summary>
         /// [pubkey in long or short format] OP_CHECKSIG
         /// </summary>
-        P2PK = 1,
+        Pay2PublicKey = 1,
         /// <summary>
         /// OP_DUP OP_HASH160 [20 byte hashed pubkey] OP_EQUALVERIFY OP_CHECKSIG
         /// PubKey is moved to ScriptSig.
-        /// Hash160 value can be converted into checksummed bitcoin address formats.
+        /// Hash160 value can be converted into a bitcoin address checksum format.
         /// </summary>
-        P2PKH = 2,
+        Pay2PublicKeyHash = 2,
         /// <summary>
         /// OP_0 OP_RETURN OP_PUSH4 ...
         /// </summary>
@@ -32,7 +32,7 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         /// <summary>
         /// Pay to script hash
         /// </summary>
-        P2SH = 4,
+        Pay2ScriptHash = 4,
         /// <summary>
         /// B:// protocol
         /// </summary>
