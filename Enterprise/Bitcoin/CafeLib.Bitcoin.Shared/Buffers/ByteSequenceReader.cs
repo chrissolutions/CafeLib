@@ -22,6 +22,18 @@ namespace CafeLib.Bitcoin.Shared.Buffers
         /// Reads an <see cref="long"/> as big endian.
         /// </summary>
         /// <returns>False if there wasn't enough data for an <see cref="long"/>.</returns>
+        public bool TryReadLittleEndian(out int value) => Data.TryReadLittleEndian(out value);
+        
+        /// <summary>
+        /// Reads an <see cref="long"/> as big endian.
+        /// </summary>
+        /// <returns>False if there wasn't enough data for an <see cref="long"/>.</returns>
+        public bool TryReadLittleEndian(out uint value) => Data.TryReadLittleEndian(out value);
+
+        /// <summary>
+        /// Reads an <see cref="long"/> as big endian.
+        /// </summary>
+        /// <returns>False if there wasn't enough data for an <see cref="long"/>.</returns>
         public bool TryReadLittleEndian(out long value) => Data.TryReadLittleEndian(out value);
 
         /// <summary>

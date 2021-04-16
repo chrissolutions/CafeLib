@@ -3,8 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System.Buffers;
-using CafeLib.Bitcoin.Shared.Extensions;
+using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Numerics;
 using CafeLib.Bitcoin.Shared.Persistence;
 
@@ -26,11 +25,11 @@ namespace CafeLib.Bitcoin.Shared.Chain
             Index = index;
         }
 
-        public bool TryReadOutpoint(ref SequenceReader<byte> r)
+        public bool TryReadOutPoint(ref ByteSequenceReader r)
         {
             var txid = Txid;
 
-            if (!r.TryCopyToA(ref txid) || !r.TryReadLittleEndian(out uint index)) return false;
+            if (/*!r.TryCopyToA(ref txid) || */ !r.TryReadLittleEndian(out uint index)) return false;
 
             Txid = txid;
             Index = index;

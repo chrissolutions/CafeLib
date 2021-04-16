@@ -16,7 +16,7 @@ namespace CafeLib.Bitcoin.Shared.Chain
     /// Focus is on performance when processing large numbers of transactions, including blocks of transactions.
     /// Not used for making dynamic changes (building scripts).
     /// See <see cref="KzBTxIn"/> when dynamically building a transaction input.
-    /// <seealso cref="KzTransaction"/>
+    /// <seealso cref="Transaction"/>
     /// </summary>
     public struct TxIn
     {
@@ -49,7 +49,7 @@ namespace CafeLib.Bitcoin.Shared.Chain
             if (!_scriptSig.TryParseScript(ref r, bp)) goto fail;
             if (!r.TryReadLittleEndian(out _sequence)) goto fail;
 
-            bp.TxInParsed(this, r.Consumed);
+            bp.TxInParsed(this, r.Data.Consumed);
 
             return true;
         fail:
