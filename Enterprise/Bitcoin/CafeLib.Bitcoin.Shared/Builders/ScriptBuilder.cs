@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Encoding;
+using CafeLib.Bitcoin.Shared.Numerics;
 using CafeLib.Bitcoin.Shared.Scripting;
 
 namespace CafeLib.Bitcoin.Shared.Builders
@@ -53,7 +54,6 @@ namespace CafeLib.Bitcoin.Shared.Builders
         public TemplateId TemplateId => _TemplateId;
         public long Length => _ops.Sum(o => o.Length);
 
-        //public static KzBScriptPubP2PKH NewPubP2PKH(KzUInt160 pubKeyHash) => new KzBScriptPubP2PKH(pubKeyHash);
         //public static KzBScriptSigP2PKH NewSigP2PKH(KzPubKey pubKey) => new KzBScriptSigP2PKH(pubKey);
         //public static (KzBScriptPubP2PKH pub, KzBScriptSigP2PKH sig) NewP2PKH(KzPubKey pubKey)
         //    => (new KzBScriptPubP2PKH(pubKey.ToHash160()), new KzBScriptSigP2PKH(pubKey));
@@ -180,7 +180,7 @@ namespace CafeLib.Bitcoin.Shared.Builders
         /// <param name="s"></param>
         /// <param name="len"></param>
         /// <returns></returns>
-        static byte[] ParseCompactValueToBytes(string s, uint? len = null) => ParseLiteralValueToBytes(s, len).bytes;
+        private static byte[] ParseCompactValueToBytes(string s, uint? len = null) => ParseLiteralValueToBytes(s, len).bytes;
 
         /// <summary>
         /// Parses signed decimals, hexadecimal strings prefixed with 0x, and ascii strings enclosed in single quotes.
@@ -193,24 +193,31 @@ namespace CafeLib.Bitcoin.Shared.Builders
         /// <param name="len"></param>
         /// <returns>Tuple of the parsed byte[] data and a boolean true if the literal was specified in hexadecimal.
         /// Returns null for bytes if can't be parsed as a literal.</returns>
-        static (byte[] bytes, bool isHex) ParseLiteralValueToBytes(string s, uint? len = null)
+        private static (byte[] bytes, bool isHex) ParseLiteralValueToBytes(string s, uint? len = null)
         {
             var bytes = (byte[])null;
             var isHex = false;
 
-            if (s.StartsWith("'") && s.EndsWith("'")) {
+            if (s.StartsWith("'") && s.EndsWith("'"))
+            {
                 s = s.Substring(1, s.Length - 2);
                 if (s.Contains("'"))
                     throw new InvalidOperationException();
                 bytes = System.Text.Encoding.ASCII.GetBytes(s);
-            } else if (s.StartsWith("0x")) {
+            } 
+            else if (s.StartsWith("0x"))
+            {
                 isHex = true;
                 bytes = Encoders.Hex.Decode(s.Substring(2));
-            } else if (long.TryParse(s, out long v)) {
+            } 
+            else if (long.TryParse(s, out var v))
+            {
                 bytes = ScriptNum.Serialize(v);
             }
+
             if (len.HasValue && bytes != null && len.Value != bytes.Length)
                 throw new InvalidOperationException();
+            
             return (bytes, isHex);
         }
 
