@@ -15,17 +15,17 @@ namespace CafeLib.Bitcoin.Shared.Chain
     public struct TxOut
     {
         private long _value;
-        private Script _script;
+        private Script _scriptPub;
 
         public long Value => _value;
-        public Script Script => _script;
+        public Script Script => _scriptPub;
 
         public static TxOut Null => new TxOut { _value = -1 };
 
         public TxOut(long value, Script script)
         {
             _value = value;
-            _script = script;
+            _scriptPub = script;
         }
 
         public bool IsNull => _value == -1;
@@ -36,7 +36,7 @@ namespace CafeLib.Bitcoin.Shared.Chain
 
             bp.TxOutStart(this, r.Data.Consumed);
 
-            if (!_script.TryParseScript(ref r, bp)) goto fail;
+            if (!_scriptPub.TryParseScript(ref r, bp)) goto fail;
 
             bp.TxOutParsed(this, r.Data.Consumed);
 
@@ -48,7 +48,7 @@ namespace CafeLib.Bitcoin.Shared.Chain
         public bool TryReadTxOut(ref ByteSequenceReader reader)
         {
             if (!reader.TryReadLittleEndian(out _value)) goto fail;
-            if (!_script.TryReadScript(ref reader)) goto fail;
+            if (!_scriptPub.TryReadScript(ref reader)) goto fail;
 
             return true;
         fail:
@@ -58,25 +58,25 @@ namespace CafeLib.Bitcoin.Shared.Chain
         public void Write(BinaryWriter s)
         {
             s.Write(_value);
-            _script.Write(s);
+            _scriptPub.Write(s);
         }
 
         public void Read(BinaryReader s)
         {
             _value = s.ReadInt64();
-            _script.Read(s);
+            _scriptPub.Read(s);
         }
 
         public override string ToString()
         {
-            return $"{new Amount(_value)} {_script}";
+            return $"{new Amount(_value)} {_scriptPub}";
         }
 
         public IBitcoinWriter AddTo(IBitcoinWriter writer)
         {
             writer
                 .Add(_value)
-                .Add(_script)
+                .Add(_scriptPub)
                 ;
             return writer;
         }
