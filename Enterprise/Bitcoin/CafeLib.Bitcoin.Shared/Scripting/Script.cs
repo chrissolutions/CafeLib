@@ -10,6 +10,7 @@ using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Keys;
 using CafeLib.Bitcoin.Shared.Persistence;
 using Newtonsoft.Json;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.Bitcoin.Shared.Scripting
 {
@@ -61,9 +62,9 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         public void Write(BinaryWriter s)
         {
             if (_script.IsEmpty)
-                s.Write((Int32)(-1));
+                s.Write(-1);
             else {
-                s.Write((Int32)_script.Length);
+                s.Write((int)_script.Length);
                 foreach (var m in _script)
                     s.Write(m.Span);
             }
@@ -103,7 +104,7 @@ namespace CafeLib.Bitcoin.Shared.Scripting
             var bytes = rawScriptHex.HexToBytes();
             var s = new Script();
             var ros = new ReadOnlySequence<byte>(bytes);
-            var sr = new SequenceReader<byte>(ros);
+            var sr = new ByteSequenceReader(ros);
             return (s.TryReadScript(ref sr, withoutLength), s);
         }
 
@@ -196,16 +197,16 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         //    return false;
         //}
 
-        public bool TryReadScript(ref SequenceReader<byte> r, bool withoutLength = false)
+        public bool TryReadScript(ref ByteSequenceReader r, bool withoutLength = false)
         {
-            var length = r.Remaining;
+            var length = r.Data.Remaining;
 
-            if (!withoutLength /*&& !r.TryReadVarint(out length)*/) goto fail;
+            if (!withoutLength && !r.TryReadVarInt(out length)) goto fail;
 
-            if (r.Remaining < length) goto fail;
+            if (r.Data.Remaining < length) goto fail;
 
-            _script = r.Sequence.Slice(r.Position, length);
-            r.Advance(length);
+            _script = r.Data.Sequence.Slice(r.Data.Position, length);
+            r.Data.Advance(length);
 
             return true;
             fail:
@@ -220,16 +221,15 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         public string ToTemplateString()
         {
             var sb = new StringBuilder();
-            foreach (var op in Decode()) {
+            foreach (var op in Decode())
+            {
                 var len = op.Data.Length;
-                if (len == 0)
-                    sb.Append($"{op.CodeName} ");
-                else {
-                    sb.Append($"[{op.Data.Length}] ");
-                }
+                sb.Append(len == 0 ? $"{op.CodeName} " : $"[{op.Data.Length}] ");
             }
+
             if (sb.Length > 0)
                 sb.Length--;
+
             return sb.ToString();
         }
 
@@ -250,7 +250,8 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         /// <param name="scriptLen">How long the entire script is, or zero.</param>
         /// <param name="limitLen">How many bytes to process, or zero.</param>
         /// <returns></returns>
-        public static string ToTemplateString(byte[] script, long scriptLen = 0, long limitLen = 0) {
+        public static string ToTemplateString(byte[] script, long scriptLen = 0, long limitLen = 0) 
+        {
             if (script == null)
                 return scriptLen > 0 ? "..." : "";
             return ToTemplateString(new ReadOnlySequence<byte>(script), scriptLen, limitLen);
@@ -273,7 +274,8 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         /// <param name="scriptLen">How long the entire script is, or zero.</param>
         /// <param name="limitLen">How many bytes to process, or zero.</param>
         /// <returns></returns>
-        public static string ToTemplateString(ReadOnlyByteSequence script, long scriptLen = 0, long limitLen = 0) {
+        public static string ToTemplateString(ReadOnlyByteSequence script, long scriptLen = 0, long limitLen = 0) 
+        {
             var ros = script;
             if (limitLen == 0) limitLen = long.MaxValue;
             var ok = true;
@@ -285,13 +287,10 @@ namespace CafeLib.Bitcoin.Shared.Scripting
                 var op = new Operand();
                 ok = op.TryReadOperand(ref ros, out var consumed);
                 count += consumed;
-                if (ok && limitLen >= count) {
+                if (ok && limitLen >= count)
+                {
                     var len = op.Data.Length;
-                    if (len == 0)
-                        sb.Append($"{op.CodeName} ");
-                    else {
-                        sb.Append($"[{op.Data.Length}] ");
-                    }
+                    sb.Append(len == 0 ? $"{op.CodeName} " : $"[{op.Data.Length}] ");
                 }
             }
             if (sb.Length > 0)
@@ -328,10 +327,10 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         /// [65] OP_CHECKSIG
         /// update TxOuts set TemplateId = 1 where ScriptPubLen = 67 and substring(ScriptPubBuf0, 1, 1) = 0x41 and substring(ScriptPubBuf0, 67, 1) = 0xAC
         /// </summary>
-        /// <param name="len"></param>
         /// <param name="script"></param>
         /// <returns></returns>
-        public static bool IsP2PK(ReadOnlySpan<byte> script) {
+        public static bool IsPay2PublicKey(ReadOnlyByteSpan script)
+        {
             return script.Length == 67 && script[0] == 0x41 && script[66] == 0xAC;
         }
 
@@ -341,10 +340,10 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         /// OP_DUP OP_HASH160 [20] OP_EQUALVERIFY OP_CHECKSIG
         /// update TxOuts set TemplateId = 2 where ScriptPubLen = 25 and substring(ScriptPubBuf0, 1, 3) = 0x76A914 and substring(ScriptPubBuf0, 24, 2) = 0x88AC
         /// </summary>
-        /// <param name="len"></param>
         /// <param name="script"></param>
         /// <returns></returns>
-        public static bool IsP2PKH(ReadOnlySpan<byte> script) {
+        public static bool IsPay2PublicKeyHash(ReadOnlySpan<byte> script)
+        {
             return script.Length == 25 && script[0] == 0x76 && script[1] == 0xA9 && script[2] == 0x14 && script[23] == 0x88 && script[24] == 0xAC;
         }
 
@@ -353,27 +352,27 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         /// OP_0 OP_RETURN [4] ...
         /// update TxOuts set TemplateId = 3 where ScriptPubLen >= 7 and substring(ScriptPubBuf0, 1, 3) = 0x006A04
         /// </summary>
-        /// <param name="len"></param>
         /// <param name="script"></param>
         /// <returns></returns>
-        public static bool IsOpRetPush4(ReadOnlySpan<byte> script) {
+        public static bool IsOpRetPush4(ReadOnlyByteSpan script)
+        {
             return script.Length >= 7 && script[0] == 0x00 && script[1] == 0x6A && script[2] == 0x04;
         }
 
-        static byte[] _OpRetBPrefix = new byte[] { 0x6a, 0x22, 0x31, 0x39, 0x48, 0x78, 0x69, 0x67, 0x56, 0x34, 0x51, 0x79, 0x42, 0x76, 0x33, 0x74, 0x48, 0x70, 0x51, 0x56, 0x63, 0x55, 0x45, 0x51, 0x79, 0x71, 0x31, 0x70, 0x7a, 0x5a, 0x56, 0x64, 0x6f, 0x41, 0x75, 0x74 };
+        private static readonly byte[] OpRetBPrefix = { 0x6a, 0x22, 0x31, 0x39, 0x48, 0x78, 0x69, 0x67, 0x56, 0x34, 0x51, 0x79, 0x42, 0x76, 0x33, 0x74, 0x48, 0x70, 0x51, 0x56, 0x63, 0x55, 0x45, 0x51, 0x79, 0x71, 0x31, 0x70, 0x7a, 0x5a, 0x56, 0x64, 0x6f, 0x41, 0x75, 0x74 };
 
         /// <summary>
         /// 0x6a2231394878696756345179427633744870515663554551797131707a5a56646f417574
         /// 0x006a2231394878696756345179427633744870515663554551797131707a5a56646f417574
         /// </summary>
-        /// <param name="len"></param>
         /// <param name="script"></param>
         /// <returns></returns>
-        public static bool IsOpRetB(ReadOnlySpan<byte> script) {
-            if (script.Length <= _OpRetBPrefix.Length + 1)
+        public static bool IsOpRetB(ReadOnlyByteSpan script)
+        {
+            if (script.Length <= OpRetBPrefix.Length + 1)
                 return false;
             var o = script[0] == 0 ? 1 : 0;
-            return script.Slice(o, _OpRetBPrefix.Length).SequenceEqual(_OpRetBPrefix);
+            return script.Data.Slice(o, OpRetBPrefix.Length).SequenceEqual(OpRetBPrefix);
         }
 
         private static readonly byte[] OpRetBcatPrefix = { 0x6a, 0x22, 0x31, 0x35, 0x44, 0x48, 0x46, 0x78, 0x57, 0x5a, 0x4a, 0x54, 0x35, 0x38, 0x66, 0x39, 0x6e, 0x68, 0x79, 0x47, 0x6e, 0x73, 0x52, 0x42, 0x71, 0x72, 0x67, 0x77, 0x4b, 0x34, 0x57, 0x36, 0x68, 0x34, 0x55, 0x70 };
@@ -382,14 +381,13 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         /// 0x6a22313544484678575a4a54353866396e6879476e735242717267774b34573668345570
         /// 0x006a22313544484678575a4a54353866396e6879476e735242717267774b34573668345570
         /// </summary>
-        /// <param name="len"></param>
         /// <param name="script"></param>
         /// <returns></returns>
-        public static bool IsOpRetBcat(ReadOnlySpan<byte> script) {
+        public static bool IsOpRetBcat(ReadOnlyByteSpan script) {
             if (script.Length <= OpRetBcatPrefix.Length + 1)
                 return false;
             var o = script[0] == 0 ? 1 : 0;
-            return script.Slice(o, OpRetBcatPrefix.Length).SequenceEqual(OpRetBcatPrefix);
+            return script.Data.Slice(o, OpRetBcatPrefix.Length).SequenceEqual(OpRetBcatPrefix);
         }
 
         private static readonly byte[] OpRetBcatPartPrefix = { 0x6a, 0x22, 0x31, 0x43, 0x68, 0x44, 0x48, 0x7a, 0x64, 0x64, 0x31, 0x48, 0x34, 0x77, 0x53, 0x6a, 0x67, 0x47, 0x4d, 0x48, 0x79, 0x6e, 0x64, 0x5a, 0x6d, 0x36, 0x71, 0x78, 0x45, 0x44, 0x47, 0x6a, 0x71, 0x70, 0x4a, 0x4c };
@@ -398,10 +396,10 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         /// 0x6a2231436844487a646431483477536a67474d48796e645a6d3671784544476a71704a4c
         /// 0x006a2231436844487a646431483477536a67474d48796e645a6d3671784544476a71704a4c
         /// </summary>
-        /// <param name="len"></param>
         /// <param name="script"></param>
         /// <returns></returns>
-        public static bool IsOpRetBcatPart(ReadOnlySpan<byte> script) {
+        public static bool IsOpRetBcatPart(ReadOnlySpan<byte> script)
+        {
             if (script.Length <= OpRetBcatPartPrefix.Length + 1)
                 return false;
             var o = script[0] == 0 ? 1 : 0;
@@ -417,17 +415,21 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         /// Unspendable outputs can be safely pruned by transaction processors.
         /// Unspendable outputs can always be retrieved for a price from archive services.
         /// </summary>
-        /// <param name="len">The full transaction output script length in bytes. </param>
         /// <param name="script">The initial buffer of the transaction output script. Typically up to 256 bytes or so of the script.</param>
         /// <param name="height">The block height of the transaction containing the output script.</param>
         /// <returns></returns>
-        public static bool IsOpReturn(ReadOnlySpan<byte> script, int? height = null) {
+        public static bool IsOpReturn(ReadOnlyByteSpan script, int? height = null) 
+        {
             var result = false;
-            if (script.Length > 0 && script[0] == 0x6a) {
-                if (height <= 620538) {
+            if (script.Length > 0 && script[0] == 0x6a)
+            {
+                if (height <= 620538)
+                {
                     result = true;
                 }
-            } else if (script.Length > 1 && script[1] == 0x6a && script[0] == 0) {
+            } 
+            else if (script.Length > 1 && script[1] == 0x6a && script[0] == 0) 
+            {
                 result = true;
             }
             return result;
@@ -454,8 +456,8 @@ namespace CafeLib.Bitcoin.Shared.Scripting
             {
                 // Spendable
                 templateId
-                    = IsP2PK(scriptPubBuf0) ? TemplateId.P2PK
-                    : IsP2PKH(scriptPubBuf0) ? TemplateId.P2PKH
+                    = IsPay2PublicKey(scriptPubBuf0) ? TemplateId.P2PK
+                    : IsPay2PublicKeyHash(scriptPubBuf0) ? TemplateId.P2PKH
                     : TemplateId.Unknown;
             }
 
@@ -483,9 +485,9 @@ namespace CafeLib.Bitcoin.Shared.Scripting
 
             var sig = op1.Data.ToSpan();
             if (sig.Length < 7 || sig[0] != 0x30 || sig[2] != 0x02) goto fail;
-            var lenDER = sig[1];
+            var lenDer = sig[1];
             var lenR = sig[3];
-            if (sig.Length != lenDER + 3 || sig.Length - 1 < lenR + 5 || sig[4 + lenR] != 0x02) goto fail;
+            if (sig.Length != lenDer + 3 || sig.Length - 1 < lenR + 5 || sig[4 + lenR] != 0x02) goto fail;
             var lenS = sig[lenR + 5];
             if (sig.Length != lenR + lenS + 7) goto fail;
 

@@ -6,6 +6,7 @@
 using System;
 using System.Buffers;
 using System.Runtime.CompilerServices;
+using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Numerics;
 
 namespace CafeLib.Bitcoin.Shared.Extensions
@@ -62,7 +63,7 @@ namespace CafeLib.Bitcoin.Shared.Extensions
         /// Reads an <see cref="UInt64"/> as in bitcoin VarInt format.
         /// </summary>
         /// <returns>False if there wasn't enough data for an <see cref="UInt64"/>.</returns>
-        public static bool TryReadVarInt(ref this SequenceReader<byte> reader, out long value)
-            => VarInt.TryRead(ref reader, out value);
+        public static bool TryReadVarInt(ref this ByteSequenceReader reader, out long value)
+            => VarInt.TryRead(ref reader.Data, out value);
     }
 }

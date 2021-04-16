@@ -63,12 +63,12 @@ namespace CafeLib.Bitcoin.Shared.Buffers
             }
             return true;
         }
-        public ReadOnlyByteSequence RemoveSlice(long start, long end) => RemoveSlice(Data.GetPosition(start), Data.GetPosition(end));
+        public ReadOnlyByteSequence RemoveSlice(long start, long end) 
+            => RemoveSlice(Data.GetPosition(start), Data.GetPosition(end));
 
         /// <summary>
         /// Returns a new ReadOnlySequence with a slice removed.
         /// </summary>
-        /// <param name="sequence">Sequence from which to remove a slice.</param>
         /// <param name="start">Start of slice to remove.</param>
         /// <param name="end">End of slice to remove</param>
         /// <returns></returns>
@@ -85,45 +85,57 @@ namespace CafeLib.Bitcoin.Shared.Buffers
 
             // Join before and after sequences.
 
-            //var typeBefore = before.GetSequenceType();
-            //var typeAfter = after.GetSequenceType();
+            var typeBefore = GetSequenceType(ref before);
+            var typeAfter = GetSequenceType(ref after);
 
-            //if (typeBefore != typeAfter)
-            //    throw new InvalidOperationException();
+            if (typeBefore != typeAfter)
+                throw new InvalidOperationException();
 
-            //var first = (KzSequenceSegment<byte>)null;
-            //var last = (KzSequenceSegment<byte>)null;
-            //switch (typeBefore)
-            //{
-            //    case KzSequenceType.Segment:
-            //        {
-            //            foreach (var m in before)
-            //            {
-            //                if (last == null)
-            //                    last = first = new KzSequenceSegment<byte>(m);
-            //                else
-            //                    last = last.Append(m);
-            //            }
-            //            foreach (var m in after)
-            //            {
-            //                last = last.Append(m);
-            //            }
-            //        }
-            //        break;
-            //    case KzSequenceType.MemoryManager:
-            //    case KzSequenceType.Array:
-            //    case KzSequenceType.String:
-            //        {
-            //            first = new KzSequenceSegment<byte>(before.First);
-            //            last = first.Append(after.First);
-            //        }
-            //        break;
-            //    default: throw new NotImplementedException();
-            //}
-            //return new ReadOnlySequence<byte>(first, 0, last, last.Memory.Length);
-            return new ReadOnlySequence<byte>();
+            var first = (ByteSequenceSegment)null;
+            var last = (ByteSequenceSegment)null;
+            switch (typeBefore)
+            {
+                case SequenceType.Segment:
+                    foreach (var m in before)
+                    {
+                        if (last == null)
+                            last = first = new ByteSequenceSegment(m);
+                        else
+                            last = last.Append(m);
+                    }
+                    foreach (var m in after)
+                    {
+                        last = last?.Append(m);
+                    }
+                    break;
+
+                case SequenceType.MemoryManager:
+                case SequenceType.Array:
+                case SequenceType.String:
+                    first = new ByteSequenceSegment(before.First);
+                    last = first.Append(after.First);
+                    break;
+
+                default: 
+                    throw new NotImplementedException();
+            }
+
+            return new ReadOnlySequence<byte>(first, 0, last, last?.Memory.Length ?? -1);
         }
 
+        private static SequenceType GetSequenceType(ref ReadOnlySequence<byte> sequence)
+        {
+            var startIndex = sequence.Start.GetInteger();
+            var endIndex = sequence.End.GetInteger();
 
+            SequenceType type;
+            if (startIndex >= 0)
+                type = endIndex >= 0 ? SequenceType.Segment : SequenceType.Array;
+            else if (endIndex >= 0)
+                type = SequenceType.MemoryManager;
+            else
+                type = SequenceType.String;
+            return type;
+        }
     }
 }
