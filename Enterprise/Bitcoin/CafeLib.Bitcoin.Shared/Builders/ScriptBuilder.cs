@@ -13,7 +13,6 @@ using CafeLib.Bitcoin.Shared.Scripting;
 
 namespace CafeLib.Bitcoin.Shared.Builders
 {
-
     public class ScriptBuilder
     {
         /// <summary>

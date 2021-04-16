@@ -457,8 +457,8 @@ namespace CafeLib.Bitcoin.Shared.Scripting
             {
                 // Spendable
                 templateId
-                    = IsPay2PublicKey(scriptPubBuf0) ? TemplateId.P2PK
-                    : IsPay2PublicKeyHash(scriptPubBuf0) ? TemplateId.P2PKH
+                    = IsPay2PublicKey(scriptPubBuf0) ? TemplateId.Pay2PublicKey
+                    : IsPay2PublicKeyHash(scriptPubBuf0) ? TemplateId.Pay2PublicKeyHash
                     : TemplateId.Unknown;
             }
 
