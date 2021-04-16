@@ -114,6 +114,4 @@ namespace CafeLib.Bitcoin.Shared.Builders
             return new TxIn(PrevOut, ScriptSig, Sequence);
         }
     }
-
-
 }
