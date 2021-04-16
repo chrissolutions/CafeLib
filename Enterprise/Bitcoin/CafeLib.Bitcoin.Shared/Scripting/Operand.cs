@@ -5,29 +5,45 @@
 
 using System;
 using System.Buffers;
+using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Encoding;
 using CafeLib.Bitcoin.Shared.Extensions;
 using CafeLib.Bitcoin.Shared.Persistence;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.Bitcoin.Shared.Scripting
 {
     public struct Operand
     {
-        Opcode _code;
-        ValType _data;
+        private ValType _data;
 
-        public Opcode Code => _code;
+        public Opcode Code { get; private set; }
+
         public ValType Data => _data;
 
-        public string CodeName => GetOpName(_code);
+        public string CodeName => GetOpName(Code);
 
-        public int LengthBytesCount => _code == Opcode.OP_PUSHDATA1 ? 1 : _code == Opcode.OP_PUSHDATA2 ? 2 : _code == Opcode.OP_PUSHDATA4 ? 4 : 0;
+        public int LengthBytesCount => Code switch
+        {
+            Opcode.OP_PUSHDATA1 => 1,
+            Opcode.OP_PUSHDATA2 => 2,
+            Opcode.OP_PUSHDATA4 => 4,
+            _ => 0
+        };
 
         public long Length => 1 + _data.Length + LengthBytesCount;
 
-        public Operand(Opcode code, ValType data) { _code = code; _data = data; }
+        public Operand(Opcode code, ValType data)
+        {
+            Code = code;
+            _data = data;
+        }
 
-        public Operand(Opcode code) { _code = code; _data = ValType.None; }
+        public Operand(Opcode code)
+        {
+            Code = code;
+            _data = ValType.None;
+        }
 
         public static Operand Push(ReadOnlySpan<byte> data)
         {
@@ -38,15 +54,23 @@ namespace CafeLib.Bitcoin.Shared.Scripting
             }
             else
             {
-                if (data.Length < (int)Opcode.OP_PUSHDATA1) {
+                if (data.Length < (int)Opcode.OP_PUSHDATA1)
+                {
                     code = (Opcode)data.Length;
-                } else if (data.Length <= 0xff) {
+                }
+                else if (data.Length <= 0xff) 
+                {
                     code = Opcode.OP_PUSHDATA1;
-                } else if (data.Length <= 0xffff) {
+                }
+                else if (data.Length <= 0xffff) 
+                {
                     code = Opcode.OP_PUSHDATA2;
-                } else {
+                }
+                else
+                {
                     code = Opcode.OP_PUSHDATA4;
                 }
+
                 val = new ValType(data.ToArray());
             }
             var op = new Operand(code, val);
@@ -94,15 +118,15 @@ namespace CafeLib.Bitcoin.Shared.Scripting
             return op;
         }
 
-        public bool TryCopyTo(ref Span<byte> span)
+        public bool TryCopyTo(ref ByteSpan span)
         {
             var length = Length;
             if (length > span.Length)
                 return false;
-            span[0] = (byte)_code;
-            span = span.Slice(1);
+            span[0] = (byte)Code;
+            span = span[1..];
             length = _data.Length;
-            if (_code >= Opcode.OP_PUSHDATA1 && _code <= Opcode.OP_PUSHDATA4) {
+            if (Code >= Opcode.OP_PUSHDATA1 && Code <= Opcode.OP_PUSHDATA4) {
                 if (!BitConverter.IsLittleEndian) return false;
                 var lengthBytes = BitConverter.GetBytes((uint)_data.Length).AsSpan(0, LengthBytesCount);
                 lengthBytes.CopyTo(span);
@@ -117,8 +141,8 @@ namespace CafeLib.Bitcoin.Shared.Scripting
 
         public IBitcoinWriter AddTo(IBitcoinWriter w)
         {
-            w.Add((byte)_code);
-            if (_code >= Opcode.OP_PUSHDATA1 && _code <= Opcode.OP_PUSHDATA4) 
+            w.Add((byte)Code);
+            if (Code >= Opcode.OP_PUSHDATA1 && Code <= Opcode.OP_PUSHDATA4) 
             {
                 var lengthBytes = BitConverter.GetBytes((uint)_data.Length).AsSpan(0, LengthBytesCount);
                 w.Add(lengthBytes);
@@ -135,7 +159,7 @@ namespace CafeLib.Bitcoin.Shared.Scripting
         public byte[] GetBytes()
         {
             var bytes = new byte[Length];
-            bytes[0] = (byte)_code;
+            bytes[0] = (byte)Code;
             if (bytes.Length > 1)
                 _data.GetReader().TryCopyTo(bytes.AsSpan().Slice(1));
             return bytes;
@@ -181,36 +205,36 @@ namespace CafeLib.Bitcoin.Shared.Scripting
             }
         */
 
-        public static (bool ok, Operand op) TryRead(ref ReadOnlySequence<byte> ros, out long consumed) {
+        public static (bool ok, Operand op) TryRead(ref ReadOnlyByteSequence ros, out long consumed) {
             var op = new Operand();
-            var ok = op.TryReadOp(ref ros, out consumed);
+            var ok = op.TryReadOperand(ref ros, out consumed);
             return (ok, op);
         }
 
-        public bool TryReadOp(ref ReadOnlySequence<byte> ros) => TryReadOp(ref ros, out _);
+        public bool TryReadOperand(ref ReadOnlyByteSequence ros) => TryReadOperand(ref ros, out _);
 
-        public bool TryReadOp(ref ReadOnlySequence<byte> ros, out long consumed)
+        public bool TryReadOperand(ref ReadOnlyByteSequence ros, out long consumed)
         {
             consumed = 0L;
             var r = new SequenceReader<byte>(ros);
-            if (!TryReadOp(ref r)) goto fail;
+            if (!TryReadOperand(ref r)) goto fail;
 
             consumed = r.Consumed;
-            ros = ros.Slice(r.Consumed);
+            ros = ros.Data.Slice(r.Consumed);
 
             return true;
         fail:
             return false;
         }
 
-        public bool TryReadOp(ref SequenceReader<byte> r)
+        public bool TryReadOperand(ref SequenceReader<byte> r)
         {
-            _code = Opcode.OP_INVALIDOPCODE;
+            Code = Opcode.OP_INVALIDOPCODE;
             _data = ValType.None;
 
             if (!r.TryRead(out byte opcode)) goto fail;
 
-            _code = (Opcode)opcode;
+            Code = (Opcode)opcode;
 
             // Opcodes OP_0 and OP_1 to OP_16 are single byte opcodes that push the corresponding value.
             // Opcodes from zero to 0x4b [0..75] are single byte push commands where the value is the number of bytes to push.
@@ -256,6 +280,8 @@ namespace CafeLib.Bitcoin.Shared.Scripting
 
         public static string GetOpName(Opcode opcode)
         {
+            opcode.GetName();
+
             return opcode switch
             {
                 // push value
@@ -399,7 +425,7 @@ namespace CafeLib.Bitcoin.Shared.Scripting
 
         public string ToVerboseString()
         {
-            var s = _code.ToString();
+            var s = Code.ToString();
 
             var len = Data.Length;
             if (len > 0)

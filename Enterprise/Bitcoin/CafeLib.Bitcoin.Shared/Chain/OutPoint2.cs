@@ -14,13 +14,13 @@ namespace CafeLib.Bitcoin.Shared.Chain
     /// Closely mirrors the data and layout of a Bitcoin transaction input's previous output reference as stored in each block.
     /// Focus is on performance when processing large numbers of transactions, including blocks of transactions.
     /// </summary>
-    public struct Outpoint
+    public struct OutPoint
     {
         public UInt256 Txid { get; private set; }
 
         public uint Index { get; private set; }
 
-        public Outpoint(UInt256 hashTx, uint index)
+        public OutPoint(UInt256 hashTx, uint index)
         {
             Txid = hashTx; 
             Index = index;
