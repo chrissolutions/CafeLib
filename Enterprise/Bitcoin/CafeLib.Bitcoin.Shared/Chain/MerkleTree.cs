@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
-using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Crypto;
 using CafeLib.Bitcoin.Shared.Numerics;
 
@@ -24,14 +23,14 @@ namespace CafeLib.Bitcoin.Shared.Chain
     /// </summary>
     public class MerkleTree : IDisposable
     {
-        //public static UInt256 ComputeMerkleRoot(IEnumerable<KzTransaction> txs)
-        //{
-        //    using var mt = new MerkleTree();
-        //    mt.AddTransactions(txs);
-        //    return mt.GetMerkleRoot();
-        //}
+        public static UInt256 ComputeMerkleRoot(IEnumerable<Transaction> txs)
+        {
+            using var mt = new MerkleTree();
+            mt.AddTransactions(txs);
+            return mt.GetMerkleRoot();
+        }
 
-        private long _count = 0;
+        private long _count;
         private readonly List<MerkleTreeNode> _nodes = new List<MerkleTreeNode>();
         private readonly SHA256 _sha256;
 
@@ -173,11 +172,12 @@ namespace CafeLib.Bitcoin.Shared.Chain
         }
 
         #region IDisposable Support
-        bool disposedValue = false; // To detect redundant calls
+
+        private bool _disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
@@ -188,7 +188,7 @@ namespace CafeLib.Bitcoin.Shared.Chain
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
