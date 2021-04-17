@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
-using CafeLib.Core.Logging;
 using CafeLib.Core.Support;
 using Xunit;
 
@@ -9,8 +7,65 @@ namespace CafeLib.Core.UnitTests
 {
     public class RetryTest
     {
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async void ActionWithReturnRetry(bool doException)
+        {
+            var trials = 0;
+
+            try
+            {
+                await Retry2.Run(3, 50, x =>
+                {
+                    trials = x;
+                    if (doException)
+                    {
+                        throw new ArgumentException();
+                    }
+                });
+
+                Assert.Equal(1, trials);
+            }
+            catch (Exception e)
+            {
+                Assert.IsType<AggregateException>(e);
+                Assert.Equal(3, trials);
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async void FunctionWithReturnRetry(bool doException)
+        {
+            var trials = 0;
+
+            try
+            {
+                var result = await Retry2.Run(3, 50, x =>
+                {
+                    trials = x;
+                    if (doException)
+                    {
+                        throw new ArgumentException();
+                    }
+
+                    return 10;
+                });
+
+                Assert.Equal(1, trials);
+                Assert.Equal(10, result);
+            }
+            catch (Exception e)
+            {
+                Assert.IsType<AggregateException>(e);
+                Assert.Equal(3, trials);
+            }
+        }
+
         [Fact]
-        public async void MainPathRetry()
+        public async void TaskMainPathRetry()
         {
             var trials = 0;
 
@@ -24,7 +79,7 @@ namespace CafeLib.Core.UnitTests
         }
 
         [Fact]
-        public async void ExceptionPathRetry()
+        public async void TaskExceptionPathRetry()
         {
             var trials = 0;
             await Assert.ThrowsAsync<AggregateException>(async () =>
@@ -38,6 +93,36 @@ namespace CafeLib.Core.UnitTests
             });
 
             Assert.Equal(3, trials);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async void TaskWithReturnRetry(bool doException)
+        {
+            var trials = 0;
+
+            try
+            {
+                var result = await Retry2.Run(3, 50, async x =>
+                {
+                    trials = x;
+                    if (doException)
+                    {
+                        throw new ArgumentException();
+                    }
+
+                    return await Task.FromResult(10);
+                });
+
+                Assert.Equal(1, trials);
+                Assert.Equal(10, result);
+            }
+            catch (Exception e)
+            {
+                Assert.IsType<AggregateException>(e);
+                Assert.Equal(3, trials);
+            }
         }
     }
 }

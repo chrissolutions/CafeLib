@@ -15,28 +15,34 @@ namespace CafeLib.Core.Support
 
         #region Static Methods
 
-        ///// <summary>
-        ///// Run retry function.
-        ///// </summary>
-        ///// <typeparam name="T">return type</typeparam>
-        ///// <param name="function">retry function</param>
-        ///// <returns>asynchronous task</returns>
-        //public static Task<T> Run<T>(Func<int, Task<T>> function)
-        //{
-        //    return new Retry().Do(function);
-        //}
+        /// <summary>
+        /// Run retry function.
+        /// </summary>
+        /// <param name="limit">retry limit</param>
+        /// <param name="interval">interval between retries</param>
+        /// <param name="operation">retry function</param>
+        /// <returns>asynchronous task</returns>
+        public static async Task Run(int limit, int interval, Action<int> operation)
+        {
+            await Run(limit, interval, async x =>
+            {
+                operation(x);
+                await Task.CompletedTask;
+            });
+        }
 
-        ///// <summary>
-        ///// Run retry function.
-        ///// </summary>
-        ///// <typeparam name="T">return type</typeparam>
-        ///// <param name="limit">retry limit</param>
-        ///// <param name="function">retry function</param>
-        ///// <returns>asynchronous task</returns>
-        //public static Task<T> Run<T>(int limit, Func<int, Task<T>> function)
-        //{
-        //    return new Retry(limit, DefaultInterval).Do(function);
-        //}
+        /// <summary>
+        /// Run retry function.
+        /// </summary>
+        /// <typeparam name="T">return type</typeparam>
+        /// <param name="limit">retry limit</param>
+        /// <param name="interval">interval between retries</param>
+        /// <param name="operation">retry function</param>
+        /// <returns>asynchronous task</returns>
+        public static async Task<T> Run<T>(int limit, int interval, Func<int, T> operation)
+        {
+            return await Run(limit, interval, x => Task.FromResult(operation(x)));
+        }
 
         ///// <summary>
         ///// Run retry function.
@@ -51,6 +57,13 @@ namespace CafeLib.Core.Support
         //    return new Retry(limit, interval).Do(function);
         //}
 
+        /// <summary>
+        /// Run retry function.
+        /// </summary>
+        /// <param name="limit"></param>
+        /// <param name="interval"></param>
+        /// <param name="operation"></param>
+        /// <returns></returns>
         public static async Task Run(int limit, int interval, Func<int, Task> operation)
         {
             var exceptions = new List<Exception>();
@@ -76,6 +89,37 @@ namespace CafeLib.Core.Support
             throw new AggregateException(exceptions);
         }
 
+        /// <summary>
+        /// Run retry function.
+        /// </summary>
+        /// <typeparam name="T">return type</typeparam>
+        /// <param name="limit"></param>
+        /// <param name="interval"></param>
+        /// <param name="operation"></param>
+        /// <returns></returns>
+        public static async Task<T> Run<T>(int limit, int interval, Func<int, Task<T>> operation)
+        {
+            var exceptions = new List<Exception>();
+
+            for (var retry = 0; retry < limit; retry++)
+            {
+                try
+                {
+                    return await operation(retry + 1);
+                }
+                catch (TaskCanceledException)
+                {
+                    return default;
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                    await Task.Delay(interval);
+                }
+            }
+
+            throw new AggregateException(exceptions);
+        }
         #endregion
     }
 }
