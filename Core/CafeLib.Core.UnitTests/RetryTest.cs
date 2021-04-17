@@ -10,13 +10,40 @@ namespace CafeLib.Core.UnitTests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async void ActionWithReturnRetry(bool doException)
+        public async void ActionRetry(bool doException)
         {
             var trials = 0;
 
             try
             {
-                await Retry2.Run(3, 50, x =>
+                await Retry.Run(3, 50, x =>
+                {
+                    trials = x;
+                    if (doException)
+                    {
+                        throw new ArgumentException();
+                    }
+                });
+
+                Assert.Equal(1, trials);
+            }
+            catch (Exception e)
+            {
+                Assert.IsType<AggregateException>(e);
+                Assert.Equal(3, trials);
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async void ActionWithDefaultParameters(bool doException)
+        {
+            var trials = 0;
+
+            try
+            {
+                await Retry.Run(x =>
                 {
                     trials = x;
                     if (doException)
@@ -43,7 +70,37 @@ namespace CafeLib.Core.UnitTests
 
             try
             {
-                var result = await Retry2.Run(3, 50, x =>
+                var result = await Retry.Run(3, 50, x =>
+                {
+                    trials = x;
+                    if (doException)
+                    {
+                        throw new ArgumentException();
+                    }
+
+                    return 10;
+                });
+
+                Assert.Equal(1, trials);
+                Assert.Equal(10, result);
+            }
+            catch (Exception e)
+            {
+                Assert.IsType<AggregateException>(e);
+                Assert.Equal(3, trials);
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async void FunctionWithReturnRetryWithDefaults(bool doException)
+        {
+            var trials = 0;
+
+            try
+            {
+                var result = await Retry.Run(x =>
                 {
                     trials = x;
                     if (doException)
@@ -69,7 +126,7 @@ namespace CafeLib.Core.UnitTests
         {
             var trials = 0;
 
-            await Retry2.Run(3, 50, async x =>
+            await Retry.Run(3, 50, async x =>
             {
                 trials = x;
                 await Task.CompletedTask;
@@ -84,7 +141,7 @@ namespace CafeLib.Core.UnitTests
             var trials = 0;
             await Assert.ThrowsAsync<AggregateException>(async () =>
             {
-                await Retry2.Run(3, 50, async x =>
+                await Retry.Run(3, 50, async x =>
                 {
                     trials = x;
                     await Task.CompletedTask;
@@ -98,13 +155,42 @@ namespace CafeLib.Core.UnitTests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
+        public async void TaskRetryWithDefaults(bool doException)
+        {
+            var trials = 0;
+
+            try
+            {
+                await Retry.Run(async x =>
+                {
+                    trials = x;
+                    if (doException)
+                    {
+                        throw new ArgumentException();
+                    }
+
+                    return await Task.FromResult(10);
+                });
+
+                Assert.Equal(1, trials);
+            }
+            catch (Exception e)
+            {
+                Assert.IsType<AggregateException>(e);
+                Assert.Equal(3, trials);
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
         public async void TaskWithReturnRetry(bool doException)
         {
             var trials = 0;
 
             try
             {
-                var result = await Retry2.Run(3, 50, async x =>
+                var result = await Retry.Run(3, 50, async x =>
                 {
                     trials = x;
                     if (doException)

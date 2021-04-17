@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Support
 {
-    public class Retry
+    public static class Retry
     {
         #region Constants
 
@@ -14,210 +13,149 @@ namespace CafeLib.Core.Support
 
         #endregion
 
-        #region Automatic Properties.
+        #region Static Methods
 
         /// <summary>
-        /// Retry attempts limit.
+        /// Run retry function.
         /// </summary>
-        public int Limit { get; }
+        /// <param name="operation">retry action</param>
+        /// <returns>asynchronous task</returns>
+        public static Task Run(Action<int> operation) 
+            => Run(DefaultLimit, DefaultInterval, operation);
 
         /// <summary>
-        /// Retry interval between attempts.
+        /// Run retry function.
         /// </summary>
-        public int Interval { get; }
-
-        #endregion
-
-        #region Constructors
-
-        public Retry(int limit)
-            : this(limit, DefaultInterval)
-        {
-        }
+        /// <param name="limit">retry limit</param>
+        /// <param name="operation">retry function</param>
+        /// <returns>asynchronous task</returns>
+        public static Task Run(int limit, Action<int> operation) 
+            => Run(limit, DefaultInterval, operation);
 
         /// <summary>
-        /// Retry constructor.
+        /// Run retry function.
         /// </summary>
         /// <param name="limit">retry limit</param>
         /// <param name="interval">interval between retries</param>
-        public Retry(int limit = DefaultLimit, int interval = DefaultInterval)
+        /// <param name="operation">retry function</param>
+        /// <returns>asynchronous task</returns>
+        public static async Task Run(int limit, int interval, Action<int> operation)
         {
-            Limit = limit > 0 ? limit : 1;
-            Interval = interval > 0 ? interval : DefaultInterval;
-        }
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Do retries on action if necessary.
-        /// </summary>
-        /// <param name="action">action</param>
-        /// <returns>awaitable task</returns>
-        public async Task Do(Action<int> action)
-        {
-            await Do(async x =>
+            await Run(limit, interval, async x =>
             {
-                action(x);
-                return await Task.FromResult(0);
-            }).ConfigureAwait(false);
+                operation(x);
+                await Task.CompletedTask;
+            });
         }
 
         /// <summary>
-        /// Do retries on function if necessary.
-        /// </summary>
-        /// <typeparam name="T">result type</typeparam>
-        /// <param name="function">function</param>
-        /// <returns>awaitable task</returns>
-        public async Task<T> Do<T>(Func<int, T> function)
-        {
-            return await Do(async x =>
-            {
-                var result = function(x);
-                return await Task.FromResult(result).ConfigureAwait(false);
-            }).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Do retries on function if necessary.
+        /// Run retry function.
         /// </summary>
         /// <typeparam name="T">return type</typeparam>
-        /// <param name="function">retry function</param>
-        /// <returns>the action return result</returns>
-        public async Task<T> Do<T>(Func<int, Task<T>> function)
+        /// <param name="operation">retry function</param>
+        /// <returns>asynchronous task</returns>
+        public static Task<T> Run<T>(Func<int, T> operation)
+            => Run(DefaultLimit, DefaultInterval, operation);
+
+        /// <summary>
+        /// Run retry function.
+        /// </summary>
+        /// <typeparam name="T">return type</typeparam>
+        /// <param name="limit">retry limit</param>
+        /// <param name="operation">retry function</param>
+        /// <returns>asynchronous task</returns>
+        public static Task<T> Run<T>(int limit, Func<int, T> operation)
+            => Run(limit, DefaultInterval, operation);
+
+        /// <summary>
+        /// Run retry function.
+        /// </summary>
+        /// <typeparam name="T">return type</typeparam>
+        /// <param name="limit">retry limit</param>
+        /// <param name="interval">interval between retries</param>
+        /// <param name="operation">retry function</param>
+        /// <returns>asynchronous task</returns>
+        public static async Task<T> Run<T>(int limit, int interval, Func<int, T> operation)
+        {
+            return await Run(limit, interval, x => Task.FromResult(operation(x)));
+        }
+
+        ///// <summary>
+        ///// Run retry function.
+        ///// </summary>
+        ///// <typeparam name="T">return type</typeparam>
+        ///// <param name="limit">retry limit</param>
+        ///// <param name="interval">interval between retries</param>
+        ///// <param name="function">retry function</param>
+        ///// <returns>asynchronous task</returns>
+        //public static Task<T> Run<T>(int limit, int interval, Func<int, Task<T>> function)
+        //{
+        //    return new Retry(limit, interval).Do(function);
+        //}
+
+        /// <summary>
+        /// Run retry function.
+        /// </summary>
+        /// <param name="limit"></param>
+        /// <param name="interval"></param>
+        /// <param name="operation"></param>
+        /// <returns></returns>
+        public static async Task Run(int limit, int interval, Func<int, Task> operation)
         {
             var exceptions = new List<Exception>();
 
-            for (var retry = 0; retry < Limit; retry++)
+            for (var retry = 0; retry < limit; retry++)
             {
                 try
                 {
-                    return await function(retry + 1).ConfigureAwait(false);
+                    await operation(retry + 1);
+                    return;
                 }
                 catch (TaskCanceledException)
                 {
-                    return await Task.FromResult(default(T)).ConfigureAwait(false);
+                    return;
                 }
                 catch (Exception ex)
                 {
                     exceptions.Add(ex);
-                    await Task.Delay(Interval).ConfigureAwait(false);
+                    await Task.Delay(interval);
                 }
             }
 
             throw new AggregateException(exceptions);
         }
 
-        #endregion
-
-        #region Static Methods
-
-        /// <summary>
-        /// Run retry action.
-        /// </summary>
-        /// <param name="action">retry action</param>
-        /// <returns>asynchronous task</returns>
-        public static Task Run(Action<int> action)
-        {
-            return new Retry().Do(action);
-        }
-
-        /// <summary>
-        /// Run retry action.
-        /// </summary>
-        /// <param name="limit">retry limit</param>
-        /// <param name="action">retry action</param>
-        /// <returns>asynchronous task</returns>
-        public static Task Run(int limit, Action<int> action)
-        {
-            return new Retry(limit, DefaultInterval).Do(action);
-        }
-
-        /// <summary>
-        /// Run retry action.
-        /// </summary>
-        /// <param name="limit">retry limit</param>
-        /// <param name="interval">interval between retries</param>
-        /// <param name="action">retry action</param>
-        /// <returns>asynchronous task</returns>
-        public static Task Run(int limit, int interval, Action<int> action)
-        {
-            return new Retry(limit, interval).Do(action);
-        }
-
         /// <summary>
         /// Run retry function.
         /// </summary>
         /// <typeparam name="T">return type</typeparam>
-        /// <param name="function">retry function</param>
-        /// <returns>asynchronous task</returns>
-        public static Task<T> Run<T>(Func<int, T> function)
+        /// <param name="limit"></param>
+        /// <param name="interval"></param>
+        /// <param name="operation"></param>
+        /// <returns></returns>
+        public static async Task<T> Run<T>(int limit, int interval, Func<int, Task<T>> operation)
         {
-            return new Retry().Do(function);
-        }
+            var exceptions = new List<Exception>();
 
-        /// <summary>
-        /// Run retry function.
-        /// </summary>
-        /// <typeparam name="T">return type</typeparam>
-        /// <param name="limit">retry limit</param>
-        /// <param name="function">retry function</param>
-        /// <returns>asynchronous task</returns>
-        public static Task<T> Run<T>(int limit, Func<int, T> function)
-        {
-            return new Retry(limit, DefaultInterval).Do(function);
-        }
+            for (var retry = 0; retry < limit; retry++)
+            {
+                try
+                {
+                    return await operation(retry + 1);
+                }
+                catch (TaskCanceledException)
+                {
+                    return default;
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                    await Task.Delay(interval);
+                }
+            }
 
-        /// <summary>
-        /// Run retry function.
-        /// </summary>
-        /// <typeparam name="T">return type</typeparam>
-        /// <param name="limit">retry limit</param>
-        /// <param name="interval">interval between retries</param>
-        /// <param name="function">retry function</param>
-        /// <returns>asynchronous task</returns>
-        public static Task<T> Run<T>(int limit, int interval, Func<int, T> function)
-        {
-            return new Retry(limit, interval).Do(function);
+            throw new AggregateException(exceptions);
         }
-
-        /// <summary>
-        /// Run retry function.
-        /// </summary>
-        /// <typeparam name="T">return type</typeparam>
-        /// <param name="function">retry function</param>
-        /// <returns>asynchronous task</returns>
-        public static Task<T> Run<T>(Func<int, Task<T>> function)
-        {
-            return new Retry().Do(function);
-        }
-
-        /// <summary>
-        /// Run retry function.
-        /// </summary>
-        /// <typeparam name="T">return type</typeparam>
-        /// <param name="limit">retry limit</param>
-        /// <param name="function">retry function</param>
-        /// <returns>asynchronous task</returns>
-        public static Task<T> Run<T>(int limit, Func<int, Task<T>> function)
-        {
-            return new Retry(limit, DefaultInterval).Do(function);
-        }
-
-        /// <summary>
-        /// Run retry function.
-        /// </summary>
-        /// <typeparam name="T">return type</typeparam>
-        /// <param name="limit">retry limit</param>
-        /// <param name="interval">interval between retries</param>
-        /// <param name="function">retry function</param>
-        /// <returns>asynchronous task</returns>
-        public static Task<T> Run<T>(int limit, int interval, Func<int, Task<T>> function)
-        {
-            return new Retry(limit, interval).Do(function);
-        }
-
         #endregion
     }
 }
