@@ -101,12 +101,12 @@ namespace CafeLib.Bitcoin.Shared.Scripting
 #endif
         }
 
-        //public KzScriptNum ToScriptNum(bool fRequireMinimal = false)
-        //{
-        //    return new KzScriptNum(ToSpan(), fRequireMinimal);
-        //}
+        public ScriptNum ToScriptNum(bool fRequireMinimal = false)
+        {
+            return new ScriptNum(ToSpan(), fRequireMinimal);
+        }
 
-        //public Int32 ToInt32() => new KzScriptNum(ToSpan()).getint();
+        public int ToInt32() => new ScriptNum(ToSpan()).GetInt();
 
         public ValType BitAnd(ValType b)
         {

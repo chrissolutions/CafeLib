@@ -25,7 +25,7 @@ namespace CafeLib.Bitcoin.Shared.Builders
         public int Version = 1;
         public List<TxInBuilder> Vin = new List<TxInBuilder>();
         public List<TxOutBuilder> Vout = new List<TxOutBuilder>();
-        public UInt32 LockTime = 0;
+        public uint LockTime;
 
         public UInt256? HashTx;
 
@@ -114,72 +114,73 @@ namespace CafeLib.Bitcoin.Shared.Builders
         /// </summary>
         /// <param name="protocol"></param>
         /// <returns></returns>
-        //public IEnumerable<(TxOutBuilder o, OperandBuilder[] data)> FindPushDataByProtocol(UInt160 protocol)
-        //{
-        //    var val = protocol.ToBytes();
+        public IEnumerable<(TxOutBuilder o, OperandBuilder[] data)> FindPushDataByProtocol(UInt160 protocol)
+        {
+            var val = protocol.ToBytes();
 
-        //    foreach (var o in Vout) {
-        //        var ops = o.ScriptPubBuilder.Ops;
-        //        if (ops.Count > 2
-        //            && ops[0].Operand.Code == Opcode.OP_RETURN
-        //            && ops[1].Operand.Code == Opcode.OP_PUSH20
-        //            && ops[1].Operand.Data.Sequence.CompareTo(val) == 0)
-        //            yield return (o, ops.Skip(2).ToArray());
-        //    }
-        //}
+            foreach (var o in Vout)
+            {
+                var ops = o.ScriptPubBuilder.Ops;
+                if (ops.Count > 2
+                    && ops[0].Operand.Code == Opcode.OP_RETURN
+                    && ops[1].Operand.Code == Opcode.OP_PUSH20
+                    && ops[1].Operand.Data.Sequence.CompareTo(val) == 0)
+                    yield return (o, ops.Skip(2).ToArray());
+            }
+        }
 
         //public bool CheckSignatures(IEnumerable<PrivateKey> privKeys = null) {
         //    return Sign(privKeys, confirmExistingSignatures: true);
         //}
 
-//        public bool Sign(IEnumerable<PrivateKey> privKeys = null, bool confirmExistingSignatures = false)
-//        {
-//            var signedOk = true;
-//            var sigHashType = new KzSigHashType(KzSigHash.ALL | KzSigHash.FORKID);
-//            var tx = ToTransaction();
-//            var nIn = -1;
-//            foreach (var i in Vin) {
-//                nIn++;
-//                var scriptSig = i.ScriptSig;
-//                if (scriptSig.Ops.Count == 2) {
-//                    var pubKey = new KzPubKey();
-//                    pubKey.Set(scriptSig.Ops[1].Op.Data.ToSpan());
-//                    if (pubKey.IsValid) {
-//                        var privKey = i.PrivKey ?? privKeys?.FirstOrDefault(k => k.GetPubKey() == pubKey);
-//                        if (privKey != null) {
-//                            var value = i.Value ?? i.PrevOutTx?.Vout[i.PrevOutN].Value ?? 0L;
-//                            var sigHash = KzScriptInterpreter.ComputeSignatureHash(i.ScriptPub, tx, nIn, sigHashType, value, KzScriptFlags.ENABLE_SIGHASH_FORKID);
-//                            var (ok, sig) = privKey.Sign(sigHash);
-//                            if (ok) {
-//                                var sigWithType = new byte[sig.Length + 1];
-//                                sig.CopyTo(sigWithType.AsSpan());
-//                                sigWithType[^1] = (byte)sigHashType.rawSigHashType;
-//                                var op = KzOp.Push(sigWithType.AsSpan());
-//                                if (confirmExistingSignatures)
-//                                    signedOk &= op == scriptSig.Ops[0].Op;
-//                                else
-//                                    scriptSig.Ops[0] = op;
-//                            } else signedOk = false;
-//                        } else signedOk = false;
-//                    } else signedOk = false;
-//                }
-//            }
-//            return signedOk;
-//#if false
-//            var tx = txb.ToTransaction();
-//                var bytes = tx.ToBytes();
-//                var hex = bytes.ToHex();
+        //        public bool Sign(IEnumerable<PrivateKey> privKeys = null, bool confirmExistingSignatures = false)
+        //        {
+        //            var signedOk = true;
+        //            var sigHashType = new KzSigHashType(KzSigHash.ALL | KzSigHash.FORKID);
+        //            var tx = ToTransaction();
+        //            var nIn = -1;
+        //            foreach (var i in Vin) {
+        //                nIn++;
+        //                var scriptSig = i.ScriptSig;
+        //                if (scriptSig.Ops.Count == 2) {
+        //                    var pubKey = new KzPubKey();
+        //                    pubKey.Set(scriptSig.Ops[1].Op.Data.ToSpan());
+        //                    if (pubKey.IsValid) {
+        //                        var privKey = i.PrivKey ?? privKeys?.FirstOrDefault(k => k.GetPubKey() == pubKey);
+        //                        if (privKey != null) {
+        //                            var value = i.Value ?? i.PrevOutTx?.Vout[i.PrevOutN].Value ?? 0L;
+        //                            var sigHash = KzScriptInterpreter.ComputeSignatureHash(i.ScriptPub, tx, nIn, sigHashType, value, KzScriptFlags.ENABLE_SIGHASH_FORKID);
+        //                            var (ok, sig) = privKey.Sign(sigHash);
+        //                            if (ok) {
+        //                                var sigWithType = new byte[sig.Length + 1];
+        //                                sig.CopyTo(sigWithType.AsSpan());
+        //                                sigWithType[^1] = (byte)sigHashType.rawSigHashType;
+        //                                var op = KzOp.Push(sigWithType.AsSpan());
+        //                                if (confirmExistingSignatures)
+        //                                    signedOk &= op == scriptSig.Ops[0].Op;
+        //                                else
+        //                                    scriptSig.Ops[0] = op;
+        //                            } else signedOk = false;
+        //                        } else signedOk = false;
+        //                    } else signedOk = false;
+        //                }
+        //            }
+        //            return signedOk;
+        //#if false
+        //            var tx = txb.ToTransaction();
+        //                var bytes = tx.ToBytes();
+        //                var hex = bytes.ToHex();
 
-//                var (ok, sig) = privKey1h11.Sign(sigHash);
-//            //var (ok, sig) = privKey1h11.SignCompact(sigHash);
-//            if (ok) {
-//                var sigWithType = new byte[sig.Length + 1];
-//                sig.CopyTo(sigWithType.AsSpan());
-//                sigWithType[^1] = (byte)sigHashType.rawSigHashType;
-//                txb.Vin[0].ScriptSig.Ops[0] = KzOp.Push(sigWithType.AsSpan());
-//            }
-//#endif
-//        }
+        //                var (ok, sig) = privKey1h11.Sign(sigHash);
+        //            //var (ok, sig) = privKey1h11.SignCompact(sigHash);
+        //            if (ok) {
+        //                var sigWithType = new byte[sig.Length + 1];
+        //                sig.CopyTo(sigWithType.AsSpan());
+        //                sigWithType[^1] = (byte)sigHashType.rawSigHashType;
+        //                txb.Vin[0].ScriptSig.Ops[0] = KzOp.Push(sigWithType.AsSpan());
+        //            }
+        //#endif
+        //        }
     }
 
 

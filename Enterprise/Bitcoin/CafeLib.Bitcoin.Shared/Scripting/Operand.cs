@@ -18,7 +18,7 @@ namespace CafeLib.Bitcoin.Shared.Scripting
 
         public Opcode Code { get; private set; }
 
-        public ValType Data => _data;
+        internal ValType Data => _data;
 
         public string CodeName => GetOpName(Code);
 

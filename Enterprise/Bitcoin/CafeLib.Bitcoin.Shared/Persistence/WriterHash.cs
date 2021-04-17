@@ -32,6 +32,7 @@ namespace CafeLib.Bitcoin.Shared.Persistence
             return hash.AsUInt256();
         }
 
+        public IBitcoinWriter Add(byte[] data) { _alg.TransformBlock(data); return this; }
         public IBitcoinWriter Add(ReadOnlySpan<byte> data) { _alg.TransformBlock(data); return this; }
         public IBitcoinWriter Add(ReadOnlySequence<byte> data) { _alg.TransformBlock(data); return this; }
 

@@ -6,7 +6,7 @@ namespace CafeLib.Bitcoin.Shared.Scripting
 {
     public class SignatureCheckerBase
     {
-        //public virtual bool CheckSig(ValType scriptSig, ValType vchPubKey, Script script, ScriptFlags flags) => false;
+        public virtual bool CheckSignature(ValType scriptSig, ValType vchPubKey, Script script, ScriptFlags flags) => false;
 
         public virtual bool CheckLockTime(ScriptNum nLockTime) => false;
 

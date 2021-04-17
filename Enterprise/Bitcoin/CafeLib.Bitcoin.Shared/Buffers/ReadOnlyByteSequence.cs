@@ -28,14 +28,45 @@ namespace CafeLib.Bitcoin.Shared.Buffers
         public void CopyTo(ByteSpan destination) => Data.CopyTo(destination);
         public byte[] ToArray() => Data.ToArray();
 
-        public static implicit operator ReadOnlySequence<byte>(ReadOnlyByteSequence rhs)
-        {
-            return rhs.Data;
-        }
+        public static implicit operator ReadOnlySequence<byte>(ReadOnlyByteSequence rhs) => rhs.Data;
+        public static implicit operator ReadOnlyByteSequence(ReadOnlySequence<byte> rhs) => new ReadOnlyByteSequence(rhs);
 
-        public static implicit operator ReadOnlyByteSequence(ReadOnlySequence<byte> rhs)
+        public static implicit operator byte[](ReadOnlyByteSequence rhs) => rhs.ToArray();
+        public static implicit operator ReadOnlyByteSequence(byte[] rhs) => new ReadOnlyByteSequence(rhs);
+
+        /// <summary>
+        /// Run down both sequences as long as the bytes are equal.
+        /// If we've run out of a bytes, return -1, a is less than b.
+        /// If we've run out of b bytes, return 1, a is greater than b.
+        /// If both are simultaneously out, they are equal, return 0.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public int CompareTo(ReadOnlyByteSequence other)
         {
-            return new ReadOnlyByteSequence(rhs);
+            var ae = GetEnumerator();
+            var be = other.GetEnumerator();
+            var aok = ae.MoveNext();
+            var bok = be.MoveNext();
+            var ai = -1;
+            var bi = -1;
+            var aSpan = ReadOnlySpan<byte>.Empty;
+            var bSpan = ReadOnlySpan<byte>.Empty;
+            while (aok && bok)
+            {
+                if (ai == -1) { aSpan = ae.Current.Span; ai = 0; }
+                if (bi == -1) { bSpan = be.Current.Span; bi = 0; }
+                if (ai >= aSpan.Length) { ai = -1; aok = ae.MoveNext(); }
+                if (bi >= bSpan.Length) { bi = -1; bok = ae.MoveNext(); }
+                if (ai == -1 || bi == -1) continue;
+                if (aSpan[ai++] != bSpan[bi++]) break;
+            }
+
+            return aok 
+                ? 1 
+                : bok 
+                    ? -1 
+                    : 0;
         }
 
         /// <summary>

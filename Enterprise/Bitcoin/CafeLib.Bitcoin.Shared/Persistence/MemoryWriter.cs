@@ -26,6 +26,12 @@ namespace CafeLib.Bitcoin.Shared.Persistence
             _memory = memory;
         }
 
+        public IBitcoinWriter Add(byte[] data)
+        {
+            data.CopyTo(_memory.Span);
+            return this;
+        }
+
         public IBitcoinWriter Add(ReadOnlyByteSpan data)
         {
             data.CopyTo(_memory.Span); 

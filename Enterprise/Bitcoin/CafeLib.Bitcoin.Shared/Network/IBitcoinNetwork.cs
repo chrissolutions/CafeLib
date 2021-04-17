@@ -9,7 +9,7 @@ namespace CafeLib.Bitcoin.Shared.Network
 {
     public interface IBitcoinNetwork
     {
-        //public KzConsensus Consensus { get; protected set; }
+        Consensus Consensus { get; }
 
         string NetworkId { get; }
 

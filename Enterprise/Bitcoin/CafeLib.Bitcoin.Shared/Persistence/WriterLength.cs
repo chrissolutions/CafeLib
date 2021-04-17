@@ -12,6 +12,12 @@ namespace CafeLib.Bitcoin.Shared.Persistence
     {
         public long Length;
 
+        public IBitcoinWriter Add(byte[] data)
+        {
+            Length += data.Length;
+            return this;
+        }
+
         public IBitcoinWriter Add(ReadOnlyByteSpan data)
         {
             Length += data.Length; 
