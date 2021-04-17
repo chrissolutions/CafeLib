@@ -163,14 +163,14 @@ namespace CafeLib.Bitcoin.Shared.Extensions
         /// </summary>
         /// <param name="v"></param>
         /// <returns></returns>
-        public static byte[] AsVarIntBytes(this int v) => VarInt.AsBytes(v);
+        public static byte[] AsVarIntBytes(this int v) => ((VarInt)v).ToArray();
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="v"></param>
         /// <returns></returns>
-        public static byte[] AsVarIntBytes(this long v) => VarInt.AsBytes(v);
+        public static byte[] AsVarIntBytes(this long v) => ((VarInt)v).ToArray();
 
     }
 }

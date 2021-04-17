@@ -15,7 +15,7 @@ namespace CafeLib.Bitcoin.Shared.Persistence
 {
     public class WriterHash : IDisposable, IBitcoinWriter
     {
-        SHA256Managed _alg = new SHA256Managed();
+        private readonly SHA256Managed _alg = new SHA256Managed();
 
         public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
 
@@ -78,7 +78,7 @@ namespace CafeLib.Bitcoin.Shared.Persistence
 
         public WriterHash Add(string ascii)
         {
-            _alg.TransformBlock(VarInt.AsBytes(ascii.Length));
+            _alg.TransformBlock(((VarInt)ascii.Length).ToArray());
             _alg.TransformBlock(ascii.AsciiToBytes());
             return this;
         } 

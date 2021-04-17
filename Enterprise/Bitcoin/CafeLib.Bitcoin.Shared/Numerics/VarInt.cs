@@ -4,28 +4,52 @@
 #endregion
 
 using System;
-using System.Buffers;
+using CafeLib.Bitcoin.Shared.Buffers;
 using CafeLib.Bitcoin.Shared.Extensions;
 
 namespace CafeLib.Bitcoin.Shared.Numerics
 {
-    public struct VarInt
+    public readonly struct VarInt
     {
-        public long Value;
+        private const int SizeofVarByte = sizeof(byte);
+        private const int SizeofVarChar = sizeof(char) + sizeof(byte) ;
+        private const int SizeofVarInt = sizeof(int) + sizeof(byte);
+        private const int SizeofVarLong = sizeof(long) + sizeof(byte);
 
-        public const int SizeofVarByte = sizeof(byte);
-        public const int SizeofVarChar = sizeof(char) + sizeof(byte) ;
-        public const int SizeofVarInt = sizeof(int) + sizeof(byte);
-        public const int SizeofVarLong = sizeof(long) + sizeof(byte);
+        public long Value { get; }
+        public int Length { get; }
+        public byte Prefix { get; }
 
-        public int Length => GetInfo(Value).length;
-        public byte Prefix => GetInfo(Value).prefix;
+        internal VarInt(ulong value)
+            : this((long)value)
+        {
+        }
 
-        public bool TryRead(ref SequenceReader<byte> reader) => TryRead(ref reader, out Value);
+        internal VarInt(int value)
+        {
+            var (length, prefix) = GetInfo(value);
+            Length = length;
+            Prefix = prefix;
+            Value = value;
+        }
 
-        public byte[] AsBytes() => AsBytes(Value);
+        internal VarInt(long value)
+        {
+            var (length, prefix) = GetInfo(value);
+            Length = length;
+            Prefix = prefix;
+            Value = value;
+        }
 
-        internal static byte[] AsBytes(long value)
+        public static implicit operator byte[](VarInt rhs) => rhs.ToArray();
+        public static explicit operator VarInt(int rhs) => new VarInt(rhs);
+        public static explicit operator VarInt(uint rhs) => new VarInt(rhs);
+        public static explicit operator VarInt(long rhs) => new VarInt(rhs);
+        public static explicit operator VarInt(ulong rhs) => new VarInt(rhs);
+
+        public byte[] ToArray() => AsBytes(Value);
+
+        private static byte[] AsBytes(long value)
         {
             var (len, prefix) = GetInfo(value);
             var bytes = new byte[len];
@@ -70,22 +94,54 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         public static (int length, byte prefix) GetInfo(long value)
         {
-            var len = SizeofVarByte;
-            var prefix = (byte)0;
-            var uv = (ulong)value;
-            if (uv <= 0xfc) goto done;
-            if (uv <= 0xffff) { len = SizeofVarChar; prefix = 0xfd; goto done; }
-            if (uv <= 0xffff_ffff) { len = SizeofVarInt; prefix = 0xfe; goto done; }
-            len = SizeofVarLong; prefix = 0xff;
-        done:
+            int len;
+            byte prefix;
+            var unsigned = (ulong)value;
+
+            if (unsigned <= 0xfc)
+            {
+                len = SizeofVarByte;
+                prefix = 0;
+            }
+            else if (unsigned <= 0xffff)
+            {
+                len = SizeofVarChar; 
+                prefix = 0xfd; 
+            }
+            else if (unsigned <= 0xffff_ffff)
+            {
+                len = SizeofVarInt; 
+                prefix = 0xfe; 
+            }
+            else
+            {
+                len = SizeofVarLong; 
+                prefix = 0xff;
+            }
+
             return (len, prefix);
         }
 
-		/// <summary>
-		/// Reads an <see cref="UInt64"/> as in bitcoin varint format.
-		/// </summary>
-		/// <returns>False if there wasn't enough data for an <see cref="UInt64"/>.</returns>
-		public static bool TryRead(ref SequenceReader<byte> reader, out long value) {
+        /// <summary>
+        /// Reads an <see cref="long"/> as in bitcoin varint format.
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="value"></param>
+        /// <returns>False if there wasn't enough data for an <see cref="ulong"/>.</returns>
+        public static bool TryRead(ref ByteSequenceReader reader, out ulong value)
+        {
+            value = 0;
+            if (!TryRead(ref reader, out long tempValue)) return false;
+            value = (ulong) tempValue;
+            return true;
+        }
+
+        /// <summary>
+        /// Reads an <see cref="long"/> as in bitcoin varint format.
+        /// </summary>
+        /// <returns>False if there wasn't enough data for an <see cref="long"/>.</returns>
+        public static bool TryRead(ref ByteSequenceReader reader, out long value) 
+        {
 			value = 0L;
 
             var b = reader.TryRead(out var b0);

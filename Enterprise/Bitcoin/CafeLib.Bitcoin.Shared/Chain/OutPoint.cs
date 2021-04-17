@@ -29,7 +29,7 @@ namespace CafeLib.Bitcoin.Shared.Chain
         {
             var txid = Txid;
 
-            if (!r.TryCopyToUInt256(ref txid) || !r.TryReadLittleEndian(out int index)) return false;
+            if (!r.TryReadUInt256(ref txid) || !r.TryReadLittleEndian(out int index)) return false;
 
             Txid = txid;
             Index = index;

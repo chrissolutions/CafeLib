@@ -169,7 +169,7 @@ namespace CafeLib.Bitcoin.Shared.Crypto
             }
         }
 
-        public static void TransformBlock(this HashAlgorithm alg, ReadOnlySequence<byte> data)
+        public static void TransformBlock(this HashAlgorithm alg, ReadOnlyByteSequence data)
         {
             var length = data.Length;
             var array = ArrayPool<byte>.Shared.Rent((int)Math.Min(MaxBufferSize, length));

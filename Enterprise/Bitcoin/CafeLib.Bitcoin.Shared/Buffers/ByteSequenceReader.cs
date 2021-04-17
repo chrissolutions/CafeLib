@@ -130,19 +130,24 @@ namespace CafeLib.Bitcoin.Shared.Buffers
             return result;
         }
 
+        /// <summary>
+        /// Reads an <see cref="UInt64"/> as in bitcoin VarInt format.
+        /// </summary>
+        /// <returns>False if there wasn't enough data for an <see cref="UInt64"/>.</returns>
+        public bool TryReadVarInt(out long value) => VarInt.TryRead(ref this, out value);
+
+        /// <summary>
+        /// Reads an <see cref="UInt256"/> as in bitcoin VarInt format.
+        /// </summary>
+        /// <param name="destination"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryCopyToUInt256(ref UInt256 destination)
+        public bool TryReadUInt256(ref UInt256 destination)
         {
             var bytes = destination.Bytes;
             if (!Data.TryCopyTo(bytes)) return false;
             Data.Advance(bytes.Length);
             return true;
         }
-
-        /// <summary>
-        /// Reads an <see cref="UInt64"/> as in bitcoin VarInt format.
-        /// </summary>
-        /// <returns>False if there wasn't enough data for an <see cref="UInt64"/>.</returns>
-        public bool TryReadVarInt(out long value) => VarInt.TryRead(ref Data, out value);
     }
 }

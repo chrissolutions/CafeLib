@@ -57,7 +57,7 @@ namespace CafeLib.Bitcoin.Shared.Numerics
             get {
                 unsafe {
                     fixed (UInt64* p = &N0) {
-                        UInt64* pb = (UInt64*)p;
+                        UInt64* pb = p;
                         var span = new Span<UInt64>(pb, 4);
                         return span;
                     }
@@ -105,9 +105,9 @@ namespace CafeLib.Bitcoin.Shared.Numerics
 
         public readonly BigInteger ToBigInteger() => new BigInteger(Bytes, isUnsigned:true, isBigEndian:true);
 
-        public byte[] ToBytes(bool reverse = false)  => !reverse ? Bytes : new ByteSpan(Bytes).Reverse();
+        public byte[] ToArray(bool reverse = false)  => !reverse ? Bytes : new ByteSpan(Bytes).Reverse();
 
-        public void ToBytes(ByteSpan destination, bool reverse = false)
+        public void ToArray(ByteSpan destination, bool reverse = false)
         {
             if (destination.Length < Length)
                 throw new ArgumentException($"{Length} byte destination is required.");
