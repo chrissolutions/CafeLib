@@ -7,7 +7,6 @@ using System;
 using System.IO;
 using System.Numerics;
 using CafeLib.Bitcoin.Shared.Buffers;
-using CafeLib.Bitcoin.Shared.Crypto;
 using CafeLib.Bitcoin.Shared.Encoding;
 using CafeLib.Bitcoin.Shared.Numerics.Converters;
 using Newtonsoft.Json;
@@ -101,8 +100,6 @@ namespace CafeLib.Bitcoin.Shared.Numerics
             s.Read(Bytes);
         }
 
-        public UInt160 ToHash160() => Hashes.Hash160(Bytes);
-
         public readonly BigInteger ToBigInteger() => new BigInteger(Bytes, isUnsigned:true, isBigEndian:true);
 
         public byte[] ToArray(bool reverse = false)  => !reverse ? Bytes : new ByteSpan(Bytes).Reverse();
@@ -165,32 +162,38 @@ namespace CafeLib.Bitcoin.Shared.Numerics
             return r;
         }
 
-        public static UInt256 operator <<(UInt256 a, int shift) {
+        public static UInt256 operator <<(UInt256 a, int shift) 
+        {
             const int width = 4;
             var r = UInt256.Zero;
             var rpn = r.Span64.Data;
             var apn = a.Span64.Data;
-            int k = shift / 64;
-            shift = shift % 64;
-            for (int i = 0; i < width; i++) {
+            var k = shift / 64;
+            shift %= 64;
+            for (var i = 0; i < width; i++) 
+            {
                 if (i + k + 1 < width && shift != 0)
                     rpn[i + k + 1] |= (apn[i] >> (64 - shift));
+
                 if (i + k < width)
                     rpn[i + k] |= (apn[i] << shift);
             }
             return r;
         }
 
-        public static UInt256 operator >>(UInt256 a, int shift) {
+        public static UInt256 operator >>(UInt256 a, int shift) 
+        {
             const int width = 4;
             var r = UInt256.Zero;
             var rpn = r.Span64.Data;
             var apn = a.Span64.Data;
-            int k = shift / 64;
-            shift = shift % 64;
-            for (int i = 0; i < width; i++) {
+            var k = shift / 64;
+            shift %= 64;
+            for (var i = 0; i < width; i++) 
+            {
                 if (i - k - 1 >= 0 && shift != 0)
                     rpn[i - k - 1] |= (apn[i] << (64 - shift));
+
                 if (i - k >= 0)
                     rpn[i - k] |= (apn[i] >> shift);
             }
@@ -208,9 +211,12 @@ namespace CafeLib.Bitcoin.Shared.Numerics
         public int Bits() {
             const int width = 8;
             var pn = Span32;
-            for (int pos = width - 1; pos >= 0; pos--) {
-                if (pn[pos] != 0) {
-                    for (int bits = 31; bits > 0; bits--) {
+            for (int pos = width - 1; pos >= 0; pos--) 
+            {
+                if (pn[pos] != 0) 
+                {
+                    for (int bits = 31; bits > 0; bits--) 
+                    {
                         if ((pn[pos] & (1 << bits)) != 0) return 32 * pos + bits + 1;
                     }
                     return 32 * pos + 1;
@@ -219,7 +225,8 @@ namespace CafeLib.Bitcoin.Shared.Numerics
             return 0;
         }
 
-        public static UInt256 operator ++(UInt256 a) {
+        public static UInt256 operator ++(UInt256 a)
+        {
             const int width = 4;
             var apn = a.Span64;
             int i = 0;
