@@ -22,8 +22,9 @@ namespace CafeLib.Bitcoin.UnitTests.Persist
         [Fact]
         public void CreateAndCleanup()
         {
-            var file = Path.Combine(_tempFolders.CreateRandomTempFolder(), "createandcleanup.mmf");
-            using (var mmf = new MemoryFile(file, 100)) {
+            var file = Path.Combine(_tempFolders.CreateRandomTempFolder(), "CreateAndCleanup.mmf");
+            using (var mmf = new MemoryFile(file, 100))
+            {
                 Assert.Equal(100, mmf.FileLength);
                 var spanAll = mmf.GetSpan();
                 var span40Len10 = mmf.GetSpan(40, 10);
@@ -33,7 +34,8 @@ namespace CafeLib.Bitcoin.UnitTests.Persist
                 spanAll[^1] = 42;
                 mmf.Flush();
             }
-            using (var mmf = new MemoryFile(file)) {
+            using (var mmf = new MemoryFile(file)) 
+            {
                 //Assert.Equal(100, mmf.FileLength);
                 var span40Len10 = mmf.GetSpan(40, 10);
                 Assert.Equal(9, span40Len10[9]);
@@ -46,7 +48,7 @@ namespace CafeLib.Bitcoin.UnitTests.Persist
 
     public class TempFoldersClassFixture : IDisposable
     {
-        readonly string _folder;
+        private readonly string _folder;
 
         public TempFoldersClassFixture()
         {
