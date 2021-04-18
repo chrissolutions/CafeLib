@@ -133,13 +133,13 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
             foreach (var tv in tvs) {
 
                 var seed = tv.m.HexToBytes();
-                var m = KzExtPrivKey.MasterBip32(seed);
+                var m = ExtPrivateKey.MasterBip32(seed);
 
                 foreach (var d in tv.tds) {
 
-                    var path = new KzKeyPath(d.p);
+                    var path = new KeyPath(d.p);
                     var priv = m.Derive(path);
-                    var pub = priv.GetExtPubKey();
+                    var pub = priv.GetExtPublicKey();
 
                     var spriv = priv.ToString();
                     var spub = pub.ToString();
@@ -151,11 +151,11 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
                     pub.Encode(data);
 
                     // Test private key
-                    var b58key = new KzB58ExtPrivKey();
+                    var b58key = new Base58ExtPrivateKey();
                     b58key.SetKey(priv);
                     Assert.Equal(d.prv, b58key.ToString());
 
-                    var b58keyDecodeCheck = new KzB58ExtPrivKey(d.prv);
+                    var b58keyDecodeCheck = new Base58ExtPrivateKey(d.prv);
                     var checkKey = b58keyDecodeCheck.GetKey();
                     var eq = checkKey == priv;
                     // ensure a base58 decoded pubkey also matches
@@ -163,7 +163,7 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
 
                     if (priv.Hardened == false && path.Parent != null) {
                         // Compare with public derivation
-                        var pubkeyNew2 = m.Derive(path.Parent).GetExtPubKey().Derive((int)path.Indices.Last());
+                        var pubkeyNew2 = m.Derive(path.Parent).GetExtPublicKey().Derive((int)path.Indices.Last());
                         Assert.True(pubkeyNew2 != null);
                         Assert.Equal(pub, pubkeyNew2);
                     }

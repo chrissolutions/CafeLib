@@ -11,9 +11,18 @@ namespace CafeLib.Bitcoin.Encoding
     {
         private static readonly Lazy<HexEncoder> LazyHex = new Lazy<HexEncoder>(() => new HexEncoder(), true);
         private static readonly Lazy<HexReverseEncoder> LazyHexReverse = new Lazy<HexReverseEncoder>(() => new HexReverseEncoder(), true);
-        private static readonly Lazy<Base58Encoder> LazyBase58Encoder = new Lazy<Base58Encoder>(() => new Base58Encoder());
-        private static readonly Lazy<Base58CheckEncoder> LazyBase58CheckEncoder = new Lazy<Base58CheckEncoder>(() => new Base58CheckEncoder());
-        private static readonly Lazy<Utf8Encoder> LazyUtf8Encoder = new Lazy<Utf8Encoder>(() => new Utf8Encoder());
+        private static readonly Lazy<Base58Encoder> LazyBase58 = new Lazy<Base58Encoder>(() => new Base58Encoder());
+        private static readonly Lazy<Base58CheckEncoder> LazyBase58Check = new Lazy<Base58CheckEncoder>(() => new Base58CheckEncoder());
+        private static readonly Lazy<Utf8Encoder> LazyUtf8 = new Lazy<Utf8Encoder>(() => new Utf8Encoder());
+        private static readonly Lazy<EndianEncoder> LazyEndian = new Lazy<EndianEncoder>(() => new EndianEncoder());
+
+        /// <summary>
+        /// Encodes a sequence of bytes as hexadecimal digits where:
+        /// First byte first: The encoded string begins with the first byte.
+        /// Character 0 corresponds to the high nibble of the first byte. 
+        /// Character 1 corresponds to the low nibble of the first byte. 
+        /// </summary>
+        public static EndianEncoder Endian => LazyEndian.Value;
 
         /// <summary>
         /// Encodes a sequence of bytes as hexadecimal digits where:
@@ -34,21 +43,21 @@ namespace CafeLib.Bitcoin.Encoding
         // <summary>
         // Base58 encoder.
         // </summary>
-        public static Base58Encoder Base58 => LazyBase58Encoder.Value;
+        public static Base58Encoder Base58 => LazyBase58.Value;
 
         // <summary>
         // Base58 plus checksum encoder.
         // Checksum is first 4 bytes of double SHA256 hash of byte sequence.
         // Checksum is appended to byte sequence.
         // </summary>
-        public static Base58CheckEncoder Base58Check => LazyBase58CheckEncoder.Value;
+        public static Base58CheckEncoder Base58Check => LazyBase58Check.Value;
 
         // <summary>
         // Base58 plus checksum encoder.
         // Checksum is first 4 bytes of double SHA256 hash of byte sequence.
         // Checksum is appended to byte sequence.
         // </summary>
-        public static Utf8Encoder Utf8 => LazyUtf8Encoder.Value;
+        public static Utf8Encoder Utf8 => LazyUtf8.Value;
 
     }
 }

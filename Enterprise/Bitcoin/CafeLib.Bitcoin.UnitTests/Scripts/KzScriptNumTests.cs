@@ -4,6 +4,7 @@
 #endregion
 
 using System;
+using CafeLib.Bitcoin.Scripting;
 using Xunit;
 
 namespace CafeLib.Bitcoin.UnitTests.Scripts
@@ -89,14 +90,14 @@ namespace CafeLib.Bitcoin.UnitTests.Scripts
         public void TestValueEncoding()
         {
             foreach (var tv in tvs) {
-                var sn = new KzScriptNum(tv.v64);
-                Assert.Equal(tv.v64, sn.getvalue());
-                Assert.Equal(tv.v32, sn.getint());
-                Assert.Equal(tv.hex, sn.gethex());
-                sn = new KzScriptNum(tv.hex);
-                Assert.Equal(tv.v64, sn.getvalue());
-                Assert.Equal(tv.v32, sn.getint());
-                Assert.Equal(tv.hex, sn.gethex());
+                var sn = new ScriptNum(tv.v64);
+                Assert.Equal(tv.v64, sn.GetValue());
+                Assert.Equal(tv.v32, sn.GetInt());
+                Assert.Equal(tv.hex, sn.GetHex());
+                sn = new ScriptNum(tv.hex);
+                Assert.Equal(tv.v64, sn.GetValue());
+                Assert.Equal(tv.v32, sn.GetInt());
+                Assert.Equal(tv.hex, sn.GetHex());
             }
         }
     }

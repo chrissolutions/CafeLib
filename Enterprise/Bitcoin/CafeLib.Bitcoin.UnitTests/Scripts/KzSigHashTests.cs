@@ -6,6 +6,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CafeLib.Bitcoin.Chain;
+using CafeLib.Bitcoin.Scripting;
+using CafeLib.Bitcoin.Units;
+using CafeLib.Bitcoin.UnitTests.Extensions;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -21,7 +25,7 @@ namespace CafeLib.Bitcoin.UnitTests.Scripts
             public string rawTx;
             public string rawScript;
             public int nIn;
-            public KzSigHashType sigHashType;
+            public SignatureHashType sigHashType;
             public string sigHashRegHex;
             public string sigHashOldHex;
             public string sigHashRepHex;
@@ -31,7 +35,7 @@ namespace CafeLib.Bitcoin.UnitTests.Scripts
                 this.rawTx = rawTx;
                 this.rawScript = script;
                 this.nIn = inputIndex;
-                this.sigHashType = new KzSigHashType((uint)hashType);
+                this.sigHashType = new SignatureHashType((uint)hashType);
                 this.sigHashRegHex = sigHashReg;
                 this.sigHashOldHex = sigHashNoFork;
                 this.sigHashRepHex = sigHashFork;
@@ -45,7 +49,8 @@ namespace CafeLib.Bitcoin.UnitTests.Scripts
         {
             var tvs = new List<TestVector>();
             var json = JArray.Parse(File.ReadAllText(@"..\..\..\data\sighash.json"));
-            foreach (var r in json.Children<JToken>().Where(c => c.Count() >= 6)) {
+            foreach (var r in json.Children<JToken>().Where(c => c.Count() >= 6))
+            {
                 var rawTx = r[0].Value<string>();
                 var script = r[1].Value<string>();
                 var inputIndex = r[2].Value<int>();
@@ -56,7 +61,7 @@ namespace CafeLib.Bitcoin.UnitTests.Scripts
                 tvs.Add(new TestVector(rawTx, script, inputIndex, hashType, sigHashReg, sigHashNoFork, sigHashFork));
             }
 
-            (tvsForkId, tvsOther) = tvs.Partition(tv => tv.sigHashType.hasForkId);
+            (tvsForkId, tvsOther) = tvs.Partition(tv => tv.sigHashType.HasForkId);
         }
 
         void SigHash(List<TestVector> tvs)
@@ -64,14 +69,14 @@ namespace CafeLib.Bitcoin.UnitTests.Scripts
             var i = 0;
             foreach (var tv in tvs) {
                 i++;
-                var tx = KzTransaction.ParseHex(tv.rawTx);
-                var (scriptCodeOk, scriptCode) = KzScript.ParseHex(tv.rawScript, withoutLength: true);
+                var tx = Transaction.ParseHex(tv.rawTx);
+                var (scriptCodeOk, scriptCode) = Script.ParseHex(tv.rawScript, withoutLength: true);
                 Assert.True(tx != null && scriptCodeOk);
 
-                var shreg = KzScriptInterpreter.ComputeSignatureHash(scriptCode, tx, tv.nIn, tv.sigHashType, KzAmount.Zero).ToString();
+                var shreg = ScriptInterpreter.ComputeSignatureHash(scriptCode, tx, tv.nIn, tv.sigHashType, Amount.Zero).ToString();
                 Assert.Equal(tv.sigHashRegHex, shreg);
 
-                var shold = KzScriptInterpreter.ComputeSignatureHash(scriptCode, tx, tv.nIn, tv.sigHashType, KzAmount.Zero, 0).ToString();
+                var shold = ScriptInterpreter.ComputeSignatureHash(scriptCode, tx, tv.nIn, tv.sigHashType, Amount.Zero, 0).ToString();
                 Assert.Equal(tv.sigHashOldHex, shold);
             }
         }

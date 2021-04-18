@@ -33,15 +33,13 @@ namespace CafeLib.Bitcoin.UnitTests.Encode
         {
             var h = Encoders.Hex;
             var e = Encoders.Base58;
-            var buf = new byte[256];
             foreach (var tc in _testCases) {
                 var hex = h.Decode(tc.Hex);
-                var span = buf.AsSpan();
-                var ok = e.TryDecode(tc.Base58, ref span);
+                var ok = e.TryDecode(tc.Base58, out var bytes);
                 Assert.Equal(tc.Ok, ok);
                 if (ok) {
-                    Assert.Equal(hex, span.ToArray());
-                    Assert.Equal(tc.Base58, e.Encode(span));
+                    Assert.Equal(hex, bytes);
+                    Assert.Equal(tc.Base58, e.Encode(bytes));
                 }
             }
         }
