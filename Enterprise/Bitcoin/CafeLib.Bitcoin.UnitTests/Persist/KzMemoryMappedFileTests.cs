@@ -5,14 +5,14 @@
 
 using System;
 using System.IO;
-using CafeLib.Bitcoin.Persist;
+using CafeLib.Bitcoin.Persistence;
 using Xunit;
 
 namespace CafeLib.Bitcoin.UnitTests.Persist
 {
     public class KzMemoryMappedFileTests : IClassFixture<TempFoldersClassFixture>
     {
-        TempFoldersClassFixture _tempFolders;
+        private readonly TempFoldersClassFixture _tempFolders;
 
         public KzMemoryMappedFileTests(TempFoldersClassFixture tempFolders)
         {
@@ -23,22 +23,22 @@ namespace CafeLib.Bitcoin.UnitTests.Persist
         public void CreateAndCleanup()
         {
             var file = Path.Combine(_tempFolders.CreateRandomTempFolder(), "createandcleanup.mmf");
-            using (var mmf = new KzMemoryMappedFile(file, 100)) {
+            using (var mmf = new MemoryFile(file, 100)) {
                 Assert.Equal(100, mmf.FileLength);
                 var spanAll = mmf.GetSpan();
-                var span40_10 = mmf.GetSpan(40, 10);
+                var span40Len10 = mmf.GetSpan(40, 10);
                 var bytes = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-                bytes.CopyTo(span40_10);
+                bytes.CopyTo(span40Len10);
                 Assert.Equal(7, spanAll[47]);
-                spanAll[spanAll.Length - 1] = 42;
+                spanAll[^1] = 42;
                 mmf.Flush();
             }
-            using (var mmf = new KzMemoryMappedFile(file)) {
+            using (var mmf = new MemoryFile(file)) {
                 //Assert.Equal(100, mmf.FileLength);
-                var span40_10 = mmf.GetSpan(40, 10);
-                Assert.Equal(9, span40_10[9]);
+                var span40Len10 = mmf.GetSpan(40, 10);
+                Assert.Equal(9, span40Len10[9]);
                 var spanAll = mmf.GetSpan();
-                spanAll[spanAll.Length - 1] = 43;
+                spanAll[^1] = 43;
                 mmf.Flush();
             }
         }
