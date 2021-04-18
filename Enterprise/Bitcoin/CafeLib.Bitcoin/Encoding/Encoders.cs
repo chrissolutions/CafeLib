@@ -7,7 +7,7 @@ using System;
 
 namespace CafeLib.Bitcoin.Encoding
 {
-    internal static class Encoders
+    public static class Encoders
     {
         private static readonly Lazy<HexEncoder> LazyHex = new Lazy<HexEncoder>(() => new HexEncoder(), true);
         private static readonly Lazy<HexReverseEncoder> LazyHexReverse = new Lazy<HexReverseEncoder>(() => new HexReverseEncoder(), true);

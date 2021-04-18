@@ -140,6 +140,9 @@ namespace CafeLib.Bitcoin.Numerics
         public override bool Equals(object obj) => obj is UInt256 int256 && this == int256;
         public readonly bool Equals(UInt256 o) => N0 == o.N0 && N1 == o.N1 && N2 == o.N2 && N3 == o.N3;
 
+        public static explicit operator UInt256(byte[] rhs) => new UInt256(rhs);
+        public static implicit operator byte[](UInt256 rhs) => rhs.ToArray();
+
         public static bool operator ==(UInt256 x, UInt256 y) => x.Equals(y);
         public static bool operator !=(UInt256 x, UInt256 y) => !(x == y);
 
