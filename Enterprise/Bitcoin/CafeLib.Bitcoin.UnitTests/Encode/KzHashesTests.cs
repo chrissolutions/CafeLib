@@ -15,6 +15,7 @@ using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Keys;
 using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Persist;
+using CafeLib.Bitcoin.Persistence;
 using CafeLib.Bitcoin.Utility;
 using Xunit;
 
@@ -91,18 +92,18 @@ namespace CafeLib.Bitcoin.UnitTests.Encode
             var key = ExtPrivateKey.MasterBip32(hash.Bytes);
 
             Assert.Equal(seedHash, hash.ToHex());
-            Assert.Equal(pub, key.GetExtPubKey().ToString());
+            Assert.Equal(pub, key.GetExtPublicKey().ToString());
             Assert.Equal(key, KzElectrumSv.GetMasterPrivKey(seed));
         }
 
         [Fact]
         public void WriterHash()
         {
-            using var hw = new KzWriterHash();
+            using var hw = new WriterHash();
             var empty = hw.GetHashFinal().ToHex();
             Assert.Equal("5df6e0e2761359d30a8275058e299fcc0381534545f55cf43e41983f5d4c9456", empty);
 
-            hw.Add("abc".ASCIIToBytes());
+            hw.Add("abc".AsciiToBytes());
             var abc = hw.GetHashFinal().ToHex();
             Assert.Equal("4f8b42c22dd3729b519ba6f68d2da7cc5b2d606d05daed5ad5128cc03e6c6358", abc);
 
@@ -138,23 +139,22 @@ namespace CafeLib.Bitcoin.UnitTests.Encode
             using (var alg = new SHA256Managed()) {
                 alg.TransformBlock(data, 0, data.Length - 12, null, 0);
                 alg.TransformFinalBlock(data, data.Length - 12, 12);
-                h1 = alg.Hash.ToKzUInt256();
-                Assert.Equal(refonce, h1);
+                h1 = alg.Hash.ToUInt256();
+                Assert.Equal(refOnce, h1);
             }
 
             using (var alg = new SHA256Managed()) {
                 alg.TransformBlock(data, 0, data.Length, null, 0);
                 alg.TransformFinalBlock(data, 0, 0);
-                h1 = alg.Hash.ToKzUInt256();
-                Assert.Equal(refonce, h1);
+                h1 = alg.Hash.ToUInt256();
+                Assert.Equal(refOnce, h1);
             }
 
-            using (var hw = new KzWriterHash()) {
-                hw.Add(data[..12]);
-                hw.Add(data[12..]);
-                h1 = hw.GetHashFinal();
-                Assert.Equal(reftwice, h1);
-            }
+            using var hw = new WriterHash();
+            hw.Add(data[..12]);
+            hw.Add(data[12..]);
+            h1 = hw.GetHashFinal();
+            Assert.Equal(refTwice, h1);
         }
 
         [Fact]
@@ -163,8 +163,7 @@ namespace CafeLib.Bitcoin.UnitTests.Encode
             var d1 = new byte[4 * 1024 * 1024];
             //var d1 = new byte[900];
             (new Random(42)).NextBytes(d1);
-            var h1 = new KzUInt256();
-            new SHA256Managed().ComputeHash(d1).AsSpan().CopyTo(h1.Span);
+            var h1 = new UInt256(new SHA256Managed().ComputeHash(d1).AsSpan());
 
             var ams = new [] {
                 new int[] {},
@@ -187,12 +186,10 @@ namespace CafeLib.Bitcoin.UnitTests.Encode
 
                 var ros = new ReadOnlySequence<byte>(segs[0], 0, segs.Last(), segs.Last().Memory.Length);
 
-                var h2 = new KzUInt256();
-                KzHashes.SHA256(ros, h2.Span);
+                var h2 = new UInt256(Hashes.Sha256(ros));
 
                 Assert.Equal(h1.ToString(), h2.ToString());
             }
         }
-
     }
 }
