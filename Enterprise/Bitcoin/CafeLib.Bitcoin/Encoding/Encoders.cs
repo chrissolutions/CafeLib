@@ -13,6 +13,7 @@ namespace CafeLib.Bitcoin.Encoding
         private static readonly Lazy<HexReverseEncoder> LazyHexReverse = new Lazy<HexReverseEncoder>(() => new HexReverseEncoder(), true);
         private static readonly Lazy<Base58Encoder> LazyBase58Encoder = new Lazy<Base58Encoder>(() => new Base58Encoder());
         private static readonly Lazy<Base58CheckEncoder> LazyBase58CheckEncoder = new Lazy<Base58CheckEncoder>(() => new Base58CheckEncoder());
+        private static readonly Lazy<Utf8Encoder> LazyUtf8Encoder = new Lazy<Utf8Encoder>(() => new Utf8Encoder());
 
         /// <summary>
         /// Encodes a sequence of bytes as hexadecimal digits where:
@@ -41,5 +42,13 @@ namespace CafeLib.Bitcoin.Encoding
         // Checksum is appended to byte sequence.
         // </summary>
         public static Base58CheckEncoder Base58Check => LazyBase58CheckEncoder.Value;
+
+        // <summary>
+        // Base58 plus checksum encoder.
+        // Checksum is first 4 bytes of double SHA256 hash of byte sequence.
+        // Checksum is appended to byte sequence.
+        // </summary>
+        public static Utf8Encoder Utf8 => LazyUtf8Encoder.Value;
+
     }
 }

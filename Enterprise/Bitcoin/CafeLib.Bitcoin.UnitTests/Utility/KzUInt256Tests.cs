@@ -7,13 +7,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Utility;
 using Xunit;
 
 namespace CafeLib.Bitcoin.UnitTests.Utility
 {
 
-    public class KzUInt256Tests
+    public class UInt256Tests
     {
         [Fact]
         public void Division() {
@@ -35,25 +36,25 @@ namespace CafeLib.Bitcoin.UnitTests.Utility
                 },
             };
             foreach (var tc in tcs) {
-                var a = tc.a.ToKzUInt256();
-                var b = tc.b.ToKzUInt256();
-                var r = tc.r.ToKzUInt256();
+                var a = tc.a.ToUInt256();
+                var b = tc.b.ToUInt256();
+                var r = tc.r.ToUInt256();
                 var t = a / b;
                 Assert.Equal(r, t);
             }
 
-            var R1L = "7D1DE5EAF9B156D53208F033B5AA8122D2d2355d5e12292b121156cfdb4a529c".ToKzUInt256();
-            var D1L = "00000000000000000000000000000000000000000000000AD7133AC1977FA2B7".ToKzUInt256();
-            var D2L = "0000000000000000000000000000000000000000000000000000000ECD751716".ToKzUInt256();
-            var ZeroL = "0000000000000000000000000000000000000000000000000000000000000000".ToKzUInt256();
-            var OneL = "0000000000000000000000000000000000000000000000000000000000000001".ToKzUInt256();
-            var MaxL = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff".ToKzUInt256();
+            var R1L = "7D1DE5EAF9B156D53208F033B5AA8122D2d2355d5e12292b121156cfdb4a529c".ToUInt256();
+            var D1L = "00000000000000000000000000000000000000000000000AD7133AC1977FA2B7".ToUInt256();
+            var D2L = "0000000000000000000000000000000000000000000000000000000ECD751716".ToUInt256();
+            var ZeroL = "0000000000000000000000000000000000000000000000000000000000000000".ToUInt256();
+            var OneL = "0000000000000000000000000000000000000000000000000000000000000001".ToUInt256();
+            var MaxL = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff".ToUInt256();
 
-            Assert.Equal("00000000000000000b8ac01106981635d9ed112290f8895545a7654dde28fb3a".ToKzUInt256(), R1L / D1L);
-            Assert.Equal("000000000873ce8efec5b67150bad3aa8c5fcb70e947586153bf2cec7c37c57a".ToKzUInt256(), R1L / D2L);
+            Assert.Equal("00000000000000000b8ac01106981635d9ed112290f8895545a7654dde28fb3a".ToUInt256(), R1L / D1L);
+            Assert.Equal("000000000873ce8efec5b67150bad3aa8c5fcb70e947586153bf2cec7c37c57a".ToUInt256(), R1L / D2L);
             Assert.Equal(R1L, R1L / OneL);
             Assert.Equal(ZeroL, R1L / MaxL);
-            Assert.Equal(new KzUInt256(2), MaxL / R1L);
+            Assert.Equal(new UInt256(2), MaxL / R1L);
 
 #if false
             BOOST_CHECK(R1L / OneL == R1L);
@@ -75,14 +76,14 @@ namespace CafeLib.Bitcoin.UnitTests.Utility
 
         [Fact]
         public void LeftShift() {
-            var a = new KzUInt256(1);
-            Assert.Equal(new KzUInt256(1, 0, 0, 0), a);
-            Assert.Equal(new KzUInt256(0, 1, 0, 0), a << 64);
-            Assert.Equal(new KzUInt256(0, 4, 0, 0), a << 66);
-            Assert.Equal(new KzUInt256(0, 0, 1, 0), a << (64 + 64));
-            Assert.Equal(new KzUInt256(0, 0, 4, 0), a << (66 + 64));
-            Assert.Equal(new KzUInt256(0, 0, 0, 1), a << (64 + 64 + 64));
-            Assert.Equal(new KzUInt256(0, 0, 0, 4), a << (66 + 64 + 64));
+            var a = new UInt256(1);
+            Assert.Equal(new UInt256(1, 0, 0, 0), a);
+            Assert.Equal(new UInt256(0, 1, 0, 0), a << 64);
+            Assert.Equal(new UInt256(0, 4, 0, 0), a << 66);
+            Assert.Equal(new UInt256(0, 0, 1, 0), a << (64 + 64));
+            Assert.Equal(new UInt256(0, 0, 4, 0), a << (66 + 64));
+            Assert.Equal(new UInt256(0, 0, 0, 1), a << (64 + 64 + 64));
+            Assert.Equal(new UInt256(0, 0, 0, 4), a << (66 + 64 + 64));
         }
 
         [Fact]
@@ -92,10 +93,10 @@ namespace CafeLib.Bitcoin.UnitTests.Utility
             var fbf = new byte[] { 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10 };
             var fbl = fbf.Reverse().ToArray();
 
-            var ifbl = new KzUInt256(hex, firstByteFirst: false);
-            var ifbf = new KzUInt256(hex, firstByteFirst: true);
-            Assert.Equal(ifbl.ReadOnlySpan.ToArray(), fbl);
-            Assert.Equal(ifbf.ReadOnlySpan.ToArray(), fbf);
+            var ifbl = new UInt256(hex, firstByteFirst: false);
+            var ifbf = new UInt256(hex, firstByteFirst: true);
+            Assert.Equal(ifbl, fbl);
+            Assert.Equal(ifbf, fbf);
 
             Assert.Equal(hex, ifbl.ToString());
             Assert.Equal(hex, ifbf.ToStringFirstByteFirst());
@@ -104,8 +105,8 @@ namespace CafeLib.Bitcoin.UnitTests.Utility
         [Fact]
         public void ByteAccess()
         {
-            var i = new KzUInt256();
-            var s = i.Span;
+            var i = new UInt256();
+            var s = i.Bytes;
             s[0] = 0x21;
             s[31] = 0xfe;
             var str = i.ToString();
@@ -124,7 +125,7 @@ namespace CafeLib.Bitcoin.UnitTests.Utility
             public UInt64 a0;
             public UInt64 a1;
 
-            public KzUInt256 l0;
+            public UInt256 l0;
 
             public SafetySmallObj()
             {
@@ -153,10 +154,10 @@ namespace CafeLib.Bitcoin.UnitTests.Utility
         public void SpanAccessSafety()
         {
 
-            UInt64 GetAddress(ref KzUInt256 v)
+            UInt64 GetAddress(ref UInt256 v)
             {
                 unsafe {
-                    fixed (KzUInt256* p = &v) {
+                    fixed (UInt256* p = &v) {
                         return (UInt64)p;
                     }
                 }
@@ -169,7 +170,7 @@ namespace CafeLib.Bitcoin.UnitTests.Utility
                     var o1 = new SafetySmallObj();
                     var o2 = new SafetySmallObj();
                     hold.Add(o2);
-                    o2.l0.n0 = (uint)hold.Count;
+                    o2.l0.N0 = (uint)hold.Count;
                     var o3 = new SafetySmallObj();
                     var o4 = new SafetySmallObj();
                     var o5 = new SafetySmallObj();
@@ -179,18 +180,18 @@ namespace CafeLib.Bitcoin.UnitTests.Utility
                     break;
                 }
                 var a0 = GetAddress(ref hold[0].l0);
-                var span0 = hold[0].l0.Span;
+                var span0 = hold[0].l0.Bytes;
                 GC.Collect();
                 var a1 = GetAddress(ref hold[0].l0);
-                var span1 = hold[0].l0.Span;
+                var span1 = hold[0].l0.Bytes;
                 if (hold.Any(o => o.HasMoved())) {
                     var o = hold.First(t => t.HasMoved());
                     var c = hold.Count(t => t.HasMoved());
                     var i = 1u;
                     foreach (var ot in hold) {
-                        Assert.True(ot.l0.n0 == i, "Unexpected initialization.");
+                        Assert.True(ot.l0.N0 == i, "Unexpected initialization.");
                         var b = (byte)i;
-                        Assert.True(ot.l0.Span[0] == b, "Span access failed.");
+                        Assert.True(ot.l0.Bytes[0] == b, "Span access failed.");
                         i++;
                     }
                     Assert.True(a0 != a1, "Test instance wasn't moved.");

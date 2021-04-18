@@ -6,13 +6,13 @@
 using System.IO;
 using System.Security.Cryptography;
 using CafeLib.Bitcoin.Crypto;
-using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.UnitTests.Extensions;
 using Xunit;
 
 namespace CafeLib.Bitcoin.UnitTests.Encrypt
 {
-    public class KzECIESTests
+    public class KzEciesTests
     {
         /*
         class TC { public bool ok; public string hex; public string b58; }
@@ -29,8 +29,8 @@ namespace CafeLib.Bitcoin.UnitTests.Encrypt
             //var hex2 = "8080808080808080808080808080808080808080808080808080808080808080";
             var wifLivenet = "L2Gkw3kKJ6N24QcDuH4XDqt9cTqsKTVNDGz1CRZhk9cq4auDUbJy";
 
-            var privKey = new KzPrivKey(hex);
-            var privKey2 = KzPrivKey.FromWIF(wifLivenet);
+            var privKey = new PrivateKey(hex);
+            var privKey2 = PrivateKey.FromWIF(wifLivenet);
             Assert.Equal(privKey, privKey2);
         }
 
@@ -44,12 +44,11 @@ namespace CafeLib.Bitcoin.UnitTests.Encrypt
             var plaintext = new byte[] { 168, 8, 221, 252, 21, 193, 149, 122, 213, 17, 252, 154, 186, 66, 168, 129 }; 
             //[173, 10, 220, 38, 56, 150, 251, 88, 72, 82, 231, 198, 251, 106, 85, 180]
 
-            using var aes = new AesCryptoServiceProvider();
-            aes.Padding = PaddingMode.None;
-            aes.Mode = CipherMode.CBC;
-            aes.Key = key;
-            aes.IV = iv;
-            var r = (byte[])null;
+            using var aes = new AesCryptoServiceProvider
+            {
+                Padding = PaddingMode.None, Mode = CipherMode.CBC, Key = key, IV = iv
+            };
+            byte[] r;
 
             var e = aes.CreateEncryptor();
             var r1 = e.TransformFinalBlock(plaintext, 0, plaintext.Length);
@@ -68,8 +67,8 @@ namespace CafeLib.Bitcoin.UnitTests.Encrypt
         {
             var message = "attack at dawn";
 
-            var aliceKey = KzPrivKey.FromWIF("L1Ejc5dAigm5XrM3mNptMEsNnHzS7s51YxU7J61ewGshZTKkbmzJ");
-            var bobKey = KzPrivKey.FromWIF("KxfxrUXSMjJQcb3JgnaaA6MqsrKQ1nBSxvhuigdKRyFiEm6BZDgG");
+            var aliceKey = PrivateKey.FromWIF("L1Ejc5dAigm5XrM3mNptMEsNnHzS7s51YxU7J61ewGshZTKkbmzJ");
+            var bobKey = PrivateKey.FromWIF("KxfxrUXSMjJQcb3JgnaaA6MqsrKQ1nBSxvhuigdKRyFiEm6BZDgG");
 
             {
                 var encrypted = "0339e504d6492b082da96e11e8f039796b06cd4855c101e2492a6f10f3e056a9e712c732611c6917ab5c57a1926973bc44a1586e94a783f81d05ce72518d9b0a80e2e13c7ff7d1306583f9cc7a48def5b37fbf2d5f294f128472a6e9c78dede5f5";
@@ -79,7 +78,7 @@ namespace CafeLib.Bitcoin.UnitTests.Encrypt
                 // encrypted   a1586e94a783f81d05ce72518d9b0a80
                 // sig         e2e13c7ff7d1306583f9cc7a48def5b37fbf2d5f294f128472a6e9c78dede5f5
 
-                var alice = new Ecies { PrivateKey = aliceKey, PublicKey = bobKey.GetPubKey() };
+                var alice = new Ecies { PrivateKey = aliceKey, PublicKey = bobKey.CreatePublicKey() };
                 var bob = new Ecies { PrivateKey = bobKey };
 
                 var ciphertext = alice.Encrypt(message);
@@ -97,7 +96,7 @@ namespace CafeLib.Bitcoin.UnitTests.Encrypt
                 // encrypted   a1586e94a783f81d05ce72518d9b0a80
                 // sig         e2e13c7f
 
-                var alice = new Ecies { PrivateKey = aliceKey, PublicKey = bobKey.GetPubKey(), ShortTag = true };
+                var alice = new Ecies { PrivateKey = aliceKey, PublicKey = bobKey.CreatePublicKey(), ShortTag = true };
                 var bob = new Ecies { PrivateKey = bobKey, ShortTag = true };
 
                 var ciphertext = alice.Encrypt(message);
@@ -115,8 +114,8 @@ namespace CafeLib.Bitcoin.UnitTests.Encrypt
                 // encrypted   a1586e94a783f81d05ce72518d9b0a80
                 // sig         e2e13c7ff7d1306583f9cc7a48def5b37fbf2d5f294f128472a6e9c78dede5f5
 
-                var alice = new Ecies { PrivateKey = aliceKey, PublicKey = bobKey.GetPubKey(), NoKey = true };
-                var bob = new Ecies { PrivateKey = bobKey, PublicKey = aliceKey.GetPubKey(), NoKey = true };
+                var alice = new Ecies { PrivateKey = aliceKey, PublicKey = bobKey.CreatePublicKey(), NoKey = true };
+                var bob = new Ecies { PrivateKey = bobKey, PublicKey = aliceKey.CreatePublicKey(), NoKey = true };
 
                 var ciphertext = alice.Encrypt(message);
                 Assert.Equal(encrypted, ciphertext.ToHex());
@@ -133,8 +132,8 @@ namespace CafeLib.Bitcoin.UnitTests.Encrypt
                 // encrypted   a1586e94a783f81d05ce72518d9b0a80
                 // sig         e2e13c7f
 
-                var alice = new Ecies { PrivateKey = aliceKey, PublicKey = bobKey.GetPubKey(), NoKey = true, ShortTag = true };
-                var bob = new Ecies { PrivateKey = bobKey, PublicKey = aliceKey.GetPubKey(), NoKey = true, ShortTag = true };
+                var alice = new Ecies { PrivateKey = aliceKey, PublicKey = bobKey.CreatePublicKey(), NoKey = true, ShortTag = true };
+                var bob = new Ecies { PrivateKey = bobKey, PublicKey = aliceKey.CreatePublicKey(), NoKey = true, ShortTag = true };
 
                 var ciphertext = alice.Encrypt(message);
                 Assert.Equal(encrypted, ciphertext.ToHex());

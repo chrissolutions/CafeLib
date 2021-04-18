@@ -12,9 +12,8 @@ namespace CafeLib.Bitcoin.Services
 
         public const string MasterBip32Key = "Bitcoin seed";
 
-        public static IBitcoinNetwork Network => _bitcoinNetwork ?? throw new InvalidOperationException();
+        public static IBitcoinNetwork Network => _bitcoinNetwork ??= CreateNetwork(NetworkType.Main);
 
-        public static void Bootstrap() => Bootstrap(NetworkType.Main);
         public static void Bootstrap(NetworkType networkType)
         {
             if (_bitcoinNetwork != null) throw new InvalidOperationException();
@@ -39,7 +38,7 @@ namespace CafeLib.Bitcoin.Services
         {
             return networkType switch
             {
-                NetworkType.Main => new MainNetwork(),
+                NetworkType.Main => (IBitcoinNetwork) new MainNetwork(),
                 NetworkType.Test => new TestNetwork(),
                 NetworkType.Regression => new RegressionTestNetwork(),
                 NetworkType.Scaling => new ScalingTestNetwork(),

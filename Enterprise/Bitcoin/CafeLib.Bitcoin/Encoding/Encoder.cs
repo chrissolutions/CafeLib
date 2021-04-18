@@ -16,27 +16,27 @@ namespace CafeLib.Bitcoin.Encoding
     /// </summary>
     public abstract class Encoder
     {
-        public string Encode(ReadOnlyByteSpan bytes1, ReadOnlyByteSpan bytes2)
+        public string Encode(ReadOnlyByteSpan data1, ReadOnlyByteSpan data2)
         {
-            var bytes = new byte[bytes1.Length + bytes2.Length].AsSpan();
-            bytes1.CopyTo(bytes);
-            bytes2.CopyTo(bytes.Slice(bytes1.Length));
+            var bytes = new byte[data1.Length + data2.Length].AsSpan();
+            data1.CopyTo(bytes);
+            data2.CopyTo(bytes.Slice(data1.Length));
             return Encode(bytes);
         }
 
         /// <summary>
         /// Encodes a span of bytes as a string.
         /// </summary>
-        /// <param name="bytes">Byte sequence to be encoded.</param>
+        /// <param name="data">Byte sequence to be encoded.</param>
         /// <returns>String representation of byte sequence capable of being decoded back into a byte sequence.</returns>
-        public abstract string Encode(ReadOnlyByteSpan bytes);
+        public abstract string Encode(ReadOnlyByteSpan data);
 
         /// <summary>
         /// Encodes a sequence of bytes as a string./// 
         /// </summary>
-        /// <param name="bytes">Byte sequence to be encoded.</param>
+        /// <param name="data">Byte sequence to be encoded.</param>
         /// <returns></returns>
-        public virtual string Encode(ReadOnlyByteSequence bytes) => Encode((ReadOnlyByteSpan) bytes);
+        public virtual string Encode(ReadOnlyByteSequence data) => Encode((ReadOnlyByteSpan) data);
 
         /// <summary>
         /// Returns false on most failures and does not assume size of byte sequence output
@@ -56,15 +56,15 @@ namespace CafeLib.Bitcoin.Encoding
         /// 
         /// </summary>
         /// <param name="encoded"></param>
-        /// <param name="bytes">Will be reduced if longer than encoded data. If it is too small, false is returned.</param>
+        /// <param name="data">Will be reduced if longer than encoded data. If it is too small, false is returned.</param>
         /// <returns></returns>
-        public virtual bool TryDecode(string encoded, ref Span<byte> bytes)
+        public virtual bool TryDecode(string encoded, ref ByteSpan data)
         {
             var ok = TryDecode(encoded, out var ba);
-            if (ok && ba.Length < bytes.Length)
-                bytes = bytes.Slice(0, ba.Length);
-            if (ok && ba.Length <= bytes.Length)
-                ba.CopyTo(bytes);
+            if (ok && ba.Length < data.Length)
+                data = data.Slice(0, ba.Length);
+            if (ok && ba.Length <= data.Length)
+                ba.CopyTo(data);
             else
                 ok = false;
             return ok;
@@ -74,14 +74,14 @@ namespace CafeLib.Bitcoin.Encoding
         /// 
         /// </summary>
         /// <param name="encoded"></param>
-        /// <param name="bytes">Will be filled with zero if longer than encoded data. If it is too small, false is returned.</param>
+        /// <param name="data">Will be filled with zero if longer than encoded data. If it is too small, false is returned.</param>
         /// <returns></returns>
-        public virtual bool TryDecode(string encoded, Span<byte> bytes)
+        public virtual bool TryDecode(string encoded, ByteSpan data)
         {
-            var span = bytes;
+            var span = data;
             var ok = TryDecode(encoded, ref span);
-            if (ok && span.Length < bytes.Length)
-                    bytes.Slice(span.Length).Fill(0);
+            if (ok && span.Length < data.Length)
+                data.Slice(span.Length).Data.Fill(0);
             return ok;
         }
 

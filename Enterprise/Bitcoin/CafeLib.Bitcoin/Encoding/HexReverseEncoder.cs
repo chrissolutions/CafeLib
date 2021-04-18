@@ -40,7 +40,7 @@ namespace CafeLib.Bitcoin.Encoding
             return new string(s);
         }
 
-        public override bool TryDecode(string hex, Span<byte> bytes)
+        public override bool TryDecode(string hex, ByteSpan bytes)
         {
             if (hex.Length % 2 == 1)
                 throw new ArgumentException("Invalid hex bytes string.", nameof(hex));

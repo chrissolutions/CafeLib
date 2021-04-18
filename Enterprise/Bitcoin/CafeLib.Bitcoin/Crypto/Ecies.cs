@@ -5,6 +5,7 @@
 
 using System;
 using CafeLib.Bitcoin.Buffers;
+using CafeLib.Bitcoin.Encoding;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Keys;
 using CafeLib.Bitcoin.Numerics;
@@ -84,7 +85,7 @@ namespace CafeLib.Bitcoin.Crypto
 
         public byte[] Encrypt(string message) => Encrypt(message.Utf8ToBytes());
 
-        public string DecryptToUtf8(ReadOnlyByteSpan data) => Decrypt(data).ToUTF8();
+        public string DecryptToUtf8(ReadOnlyByteSpan data) => Encoders.Utf8.Encode(Decrypt(data));
 
         public byte[] Encrypt(ReadOnlyByteSpan data)
         {
@@ -95,7 +96,7 @@ namespace CafeLib.Bitcoin.Crypto
             var d = Hashes.HmacSha256(_kM.Bytes, c).Bytes;
             if (ShortTag) d = d.Slice(0, 4);
 
-            var key = NoKey ? Span<byte>.Empty : _privateKey.CreatePublicKey().Bytes;
+            var key = NoKey ? ReadOnlyByteSpan.Empty : _privateKey.CreatePublicKey().ReadOnlySpan;
             var len = key.Length + c.Length + d.Length;
             var bytes = new byte[len];
             var result = bytes.AsSpan();
@@ -135,7 +136,7 @@ namespace CafeLib.Bitcoin.Crypto
                 return null;
             }
 
-            var r = KzEncrypt.AesDecrypt(c, _kE.ToBytes());
+            var r = Encryption.AesDecrypt(c, _kE);
 
             return r;
         }

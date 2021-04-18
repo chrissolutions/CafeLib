@@ -66,13 +66,13 @@ namespace CafeLib.Bitcoin.Encoding
             return c > CharToNibbleArray.Length ? -1 : CharToNibbleArray[c];
         }
 
-        public override bool TryDecode(string hex, Span<byte> bytes)
+        public override bool TryDecode(string hex, ByteSpan bytes)
         {
             if (hex.Length % 2 == 1 || hex.Length / 2 > bytes.Length)
                 return false;
 
             if (hex.Length / 2 < bytes.Length)
-                bytes[(hex.Length / 2)..].Fill(0);
+                bytes[(hex.Length / 2)..].Data.Fill(0);
 
             for (int i = 0, j = 0; i < hex.Length;)
             {

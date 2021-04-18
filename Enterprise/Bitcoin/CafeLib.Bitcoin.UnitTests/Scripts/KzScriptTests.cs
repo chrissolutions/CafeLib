@@ -203,7 +203,7 @@ namespace CafeLib.Bitcoin.UnitTests.Scripts
                     _testOutputHelper.WriteLine($"{opcode} {i}");
                     _testOutputHelper.WriteLine($"Sig: {tv.scriptSig.ToHexString()} => {tv.scriptSig}");
                     _testOutputHelper.WriteLine($"Pub: {tv.scriptPub.ToHexString()} => {tv.scriptPub}");
-                    var ok = ScriptInterpreter.VerifyScript(tv.scriptSig, tv.scriptPub, tv.scriptFlags, null, out KzScriptError error);
+                    var ok = ScriptInterpreter.VerifyScript(tv.scriptSig, tv.scriptPub, tv.scriptFlags, null, out var error);
 
                     var correct = (ok && tv.scriptError == ScriptError.OK) || tv.scriptError == error;
 
