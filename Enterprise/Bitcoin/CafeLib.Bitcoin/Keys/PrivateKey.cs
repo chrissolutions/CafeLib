@@ -29,7 +29,7 @@ namespace CafeLib.Bitcoin.Keys
         /// </summary>
         public bool IsCompressed { get; private set; }
 
-        public ReadOnlyByteSpan ReadOnlySpan => _keyData.Bytes;
+        public ReadOnlyByteSpan Bytes => _keyData.Bytes;
 
         public BigInteger BigInteger => _keyData.ToBigInteger();
 

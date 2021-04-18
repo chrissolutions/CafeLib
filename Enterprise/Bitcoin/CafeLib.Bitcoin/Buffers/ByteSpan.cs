@@ -42,6 +42,8 @@ namespace CafeLib.Bitcoin.Buffers
         public Span<byte>.Enumerator GetEnumerator() => Data.GetEnumerator();
         public byte[] ToArray() => Data.ToArray();
 
+        public static ByteSpan Empty => default;
+
         public static implicit operator ByteSpan(byte[] rhs) => new ByteSpan(rhs);
         public static implicit operator byte[](ByteSpan rhs) => rhs.Data.ToArray();
 

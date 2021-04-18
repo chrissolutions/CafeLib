@@ -216,7 +216,7 @@ namespace CafeLib.Bitcoin.Keys
             code[8] = (byte)((Child >> 0) & 0xFF);
             ChainCode.Bytes.CopyTo(code.Slice(9, 32));
             code[41] = 0;
-            var key = PrivateKey.ReadOnlySpan;
+            var key = PrivateKey.Bytes;
             Debug.Assert(key.Length == 32);
             key.CopyTo(code.Slice(42, 32));
         }

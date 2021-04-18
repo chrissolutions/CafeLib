@@ -37,6 +37,8 @@ namespace CafeLib.Bitcoin.Buffers
         public byte this[int index] => Data[index];
         public ReadOnlyByteSpan this[Range range] => Data[range];
 
+        public static ReadOnlyByteSpan Empty => default;
+
         public static implicit operator ByteSpan(ReadOnlyByteSpan rhs) => rhs.Data;
 
         public static implicit operator ReadOnlySpan<byte>(ReadOnlyByteSpan rhs) => rhs.Data;

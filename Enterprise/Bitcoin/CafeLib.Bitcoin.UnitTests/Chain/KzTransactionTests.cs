@@ -4,25 +4,36 @@
 #endregion
 
 using CafeLib.Bitcoin.Builders;
+using CafeLib.Bitcoin.Chain;
+using CafeLib.Bitcoin.Scripting;
 using Xunit;
 
 namespace CafeLib.Bitcoin.UnitTests.Chain
 {
     public class TransactionTests
     {
-
-        TransactionBuilder BuildCreditingTransaction(Scripting.Script scriptPubKey, long nValue)
+        private TransactionBuilder BuildCreditingTransaction(Script scriptPubKey, long nValue)
         {
-            var tx = new KzBTransaction { LockTime = 0, Version = 1, };
-            tx.AddIn( new KzOutPoint(), Kz.Script().Push(0).Push(0) );
+            var tx = new TransactionBuilder
+            {
+                LockTime = 0,
+                Version = 1,
+            };
+
+            tx.AddIn( new OutPoint(), new ScriptBuilder().Push(0).Push(0) );
             tx.AddOut(scriptPubKey, nValue);
             return tx;
         }
 
-        KzBTransaction BuildSpendingTransaction(KzScript scriptSig, KzBTransaction txCredit)
+        TransactionBuilder BuildSpendingTransaction(Script scriptSig, TransactionBuilder txCredit)
         {
-            var tx = new KzBTransaction { LockTime = 0, Version = 1, };
-            tx.AddIn( new KzOutPoint(), Kz.Script().Push(0).Push(0) );
+            var tx = new TransactionBuilder
+            {
+                LockTime = 0,
+                Version = 1,
+            };
+
+            tx.AddIn( new OutPoint(), new ScriptBuilder().Push(0).Push(0) );
             //tx.AddOut(scriptPubKey, nValue);
             return tx;
         }

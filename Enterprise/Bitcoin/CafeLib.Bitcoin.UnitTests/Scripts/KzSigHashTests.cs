@@ -6,14 +6,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CafeLib.Bitcoin.Chain;
-using CafeLib.Bitcoin.Extensions;
-using CafeLib.Bitcoin.Script;
-using CafeLib.Bitcoin.Utility;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace CafeLib.Bitcoin.UnitTests.Script
+namespace CafeLib.Bitcoin.UnitTests.Scripts
 {
     public class KzSigHashTests
     {

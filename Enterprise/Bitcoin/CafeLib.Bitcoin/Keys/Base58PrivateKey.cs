@@ -15,7 +15,7 @@ namespace CafeLib.Bitcoin.Keys
         public void SetKey(PrivateKey privateKey)
         {
             Debug.Assert(privateKey.IsValid);
-            SetData(RootService.Network.SecretKey, privateKey.ReadOnlySpan, privateKey.IsCompressed);
+            SetData(RootService.Network.SecretKey, privateKey.Bytes, privateKey.IsCompressed);
         }
 
         public PrivateKey GetKey()

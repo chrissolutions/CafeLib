@@ -3,7 +3,6 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using CafeLib.Bitcoin.Encrypt;
 using CafeLib.Bitcoin.Extensions;
 using Xunit;
 

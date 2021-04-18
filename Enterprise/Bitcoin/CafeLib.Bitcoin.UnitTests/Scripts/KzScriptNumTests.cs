@@ -4,10 +4,9 @@
 #endregion
 
 using System;
-using CafeLib.Bitcoin.Script;
 using Xunit;
 
-namespace CafeLib.Bitcoin.UnitTests.Script
+namespace CafeLib.Bitcoin.UnitTests.Scripts
 {
     public class KzScriptNumTests
     {

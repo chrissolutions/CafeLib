@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
+using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Extensions;
 
 namespace CafeLib.Bitcoin.Crypto
 {
-    public class Encrypt 
+    public class Encryption 
     {
         public static byte[] InitializationVector(ReadOnlySpan<byte> key, ReadOnlySpan<byte> data, int length = 16)
             => Hashes.HmacSha256(key, data).Bytes.Slice(0, length).ToArray();
@@ -43,7 +44,7 @@ namespace CafeLib.Bitcoin.Crypto
         /// <param name="iv">null or 16 bytes of random initialization vector data</param>
         /// <param name="noIniVector">If true, the initialization vector used is not prepended to the encrypted result.</param>
         /// <returns>16 bytes of IV followed by encrypted data bytes.</returns>
-        public static byte[] AesEncrypt(ReadOnlySpan<byte> data, byte[] key, byte[] iv = null, bool noIniVector = false)
+        public static byte[] AesEncrypt(ReadOnlyByteSpan data, byte[] key, byte[] iv = null, bool noIniVector = false)
         {
             using var aes = new AesCryptoServiceProvider { Padding = PaddingMode.PKCS7, Mode = CipherMode.CBC, Key = key };
             if (iv == null) {

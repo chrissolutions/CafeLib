@@ -24,7 +24,7 @@ namespace CafeLib.Bitcoin.Keys
         {
             Trace.Assert(privateKey.IsValid);
             var pubKeySecp256k1 = new byte[Secp256k1.PUBKEY_LENGTH];
-            var ok = Library.PublicKeyCreate(pubKeySecp256k1, privateKey.ReadOnlySpan);
+            var ok = Library.PublicKeyCreate(pubKeySecp256k1, privateKey.Bytes);
             Trace.Assert(ok);
             var pubKey = new PublicKey(privateKey.IsCompressed);
             LazySecpLibrary.Value.PublicKeySerialize(pubKey.Bytes, pubKeySecp256k1, privateKey.IsCompressed ? Flags.SECP256K1_EC_COMPRESSED : Flags.SECP256K1_EC_UNCOMPRESSED);
@@ -41,7 +41,7 @@ namespace CafeLib.Bitcoin.Keys
         public static byte[] CreateCompactSignature(this PrivateKey privateKey, UInt256 hash)
         {
             if (!privateKey.IsValid) return default;
-            var (ok, sig) = Library.PrivateKeySignCompact(hash.Bytes, privateKey.ReadOnlySpan, privateKey.IsCompressed);
+            var (ok, sig) = Library.PrivateKeySignCompact(hash.Bytes, privateKey.Bytes, privateKey.IsCompressed);
             return ok ? sig : default;
         }
 
@@ -54,7 +54,7 @@ namespace CafeLib.Bitcoin.Keys
         public static byte[] CreateSignature(this PrivateKey privateKey, UInt256 hash)
         {
             if (!privateKey.IsValid) return default;
-            var (ok, sig) = Library.PrivateKeySign(hash.Bytes, privateKey.ReadOnlySpan);
+            var (ok, sig) = Library.PrivateKeySign(hash.Bytes, privateKey.Bytes);
             return ok ? sig : default;
         }
 
@@ -78,7 +78,7 @@ namespace CafeLib.Bitcoin.Keys
         public static bool TweakAdd(this PrivateKey privateKey, ByteSpan bytes, out PrivateKey childKey)
         {
             childKey = null;
-            var dataChild = (UInt256)privateKey.ReadOnlySpan;
+            var dataChild = (UInt256)privateKey.Bytes;
             var result = Library.PrivKeyTweakAdd(dataChild.Bytes, bytes.Slice(0, 32));
             if (result)
             {
