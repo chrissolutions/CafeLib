@@ -6,9 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Numerics;
-using CafeLib.Bitcoin.Utility;
 using Xunit;
 
 namespace CafeLib.Bitcoin.UnitTests.Utility
@@ -36,22 +34,22 @@ namespace CafeLib.Bitcoin.UnitTests.Utility
                 },
             };
             foreach (var tc in tcs) {
-                var a = tc.a.ToUInt256();
-                var b = tc.b.ToUInt256();
-                var r = tc.r.ToUInt256();
+                var a = new UInt256(tc.a);
+                var b = new UInt256(tc.b);
+                var r = new UInt256(tc.r);
                 var t = a / b;
                 Assert.Equal(r, t);
             }
 
-            var R1L = "7D1DE5EAF9B156D53208F033B5AA8122D2d2355d5e12292b121156cfdb4a529c".ToUInt256();
-            var D1L = "00000000000000000000000000000000000000000000000AD7133AC1977FA2B7".ToUInt256();
-            var D2L = "0000000000000000000000000000000000000000000000000000000ECD751716".ToUInt256();
-            var ZeroL = "0000000000000000000000000000000000000000000000000000000000000000".ToUInt256();
-            var OneL = "0000000000000000000000000000000000000000000000000000000000000001".ToUInt256();
-            var MaxL = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff".ToUInt256();
+            var R1L = new UInt256("7D1DE5EAF9B156D53208F033B5AA8122D2d2355d5e12292b121156cfdb4a529c");
+            var D1L = new UInt256("00000000000000000000000000000000000000000000000AD7133AC1977FA2B7");
+            var D2L = new UInt256("0000000000000000000000000000000000000000000000000000000ECD751716");
+            var ZeroL = new UInt256("0000000000000000000000000000000000000000000000000000000000000000");
+            var OneL = new UInt256("0000000000000000000000000000000000000000000000000000000000000001");
+            var MaxL = new UInt256("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 
-            Assert.Equal("00000000000000000b8ac01106981635d9ed112290f8895545a7654dde28fb3a".ToUInt256(), R1L / D1L);
-            Assert.Equal("000000000873ce8efec5b67150bad3aa8c5fcb70e947586153bf2cec7c37c57a".ToUInt256(), R1L / D2L);
+            Assert.Equal(new UInt256("00000000000000000b8ac01106981635d9ed112290f8895545a7654dde28fb3a"), R1L / D1L);
+            Assert.Equal(new UInt256("000000000873ce8efec5b67150bad3aa8c5fcb70e947586153bf2cec7c37c57a"), R1L / D2L);
             Assert.Equal(R1L, R1L / OneL);
             Assert.Equal(ZeroL, R1L / MaxL);
             Assert.Equal(new UInt256(2), MaxL / R1L);
