@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
 
@@ -35,6 +35,7 @@
     <ProjectReference Include="..\CafeLib.Bitcoin.Api.Paymail\CafeLib.Bitcoin.Api.Paymail.csproj" />
     <ProjectReference Include="..\CafeLib.Bitcoin.Api.WhatsOnChain\CafeLib.Bitcoin.Api.WhatsOnChain.csproj" />
     <ProjectReference Include="..\CafeLib.Bitcoin\CafeLib.Bitcoin.csproj" />
+    <ProjectReference Include="..\libs\KzSecp256k1.Net\KzSecp256k1.Net.csproj" />
   </ItemGroup>
   
 </Project>

@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CafeLib.Bitcoin.Shared\CafeLib.Bitcoin.Shared.csproj" />
+    <ProjectReference Include="..\CafeLib.Bitcoin\CafeLib.Bitcoin.csproj" />
   </ItemGroup>
 
 </Project>

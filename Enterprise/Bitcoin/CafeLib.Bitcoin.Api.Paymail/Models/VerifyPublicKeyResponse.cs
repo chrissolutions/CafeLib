@@ -2,13 +2,13 @@
 
 namespace CafeLib.Bitcoin.Api.Paymail.Models
 {
-    internal class VerifyPubKeyResponse
+    internal class VerifyPublicKeyResponse
     {
         [JsonProperty("handle")]
         public string Handle { get; set; }
 
         [JsonProperty("pubkey")]
-        public string PubKey { get; set; }
+        public string PublicKey { get; set; }
 
         [JsonProperty("match")]
         public bool Match { get; set; }

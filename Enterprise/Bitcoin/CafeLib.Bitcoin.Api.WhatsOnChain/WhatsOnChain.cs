@@ -6,9 +6,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CafeLib.Bitcoin.Api.WhatsOnChain.Models;
-using CafeLib.Bitcoin.Shared;
-using CafeLib.Bitcoin.Shared.Network;
-using CafeLib.Core.Extensions;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Network;
 using CafeLib.Web.Request;
 using Newtonsoft.Json;
 
@@ -18,7 +17,7 @@ namespace CafeLib.Bitcoin.Api.WhatsOnChain
     {
         public string Network { get; }
 
-        public WhatsOnChain(NetworkType networkType)
+        public WhatsOnChain(NetworkType networkType = NetworkType.Main)
         {
             Network = networkType.GetDescriptor();
             Headers.Add("Content-Type", WebContentType.Json);

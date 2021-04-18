@@ -38,29 +38,43 @@ namespace CafeLib.Bitcoin.Keys
         /// <param name="privateKey"></param>
         /// <param name="hash"></param>
         /// <returns></returns>
-        public static (bool ok, byte[] sig) CreateCompactSignature(this PrivateKey privateKey, UInt256 hash)
+        public static byte[] CreateCompactSignature(this PrivateKey privateKey, UInt256 hash)
         {
-            if (!privateKey.IsValid) return (false, null);
-
+            if (!privateKey.IsValid) return default;
             var (ok, sig) = Library.PrivateKeySignCompact(hash.Bytes, privateKey.ReadOnlySpan, privateKey.IsCompressed);
-
-            return (ok, sig);
+            return ok ? sig : default;
         }
 
-        public static (bool ok, byte[] sig) CreateSignature(this PrivateKey privateKey, UInt256 hash)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="privateKey"></param>
+        /// <param name="hash"></param>
+        /// <returns></returns>
+        public static byte[] CreateSignature(this PrivateKey privateKey, UInt256 hash)
         {
-            if (!privateKey.IsValid) return (false, null);
-
+            if (!privateKey.IsValid) return default;
             var (ok, sig) = Library.PrivateKeySign(hash.Bytes, privateKey.ReadOnlySpan);
-
-            return (ok, sig);
+            return ok ? sig : default;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="secretKey"></param>
+        /// <returns></returns>
         public static bool SecretKeyVerify(ReadOnlyByteSpan secretKey)
         {
             return Library.SecretKeyVerify(secretKey);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="privateKey"></param>
+        /// <param name="bytes"></param>
+        /// <param name="childKey"></param>
+        /// <returns></returns>
         public static bool TweakAdd(this PrivateKey privateKey, ByteSpan bytes, out PrivateKey childKey)
         {
             childKey = null;

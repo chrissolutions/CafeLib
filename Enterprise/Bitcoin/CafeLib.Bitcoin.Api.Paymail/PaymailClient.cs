@@ -5,18 +5,19 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CafeLib.Bitcoin.Api.Paymail.Models;
+using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Keys;
-using CafeLib.Bitcoin.Script;
-using CafeLib.Bitcoin.Utility;
-using CafeLib.Core.Extensions;
+using CafeLib.Bitcoin.Scripting;
+using CafeLib.Bitcoin.Units;
 using CafeLib.Web.Request;
 using DnsClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using EnumExtensions = CafeLib.Core.Extensions.EnumExtensions;
 
 namespace CafeLib.Bitcoin.Api.Paymail
 {
-    public class Paymail : BasicApiRequest, IPaymail
+    public class PaymailClient : BasicApiRequest, IPaymail
     {
         private const string HandleRegexPattern = @"^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
         private static readonly Lazy<Regex> HandleRegex = new Lazy<Regex>(() => new Regex(HandleRegexPattern), true);
@@ -26,7 +27,7 @@ namespace CafeLib.Bitcoin.Api.Paymail
         /// <summary>
         /// Paymail api default constructor.
         /// </summary>
-        public Paymail()
+        public PaymailClient()
         {
              _cache = new ConcurrentDictionary<string, CapabilitiesResponse>();
              Headers.Add("User-Agent", "KzPaymailClient");
@@ -66,12 +67,12 @@ namespace CafeLib.Bitcoin.Api.Paymail
         /// </summary>
         /// <param name="paymailAddress"></param>
         /// <returns></returns>
-        public async Task<KzPubKey> GetPubKey(string paymailAddress)
+        public async Task<PublicKey> GetPublicKey(string paymailAddress)
         {
             var url = await GetIdentityUrl(paymailAddress);
             var json = await GetAsync(url);
-            var response = JsonConvert.DeserializeObject<GetPubKeyResponse>(json);
-            var pubkey = new KzPubKey(response.PubKey);
+            var response = JsonConvert.DeserializeObject<GetPublicKeyResponse>(json);
+            var pubkey = new PublicKey(response.PubKey);
             return pubkey.IsCompressed && new[] { 2, 3 }.ToArray().Contains(pubkey.ReadOnlySpan[0])
                 ? pubkey
                 : null;
@@ -83,13 +84,13 @@ namespace CafeLib.Bitcoin.Api.Paymail
         /// <param name="receiverHandle"></param>
         /// <param name="pubKey"></param>
         /// <returns></returns>
-        public async Task<bool> VerifyPubKey(string receiverHandle, KzPubKey pubKey)
+        public async Task<bool> VerifyPubKey(string receiverHandle, PublicKey pubKey)
         {
             var url = await GetVerifyUrl(receiverHandle, pubKey.ToHex());
 
             var json = await GetAsync(url);
-            var response = JsonConvert.DeserializeObject<VerifyPubKeyResponse>(json);
-            return response.PubKey == pubKey.ToHex() && response.Match;
+            var response = JsonConvert.DeserializeObject<VerifyPublicKeyResponse>(json);
+            return response.PublicKey == pubKey.ToHex() && response.Match;
         }
 
         /// <summary>
@@ -102,12 +103,12 @@ namespace CafeLib.Bitcoin.Api.Paymail
         /// <param name="amount"></param>
         /// <param name="purpose"></param>
         /// <returns></returns>
-        public async Task<KzScript> GetOutputScript(KzPrivKey key, string receiverHandle, string senderHandle, string senderName = null, KzAmount? amount = null, string purpose = "")
+        public async Task<Script> GetOutputScript(PrivateKey key, string receiverHandle, string senderHandle, string senderName = null, Amount? amount = null, string purpose = "")
         {
-            amount ??= KzAmount.Zero;
+            amount ??= Amount.Zero;
             var dt = DateTime.UtcNow.ToString("o");
             var message = $"{senderHandle}{amount.Value.Satoshis}{dt}{purpose}";
-            var signature = key?.SignMessageToB64(message) ?? "";
+            var signature = key?.SignMessageToBase64(message) ?? "";
 
             // var ok = key.GetPubKey().VerifyMessage(message, signature);
 
@@ -127,7 +128,7 @@ namespace CafeLib.Bitcoin.Api.Paymail
             var response = await PostAsync(url, json);
             // e.g. {"output":"76a914bdfbe8a16162ba467746e382a081a1857831811088ac"} 
             var outputScript = JsonConvert.DeserializeObject<GetOutputScriptResponse>(response);
-            return new KzScript(outputScript.Output);
+            return new Script(outputScript.Output);
         }
 
         /// <summary>
@@ -139,7 +140,7 @@ namespace CafeLib.Bitcoin.Api.Paymail
         /// <returns>true if both the public key and signature were confirmed as valid.</returns>
         public async Task<bool> IsValidSignature(string paymail, string message, string signature)
         {
-            var pubKey = await GetPubKey(paymail);
+            var pubKey = await GetPublicKey(paymail);
             return pubKey.IsValid && pubKey.VerifyMessage(message, signature);
         }
 
@@ -153,7 +154,7 @@ namespace CafeLib.Bitcoin.Api.Paymail
         /// <returns>(ok, pubkey) where ok is true only if both the public key and signature were confirmed as valid.
         /// If ok is true, the returned public key is valid and can be saved for future validations.
         /// </returns>
-        public async Task<(bool ok, KzPubKey pubkey)> IsValidSignature(string message, string signature, string paymail, KzPubKey pubkey)
+        public async Task<(bool ok, PublicKey pubkey)> IsValidSignature(string message, string signature, string paymail, PublicKey pubkey)
         {
             if (!TryParse(paymail, out _, out var domain)) return (false, pubkey);
 
@@ -173,7 +174,7 @@ namespace CafeLib.Bitcoin.Api.Paymail
                 // Attempt to determine the correct pubkey for the paymail.
                 if (await DomainHasCapability(domain, Capability.Pki))
                 {
-                    pubkey = await GetPubKey(paymail);
+                    pubkey = await GetPublicKey(paymail);
                 }
             }
 
@@ -193,7 +194,7 @@ namespace CafeLib.Bitcoin.Api.Paymail
         /// </summary>
         private static string ToBrfcId(Capability capability)
         {
-            return capability.GetDescriptor();
+            return EnumExtensions.GetDescriptor(capability);
         }
 
         private async Task<CapabilitiesResponse> GetApiDescriptionFor(string domain, bool ignoreCache = false)

@@ -4,30 +4,30 @@
 #endregion
 
 using System.Threading.Tasks;
-using CafeLib.Bitcoin.APIs.Paymail;
+using CafeLib.Bitcoin.Api.Paymail;
+using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Keys;
-using CafeLib.Bitcoin.Utility;
 using Xunit;
 
 namespace CafeLib.Bitcoin.UnitTests.APIs {
-    public class KzPaymailClientTests
+    public class PaymailClientTests
     {
         [Fact]
         public async Task EnsureCapabililtyFor()
         {
             var domain = "moneybutton.com";
-            var r = new global::CafeLib.Bitcoin.APIs.Paymail.KzPaymailClient();
-            var pkiOk = await r.DomainHasCapability(domain, KzPaymail.Capability.pki);
-            var pdOk = await r.DomainHasCapability(domain, KzPaymail.Capability.paymentDestination);
-            var svOk = await r.DomainHasCapability(domain, KzPaymail.Capability.senderValidation);
-            var vpkoOk = await r.DomainHasCapability(domain, KzPaymail.Capability.verifyPublicKeyOwner);
-            var raOk = await r.DomainHasCapability(domain, KzPaymail.Capability.receiverApprovals);
+            var r = new PaymailClient();
+            var pkiOk = await r.DomainHasCapability(domain, Capability.Pki);
+            var pdOk = await r.DomainHasCapability(domain, Capability.PaymentDestination);
+            var svOk = await r.DomainHasCapability(domain, Capability.SenderValidation);
+            var vpkoOk = await r.DomainHasCapability(domain, Capability.VerifyPublicKeyOwner);
+            var raOk = await r.DomainHasCapability(domain, Capability.ReceiverApprovals);
         }
 
         [Fact]
         public async Task GetPubKey()
         {
-            var r = new KzPaymailClient();
+            var r = new PaymailClient();
 
             foreach (var tc in new []
             {
@@ -38,10 +38,10 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
             })
             {
                 //var privkey = KzElectrumSv.GetMasterPrivKey("<replace with actual wallet seed>").Derive($"0/{int.MaxValue}").PrivKey;
-                //var privkey = KzPrivKey.FromB58("KxXvocKqZtdHvZP5HHNShrwDQVz2muNPisrzoyeyhXc4tZhBj1nM");
+                //var privkey = PrivateKey.FromB58("KxXvocKqZtdHvZP5HHNShrwDQVz2muNPisrzoyeyhXc4tZhBj1nM");
                 //var pubkey = privkey.GetPubKey();
-                var pubkey = new KzPubKey(tc.k);
-                var k = await r.GetPubKey(tc.p);
+                var pubkey = new PublicKey(tc.k);
+                var k = await r.GetPublicKey(tc.p);
                 Assert.Equal(k, pubkey);
             }
         }
@@ -49,7 +49,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
         [Fact]
         public async Task VerifyPubKey()
         {
-            var r = new KzPaymailClient();
+            var r = new PaymailClient();
 
             foreach (var tc in new []
             {
@@ -60,7 +60,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
                 new { r = false, p = "tonesnotes@moneybutton.com", k = "02fe6a13c0734578b77d28680aac58a78eb1722dd654117451b8820c9380b10e68" },   
             })
             {
-                var pubkey = new KzPubKey(tc.k);
+                var pubkey = new PublicKey(tc.k);
                 var ok = await r.VerifyPubKey(tc.p, pubkey);
                 if (tc.r)
                     Assert.True(ok);
@@ -72,7 +72,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
         [Fact]
         public async Task VerifyMessageSignature()
         {
-            var r = new KzPaymailClient();
+            var r = new PaymailClient();
 
             foreach (var tc in new[]
             {
@@ -98,9 +98,9 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
             // Public key returned by GetPubKey("testpaymail@kizmet.org"): M/0/{int.MaxValue}
             // Private key for that public key: m/0/{int.MaxValue}
             // var key = KzElectrumSv.GetMasterPrivKey("<replace with actual wallet seed>").Derive($"0/{int.MaxValue}").PrivKey;
-            var key = KzPrivKey.FromB58("KxXvocKqZtdHvZP5HHNShrwDQVz2muNPisrzoyeyhXc4tZhBj1nM");
+            var key = PrivateKey.FromBase58("KxXvocKqZtdHvZP5HHNShrwDQVz2muNPisrzoyeyhXc4tZhBj1nM");
 
-            var r = new KzPaymailClient();
+            var r = new PaymailClient();
             var s = await r.GetOutputScript(key, "tonesnotes@moneybutton.com", "testpaymail@kizmet.org");
             Assert.True(s.Length > 0);
         }
@@ -108,8 +108,8 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
         [Fact]
         public void SignatureTest()
         {
-            //var pk = await new KzPaymailClient().GetPubKey("147@moneybutton.com");
-            var pub = new KzPubKey("02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef");
+            //var pk = await new PaymailClient().GetPubKey("147@moneybutton.com");
+            var pub = new PublicKey("02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef");
 
             var message = "147@moneybutton.com02019-06-07T20:55:57.562ZPayment with Money Button";
             var signature = "H4Q8tvj632hXiirmiiDJkuUN9Z20zDu3KaFuwY8cInZiLhgVJKJdKrZx1RZN06E/AARnFX7Fn618OUBQigCis4M=";
@@ -123,18 +123,18 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
         {
             //var To = "testpaymail@kizmet.org";
             //var PubKey = "";
-            var From = "tone@simply.cash";
-            var When = "2019-07-11T12:24:04.260Z";
-            var Amount = "";
-            var Purpose = "";
-            var Signature = "IJ1C3gXhnUxKpU8JOIjGHC8talwIgfIXKMmRZ5mjysb0eHjLPQP5Tlx29Xi5KNDZuOsOPk8HiVtwKAefq1pJVDs=";
+            const string from = "tone@simply.cash";
+            const string when = "2019-07-11T12:24:04.260Z";
+            const string amount = "";
+            const string purpose = "";
+            const string signature = "IJ1C3gXhnUxKpU8JOIjGHC8talwIgfIXKMmRZ5mjysb0eHjLPQP5Tlx29Xi5KNDZuOsOPk8HiVtwKAefq1pJVDs=";
 
-            var pub = await new KzPaymailClient().GetPubKey("tone@simply.cash");
+            var pub = await new PaymailClient().GetPublicKey("tone@simply.cash");
             // var pub = new KzPubKey();
             // pub.Set("02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef".HexToBytes());
 
-            var message = $"{From}{(Amount == "" ? "0" : Amount)}{When}{Purpose}";
-            var ok = pub.VerifyMessage(message, Signature);
+            var message = $"{from}{(amount == "" ? "0" : amount)}{when}{purpose}";
+            var ok = pub.VerifyMessage(message, signature);
 
             Assert.True(ok);
         }
@@ -149,11 +149,11 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
 
             var message = $"{paymail}{amount}{when}{purpose}";
 
-            var privkey = KzPrivKey.FromB58("KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR");
-            var signature = privkey.SignMessageToB64(message);
+            var privkey = PrivateKey.FromBase58("KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR");
+            var signature = privkey.SignMessageToBase64(message);
             Assert.Equal("H1CV5DE7tya0jM2ZynueSTRgkv4CpNY9/pz5lK5ENdGOWXCt/MTReMcQ54LCRt4ogf/g53HokXDpuSfc1D5gBUE=", signature);
 
-            var pub = privkey.GetPubKey();
+            var pub = privkey.CreatePublicKey();
             var ok = pub.VerifyMessage(message, signature);
             Assert.True(ok);
         }

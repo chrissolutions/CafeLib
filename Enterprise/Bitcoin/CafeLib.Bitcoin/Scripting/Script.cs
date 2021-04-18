@@ -473,9 +473,9 @@ namespace CafeLib.Bitcoin.Scripting
         /// <returns></returns>
         public bool IsOpReturn(int? height = null) => IsOpReturn(_script.Data.FirstSpan, height);
 
-        public static (bool ok, SigHashType sh, byte[] r, byte[] s, PublicKey pk) IsCheckSigScript(byte[] scriptSigBytes) => IsCheckSigScript(new ReadOnlySequence<byte>(scriptSigBytes));
+        public static (bool ok, SignatureHashEnum sh, byte[] r, byte[] s, PublicKey pk) IsCheckSigScript(byte[] scriptSigBytes) => IsCheckSigScript(new ReadOnlySequence<byte>(scriptSigBytes));
             
-        public static (bool ok, SigHashType sh, byte[] r, byte[] s, PublicKey pk) IsCheckSigScript(ReadOnlyByteSequence scriptSigBytes) {
+        public static (bool ok, SignatureHashEnum sh, byte[] r, byte[] s, PublicKey pk) IsCheckSigScript(ReadOnlyByteSequence scriptSigBytes) {
             var ros = scriptSigBytes;
             var (ok1, op1) = Operand.TryRead(ref ros, out var consumed1);
             var (ok2, op2) = Operand.TryRead(ref ros, out var consumed2);
@@ -493,7 +493,7 @@ namespace CafeLib.Bitcoin.Scripting
             var lenS = sig[lenR + 5];
             if (sig.Length != lenR + lenS + 7) goto fail;
 
-            var sh = (SigHashType)(sig[^1]);
+            var sh = (SignatureHashEnum)(sig[^1]);
 
             var r = sig.Slice(4, lenR).ToArray();
             var s = sig.Slice(6 + lenR, lenS).ToArray();
@@ -501,7 +501,7 @@ namespace CafeLib.Bitcoin.Scripting
             return (true, sh, r, s, pubkey);
 
             fail:
-            return (false, SigHashType.UNSUPPORTED, null, null, null);
+            return (false, SignatureHashEnum.Unsupported, null, null, null);
         }
 
     }

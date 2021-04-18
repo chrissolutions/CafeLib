@@ -3,14 +3,14 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System.Text;
-using CafeLib.Bitcoin.Encode;
+using CafeLib.Bitcoin.Crypto;
+using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Keys;
 using Xunit;
 
 namespace CafeLib.Bitcoin.UnitTests.Keys
 {
-    public class KzPrivKeyTests
+    public class PrivateKeyTests
     {
         [Fact]
         public void FromHexAndB58()
@@ -18,42 +18,42 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
             var hex = "906977a061af29276e40bf377042ffbde414e496ae2260bbf1fa9d085637bfff";
             var b58 = "L24Rq5hPWMexw5mQi7tchYw6mhtr5ApiHZMN8KJXCkskEv7bTV61";
 
-            var key1 = new KzPrivKey(hex);
-            var key2 = KzPrivKey.FromB58(b58);
+            var key1 = new PrivateKey(hex);
+            var key2 = PrivateKey.FromBase58(b58);
             Assert.Equal(key1, key2);
             Assert.Equal(hex, key1.ToHex());
-            Assert.Equal(b58, key1.ToB58().ToString());
+            Assert.Equal(b58, key1.ToBase58().ToString());
             Assert.Equal(b58, key1.ToString());
             Assert.Equal(hex, key2.ToHex());
-            Assert.Equal(b58, key2.ToB58().ToString());
+            Assert.Equal(b58, key2.ToBase58().ToString());
             Assert.Equal(b58, key2.ToString());
         }
 
-        const string strSecret1 = "5HxWvvfubhXpYYpS3tJkw6fq9jE9j18THftkZjHHfmFiWtmAbrj";
-        const string strSecret2 = "5KC4ejrDjv152FGwP386VD1i2NYc5KkfSMyv1nGy1VGDxGHqVY3";
-        const string strSecret1C = "Kwr371tjA9u2rFSMZjTNun2PXXP3WPZu2afRHTcta6KxEUdm1vEw";
-        const string strSecret2C = "L3Hq7a8FEQwJkW1M2GNKDW28546Vp5miewcCzSqUD9kCAXrJdS3g";
-        const string addr1 = "1QFqqMUD55ZV3PJEJZtaKCsQmjLT6JkjvJ";
-        const string addr2 = "1F5y5E5FMc5YzdJtB9hLaUe43GDxEKXENJ";
-        const string addr1C = "1NoJrossxPBKfCHuJXT4HadJrXRE9Fxiqs";
-        const string addr2C = "1CRj2HyM1CXWzHAXLQtiGLyggNT9WQqsDs";
+        private const string StrSecret1 = "5HxWvvfubhXpYYpS3tJkw6fq9jE9j18THftkZjHHfmFiWtmAbrj";
+        private const string StrSecret2 = "5KC4ejrDjv152FGwP386VD1i2NYc5KkfSMyv1nGy1VGDxGHqVY3";
+        private const string StrSecret1C = "Kwr371tjA9u2rFSMZjTNun2PXXP3WPZu2afRHTcta6KxEUdm1vEw";
+        private const string StrSecret2C = "L3Hq7a8FEQwJkW1M2GNKDW28546Vp5miewcCzSqUD9kCAXrJdS3g";
+        private const string Addr1 = "1QFqqMUD55ZV3PJEJZtaKCsQmjLT6JkjvJ";
+        private const string Addr2 = "1F5y5E5FMc5YzdJtB9hLaUe43GDxEKXENJ";
+        private const string Addr1C = "1NoJrossxPBKfCHuJXT4HadJrXRE9Fxiqs";
+        private const string Addr2C = "1CRj2HyM1CXWzHAXLQtiGLyggNT9WQqsDs";
 
-        const string strAddressBad = "1HV9Lc3sNHZxwj4Zk6fB38tEmBryq2cBiF";
+        private const string StrAddressBad = "1HV9Lc3sNHZxwj4Zk6fB38tEmBryq2cBiF";
 
         [Fact]
-        public void KzB58PrivKeyTests()
+        public void Base58PrivateKeyTests()
         {
-            var bsecret1 = new KzB58PrivKey();
-            var bsecret2 = new KzB58PrivKey();
-            var bsecret1C = new KzB58PrivKey();
-            var bsecret2C = new KzB58PrivKey();
-            var baddress1 = new KzB58PrivKey();
+            var bsecret1 = new Base58PrivateKey();
+            var bsecret2 = new Base58PrivateKey();
+            var bsecret1C = new Base58PrivateKey();
+            var bsecret2C = new Base58PrivateKey();
+            var baddress1 = new Base58PrivateKey();
 
-            Assert.True(bsecret1.SetString(strSecret1));
-            Assert.True(bsecret2.SetString(strSecret2));
-            Assert.True(bsecret1C.SetString(strSecret1C));
-            Assert.True(bsecret2C.SetString(strSecret2C));
-            Assert.False(baddress1.SetString(strAddressBad));
+            Assert.True(bsecret1.SetString(StrSecret1));
+            Assert.True(bsecret2.SetString(StrSecret2));
+            Assert.True(bsecret1C.SetString(StrSecret1C));
+            Assert.True(bsecret2C.SetString(StrSecret2C));
+            Assert.False(baddress1.SetString(StrAddressBad));
 
             var key1 = bsecret1.GetKey();
             Assert.False(key1.IsCompressed);
@@ -64,10 +64,10 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
             var key2C = bsecret2C.GetKey();
             Assert.True(key2C.IsCompressed);
 
-            var pubkey1 = key1.GetPubKey();
-            var pubkey2 = key2.GetPubKey();
-            var pubkey1C = key1C.GetPubKey();
-            var pubkey2C = key2C.GetPubKey();
+            var pubkey1 = key1.CreatePublicKey();
+            var pubkey2 = key2.CreatePublicKey();
+            var pubkey1C = key1C.CreatePublicKey();
+            var pubkey2C = key2C.CreatePublicKey();
 
             var a = pubkey1.ToAddress();
 
@@ -91,17 +91,21 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
             Assert.False(key2C.VerifyPubKey(pubkey2));
             Assert.True(key2C.VerifyPubKey(pubkey2C));
 
-            for (var n = 0; n < 16; n++) {
+            for (var n = 0; n < 16; n++) 
+            {
                 var strMsg = $"Very secret message {n}: 11";
-                var hashMsg = KzHashes.HASH256(Encoding.ASCII.GetBytes(strMsg));
+                var hashMsg = Hashes.Hash256(strMsg.AsciiToBytes());
 
                 // normal signatures
 
-                var (ok1, sign1) = key1.Sign(hashMsg);
-                var (ok1C, sign1C) = key1C.Sign(hashMsg);
-                var (ok2, sign2) = key2.Sign(hashMsg);
-                var (ok2C, sign2C) = key2C.Sign(hashMsg);
-                Assert.True(ok1 && ok1C && ok2 && ok2C);
+                var sign1 = key1.SignMessage(hashMsg);
+                var sign1C = key1C.SignMessage(hashMsg);
+                var sign2 = key2.SignMessage(hashMsg);
+                var sign2C = key2C.SignMessage(hashMsg);
+                Assert.NotNull(sign1);
+                Assert.NotNull(sign1C);
+                Assert.NotNull(sign2);
+                Assert.NotNull(sign2C);
 
                 Assert.True(pubkey1.Verify(hashMsg, sign1));
                 Assert.True(pubkey1.Verify(hashMsg, sign1C));
@@ -125,17 +129,23 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
 
                 // compact signatures (with key recovery)
 
-                var (cok1, csign1) = key1.SignCompact(hashMsg);
-                var (cok1C, csign1C) = key1C.SignCompact(hashMsg);
-                var (cok2, csign2) = key2.SignCompact(hashMsg);
-                var (cok2C, csign2C) = key2C.SignCompact(hashMsg);
-                Assert.True(cok1 && cok1C && cok2 && cok2C);
+                var compact1 = key1.CreateCompactSignature(hashMsg);
+                var compact1C = key1C.CreateCompactSignature(hashMsg);
+                var compact2 = key2.CreateCompactSignature(hashMsg);
+                var compact2C = key2C.CreateCompactSignature(hashMsg);
+                Assert.NotNull(compact1);
+                Assert.NotNull(compact1C);
+                Assert.NotNull(compact2);
+                Assert.NotNull(compact2C);
 
-                var (rok1, rkey1) = KzPubKey.FromRecoverCompact(hashMsg, csign1);
-                var (rok2, rkey2) = KzPubKey.FromRecoverCompact(hashMsg, csign2);
-                var (rok1C, rkey1C) = KzPubKey.FromRecoverCompact(hashMsg, csign1C);
-                var (rok2C, rkey2C) = KzPubKey.FromRecoverCompact(hashMsg, csign2C);
-                Assert.True(rok1 && rok2 && rok1C && rok2C);
+            var rkey1 = PublicKey.FromRecoverCompact(hashMsg, compact1);
+                var rkey2 = PublicKey.FromRecoverCompact(hashMsg, compact2);
+                var rkey1C = PublicKey.FromRecoverCompact(hashMsg, compact1C);
+                var rkey2C = PublicKey.FromRecoverCompact(hashMsg, compact2C);
+                Assert.NotNull(rkey1);
+                Assert.NotNull(rkey2);
+                Assert.NotNull(rkey1C);
+                Assert.NotNull(rkey2C);
 
                 Assert.True(rkey1 == pubkey1);
                 Assert.True(rkey2 == pubkey2);

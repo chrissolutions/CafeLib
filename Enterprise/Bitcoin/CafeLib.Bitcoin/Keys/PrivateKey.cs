@@ -115,15 +115,12 @@ namespace CafeLib.Bitcoin.Keys
                 return false;
 
             var rnd = Randomizer.GetStrongRandBytes(8).ToArray();
-            var str = "Bitcoin key verification\n";
+            const string str = "Bitcoin key verification\n";
 
             var hash = Hashes.Hash256(System.Text.Encoding.ASCII.GetBytes(str).Concat(rnd).ToArray());
 
-            var (ok, sig) = this.CreateSignature(hash);
-
-            if (!ok) return false;
-
-            return publicKey.Verify(hash, sig);
+            var sig = this.CreateSignature(hash);
+            return (sig != null) && publicKey.Verify(hash, sig);
         }
 
         public (bool ok, PrivateKey keyChild, UInt256 ccChild) Derive(uint nChild, UInt256 cc)

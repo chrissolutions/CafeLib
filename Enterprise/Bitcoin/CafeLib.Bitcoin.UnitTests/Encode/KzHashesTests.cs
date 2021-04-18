@@ -14,6 +14,7 @@ using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Keys;
 using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Persistence;
+using CafeLib.Bitcoin.UnitTests.APIs;
 using Xunit;
 
 namespace CafeLib.Bitcoin.UnitTests.Encode
@@ -73,11 +74,11 @@ namespace CafeLib.Bitcoin.UnitTests.Encode
 
             Assert.Equal(seedHash, Encoders.Hex.Encode(hash));
             Assert.Equal(pub, key.GetExtPublicKey().ToString());
-            //Assert.Equal(key, KzElectrumSv.GetMasterPrivKey(seed, customWords));
+            Assert.Equal(key, KzElectrumSv.GetMasterPrivateKey(seed, customWords));
         }    
 
         [Fact]
-        public void Electrumsv_PubKey_without_custom_words()
+        public void ElectrumSv_PubKey_Without_Custom_Words()
         {
             const string seed = "police off kit fee village rather kind when turn crowd fun that";
             const string pub = "xpub661MyMwAqRbcGAH5Lmmp6Tq7qtwnDfkJnMjz96AsLZTJZbHyGZe4CL792x3Eu1cNVt7BVXTAQWeQb2HBgrbcd3QZKc8M2UcX2tXy7RkLGXx";
@@ -89,7 +90,7 @@ namespace CafeLib.Bitcoin.UnitTests.Encode
 
             Assert.Equal(seedHash, Encoders.Hex.Encode(hash));
             Assert.Equal(pub, key.GetExtPublicKey().ToString());
-            //Assert.Equal(key, KzElectrumSv.GetMasterPrivKey(seed));
+            Assert.Equal(key, KzElectrumSv.GetMasterPrivateKey(seed));
         }
 
         [Fact]

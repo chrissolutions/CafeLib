@@ -21,35 +21,30 @@ namespace CafeLib.Bitcoin.Extensions
             var messageHash = message.Sha256().ToHex();
             return new WriterHash().Add(MessageMagic).Add(messageHash).GetHashFinal();
         }
+        public static byte[] SignMessage(this PrivateKey key, string message) => SignMessage(key, message.Utf8ToBytes());
 
-        public static byte[] SignMessage(this PrivateKey key, ReadOnlySpan<byte> message)
-        {
-            var (ok, sig) = key.CreateCompactSignature(GetMessageHash(message));
-            return ok ? sig : null;
-        }
+        public static byte[] SignMessage(this PrivateKey key, ReadOnlyByteSpan message)
+            => key.CreateCompactSignature(GetMessageHash(message));
 
-        public static string SignMessageToB64(this PrivateKey key, ReadOnlySpan<byte> message)
+        public static string SignMessageToBase64(this PrivateKey key, ReadOnlyByteSpan message)
         {
             var sigBytes = SignMessage(key, message);
             return sigBytes == null ? null : Convert.ToBase64String(sigBytes);
         }
 
-        public static byte[] SignMessage(this PrivateKey key, string message) => SignMessage(key, message.Utf8ToBytes());
-
-        public static string SignMessageToBase64(this PrivateKey key, string message) => SignMessageToB64(key, message.Utf8ToBytes());
+        public static string SignMessageToBase64(this PrivateKey key, string message) 
+            => SignMessageToBase64(key, message.Utf8ToBytes());
 
         public static PublicKey RecoverPubKeyFromMessage(ReadOnlySpan<byte> message, ReadOnlyByteSpan signature)
-        {
-            return PublicKey.FromRecoverCompact(GetMessageHash(message), signature);
-        }
+            => PublicKey.FromRecoverCompact(GetMessageHash(message), signature);
 
-        public static bool VerifyMessage(this PublicKey key, ReadOnlySpan<byte> message, ReadOnlySpan<byte> signature)
+        public static bool VerifyMessage(this PublicKey key, ReadOnlySpan<byte> message, ReadOnlyByteSpan signature)
         {
             var rkey = RecoverPubKeyFromMessage(message, signature);
             return rkey != null && rkey == key;
         }
 
-        public static bool VerifyMessage(this UInt160 keyId, ReadOnlySpan<byte> message, ReadOnlySpan<byte> signature)
+        public static bool VerifyMessage(this UInt160 keyId, ReadOnlySpan<byte> message, ReadOnlyByteSpan signature)
         {
             var rkey = RecoverPubKeyFromMessage(message, signature);
             return rkey != null && rkey.GetId() == keyId;

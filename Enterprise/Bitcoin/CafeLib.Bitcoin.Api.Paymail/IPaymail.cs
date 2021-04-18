@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CafeLib.Bitcoin.Keys;
-using CafeLib.Bitcoin.Script;
-using CafeLib.Bitcoin.Utility;
+using CafeLib.Bitcoin.Scripting;
+using CafeLib.Bitcoin.Units;
 
 namespace CafeLib.Bitcoin.Api.Paymail
 {
@@ -28,7 +28,7 @@ namespace CafeLib.Bitcoin.Api.Paymail
         /// </summary>
         /// <param name="paymailAddress"></param>
         /// <returns></returns>
-        Task<KzPubKey> GetPubKey(string paymailAddress);
+        Task<PublicKey> GetPublicKey(string paymailAddress);
 
         /// <summary>
         /// Verify public key.
@@ -36,7 +36,7 @@ namespace CafeLib.Bitcoin.Api.Paymail
         /// <param name="paymailAddress"></param>
         /// <param name="pubKey"></param>
         /// <returns></returns>
-        Task<bool> VerifyPubKey(string paymailAddress, KzPubKey pubKey);
+        Task<bool> VerifyPubKey(string paymailAddress, PublicKey pubKey);
 
         /// <summary>
         /// Implements brfc 759684b1a19a, paymentDestination: bsvalias Payment Addressing (Basic Address Resolution)
@@ -48,7 +48,7 @@ namespace CafeLib.Bitcoin.Api.Paymail
         /// <param name="amount"></param>
         /// <param name="purpose"></param>
         /// <returns></returns>
-        Task<KzScript> GetOutputScript(KzPrivKey key, string receiverAddress, string senderAddress, string senderName = null, KzAmount? amount = null, string purpose = "");
+        Task<Script> GetOutputScript(PrivateKey key, string receiverAddress, string senderAddress, string senderName = null, Amount? amount = null, string purpose = "");
 
         /// <summary>
         /// Verifies that the message was signed by the private key corresponding to the paymail public key.

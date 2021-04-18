@@ -2,7 +2,7 @@
 
 namespace CafeLib.Bitcoin.Api.Paymail.Models
 {
-    internal class GetPubKeyResponse
+    internal class GetPublicKeyResponse
     {
         [JsonProperty("bsvalias")]
         public string BsvAlias { get; set; }
