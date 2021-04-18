@@ -57,7 +57,7 @@ namespace CafeLib.Bitcoin.Keys
         /// <returns>Returns this key unless required key paths aren't valid for specified key.</returns>
         public ExtPrivateKey SetMaster(UInt512 vout, IEnumerable<KeyPath> required = null)
         {
-            return SetMaster((UInt256)vout.Bytes.Slice(0, 32), (UInt256)vout.Bytes.Slice(32, 32), required);
+            return SetMaster((UInt256)vout.Span.Slice(0, 32), (UInt256)vout.Span.Slice(32, 32), required);
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace CafeLib.Bitcoin.Keys
             var cek = new ExtPrivateKey {
                 Depth = (byte)(Depth + 1),
                 Child = (uint)index | (hardened ? HardenedBit : 0),
-                Fingerprint = BitConverter.ToInt32(PrivateKey.CreatePublicKey().GetId().Bytes.Slice(0, 4))
+                Fingerprint = BitConverter.ToInt32(PrivateKey.CreatePublicKey().GetId().Span.Slice(0, 4))
             };
 
             bool ok;
@@ -214,7 +214,7 @@ namespace CafeLib.Bitcoin.Keys
             code[6] = (byte)((Child >> 16) & 0xFF);
             code[7] = (byte)((Child >> 8) & 0xFF);
             code[8] = (byte)((Child >> 0) & 0xFF);
-            ChainCode.Bytes.CopyTo(code.Slice(9, 32));
+            ChainCode.Span.CopyTo(code.Slice(9, 32));
             code[41] = 0;
             var key = PrivateKey.Bytes;
             Debug.Assert(key.Length == 32);
@@ -226,7 +226,7 @@ namespace CafeLib.Bitcoin.Keys
             Depth = code[0];
             code.Slice(1, 4).CopyTo(Fingerprint.AsSpan());
             Child = (uint)code[5] << 24 | (uint)code[6] << 16 | (uint)code[7] << 8 | (uint)(code[8]);
-            code.Slice(9, 32).CopyTo(ChainCode.Bytes);
+            code.Slice(9, 32).CopyTo(ChainCode.Span);
             PrivateKey.Set(code.Slice(42, 32));
         }
 

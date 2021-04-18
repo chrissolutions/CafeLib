@@ -29,7 +29,7 @@ namespace CafeLib.Bitcoin.Keys
         /// </summary>
         public bool IsCompressed { get; private set; }
 
-        public ReadOnlyByteSpan Bytes => _keyData.Bytes;
+        public ReadOnlyByteSpan Bytes => _keyData.Span;
 
         public BigInteger BigInteger => _keyData.ToBigInteger();
 
@@ -60,13 +60,13 @@ namespace CafeLib.Bitcoin.Keys
 
         public PrivateKey(UInt256 v, bool compressed)
         {
-            Set(v.Bytes, compressed);
+            Set(v.Span, compressed);
         }
 
         public PrivateKey(UInt256 v, UInt256 keyData, bool compressed = true)
         {
             _keyData = keyData;
-            Set(v.Bytes, compressed);
+            Set(v.Span, compressed);
         }
 
         public PrivateKey(string hex, bool compressed = true)
@@ -86,7 +86,7 @@ namespace CafeLib.Bitcoin.Keys
             if (data.Length != UInt256.Length || !Check(data))
                 IsValid = false;
             else {
-                data.CopyTo(_keyData.Bytes);
+                data.CopyTo(_keyData.Span);
                 IsCompressed = compressed;
                 IsValid = true;
             }
@@ -96,9 +96,9 @@ namespace CafeLib.Bitcoin.Keys
         {
             do 
             {
-                Randomizer.GetStrongRandBytes(_keyData.Bytes);
+                Randomizer.GetStrongRandBytes(_keyData.Span);
             } 
-            while (!Check(_keyData.Bytes));
+            while (!Check(_keyData.Span));
             IsValid = true;
             IsCompressed = compressed;
         }
@@ -138,13 +138,13 @@ namespace CafeLib.Bitcoin.Keys
             else
             {
                 // Hardened.
-                Debug.Assert(_keyData.Bytes.Length == 32);
-                Hashes.Bip32Hash(cc, nChild, 0, _keyData.Bytes, vout);
+                Debug.Assert(_keyData.Span.Length == 32);
+                Hashes.Bip32Hash(cc, nChild, 0, _keyData.Span, vout);
             }
 
             var sout = vout.AsSpan();
             var ccChild = new UInt256();
-            sout.Slice(32, 32).CopyTo(ccChild.Bytes);
+            sout.Slice(32, 32).CopyTo(ccChild.Span);
 
             var ok = this.TweakAdd( sout.Slice(0, 32), out var keyChild);
             if (!ok) goto fail;

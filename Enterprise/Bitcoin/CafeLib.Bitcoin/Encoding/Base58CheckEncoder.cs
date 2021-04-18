@@ -21,7 +21,7 @@ namespace CafeLib.Bitcoin.Encoding
             var checksum = bytes.Hash256();
             var buf = new byte[bytes.Length + 4];
             bytes.CopyTo(buf);
-            checksum.Bytes.Slice(0, 4).CopyTo(buf.AsSpan().Slice(bytes.Length));
+            checksum.Span.Slice(0, 4).CopyTo(buf.AsSpan().Slice(bytes.Length));
             return Encoders.Base58.Encode(buf);
         }
 
@@ -32,7 +32,7 @@ namespace CafeLib.Bitcoin.Encoding
             var checksum = span.Slice(span.Length - 4);
             bytes = span.Slice(0, span.Length - 4).ToArray();
             var hash = Hashes.Hash256(bytes);
-            return checksum.SequenceEqual(hash.Bytes.Slice(0, 4));
+            return checksum.SequenceEqual(hash.Span.Slice(0, 4));
         }
     }
 }

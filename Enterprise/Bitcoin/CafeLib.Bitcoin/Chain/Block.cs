@@ -126,7 +126,7 @@ namespace CafeLib.Bitcoin.Chain
                     {
                         if (op.Code == Opcode.OP_PUSH20) 
                         {
-                            op.Data.ToSpan().CopyTo(v.Bytes);
+                            op.Data.ToSpan().CopyTo(v.Span);
                             var i = Array.BinarySearch(addresses, v);
                             if (i >= 0) 
                             {

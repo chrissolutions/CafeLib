@@ -23,7 +23,7 @@ namespace CafeLib.Bitcoin.Chain {
 
         public void Write(BinaryWriter s) {
             s.Write(N);
-            s.Write(Txid.Bytes);
+            s.Write(Txid.Span);
         }
 
         public void Read(BinaryReader s) {

@@ -60,19 +60,19 @@ namespace CafeLib.Bitcoin.Persistence
 
         public IBitcoinWriter Add(UInt160 v)
         {
-            _alg.TransformBlock(v.Bytes); 
+            _alg.TransformBlock(v.Span); 
             return this;
         }
 
         public IBitcoinWriter Add(UInt256 v)
         {
-            _alg.TransformBlock(v.Bytes);
+            _alg.TransformBlock(v.Span);
             return this;
         }
 
         public IBitcoinWriter Add(UInt512 v)
         {
-            _alg.TransformBlock(v.Bytes); 
+            _alg.TransformBlock(v.Span); 
             return this;
         } 
 

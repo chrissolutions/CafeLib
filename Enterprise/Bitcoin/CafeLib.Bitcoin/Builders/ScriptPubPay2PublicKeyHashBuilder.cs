@@ -12,7 +12,7 @@ namespace CafeLib.Bitcoin.Builders
             _TemplateId = TemplateId.Pay2PublicKeyHash;
             Add(Opcode.OP_DUP)
                 .Add(Opcode.OP_HASH160)
-                .Push(pubKeyHash.Bytes)
+                .Push(pubKeyHash.Span)
                 .Add(Opcode.OP_EQUALVERIFY)
                 .Add(Opcode.OP_CHECKSIG)
                 ;

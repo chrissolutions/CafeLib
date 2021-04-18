@@ -77,19 +77,19 @@ namespace CafeLib.Bitcoin.Persistence
 
         public IBitcoinWriter Add(UInt160 v)
         {
-            v.Bytes.CopyTo(_memory.Span[Length..]); 
+            v.Span.CopyTo(_memory.Span[Length..]); 
             return this;
         }
 
         public IBitcoinWriter Add(UInt256 v)
         {
-            v.Bytes.CopyTo(_memory.Span[Length..]); 
+            v.Span.CopyTo(_memory.Span[Length..]); 
             return this;
         }
 
         public IBitcoinWriter Add(UInt512 v)
         {
-            v.Bytes.CopyTo(_memory.Span[Length..]);
+            v.Span.CopyTo(_memory.Span[Length..]);
             return this;
         }
     }

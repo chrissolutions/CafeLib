@@ -21,7 +21,7 @@ namespace CafeLib.Bitcoin.Crypto
         public static UInt160 Ripemd160(this ReadOnlyByteSequence data)
         {
             var h = new UInt160();
-            Ripemd160(data, h.Bytes);
+            Ripemd160(data, h.Span);
             return h;
         }
 
@@ -34,7 +34,7 @@ namespace CafeLib.Bitcoin.Crypto
         public static UInt160 Sha1(this ReadOnlyByteSequence data)
         {
             var hash = new UInt160();
-            Sha1(data, hash.Bytes);
+            Sha1(data, hash.Span);
             return hash;
         }
 
@@ -47,7 +47,7 @@ namespace CafeLib.Bitcoin.Crypto
         public static UInt256 Sha256(this ReadOnlyByteSequence data)
         {
             var hash = new UInt256();
-            Sha256(data, hash.Bytes);
+            Sha256(data, hash.Span);
             return hash;
         }
 
@@ -66,8 +66,8 @@ namespace CafeLib.Bitcoin.Crypto
         {
             var h1 = new UInt256();
             using var sha = new SHA256Managed();
-            TransformFinalBlock(sha, data, h1.Bytes);
-            TransformFinalBlock(sha, h1.Bytes, hash);
+            TransformFinalBlock(sha, data, h1.Span);
+            TransformFinalBlock(sha, h1.Span, hash);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace CafeLib.Bitcoin.Crypto
         public static UInt256 Hash256(this ReadOnlyByteSequence data)
         {
             var h2 = new UInt256();
-            data.Hash256(h2.Bytes);
+            data.Hash256(h2.Span);
             return h2;
         }
 
@@ -90,7 +90,7 @@ namespace CafeLib.Bitcoin.Crypto
         public static void Hash160(this ReadOnlyByteSequence data, ByteSpan hash)
         {
             var h = data.Sha256();
-            Ripemd160(h.Bytes, hash);
+            Ripemd160(h.Span, hash);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace CafeLib.Bitcoin.Crypto
         /// <returns>KzHash160 RIPEMD160 of SHA256 of data.</returns>
         public static UInt160 Hash160(this ReadOnlyByteSequence data)
         {
-            return Ripemd160(Sha256(data).Bytes);
+            return Ripemd160(Sha256(data).Span);
         }
 
         public static void HmacSha256(this ReadOnlyByteSpan key, ReadOnlyByteSequence data, ByteSpan hash)
@@ -111,7 +111,7 @@ namespace CafeLib.Bitcoin.Crypto
         public static UInt256 HmacSha256(this ReadOnlyByteSpan key, ReadOnlyByteSequence data)
         {
             var hash = new UInt256();
-            new HMACSHA256(key).TransformFinalBlock(data, hash.Bytes);
+            new HMACSHA256(key).TransformFinalBlock(data, hash.Span);
             return hash;
         }
 
@@ -123,7 +123,7 @@ namespace CafeLib.Bitcoin.Crypto
         public static UInt512 HmacSha512(this ReadOnlyByteSpan key, ReadOnlyByteSequence data)
         {
             var hash = new UInt512();
-            new HMACSHA512(key).TransformFinalBlock(data, hash.Bytes);
+            new HMACSHA512(key).TransformFinalBlock(data, hash.Span);
             return hash;
         }
 

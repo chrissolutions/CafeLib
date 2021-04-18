@@ -168,7 +168,7 @@ namespace CafeLib.Bitcoin.Keys
         /// <returns></returns>
         public bool RecoverCompact(UInt256 hash, ReadOnlyByteSpan sig)
         {
-            var (ok, vch) = Secp256K1.PublicKeyRecoverCompact(hash.Bytes, sig);
+            var (ok, vch) = Secp256K1.PublicKeyRecoverCompact(hash.Span, sig);
 
             if (!ok)
                 Invalidate();
@@ -188,7 +188,7 @@ namespace CafeLib.Bitcoin.Keys
         {
             if (!IsValid || sig.Length == 0) return false;
 
-            return Secp256K1.PublicKeyVerify(hash.Bytes, sig, _bytes.AsSpan());
+            return Secp256K1.PublicKeyVerify(hash.Span, sig, _bytes.AsSpan());
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace CafeLib.Bitcoin.Keys
         /// <returns>20 byte hash as a KzUInt160</returns>
         public UInt160 ToHash160() => ReadOnlySpan.Hash160();
 
-        public string ToAddress() => Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress, ToHash160().Bytes);
+        public string ToAddress() => Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress, ToHash160().Span);
 
         public string ToHex() => _bytes != null ? Encoders.Hex.Encode(_bytes) : "<invalid>";
 
@@ -218,7 +218,7 @@ namespace CafeLib.Bitcoin.Keys
 
             var sout = vout.AsSpan();
             var ccChild = new UInt256();
-            sout.Slice(32, 32).CopyTo(ccChild.Bytes);
+            sout.Slice(32, 32).CopyTo(ccChild.Span);
 
             var pkbs = new byte[64];
             if (!Secp256K1.PublicKeyParse(pkbs.AsSpan(), ReadOnlySpan)) goto fail;

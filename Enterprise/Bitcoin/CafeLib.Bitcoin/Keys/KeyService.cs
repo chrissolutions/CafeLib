@@ -41,7 +41,7 @@ namespace CafeLib.Bitcoin.Keys
         public static byte[] CreateCompactSignature(this PrivateKey privateKey, UInt256 hash)
         {
             if (!privateKey.IsValid) return default;
-            var (ok, sig) = Library.PrivateKeySignCompact(hash.Bytes, privateKey.Bytes, privateKey.IsCompressed);
+            var (ok, sig) = Library.PrivateKeySignCompact(hash.Span, privateKey.Bytes, privateKey.IsCompressed);
             return ok ? sig : default;
         }
 
@@ -54,7 +54,7 @@ namespace CafeLib.Bitcoin.Keys
         public static byte[] CreateSignature(this PrivateKey privateKey, UInt256 hash)
         {
             if (!privateKey.IsValid) return default;
-            var (ok, sig) = Library.PrivateKeySign(hash.Bytes, privateKey.Bytes);
+            var (ok, sig) = Library.PrivateKeySign(hash.Span, privateKey.Bytes);
             return ok ? sig : default;
         }
 
@@ -79,7 +79,7 @@ namespace CafeLib.Bitcoin.Keys
         {
             childKey = null;
             var dataChild = (UInt256)privateKey.Bytes;
-            var result = Library.PrivKeyTweakAdd(dataChild.Bytes, bytes.Slice(0, 32));
+            var result = Library.PrivKeyTweakAdd(dataChild.Span, bytes.Slice(0, 32));
             if (result)
             {
                 childKey = new PrivateKey(dataChild);

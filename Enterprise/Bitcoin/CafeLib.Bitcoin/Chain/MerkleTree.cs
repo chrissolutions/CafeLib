@@ -142,7 +142,7 @@ namespace CafeLib.Bitcoin.Chain
             do 
             {
                 if (!hasBoth)
-                    node.LeftHash.Bytes.CopyTo(node.RightHash.Bytes);
+                    node.LeftHash.Span.CopyTo(node.RightHash.Span);
 
                 newHash = ComputeHash(node);
                 var np = node.Parent;

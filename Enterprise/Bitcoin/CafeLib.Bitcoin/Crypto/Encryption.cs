@@ -9,7 +9,7 @@ namespace CafeLib.Bitcoin.Crypto
     public class Encryption 
     {
         public static byte[] InitializationVector(ReadOnlySpan<byte> key, ReadOnlySpan<byte> data, int length = 16)
-            => Hashes.HmacSha256(key, data).Bytes.Slice(0, length).ToArray();
+            => Hashes.HmacSha256(key, data).Span.Slice(0, length).ToArray();
 
         public static byte[] SaltBytes(int length = 8) 
         {

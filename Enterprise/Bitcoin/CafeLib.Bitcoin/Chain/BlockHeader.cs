@@ -107,7 +107,7 @@ namespace CafeLib.Bitcoin.Chain
             using var sha256 = SHA256.Create();
             var hash1 = sha256.ComputeHash(blockBytes);
             var hash2 = sha256.ComputeHash(hash1);
-            hash2.CopyTo(_hash.Bytes);
+            hash2.CopyTo(_hash.Span);
             return true;
         }
     }

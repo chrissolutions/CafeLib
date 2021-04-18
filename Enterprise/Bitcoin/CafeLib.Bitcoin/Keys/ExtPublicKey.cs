@@ -61,7 +61,7 @@ namespace CafeLib.Bitcoin.Keys
             {
                 Depth = (byte)(Depth + 1),
                 Child = (uint)index | (hardened ? HardenedBit : 0),
-                Fingerprint = BitConverter.ToInt32(PublicKey.GetId().Bytes.Slice(0, 4))
+                Fingerprint = BitConverter.ToInt32(PublicKey.GetId().Span.Slice(0, 4))
             };
 
             bool ok;
@@ -84,7 +84,7 @@ namespace CafeLib.Bitcoin.Keys
             code[6] = (byte)((Child >> 16) & 0xFF);
             code[7] = (byte)((Child >> 8) & 0xFF);
             code[8] = (byte)((Child >> 0) & 0xFF);
-            ChainCode.Bytes.CopyTo(code.Slice(9, 32));
+            ChainCode.Span.CopyTo(code.Slice(9, 32));
             var key = PublicKey.ReadOnlySpan;
             Debug.Assert(key.Length == 33);
             key.CopyTo(code.Slice(41, 33));
@@ -95,7 +95,7 @@ namespace CafeLib.Bitcoin.Keys
             Depth = code[0];
             Fingerprint = BitConverter.ToInt32(code.Slice(1, 4));
             Child = (uint)code[5] << 24 | (uint)code[6] << 16 | (uint)code[7] << 8 | (uint)(code[8]);
-            code.Slice(9, 32).CopyTo(ChainCode.Bytes);
+            code.Slice(9, 32).CopyTo(ChainCode.Span);
             PublicKey = new PublicKey();
             PublicKey.Set(code.Slice(41, 33));
         }

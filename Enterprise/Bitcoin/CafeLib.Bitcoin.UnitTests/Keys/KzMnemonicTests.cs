@@ -31,7 +31,7 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
         {
             var words = "sword victory much blossom cradle sense boy float soda render arrive arrive";
             var h = Hashes.HmacSha512("Seed version".Utf8ToBytes(), words.Utf8NormalizedToBytes());
-            var hb = h.Bytes;
+            var hb = h.Span;
         }
 
         [Fact]

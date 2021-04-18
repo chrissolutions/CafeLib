@@ -104,7 +104,7 @@ namespace CafeLib.Bitcoin.UnitTests.Utility
         public void ByteAccess()
         {
             var i = new UInt256();
-            var s = i.Bytes;
+            var s = i.Span;
             s[0] = 0x21;
             s[31] = 0xfe;
             var str = i.ToString();
@@ -178,10 +178,10 @@ namespace CafeLib.Bitcoin.UnitTests.Utility
                     break;
                 }
                 var a0 = GetAddress(ref hold[0].l0);
-                var span0 = hold[0].l0.Bytes;
+                var span0 = hold[0].l0.Span;
                 GC.Collect();
                 var a1 = GetAddress(ref hold[0].l0);
-                var span1 = hold[0].l0.Bytes;
+                var span1 = hold[0].l0.Span;
                 if (hold.Any(o => o.HasMoved())) {
                     var o = hold.First(t => t.HasMoved());
                     var c = hold.Count(t => t.HasMoved());
@@ -189,7 +189,7 @@ namespace CafeLib.Bitcoin.UnitTests.Utility
                     foreach (var ot in hold) {
                         Assert.True(ot.l0.N0 == i, "Unexpected initialization.");
                         var b = (byte)i;
-                        Assert.True(ot.l0.Bytes[0] == b, "Span access failed.");
+                        Assert.True(ot.l0.Span[0] == b, "Span access failed.");
                         i++;
                     }
                     Assert.True(a0 != a1, "Test instance wasn't moved.");

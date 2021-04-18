@@ -144,7 +144,7 @@ namespace CafeLib.Bitcoin.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryReadUInt256(ref UInt256 destination)
         {
-            var bytes = destination.Bytes;
+            var bytes = destination.Span;
             if (!Data.TryCopyTo(bytes)) return false;
             Data.Advance(bytes.Length);
             return true;

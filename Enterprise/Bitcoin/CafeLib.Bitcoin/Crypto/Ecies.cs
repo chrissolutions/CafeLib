@@ -75,7 +75,7 @@ namespace CafeLib.Bitcoin.Crypto
                 // Hash the X coordinate of the resulting elliptic curve point.
                 var x = pkbs.Slice(0, 32);
                 x.Reverse();
-                var h = Hashes.Sha256(x).Bytes;
+                var h = Hashes.Sha256(x).Span;
                 _kE = new UInt256(h.Slice(0, 32));
                 _kM = new UInt256(h.Slice(32, 32));
                 fail:
@@ -91,9 +91,9 @@ namespace CafeLib.Bitcoin.Crypto
         {
             var iv = Encryption.InitializationVector(_privateKey.Bytes, data);
 
-            var c = Encryption.AesEncrypt(data, _kE.Bytes, iv);
+            var c = Encryption.AesEncrypt(data, _kE.Span, iv);
             //var c = AESCBC_Encrypt(data.ToArray(), _kE.ToBytes(), iv);
-            var d = Hashes.HmacSha256(_kM.Bytes, c).Bytes;
+            var d = Hashes.HmacSha256(_kM.Span, c).Span;
             if (ShortTag) d = d.Slice(0, 4);
 
             var key = NoKey ? ReadOnlyByteSpan.Empty : _privateKey.CreatePublicKey().ReadOnlySpan;
@@ -125,7 +125,7 @@ namespace CafeLib.Bitcoin.Crypto
                 PublicKey = new PublicKey(key);
             }
 
-            var d1 = Hashes.HmacSha256(_kM.Bytes, c).Bytes;
+            var d1 = Hashes.HmacSha256(_kM.Span, c).Span;
             if (ShortTag)
                 d1 = d1.Slice(0, 4);
 

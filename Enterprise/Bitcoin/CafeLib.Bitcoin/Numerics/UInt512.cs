@@ -36,9 +36,9 @@ namespace CafeLib.Bitcoin.Numerics
             if (span.Length < 64)
                 throw new ArgumentException("54 bytes are required.");
 
-            span.Slice(0, 64).CopyTo(Bytes);
+            span.Slice(0, 64).CopyTo(Span);
             if (reverse)
-                Bytes.Reverse();
+                Span.Reverse();
         }
 
         public UInt512(UInt64 v0 = 0, UInt64 v1 = 0, UInt64 v2 = 0, UInt64 v3 = 0, UInt64 v4 = 0, UInt64 v5 = 0, UInt64 v6 = 0, UInt64 v7 = 0)
@@ -56,13 +56,13 @@ namespace CafeLib.Bitcoin.Numerics
         public UInt512(string hex, bool firstByteFirst = false)
             : this()
         {
-            (firstByteFirst ? Hex : HexReverse).TryDecode(hex, Bytes);
+            (firstByteFirst ? Hex : HexReverse).TryDecode(hex, Span);
         }
 
         public static UInt512 Zero { get; } = new UInt512(0);
         public static UInt512 One { get; } = new UInt512(1);
 
-        public ByteSpan Bytes
+        public ByteSpan Span
         {
             get
             {
@@ -80,23 +80,23 @@ namespace CafeLib.Bitcoin.Numerics
 
         public void Read(BinaryReader s)
         {
-            s.Read(Bytes);
+            s.Read(Span);
         }
 
-        public BigInteger ToBigInteger() => new BigInteger(Bytes);
+        public BigInteger ToBigInteger() => new BigInteger(Span);
 
         /// <summary>
         /// The bytes appear in big-endian order, as a large hexadecimal encoded number.
         /// </summary>
         /// <returns></returns>
-		public override string ToString() => HexReverse.Encode(Bytes);
+		public override string ToString() => HexReverse.Encode(Span);
 
         /// <summary>
         /// The bytes appear in little-endian order, first byte in memory first.
         /// But the high nibble, first hex digit, of the each byte still appears before the low nibble (big-endian by nibble order).
         /// </summary>
         /// <returns></returns>
-		public string ToStringFirstByteFirst() => Hex.Encode(Bytes);
+		public string ToStringFirstByteFirst() => Hex.Encode(Span);
 
         /// <summary>
         /// The bytes appear in little-endian order, first byte in memory first.
@@ -113,8 +113,8 @@ namespace CafeLib.Bitcoin.Numerics
 
         public static explicit operator UInt512(ByteSpan rhs) => new UInt512(rhs);
         public static explicit operator UInt512(ReadOnlyByteSpan rhs) => new UInt512(rhs);
-        public static implicit operator ByteSpan(UInt512 rhs) => rhs.Bytes;
-        public static implicit operator ReadOnlyByteSpan(UInt512 rhs) => rhs.Bytes;
+        public static implicit operator ByteSpan(UInt512 rhs) => rhs.Span;
+        public static implicit operator ReadOnlyByteSpan(UInt512 rhs) => rhs.Span;
 
         public static bool operator ==(UInt512 x, UInt512 y) => x.Equals(y);
         public static bool operator !=(UInt512 x, UInt512 y) => !(x == y);

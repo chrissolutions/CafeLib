@@ -39,8 +39,8 @@ namespace CafeLib.Bitcoin.UnitTests.Scripts
 
             var address = new PublicKey(true);
             var e = new UInt160("c2eaba3b9c29575322c6e24fdc1b49bdfe405bad", true);
-            var s1 = Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress, e.Bytes);
-            var s2 = Encoders.Base58Check.Encode(RootService.Network.ScriptAddress, e.Bytes);
+            var s1 = Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress, e.Span);
+            var s2 = Encoders.Base58Check.Encode(RootService.Network.ScriptAddress, e.Span);
             //e.Span.CopyTo(address.Span);
             //var id = address.GetID();
         }

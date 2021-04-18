@@ -14,14 +14,14 @@ namespace CafeLib.Bitcoin.Crypto
         public static UInt160 Ripemd160(ReadOnlySpan<byte> data)
         {
             var h = new UInt160();
-            Ripemd160(data, h.Bytes);
+            Ripemd160(data, h.Span);
             return h;
         }
 
         public static UInt160 Ripemd160(ReadOnlySequence<byte> data)
         {
             var h = new UInt160();
-            Ripemd160(data, h.Bytes);
+            Ripemd160(data, h.Span);
             return h;
         }
 

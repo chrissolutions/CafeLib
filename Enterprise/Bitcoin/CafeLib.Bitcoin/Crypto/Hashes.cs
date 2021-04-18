@@ -58,7 +58,7 @@ namespace CafeLib.Bitcoin.Crypto
             // ReSharper disable once ShiftExpressionRealShiftCountIsZero
             num[3] = (byte)((nChild >> 0) & 0xFF);
 
-            HmacSha512(chainCode.Bytes, s, output);
+            HmacSha512(chainCode.Span, s, output);
         }
 
         /// <summary>
@@ -118,9 +118,9 @@ namespace CafeLib.Bitcoin.Crypto
             {
                 inner.TransformBlock(innerSeed);
                 outer.TransformBlock(outerSeed);
-                inner.TransformFinalBlock(dataSpan, hash.Bytes);
-                outer.TransformFinalBlock(hash.Bytes, hash.Bytes);
-                dataSpan = hash.Bytes;
+                inner.TransformFinalBlock(dataSpan, hash.Span);
+                outer.TransformFinalBlock(hash.Span, hash.Span);
+                dataSpan = hash.Span;
                 xhash = i == 0 ? hash : xhash ^ hash;
             }
 

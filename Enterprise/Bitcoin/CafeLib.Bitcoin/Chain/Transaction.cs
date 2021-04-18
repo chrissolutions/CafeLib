@@ -107,7 +107,7 @@ namespace CafeLib.Bitcoin.Chain
             {
                 var hash1 = sha256.ComputeHash(txBytes);
                 var hash2 = sha256.ComputeHash(hash1);
-                hash2.CopyTo(Hash.Bytes);
+                hash2.CopyTo(Hash.Span);
             }
 
             bp.TxParsed(this, r.Data.Consumed);
@@ -154,7 +154,7 @@ namespace CafeLib.Bitcoin.Chain
             using var sha256 = SHA256.Create();
             var hash1 = sha256.ComputeHash(txBytes);
             var hash2 = sha256.ComputeHash(hash1);
-            hash2.CopyTo(Hash.Bytes);
+            hash2.CopyTo(Hash.Span);
             Version = version;
             Inputs = vin;
             Outputs = vout;
