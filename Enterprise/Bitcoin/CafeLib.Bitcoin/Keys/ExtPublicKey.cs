@@ -100,8 +100,8 @@ namespace CafeLib.Bitcoin.Keys
             PublicKey.Set(code.Slice(41, 33));
         }
 
-        //public Base58ExtPublicKey ToBase58() => new Base58ExtPublicKey(this);
-        //public override string ToString() => ToBase58().ToString();
+        public Base58ExtPublicKey ToBase58() => new Base58ExtPublicKey(this);
+        public override string ToString() => ToBase58().ToString();
 
         public override int GetHashCode() => base.GetHashCode() ^ PublicKey.GetHashCode();
         public bool Equals(ExtPublicKey o) => (object)o != null && base.Equals(o) && PublicKey == o.PublicKey;

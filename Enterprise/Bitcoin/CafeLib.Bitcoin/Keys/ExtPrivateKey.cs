@@ -225,7 +225,7 @@ namespace CafeLib.Bitcoin.Keys
         {
             Depth = code[0];
             code.Slice(1, 4).CopyTo(Fingerprint.AsSpan());
-            Child = (uint)code[5] << 24 | (uint)code[6] << 16 | (uint)code[7] << 8 | (uint)(code[8]);
+            Child = (uint)code[5] << 24 | (uint)code[6] << 16 | (uint)code[7] << 8 | code[8];
             code.Slice(9, 32).CopyTo(ChainCode.Span);
             PrivateKey.Set(code.Slice(42, 32));
         }
@@ -236,7 +236,7 @@ namespace CafeLib.Bitcoin.Keys
         public override int GetHashCode() => base.GetHashCode() ^ PrivateKey.GetHashCode();
         public bool Equals(ExtPrivateKey o) => (object)o != null && base.Equals(o) && PrivateKey == o.PrivateKey;
         public override bool Equals(object obj) => obj is ExtPrivateKey key && this == key;
-        public static bool operator ==(ExtPrivateKey x, ExtPrivateKey y) => x != null && (ReferenceEquals(x, y) || x.Equals(y));
+        public static bool operator ==(ExtPrivateKey x, ExtPrivateKey y) => (object)x != null && (ReferenceEquals(x, y) || x.Equals(y));
         public static bool operator !=(ExtPrivateKey x, ExtPrivateKey y) => !(x == y);
     }
 }

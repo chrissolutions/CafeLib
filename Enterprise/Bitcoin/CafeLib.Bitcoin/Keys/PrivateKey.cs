@@ -56,6 +56,8 @@ namespace CafeLib.Bitcoin.Keys
         public PrivateKey(UInt256 keyData)
         {
             _keyData = keyData;
+            IsCompressed = true;
+            IsValid = true;
         }
 
         public PrivateKey(UInt256 v, bool compressed)
@@ -161,7 +163,7 @@ namespace CafeLib.Bitcoin.Keys
         public override int GetHashCode() => _keyData.GetHashCode();
         public bool Equals(PrivateKey o) => (object)o != null && IsCompressed.Equals(o.IsCompressed) && _keyData.Equals(o._keyData);
         public override bool Equals(object obj) => obj is PrivateKey key && this == key;
-        public static bool operator ==(PrivateKey x, PrivateKey y) => x != null && (ReferenceEquals(x, y) || x.Equals(y));
+        public static bool operator ==(PrivateKey x, PrivateKey y) => (object)x != null && (ReferenceEquals(x, y) || x.Equals(y));
         public static bool operator !=(PrivateKey x, PrivateKey y) => !(x == y);
     }
 }
