@@ -60,7 +60,7 @@ namespace CafeLib.Bitcoin.UnitTests.Encode
                 var hex = h.Decode(tc.Hex);
                 var ok = e.TryDecode(tc.Base58, out var buf);
                 Assert.Equal(tc.Ok, ok);
-
+                if (!ok) continue;
                 var ver = buf[0];
                 var data = buf.AsSpan()[1..].ToArray();
                 Assert.Equal(tc.Version, ver);
