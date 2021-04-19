@@ -11,37 +11,29 @@ namespace CafeLib.Bitcoin.UnitTests.Encode
 {
     public class KzBase58Tests
     {
-        private class TestCase { public bool Ok; public string Hex; public string Base58; }
+        private static readonly HexEncoder Hex = Encoders.Hex;
+        private static readonly Base58Encoder Base58 = Encoders.Base58;
 
-        private readonly TestCase[] _testCases = {
-            new TestCase { Ok = true, Hex = "", Base58 = "" },
-            new TestCase { Ok = true, Hex = "61", Base58 = "2g" },
-            new TestCase { Ok = true, Hex = "626262", Base58 = "a3gV" },
-            new TestCase { Ok = true, Hex = "636363", Base58 = "aPEr" },
-            new TestCase { Ok = true, Hex = "73696d706c792061206c6f6e6720737472696e67", Base58 = "2cFupjhnEsSn59qHXstmK2ffpLv2" },
-            new TestCase { Ok = true, Hex = "00eb15231dfceb60925886b67d065299925915aeb172c06647", Base58 = "1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L" },
-            new TestCase { Ok = true, Hex = "516b6fcd0f", Base58 = "ABnLTmg" },
-            new TestCase { Ok = true, Hex = "bf4f89001e670274dd", Base58 = "3SEo3LWLoPntC" },
-            new TestCase { Ok = true, Hex = "572e4794", Base58 = "3EFU7m" },
-            new TestCase { Ok = true, Hex = "ecac89cad93923c02321", Base58 = "EJDM8drfXA6uyA" },
-            new TestCase { Ok = true, Hex = "10c8511e", Base58 = "Rt5zm" },
-            new TestCase { Ok = true, Hex = "00000000000000000000", Base58 = "1111111111" }
-        };
-
-        [Fact]
-        public void Base58TestCases()
+        [Theory]
+        [InlineData(true, "", "")]
+        [InlineData(true, "61", "2g")]
+        [InlineData(true, "626262", "a3gV")]
+        [InlineData(true, "636363", "aPEr")]
+        [InlineData(true, "73696d706c792061206c6f6e6720737472696e67", "2cFupjhnEsSn59qHXstmK2ffpLv2")]
+        [InlineData(true, "00eb15231dfceb60925886b67d065299925915aeb172c06647", "1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L")]
+        [InlineData(true, "516b6fcd0f", "ABnLTmg")]
+        [InlineData(true, "bf4f89001e670274dd", "3SEo3LWLoPntC")]
+        [InlineData(true, "572e4794", "3EFU7m")]
+        [InlineData(true, "ecac89cad93923c02321", "EJDM8drfXA6uyA")]
+        [InlineData(true, "10c8511e", "Rt5zm")]
+        [InlineData(true, "00000000000000000000", "1111111111")]
+        public void Base58TestCases(bool ok, string hex, string base58)
         {
-            var h = Encoders.Hex;
-            var e = Encoders.Base58;
-            foreach (var tc in _testCases) {
-                var hex = h.Decode(tc.Hex);
-                var ok = e.TryDecode(tc.Base58, out var bytes);
-                Assert.Equal(tc.Ok, ok);
-                if (ok) {
-                    Assert.Equal(hex, bytes);
-                    Assert.Equal(tc.Base58, e.Encode(bytes));
-                }
-            }
+            var hexValue = Hex.Decode(hex);
+            var result = Base58.TryDecode(base58, out var bytes);
+            Assert.Equal(result, ok);
+            Assert.Equal(hexValue, bytes);
+            Assert.Equal(base58, Base58.Encode(bytes));
         }
     }
 }
