@@ -3,6 +3,8 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using System;
+using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Encoding;
 using Xunit;
 
@@ -29,6 +31,18 @@ namespace CafeLib.Bitcoin.UnitTests.Encode
             var s0r = "fedcba9876543210";
             Assert.Equal(hexr.Encode(b0r), s0r);
             Assert.Equal(hexr.Decode(s0r), b0r);
+        }
+
+        [Fact]
+        public void Endian()
+        {
+            var bytes = new ByteSpan(new byte[] { 0xAC, 0x1E, 0xED, 0x88 });
+
+            var le = Encoders.Endian.LittleEndianInt32(bytes);
+            var be = Encoders.Endian.BigEndianInt32(bytes);
+
+            Assert.Equal(unchecked((Int32)(0x88ED1EAC)), le);
+            Assert.Equal(unchecked((Int32)(0xAC1EED88)), be);
         }
     }
 }
