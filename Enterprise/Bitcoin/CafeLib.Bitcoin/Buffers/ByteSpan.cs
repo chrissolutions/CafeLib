@@ -38,9 +38,14 @@ namespace CafeLib.Bitcoin.Buffers
         public ByteSpan Slice(int start) => Data[start..];
         public ByteSpan Slice(int start, int length) => Data.Slice(start, length);
 
-        public void CopyTo(ByteSpan destination) => Data.CopyTo(destination);
         public Span<byte>.Enumerator GetEnumerator() => Data.GetEnumerator();
         public byte[] ToArray() => Data.ToArray();
+
+        public ByteSpan CopyTo(ByteSpan destination)
+        {
+            Data.CopyTo(destination);
+            return destination;
+        }
 
         public static ByteSpan Empty => default;
 

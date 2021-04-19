@@ -25,8 +25,12 @@ namespace CafeLib.Bitcoin.Buffers
 
         public long Length => Data.Length;
 
-        public void CopyTo(ByteSpan destination) => Data.CopyTo(destination);
         public byte[] ToArray() => Data.ToArray();
+        public ByteSpan CopyTo(ByteSpan destination)
+        {
+            Data.CopyTo(destination);
+            return destination;
+        }
 
         public static implicit operator ReadOnlySequence<byte>(ReadOnlyByteSequence rhs) => rhs.Data;
         public static implicit operator ReadOnlyByteSequence(ReadOnlySequence<byte> rhs) => new ReadOnlyByteSequence(rhs);

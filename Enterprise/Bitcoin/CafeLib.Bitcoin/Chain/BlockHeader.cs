@@ -26,31 +26,29 @@ namespace CafeLib.Bitcoin.Chain
         public const int BlockHeaderSize = 80;
 
         /// Essential fields of a Bitcoin SV block header.
-
-        Int32 _version;
-        UInt256 _hashPrevBlock;
-        UInt256 _hashMerkleRoot;
-        UInt32 _time;
-        UInt32 _bits;
-        UInt32 _nonce;
+        private int _version;
+        private UInt256 _hashPrevBlock;
+        private UInt256 _hashMerkleRoot;
+        private uint _time;
+        private uint _bits;
+        private uint _nonce;
 
         /// The following fields are computed or external, not essential.
 
         public DateTime TimeWhen => DateTime.UnixEpoch + TimeSpan.FromSeconds(_time);
 
-        private UInt256 _hash;
+        private readonly UInt256 _hash = new UInt256();
         public UInt256 Hash => _hash;
 
-        public Int32 Height { get; set; }
+        public int Height { get; set; }
 
         /// Public access to essential header fields.
-
-        public Int32 Version => _version;
+        public int Version => _version;
         public UInt256 HashPrevBlock => _hashPrevBlock;
         public UInt256 HashMerkleRoot => _hashMerkleRoot;
-        public UInt32 Time => _time;
-        public UInt32 Bits => _bits;
-        public UInt32 Nonce => _nonce;
+        public uint Time => _time;
+        public uint Bits => _bits;
+        public uint Nonce => _nonce;
 
         public BlockHeader()
         {
@@ -58,12 +56,12 @@ namespace CafeLib.Bitcoin.Chain
 
         public BlockHeader
         (
-            Int32 version,
+            int version,
             UInt256 hashPrevBlock,
             UInt256 hashMerkleRoot,
-            UInt32 time,
-            UInt32 bits,
-            UInt32 nonce
+            uint time,
+            uint bits,
+            uint nonce
         )
         {
             _version = version;
