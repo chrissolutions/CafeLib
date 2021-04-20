@@ -30,7 +30,7 @@ namespace CafeLib.Bitcoin.UnitTests.Encrypt
             var wifLivenet = "L2Gkw3kKJ6N24QcDuH4XDqt9cTqsKTVNDGz1CRZhk9cq4auDUbJy";
 
             var privKey = new PrivateKey(hex);
-            var privKey2 = PrivateKey.FromWIF(wifLivenet);
+            var privKey2 = PrivateKey.FromWif(wifLivenet);
             Assert.Equal(privKey, privKey2);
         }
 
@@ -65,10 +65,10 @@ namespace CafeLib.Bitcoin.UnitTests.Encrypt
         [Fact]
         public void TestCases()
         {
-            var message = "attack at dawn";
+            const string message = "attack at dawn";
 
-            var aliceKey = PrivateKey.FromWIF("L1Ejc5dAigm5XrM3mNptMEsNnHzS7s51YxU7J61ewGshZTKkbmzJ");
-            var bobKey = PrivateKey.FromWIF("KxfxrUXSMjJQcb3JgnaaA6MqsrKQ1nBSxvhuigdKRyFiEm6BZDgG");
+            var aliceKey = PrivateKey.FromWif("L1Ejc5dAigm5XrM3mNptMEsNnHzS7s51YxU7J61ewGshZTKkbmzJ");
+            var bobKey = PrivateKey.FromWif("KxfxrUXSMjJQcb3JgnaaA6MqsrKQ1nBSxvhuigdKRyFiEm6BZDgG");
 
             {
                 var encrypted = "0339e504d6492b082da96e11e8f039796b06cd4855c101e2492a6f10f3e056a9e712c732611c6917ab5c57a1926973bc44a1586e94a783f81d05ce72518d9b0a80e2e13c7ff7d1306583f9cc7a48def5b37fbf2d5f294f128472a6e9c78dede5f5";

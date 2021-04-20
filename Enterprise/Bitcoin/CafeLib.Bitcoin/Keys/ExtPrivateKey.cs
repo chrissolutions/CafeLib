@@ -234,9 +234,11 @@ namespace CafeLib.Bitcoin.Keys
         public override string ToString() => ToBase58().ToString();
 
         public override int GetHashCode() => base.GetHashCode() ^ PrivateKey.GetHashCode();
-        public bool Equals(ExtPrivateKey o) => (object)o != null && base.Equals(o) && PrivateKey == o.PrivateKey;
+
+        public bool Equals(ExtPrivateKey o) => !(o is null) && base.Equals(o) && PrivateKey == o.PrivateKey;
         public override bool Equals(object obj) => obj is ExtPrivateKey key && this == key;
-        public static bool operator ==(ExtPrivateKey x, ExtPrivateKey y) => (object)x != null && (ReferenceEquals(x, y) || x.Equals(y));
+
+        public static bool operator ==(ExtPrivateKey x, ExtPrivateKey y) => x?.Equals(y) ?? y is null;
         public static bool operator !=(ExtPrivateKey x, ExtPrivateKey y) => !(x == y);
     }
 }

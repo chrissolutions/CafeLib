@@ -81,7 +81,7 @@ namespace CafeLib.Bitcoin.Keys
 
         public static PrivateKey FromHex(string hex, bool compressed = true) => new PrivateKey(new UInt256(hex, true), compressed);
         public static PrivateKey FromBase58(string base58) => new Base58PrivateKey(base58).GetKey();
-        public static PrivateKey FromWIF(string wif) => new Base58PrivateKey(wif).GetKey();
+        public static PrivateKey FromWif(string wif) => new Base58PrivateKey(wif).GetKey();
 
         public void Set(ReadOnlyByteSpan data, bool compressed = true)
         {
@@ -161,9 +161,12 @@ namespace CafeLib.Bitcoin.Keys
         public override string ToString() => ToBase58().ToString();
 
         public override int GetHashCode() => _keyData.GetHashCode();
-        public bool Equals(PrivateKey o) => (object)o != null && IsCompressed.Equals(o.IsCompressed) && _keyData.Equals(o._keyData);
+
+        
+        public bool Equals(PrivateKey o) => !(o is null) && IsCompressed.Equals(o.IsCompressed) && _keyData.Equals(o._keyData);
         public override bool Equals(object obj) => obj is PrivateKey key && this == key;
-        public static bool operator ==(PrivateKey x, PrivateKey y) => (object)x != null && (ReferenceEquals(x, y) || x.Equals(y));
+
+        public static bool operator ==(PrivateKey x, PrivateKey y) => x?.Equals(y) ?? y is null;
         public static bool operator !=(PrivateKey x, PrivateKey y) => !(x == y);
     }
 }

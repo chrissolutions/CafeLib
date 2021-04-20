@@ -75,7 +75,7 @@ namespace CafeLib.Bitcoin.Crypto
                 // Hash the X coordinate of the resulting elliptic curve point.
                 var x = pkbs.Slice(0, 32);
                 x.Reverse();
-                var h = Hashes.Sha256(x).Span;
+                var h = Hashes.Sha512(x).Span;
                 _kE = new UInt256(h.Slice(0, 32));
                 _kM = new UInt256(h.Slice(32, 32));
                 fail:

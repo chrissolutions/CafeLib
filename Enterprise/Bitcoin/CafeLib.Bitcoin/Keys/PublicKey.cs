@@ -239,11 +239,10 @@ namespace CafeLib.Bitcoin.Keys
 
         public override int GetHashCode() => _bytes.AggregateHashCode();
 
-        public bool Equals(PublicKey o) => (object) o != null && _bytes.SequenceEqual(o._bytes);
+        public bool Equals(PublicKey o) => !(o is null) && _bytes.SequenceEqual(o._bytes);
         public override bool Equals(object obj) => obj is PublicKey key && this == key;
 
-        public static bool operator ==(PublicKey x, PublicKey y) => x != null && (ReferenceEquals(x, y) || x.Equals(y));
-
+        public static bool operator ==(PublicKey x, PublicKey y) => x?.Equals(y) ?? y is null;
         public static bool operator !=(PublicKey x, PublicKey y) => !(x == y);
     }
 }
