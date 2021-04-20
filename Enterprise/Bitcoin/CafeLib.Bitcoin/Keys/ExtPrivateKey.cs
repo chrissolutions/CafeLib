@@ -221,12 +221,12 @@ namespace CafeLib.Bitcoin.Keys
             key.CopyTo(code.Slice(42, 32));
         }
 
-        public void Decode(ReadOnlySpan<byte> code)
+        public void Decode(ReadOnlyByteSpan code)
         {
             Depth = code[0];
-            code.Slice(1, 4).CopyTo(Fingerprint.AsSpan());
+            Fingerprint = BitConverter.ToInt32(code[1..5]);
             Child = (uint)code[5] << 24 | (uint)code[6] << 16 | (uint)code[7] << 8 | code[8];
-            code.Slice(9, 32).CopyTo(ChainCode.Span);
+            ChainCode = new UInt256(code.Slice(9, 32));
             PrivateKey.Set(code.Slice(42, 32));
         }
 

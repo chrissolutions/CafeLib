@@ -78,9 +78,11 @@ namespace CafeLib.Bitcoin.Keys
         }
 
         public override int GetHashCode() => Depth.GetHashCode() ^ Fingerprint.GetHashCode() ^ Child.GetHashCode() ^ ChainCode.GetHashCode();
+
         public bool Equals(ExtKey o) => (object)o != null && Depth == o.Depth && Fingerprint == o.Fingerprint && Child == o.Child && ChainCode == o.ChainCode;
         public override bool Equals(object obj) => obj is ExtKey key && Equals(key);
-        public static bool operator ==(ExtKey x, ExtKey y) => x != null && (ReferenceEquals(x, y) || x.Equals(y));
+
+        public static bool operator ==(ExtKey x, ExtKey y) => x?.Equals(y) ?? y is null;
         public static bool operator !=(ExtKey x, ExtKey y) => !(x == y);
     }
 }
