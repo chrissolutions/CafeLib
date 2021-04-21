@@ -45,7 +45,7 @@ namespace CafeLib.Bitcoin.Scripting
             _data = ValType.None;
         }
 
-        public static Operand Push(ReadOnlySpan<byte> data)
+        public static Operand Push(ReadOnlyByteSpan data)
         {
             var code = Opcode.OP_INVALIDOPCODE;
             var val = ValType.None;

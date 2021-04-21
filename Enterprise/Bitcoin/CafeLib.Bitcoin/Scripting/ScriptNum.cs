@@ -32,7 +32,8 @@ namespace CafeLib.Bitcoin.Scripting
             _value = value;
         }
 
-        public ScriptNum(ReadOnlyByteSpan bytes, bool fRequireMinimal = false, uint nMaximumSize = MaximumElementSize) : this()
+        public ScriptNum(ReadOnlyByteSpan bytes, bool fRequireMinimal = false, uint nMaximumSize = MaximumElementSize)
+            : this()
         {
             if (bytes.Length > nMaximumSize) throw new OverflowError("script number overflow");
 
@@ -46,7 +47,7 @@ namespace CafeLib.Bitcoin.Scripting
         {
         }
 
-        public ValType ToValType() => new ValType(new ReadOnlyByteSequence(Bytes()));
+        public ValType ToValType() => new ValType(Bytes());
 
         public string GetHex() => Hex.Encode(Bytes());
 
@@ -112,7 +113,7 @@ namespace CafeLib.Bitcoin.Scripting
             return result.ToArray();
         }
 
-        public Int64 set_vch(ReadOnlySpan<byte> vch)
+        public Int64 set_vch(ReadOnlyByteSpan vch)
         {
             if (vch.Length == 0)
                 return 0;

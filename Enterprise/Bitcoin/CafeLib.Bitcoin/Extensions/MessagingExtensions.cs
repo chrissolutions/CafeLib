@@ -16,9 +16,9 @@ namespace CafeLib.Bitcoin.Extensions
     {
         private const string MessageMagic = "Bitcoin Signed Message:\n";
 
-        internal static UInt256 GetMessageHash(this ReadOnlyByteSpan message)
+        private static UInt256 GetMessageHash(UInt256 message)
         {
-            var messageHash = message.Sha256().ToHex();
+            var messageHash = Hashes.Sha256(message).ToHex();
             return new WriterHash().Add(MessageMagic).Add(messageHash).GetHashFinal();
         }
 
@@ -43,25 +43,25 @@ namespace CafeLib.Bitcoin.Extensions
         public static string SignMessageToBase64(this PrivateKey key, string message) 
             => SignMessageToBase64(key, (UInt256)message.Utf8ToBytes());
 
-        public static PublicKey RecoverPubKeyFromMessage(ReadOnlySpan<byte> message, ReadOnlyByteSpan signature)
+        public static PublicKey RecoverPubKeyFromMessage(UInt256 message, ReadOnlyByteSpan signature)
             => PublicKey.FromRecoverCompact(GetMessageHash(message), signature);
 
-        public static bool VerifyMessage(this PublicKey key, ReadOnlySpan<byte> message, ReadOnlyByteSpan signature)
+        public static bool VerifyMessage(this PublicKey key, UInt256 message, ReadOnlyByteSpan signature)
         {
             var rkey = RecoverPubKeyFromMessage(message, signature);
             return rkey != null && rkey == key;
         }
 
-        public static bool VerifyMessage(this UInt160 keyId, ReadOnlySpan<byte> message, ReadOnlyByteSpan signature)
+        public static bool VerifyMessage(this UInt160 keyId, UInt256 message, ReadOnlyByteSpan signature)
         {
             var rkey = RecoverPubKeyFromMessage(message, signature);
             return rkey != null && rkey.GetId() == keyId;
         }
 
         public static bool VerifyMessage(this PublicKey key, string message, string signature) 
-            => VerifyMessage(key, message.Utf8ToBytes(), Convert.FromBase64String(signature));
+            => VerifyMessage(key, (UInt256)message.Utf8ToBytes(), Convert.FromBase64String(signature));
 
         public static bool VerifyMessage(this UInt160 keyId, string message, string signature)
-            => VerifyMessage(keyId, message.Utf8ToBytes(), Convert.FromBase64String(signature));
+            => VerifyMessage(keyId, (UInt256)message.Utf8ToBytes(), Convert.FromBase64String(signature));
     }
 }

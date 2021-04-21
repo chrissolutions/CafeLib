@@ -138,7 +138,7 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
                 Assert.NotNull(compact2);
                 Assert.NotNull(compact2C);
 
-            var rkey1 = PublicKey.FromRecoverCompact(hashMsg, compact1);
+                var rkey1 = PublicKey.FromRecoverCompact(hashMsg, compact1);
                 var rkey2 = PublicKey.FromRecoverCompact(hashMsg, compact2);
                 var rkey1C = PublicKey.FromRecoverCompact(hashMsg, compact1C);
                 var rkey2C = PublicKey.FromRecoverCompact(hashMsg, compact2C);

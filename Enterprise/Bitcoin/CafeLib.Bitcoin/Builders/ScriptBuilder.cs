@@ -99,19 +99,18 @@ namespace CafeLib.Bitcoin.Builders
 
         public ScriptBuilder Add(Script script)
         {
-           // _ops.AddRange(script.ToBOps()); 
+            _ops.AddRange(script.Decode().Select(o => new OperandBuilder(o)));
             return this;
         }
 
         public ScriptBuilder Add(string hex)
         {
-            //return Add(hex.ToScript());
-            return this;
+            return Add(new Script(hex));
         }
 
         public ScriptBuilder Add(byte[] raw)
         {
-            //_ops.Add(new KzBOp(new ValType(raw)));
+            _ops.Add(new OperandBuilder(new ValType(raw)));
             return this;
         }
 
@@ -119,7 +118,7 @@ namespace CafeLib.Bitcoin.Builders
         /// Push a zero as a non-final placeholder.
         /// </summary>
         /// <returns></returns>
-        //public ScriptBuilder Push() => Add(new KzBOp { IsFinal = false, IsRaw = false, Op = new KzOp(KzOpcode.OP_0) });
+        public ScriptBuilder Push() => Add(new OperandBuilder { IsFinal = false, IsRaw = false, Operand = new Operand(Opcode.OP_0) });
 
         public ScriptBuilder Push(ReadOnlySpan<byte> data)
         {
