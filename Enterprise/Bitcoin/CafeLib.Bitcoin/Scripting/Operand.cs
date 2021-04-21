@@ -51,6 +51,7 @@ namespace CafeLib.Bitcoin.Scripting
             var val = ValType.None;
             if (data.Length == 1 && data[0] <= 16)
             {
+                code = data[0] == 0 ? Opcode.OP_0 : (Opcode)(data[0] - 1 + (int)Opcode.OP_1);
             }
             else
             {
