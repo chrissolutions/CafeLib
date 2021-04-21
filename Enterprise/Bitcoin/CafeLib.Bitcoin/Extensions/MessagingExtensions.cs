@@ -21,19 +21,27 @@ namespace CafeLib.Bitcoin.Extensions
             var messageHash = message.Sha256().ToHex();
             return new WriterHash().Add(MessageMagic).Add(messageHash).GetHashFinal();
         }
-        public static byte[] SignMessage(this PrivateKey key, string message) => SignMessage(key, message.Utf8ToBytes());
 
-        public static byte[] SignMessage(this PrivateKey key, ReadOnlyByteSpan message)
-            => key.CreateCompactSignature(GetMessageHash(message));
+        public static byte[] SignMessage(this PrivateKey key, string message) => SignMessage(key, (UInt256)message.Utf8ToBytes());
 
-        public static string SignMessageToBase64(this PrivateKey key, ReadOnlyByteSpan message)
+        public static byte[] SignMessage(this PrivateKey key, UInt256 message)
+        {
+            return key.CreateSignature(message);
+        }
+
+        public static byte[] SignMessageCompact(this PrivateKey key, UInt256 message)
+        {
+            return key.CreateCompactSignature(message);
+        }
+
+        public static string SignMessageToBase64(this PrivateKey key, UInt256 message)
         {
             var sigBytes = SignMessage(key, message);
             return sigBytes == null ? null : Convert.ToBase64String(sigBytes);
         }
 
         public static string SignMessageToBase64(this PrivateKey key, string message) 
-            => SignMessageToBase64(key, message.Utf8ToBytes());
+            => SignMessageToBase64(key, (UInt256)message.Utf8ToBytes());
 
         public static PublicKey RecoverPubKeyFromMessage(ReadOnlySpan<byte> message, ReadOnlyByteSpan signature)
             => PublicKey.FromRecoverCompact(GetMessageHash(message), signature);

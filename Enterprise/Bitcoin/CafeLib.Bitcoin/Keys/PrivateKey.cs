@@ -157,7 +157,7 @@ namespace CafeLib.Bitcoin.Keys
         }
 
         public string ToHex() => _keyData.ToStringFirstByteFirst();
-        public Base58ExtPrivateKey ToBase58() => new Base58ExtPrivateKey();
+        public Base58PrivateKey ToBase58() => new Base58PrivateKey(this);
         public override string ToString() => ToBase58().ToString();
 
         public override int GetHashCode() => _keyData.GetHashCode();

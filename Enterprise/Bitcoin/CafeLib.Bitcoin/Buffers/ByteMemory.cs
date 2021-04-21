@@ -8,7 +8,7 @@ namespace CafeLib.Bitcoin.Buffers
 
         public ByteMemory(byte[] data = null)
         {
-            Data = new Memory<byte>(data);
+            Data = new Memory<byte>(data ?? Array.Empty<byte>());
         }
 
         public ByteMemory(ByteSpan data)

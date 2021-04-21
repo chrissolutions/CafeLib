@@ -5,7 +5,6 @@
 
 using System;
 using System.Diagnostics;
-using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Services;
 
 namespace CafeLib.Bitcoin.Keys
@@ -23,7 +22,7 @@ namespace CafeLib.Bitcoin.Keys
             var data = Data;
             Debug.Assert(data.Length >= 32);
             var isCompressed = data.Length > 32 && data[32] == 1;
-            var privateKey = new PrivateKey((ByteSpan)data.Slice(0, 32), isCompressed);
+            var privateKey = new PrivateKey(data.Slice(0, 32), isCompressed);
             return privateKey;
         }
 

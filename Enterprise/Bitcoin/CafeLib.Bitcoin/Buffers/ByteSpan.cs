@@ -14,7 +14,7 @@ namespace CafeLib.Bitcoin.Buffers
 
         public ByteSpan(byte[] data)
         {
-            Data = data;
+            Data = data ?? Array.Empty<byte>();
         }
 
         public byte this[int index]

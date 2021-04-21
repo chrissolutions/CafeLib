@@ -211,9 +211,11 @@ namespace CafeLib.Bitcoin.Keys
 		}
 
 		public override int GetHashCode() => ToString().GetHashCode();
-        public bool Equals(KeyPath o) => (object)o != null && ToString().Equals(o.ToString());
+
+        public bool Equals(KeyPath o) => !(o is null) && ToString().Equals(o.ToString());
         public override bool Equals(object obj) => obj is KeyPath path && this == path;
-        public static bool operator ==(KeyPath x, KeyPath y) => object.ReferenceEquals(x, y) || (object)x == null && (object)y == null || x.Equals(y);
+
+        public static bool operator ==(KeyPath x, KeyPath y) => x?.Equals(y) ?? y is null;
         public static bool operator !=(KeyPath x, KeyPath y) => !(x == y);
 
         /// <summary>

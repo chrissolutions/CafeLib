@@ -9,7 +9,7 @@ namespace CafeLib.Bitcoin.Buffers
 
         public ReadOnlyByteSpan(byte[] data)
         {
-            Data = data;
+            Data = data ?? Array.Empty<byte>();
         }
 
         public ReadOnlyByteSpan(ReadOnlySpan<byte> data)
