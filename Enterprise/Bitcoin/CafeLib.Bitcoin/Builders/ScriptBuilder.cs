@@ -120,7 +120,7 @@ namespace CafeLib.Bitcoin.Builders
         /// <returns></returns>
         public ScriptBuilder Push() => Add(new OperandBuilder { IsFinal = false, IsRaw = false, Operand = new Operand(Opcode.OP_0) });
 
-        public ScriptBuilder Push(ReadOnlySpan<byte> data)
+        public ScriptBuilder Push(ReadOnlyByteSpan data)
         {
             _ops.Add(Operand.Push(data)); 
             return this;
