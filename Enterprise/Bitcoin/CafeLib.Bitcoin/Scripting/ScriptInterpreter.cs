@@ -22,7 +22,7 @@ namespace CafeLib.Bitcoin.Scripting
         private static SignatureHashType GetHashType(ValType vchSig) 
             => new SignatureHashType(vchSig.Length == 0 ? SignatureHashEnum.Unsupported : (SignatureHashEnum)vchSig.LastByte);
 
-        private static readonly SignatureCheckerBase defaultSignatureChecker = new SignatureCheckerBase();
+        private static readonly SignatureCheckerBase DefaultSignatureChecker = new SignatureCheckerBase();
 
         private static void CleanupScriptCode(Script scriptCode, ValType vchSig, ScriptFlags flags)
         {
@@ -525,7 +525,7 @@ namespace CafeLib.Bitcoin.Scripting
             var op = new Operand();
             var vfExec = new ScriptStack<bool>();
             var altStack = new ScriptStack<ValType>();
-            checker ??= defaultSignatureChecker;
+            checker ??= DefaultSignatureChecker;
 
             SetError(out error, ScriptError.UNKNOWN_ERROR);
 
