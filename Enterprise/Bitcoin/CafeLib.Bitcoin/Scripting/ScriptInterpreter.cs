@@ -22,6 +22,8 @@ namespace CafeLib.Bitcoin.Scripting
         private static SignatureHashType GetHashType(ValType vchSig) 
             => new SignatureHashType(vchSig.Length == 0 ? SignatureHashEnum.Unsupported : (SignatureHashEnum)vchSig.LastByte);
 
+        private static readonly SignatureCheckerBase defaultSignatureChecker = new SignatureCheckerBase();
+
         private static void CleanupScriptCode(Script scriptCode, ValType vchSig, ScriptFlags flags)
         {
             // Drop the signature in scripts when SIGHASH_FORKID is not used.
@@ -523,6 +525,7 @@ namespace CafeLib.Bitcoin.Scripting
             var op = new Operand();
             var vfExec = new ScriptStack<bool>();
             var altStack = new ScriptStack<ValType>();
+            checker ??= defaultSignatureChecker;
 
             SetError(out error, ScriptError.UNKNOWN_ERROR);
 
