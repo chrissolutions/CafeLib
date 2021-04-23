@@ -37,7 +37,7 @@ namespace CafeLib.Bitcoin.Scripting
         public ValType(byte[] bytes) 
             : this(new ReadOnlyByteSequence(bytes)) { }
 
-        public SequenceReader<byte> GetReader()
+        public ByteSequenceReader GetReader()
         {
             return new SequenceReader<byte>(Sequence);
         }

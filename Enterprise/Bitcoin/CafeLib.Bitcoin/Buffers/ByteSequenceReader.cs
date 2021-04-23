@@ -24,6 +24,50 @@ namespace CafeLib.Bitcoin.Buffers
             Data = new SequenceReader<byte>(sequence);
         }
 
+        public long Consumed => Data.Consumed;
+
+        public ReadOnlyByteSpan CurrentSpan => Data.CurrentSpan;
+
+        public int CurrentSpanIndex => Data.CurrentSpanIndex;
+
+        public bool End => Data.End;
+
+        public long Length => Data.Length;
+
+        public SequencePosition Position => Data.Position;
+
+        public long Remaining => Data.Remaining;
+
+        public ReadOnlyByteSequence Sequence => Data.Sequence;
+
+        public ReadOnlyByteSpan UnreadSpan => Data.UnreadSpan;
+
+        public void Advance(long count) => Data.Advance(count);
+
+        public long AdvancePast(byte value) => Data.AdvancePast(value);
+
+        public long AdvancePastAny(ReadOnlyByteSpan values) => Data.AdvancePastAny(values);
+
+        public long AdvancePastAny(byte value0, byte value1) => Data.AdvancePastAny(value0, value1);
+
+        public long AdvancePastAny(byte value0, byte value1, byte value2) => Data.AdvancePastAny(value0, value1, value2);
+
+        public long AdvancePastAny(byte value0, byte value1, byte value2, byte value3) => Data.AdvancePastAny(value0, value1, value2, value3);
+
+        public bool IsNext(ReadOnlyByteSpan next, bool advancePast = false) => Data.IsNext(next, advancePast);
+
+        public bool IsNext(byte next, bool advancePast = false) => Data.IsNext(next, advancePast);
+
+        public void Rewind(long count) => Data.Rewind(count);
+
+        public bool TryAdvanceTo(byte delimiter, bool advancePastDelimiter = true) => Data.TryAdvanceTo(delimiter, advancePastDelimiter);
+
+        public bool TryAdvanceToAny(ReadOnlyByteSpan delimiters, bool advancePastDelimiter = true) => Data.TryAdvanceToAny(delimiters, advancePastDelimiter);
+
+        public bool TryCopyTo(ByteSpan destination) => Data.TryCopyTo(destination);
+
+        public bool TryPeek(out byte value) => Data.TryPeek(out value);
+
         public static implicit operator SequenceReader<byte>(ByteSequenceReader rhs) => rhs.Data;
         public static implicit operator ByteSequenceReader(SequenceReader<byte> rhs) => new ByteSequenceReader(rhs);
 
@@ -62,7 +106,7 @@ namespace CafeLib.Bitcoin.Buffers
         /// <returns>False if there wasn't enough data for an <see cref="uint"/>.</returns>
         public bool TryReadBigEndian(out uint value)
         {
-            var result = Data.TryReadBigEndian(out long v);
+            var result = Data.TryReadBigEndian(out int v);
             value = (uint)v;
             return result;
         }
@@ -150,8 +194,8 @@ namespace CafeLib.Bitcoin.Buffers
         public bool TryReadUInt256(ref UInt256 destination)
         {
             var bytes = destination.Span;
-            if (!Data.TryCopyTo(bytes)) return false;
-            Data.Advance(bytes.Length);
+            if (!TryCopyTo(bytes)) return false;
+            Advance(bytes.Length);
             return true;
         }
     }

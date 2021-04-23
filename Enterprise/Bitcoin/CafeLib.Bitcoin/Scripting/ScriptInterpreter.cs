@@ -646,7 +646,7 @@ namespace CafeLib.Bitcoin.Scripting
                                         var vch = stack.Pop();
                                         if ((flags & ScriptFlags.VERIFY_MINIMALIF) != 0) 
                                         {
-                                            if (vch.Length > 1 || vch.Length == 1 && vch.GetReader().CurrentSpan[0] != 1) 
+                                            if (vch.Length > 1 || vch.Length == 1 && vch.GetReader().Data.CurrentSpan[0] != 1) 
                                             {
                                                 stack.Push(vch);
                                                 return SetError(out error, ScriptError.MINIMALIF);
