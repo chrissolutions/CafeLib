@@ -96,7 +96,7 @@ namespace CafeLib.Bitcoin.UnitTests.Encode
         [Fact]
         public void WriterHash()
         {
-            using var hw = new WriterHash();
+            using var hw = new HashWriter();
             var empty = hw.GetHashFinal().ToHex();
             Assert.Equal("5df6e0e2761359d30a8275058e299fcc0381534545f55cf43e41983f5d4c9456", empty);
 
@@ -148,7 +148,7 @@ namespace CafeLib.Bitcoin.UnitTests.Encode
                 Assert.Equal(refOnce, h1);
             }
 
-            using var hw = new WriterHash();
+            using var hw = new HashWriter();
             hw.Add(data[..12]);
             hw.Add(data[12..]);
             h1 = hw.GetHashFinal();
