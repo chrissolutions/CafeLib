@@ -8,7 +8,7 @@ using CafeLib.Bitcoin.Numerics;
 
 namespace CafeLib.Bitcoin.Persistence
 {
-    public class WriterLength : IBitcoinWriter
+    public class LengthWriter : IBitcoinWriter
     {
         public long Length;
 
