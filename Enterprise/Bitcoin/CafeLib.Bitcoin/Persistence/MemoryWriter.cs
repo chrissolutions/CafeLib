@@ -4,11 +4,8 @@
 #endregion
 
 using System;
-using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Numerics;
-
-// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Bitcoin.Persistence
 {
@@ -30,18 +27,6 @@ namespace CafeLib.Bitcoin.Persistence
         public IBitcoinWriter Add(byte[] data)
         {
             data.CopyTo(_memory.Span);
-            return this;
-        }
-
-        public IBitcoinWriter Add(ReadOnlyByteSpan data)
-        {
-            data.CopyTo(_memory.Span); 
-            return this;
-        }
-
-        public IBitcoinWriter Add(ReadOnlyByteSequence data)
-        {
-            data.CopyTo(_memory.Span[Length..]);
             return this;
         }
 

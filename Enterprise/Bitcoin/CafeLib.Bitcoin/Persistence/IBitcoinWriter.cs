@@ -11,9 +11,6 @@ namespace CafeLib.Bitcoin.Persistence
     public interface IBitcoinWriter
     {
         IBitcoinWriter Add(byte[] data);
-        IBitcoinWriter Add(ReadOnlyByteSpan data);
-        IBitcoinWriter Add(ReadOnlyByteSequence data);
-
         IBitcoinWriter Add(byte v);
         IBitcoinWriter Add(int v);
         IBitcoinWriter Add(uint v);

@@ -11,7 +11,7 @@ using CafeLib.Bitcoin.Scripting;
 
 namespace CafeLib.Bitcoin.Numerics
 {
-    public struct VarType
+    public readonly struct VarType
     {
         private readonly ReadOnlyByteSequence _sequence;
 
@@ -72,14 +72,6 @@ namespace CafeLib.Bitcoin.Numerics
             if (r.TryReadBigEndian(out Int32 v) == false)
                 throw new InvalidOperationException();
             return (UInt32)v;
-        }
-
-        public byte[] ToBytes()
-        {
-            var bytes = new byte[_sequence.Length];
-            if (!GetReader().TryCopyTo(bytes))
-                throw new InvalidOperationException();
-            return bytes;
         }
 
         public bool ToBool()
@@ -213,9 +205,9 @@ namespace CafeLib.Bitcoin.Numerics
                 }
 
                 if (k + 1 < r.Length) {
-                    var carryval = (byte)(x[i] & overflowMask);
-                    carryval <<= 8 - bitShift;
-                    r[k + 1] |= carryval;
+                    var carryVal = (byte)(x[i] & overflowMask);
+                    carryVal <<= 8 - bitShift;
+                    r[k + 1] |= carryVal;
                 }
             }
             return new VarType(r);
@@ -262,7 +254,8 @@ namespace CafeLib.Bitcoin.Numerics
 
             var bytes = new byte[(int)size];
 
-            if (size > 0) {
+            if (size > 0)
+            {
                 data.Slice(0, (int)length).CopyTo(bytes.AsSpan());
 
                 // Remove the sign bit, add padding 0x00 bytes, restore the sign bit.
@@ -355,10 +348,19 @@ namespace CafeLib.Bitcoin.Numerics
         public override bool Equals(object obj) => obj is VarType type && this == type;
         public bool Equals(VarType rhs) => ((ReadOnlyByteSpan)_sequence).Data.SequenceEqual((ReadOnlyByteSpan)rhs._sequence);
 
-        public static implicit operator ReadOnlyByteSequence(VarType rhs) => rhs.Sequence;
+        public static implicit operator byte[](VarType rhs) => rhs.ToBytes();
+        public static implicit operator ReadOnlyByteSequence(VarType rhs) => rhs.ToBytes();
         public static explicit operator VarType(ReadOnlyByteSequence rhs) => new VarType(rhs);
 
         public static bool operator ==(VarType x, VarType y) => x.Equals(y);
         public static bool operator !=(VarType x, VarType y) => !(x == y);
+
+        public byte[] ToBytes()
+        {
+            var bytes = new byte[_sequence.Length];
+            if (!GetReader().TryCopyTo(bytes))
+                throw new InvalidOperationException();
+            return bytes;
+        }
     }
 }

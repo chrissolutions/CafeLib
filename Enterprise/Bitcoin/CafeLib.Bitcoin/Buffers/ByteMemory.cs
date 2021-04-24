@@ -28,7 +28,7 @@ namespace CafeLib.Bitcoin.Buffers
         public ByteMemory Slice(int start, int length) => Data.Slice(start, length);
 
         public void CopyTo(ByteMemory destination) => Data.CopyTo(destination);
-        public Span<byte>.Enumerator GetEnumerator() => Data.Span.GetEnumerator();
+        public ByteSpan.Enumerator GetEnumerator() => ((ByteSpan)Data.Span).GetEnumerator();
         public byte[] ToArray() => Data.ToArray();
         public override string ToString() => Data.ToString();
 

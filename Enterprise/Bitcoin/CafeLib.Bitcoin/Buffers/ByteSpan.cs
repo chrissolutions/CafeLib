@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Runtime.CompilerServices;
 
 namespace CafeLib.Bitcoin.Buffers
 {
@@ -34,12 +35,32 @@ namespace CafeLib.Bitcoin.Buffers
         public bool IsEmpty => Data.IsEmpty;
         public int Length => Data.Length;
 
-
         public ByteSpan Slice(int start) => Data[start..];
         public ByteSpan Slice(int start, int length) => Data.Slice(start, length);
 
-        public Span<byte>.Enumerator GetEnumerator() => Data.GetEnumerator();
         public byte[] ToArray() => Data.ToArray();
+
+        public Enumerator GetEnumerator() => new Enumerator(this);
+
+        public ref struct Enumerator
+        {
+            private Span<byte>.Enumerator _enumerator;
+
+            /// <summary>Initialize the enumerator.</summary>
+            /// <param name="span">The span to enumerate.</param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal Enumerator(ByteSpan span)
+            {
+                _enumerator = span.Data.GetEnumerator();
+            }
+
+            /// <summary>Advances the enumerator to the next element of the span.</summary>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public bool MoveNext() => _enumerator.MoveNext();
+
+            /// <summary>Gets the element at the current position of the enumerator.</summary>
+            public byte Current => _enumerator.Current;
+        }
 
         public ByteSpan CopyTo(ByteSpan destination)
         {
@@ -47,7 +68,7 @@ namespace CafeLib.Bitcoin.Buffers
             return destination;
         }
 
-        public static ByteSpan Empty => default;
+        public static ByteSpan Empty => new ByteSpan();
 
         public static implicit operator ByteSpan(byte[] rhs) => new ByteSpan(rhs);
         public static implicit operator byte[](ByteSpan rhs) => rhs.Data.ToArray();

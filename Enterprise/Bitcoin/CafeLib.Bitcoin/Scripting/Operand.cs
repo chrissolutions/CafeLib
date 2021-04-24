@@ -146,7 +146,7 @@ namespace CafeLib.Bitcoin.Scripting
             w.Add((byte)Code);
             if (Code >= Opcode.OP_PUSHDATA1 && Code <= Opcode.OP_PUSHDATA4) 
             {
-                var lengthBytes = BitConverter.GetBytes((uint)_data.Length).AsSpan(0, LengthBytesCount);
+                ByteSpan lengthBytes = BitConverter.GetBytes((uint)_data.Length).AsSpan(0, LengthBytesCount);
                 w.Add(lengthBytes);
             }
 

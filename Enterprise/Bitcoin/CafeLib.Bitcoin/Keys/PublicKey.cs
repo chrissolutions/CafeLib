@@ -13,8 +13,6 @@ using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Services;
 using Secp256k1Net;
 
-// ReSharper disable NonReadonlyMemberInGetHashCode
-
 namespace CafeLib.Bitcoin.Keys
 {
     /// <summary>
@@ -49,6 +47,41 @@ namespace CafeLib.Bitcoin.Keys
 
         public const int MinLength = 33;
         public const int MaxLength = 65;
+
+        public PublicKey()
+        {
+            Invalidate();
+        }
+
+        public PublicKey(bool compressed)
+        {
+            _bytes = new byte[compressed ? 33 : 65];
+        }
+
+        public PublicKey(ReadOnlyByteSpan bytes)
+            : this()
+        {
+            if (bytes.Length > 0 && bytes.Length == PredictLength(bytes[0]))
+            {
+                _bytes = new byte[bytes.Length];
+                bytes.CopyTo(_bytes);
+            }
+        }
+
+        public PublicKey(string hex)
+            : this()
+        {
+            try
+            {
+                var vch = hex.HexToBytes();
+                if ((vch.Length == 33 || vch.Length == 65) && vch.Length == PredictLength(vch[0]))
+                    _bytes = vch;
+            }
+            catch
+            {
+                // ignored
+            }
+        }
 
         /// <summary>
         /// Creates a copy of this key.
@@ -103,41 +136,6 @@ namespace CafeLib.Bitcoin.Keys
             }
             else
                 Invalidate();
-        }
-
-        public PublicKey()
-        {
-            Invalidate();
-        }
-
-        public PublicKey(bool compressed)
-        {
-            _bytes = new byte[compressed ? 33 : 65];
-        }
-
-        public PublicKey(ReadOnlyByteSpan bytes)
-            : this()
-        {
-            if (bytes.Length > 0 && bytes.Length == PredictLength(bytes[0]))
-            {
-                _bytes = new byte[bytes.Length];
-                bytes.CopyTo(_bytes);
-            }
-        }
-
-        public PublicKey(string hex)
-            : this()
-        {
-            try
-            {
-                var vch = hex.HexToBytes();
-                if ((vch.Length == 33 || vch.Length == 65) && vch.Length == PredictLength(vch[0]))
-                    _bytes = vch;
-            }
-            catch
-            {
-                // ignored
-            }
         }
 
         private void Invalidate()

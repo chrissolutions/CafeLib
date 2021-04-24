@@ -76,8 +76,6 @@ namespace CafeLib.Bitcoin.Numerics
         public string ToPublicKeyAddress() => Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress, Span);
         public BigInteger ToBigInteger() => new BigInteger(Span, isUnsigned:true, isBigEndian:true);
 
-        public byte[] ToBytes() => Span.ToArray();
-
         public void ToBytes(Span<byte> destination, bool reverse = false) {
             if (destination.Length < 20)
                 throw new ArgumentException("20 byte destination is required.");
@@ -115,9 +113,13 @@ namespace CafeLib.Bitcoin.Numerics
         public static bool operator ==(UInt160 x, UInt160 y) => x.Equals(y);
         public static bool operator !=(UInt160 x, UInt160 y) => !(x == y);
 
+        public static explicit operator UInt160(byte[] rhs) => new UInt160(rhs);
+        public static implicit operator byte[](UInt160 rhs) => rhs.Span.ToArray();
+
         public static explicit operator UInt160(ByteSpan rhs) => new UInt160(rhs);
-        public static explicit operator UInt160(ReadOnlyByteSpan rhs) => new UInt160(rhs);
         public static implicit operator ByteSpan(UInt160 rhs) => rhs.Span;
+
+        public static explicit operator UInt160(ReadOnlyByteSpan rhs) => new UInt160(rhs);
         public static implicit operator ReadOnlyByteSpan(UInt160 rhs) => rhs.Span;
 
         public int CompareTo(UInt160 o)

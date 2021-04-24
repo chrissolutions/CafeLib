@@ -116,7 +116,7 @@ namespace CafeLib.Bitcoin.Builders
         /// <returns></returns>
         public IEnumerable<(TxOutBuilder o, OperandBuilder[] data)> FindPushDataByProtocol(UInt160 protocol)
         {
-            var val = protocol.ToBytes();
+            byte[] val = protocol;
 
             foreach (var o in Vout)
             {
