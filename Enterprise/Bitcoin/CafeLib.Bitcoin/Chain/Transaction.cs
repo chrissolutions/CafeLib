@@ -89,7 +89,7 @@ namespace CafeLib.Bitcoin.Chain
             var start = r.Data.Position;
 
             if (!r.TryReadLittleEndian(out _version)) return false;;
-            if (!r.TryReadVarInt(out var countIn)) return false;
+            if (!r.TryReadVariant(out var countIn)) return false;
 
             bp.TxStart(this, offset);
 
@@ -100,7 +100,7 @@ namespace CafeLib.Bitcoin.Chain
                 if (!txIn.TryParseTxIn(ref r, bp)) return false;
             }
 
-            if (!r.TryReadVarInt(out var countOut)) return false;
+            if (!r.TryReadVariant(out var countOut)) return false;
 
             _vout = new TxOut[countOut];
             for (var i = 0L; i < countOut; i++)
@@ -132,7 +132,7 @@ namespace CafeLib.Bitcoin.Chain
             var start = r.Data.Position;
 
             if (!r.TryReadLittleEndian(out _version)) goto fail;
-            if (!r.TryReadVarInt(out var countIn)) goto fail;
+            if (!r.TryReadVariant(out var countIn)) goto fail;
 
             _vin = new TxIn[countIn];
             for (var i = 0L; i < countIn; i++)
@@ -141,7 +141,7 @@ namespace CafeLib.Bitcoin.Chain
                 if (!txIn.TryReadTxIn(ref r)) goto fail;
             }
 
-            if (!r.TryReadVarInt(out long countOut)) goto fail;
+            if (!r.TryReadVariant(out long countOut)) goto fail;
 
             _vout = new TxOut[countOut];
             for (var i = 0L; i < countOut; i++)

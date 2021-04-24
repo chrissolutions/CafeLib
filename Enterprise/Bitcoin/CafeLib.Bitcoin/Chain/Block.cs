@@ -69,7 +69,7 @@ namespace CafeLib.Bitcoin.Chain
 
             bp.BlockStart(this, offset);
 
-            if (!r.TryReadVarInt(out var count)) goto fail;
+            if (!r.TryReadVariant(out var count)) goto fail;
 
             Txs = new Transaction[count];
 
@@ -93,7 +93,7 @@ namespace CafeLib.Bitcoin.Chain
         {
             if (!TryReadBlockHeader(ref r)) goto fail;
 
-            if (!r.TryReadVarInt(out var count)) goto fail;
+            if (!r.TryReadVariant(out var count)) goto fail;
 
             Txs = new Transaction[count];
 

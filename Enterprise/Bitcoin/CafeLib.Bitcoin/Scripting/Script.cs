@@ -13,14 +13,28 @@ using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Persistence;
 using Newtonsoft.Json;
 
-// ReSharper disable NonReadonlyMemberInGetHashCode
-
 namespace CafeLib.Bitcoin.Scripting
 {
     [JsonConverter(typeof(ScriptConverter))]
     public struct Script
     {
-        private ReadOnlyByteSequence _script;
+        private VarType _script;
+
+        private Script(VarType script)
+            : this()
+        {
+            _script = script;
+        }
+
+        public Script(byte[] script)
+            : this(new VarType(new ReadOnlyByteSequence(script)))
+        {
+        }
+
+        public Script(string hex)
+            : this(Encoders.Hex.Decode(hex))
+        {
+        }
 
         public ReadOnlyByteSequence Sequence => _script;
 
@@ -52,47 +66,35 @@ namespace CafeLib.Bitcoin.Scripting
             var count = s.ReadInt32();
             if (count == -1)
             {
-                _script = ReadOnlyByteSequence.Empty;
+                _script = VarType.Empty;
             }
             else
             {
                 var bytes = new byte[count];
                 s.Read(bytes);
-                _script = new ReadOnlyByteSequence(bytes);
+                _script = new VarType(bytes);
             }
         }
 
         public void Write(BinaryWriter s)
         {
-            if (_script.IsEmpty)
+            if (_script.Sequence.IsEmpty)
             {
                 s.Write(-1);
             }
             else
             {
                 s.Write((int)_script.Length);
-                foreach (var m in _script)
+                foreach (var m in _script.Sequence)
                     s.Write(m.Span);
             }
         }
 
-        public Script Slice(SequencePosition start, SequencePosition end) => new Script(_script.Data.Slice(start, end));
-
-        private Script(ReadOnlyByteSequence script) 
-            : this()
-        {
-            _script = script;
-        }
-
-        public Script(byte[] script)
-            : this(new ReadOnlyByteSequence(script)) { }
-
-        public Script(string hex) 
-            : this(Encoders.Hex.Decode(hex)) { }
+        public Script Slice(SequencePosition start, SequencePosition end) => new Script(_script.Sequence.Slice(start, end));
 
         public bool IsPushOnly()
         {
-            var ros = _script;
+            var ros = _script.Sequence;
             var op = new Operand();
 
             while (ros.Length > 0)
@@ -104,6 +106,8 @@ namespace CafeLib.Bitcoin.Scripting
                 // validation code being executed.
                 if (op.Code > Opcode.OP_16) return false;
             }
+
+            _script = (VarType)ros;
             return true;
         }
 
@@ -111,7 +115,7 @@ namespace CafeLib.Bitcoin.Scripting
         {
             var bytes = rawScriptHex.HexToBytes();
             var s = new Script();
-            var ros = new ReadOnlySequence<byte>(bytes);
+            var ros = new ReadOnlyByteSequence(bytes);
             var sr = new ByteSequenceReader(ros);
             return (s.TryReadScript(ref sr, withoutLength), s);
         }
@@ -119,7 +123,7 @@ namespace CafeLib.Bitcoin.Scripting
         public int FindAndDelete(VarType vchSig)
         {
             int nFound = 0;
-            var s = _script;
+            var s = _script.Sequence;
             var r = s;
             if (vchSig.Length == 0) return nFound;
 
@@ -133,15 +137,16 @@ namespace CafeLib.Bitcoin.Scripting
             do 
             {
                 offset += consumed;
-                while (s.StartsWith(o)) {
-                    r = r.RemoveSlice(offset, oLen);
-                    s = s.Data.Slice(oLen);
+                while (s.StartsWith(o))
+                {
+                    r = (VarType)r.RemoveSlice(offset, oLen);
+                    s = s.Slice(oLen);
                     ++nFound;
                 }
             }
             while (op.TryReadOperand(ref s, out consumed));
 
-            _script = r;
+            _script = (VarType)r;
             return nFound;
 #if false
             CScript result;
@@ -171,7 +176,7 @@ namespace CafeLib.Bitcoin.Scripting
         /// <returns></returns>
         public IEnumerable<Operand> Decode()
         {
-            var ros = _script;
+            var ros = _script.Sequence;
 
             while (ros.Length > 0)
             {
@@ -189,13 +194,13 @@ namespace CafeLib.Bitcoin.Scripting
 
             var length = reader.Data.Remaining;
 
-            if (!withoutLength && !reader.TryReadVarInt(out length)) goto fail;
+            if (!withoutLength && !reader.TryReadVariant(out length)) goto fail;
 
             bp.ScriptStart(this, reader.Data.Consumed);
 
             if (reader.Data.Remaining < length) goto fail;
 
-            _script = reader.Data.Sequence.Slice(reader.Data.Position, length);
+            _script = (VarType)(ReadOnlyByteSequence)reader.Data.Sequence.Slice(reader.Data.Position, length);
             reader.Data.Advance(length);
 
             bp.ScriptParsed(this, reader.Data.Consumed);
@@ -209,11 +214,11 @@ namespace CafeLib.Bitcoin.Scripting
         {
             var length = r.Data.Remaining;
 
-            if (!withoutLength && !r.TryReadVarInt(out length)) goto fail;
+            if (!withoutLength && !r.TryReadVariant(out length)) goto fail;
 
             if (r.Data.Remaining < length) goto fail;
 
-            _script = r.Data.Sequence.Slice(r.Data.Position, length);
+            _script = (VarType)(ReadOnlyByteSequence)r.Data.Sequence.Slice(r.Data.Position, length);
             r.Data.Advance(length);
 
             return true;
@@ -477,7 +482,7 @@ namespace CafeLib.Bitcoin.Scripting
         /// With height, pre 620538 blocks also treat just a bare OP_RETURN to be unspendable.
         /// </summary>
         /// <returns></returns>
-        public bool IsOpReturn(int? height = null) => IsOpReturn(_script.Data.FirstSpan, height);
+        public bool IsOpReturn(int? height = null) => IsOpReturn(_script.Sequence.Data.FirstSpan, height);
 
         public static (bool ok, SignatureHashEnum sh, byte[] r, byte[] s, PublicKey pk) IsCheckSigScript(byte[] scriptSigBytes) => IsCheckSigScript(new ReadOnlySequence<byte>(scriptSigBytes));
             

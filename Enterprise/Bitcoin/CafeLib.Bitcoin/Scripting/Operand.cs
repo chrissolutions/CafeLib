@@ -43,13 +43,13 @@ namespace CafeLib.Bitcoin.Scripting
         public Operand(Opcode code)
         {
             Code = code;
-            _data = VarType.None;
+            _data = VarType.Empty;
         }
 
         public static Operand Push(ReadOnlyByteSpan data)
         {
             var code = Opcode.OP_INVALIDOPCODE;
-            var val = VarType.None;
+            var val = VarType.Empty;
             if (data.Length == 1 && data[0] <= 16)
             {
                 code = data[0] == 0 ? Opcode.OP_0 : (Opcode)(data[0] - 1 + (int)Opcode.OP_1);
@@ -82,7 +82,7 @@ namespace CafeLib.Bitcoin.Scripting
         public static Operand Push(long v)
         {
             Opcode code;
-            var val = VarType.None;
+            var val = VarType.Empty;
 
             if (v == -1) 
             {
@@ -232,7 +232,7 @@ namespace CafeLib.Bitcoin.Scripting
         public bool TryReadOperand(ref ByteSequenceReader r)
         {
             Code = Opcode.OP_INVALIDOPCODE;
-            _data = VarType.None;
+            _data = VarType.Empty;
 
             if (!r.TryRead(out var opcode)) goto fail;
 

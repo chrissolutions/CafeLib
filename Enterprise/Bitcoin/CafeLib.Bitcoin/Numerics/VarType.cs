@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using System.Buffers;
 using System.Diagnostics;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Encoding;
@@ -16,27 +15,34 @@ namespace CafeLib.Bitcoin.Numerics
     {
         private readonly ReadOnlyByteSequence _sequence;
 
+        public VarType(ReadOnlyByteSequence data)
+            : this()
+        {
+            _sequence = data;
+        }
+
+        public VarType(VarType data)
+            : this(data.Sequence.Data)
+        {
+        }
+
+        public VarType(byte[] bytes)
+            : this(new ReadOnlyByteSequence(bytes))
+        {
+        }
+
         public ReadOnlyByteSequence Sequence => _sequence;
 
-        public static VarType None = new VarType();
+        public static VarType Empty = new VarType();
 
         public long Length => Sequence.Length;
 
         public byte FirstByte => _sequence.Data.First.Span[0];
         public byte LastByte => _sequence.Data.Slice(_sequence.Length - 1).First.Span[0];
 
-        public ReadOnlySequence<byte> Slice(long start, int length) => _sequence.Data.Slice(start, length);
+        public VarType Slice(long start, int length) => new VarType(_sequence.Data.Slice(start, length));
 
         public override string ToString() => Encoders.Hex.Encode(_sequence);
-
-        public VarType(ReadOnlyByteSequence sequence) 
-            : this()
-        {
-            _sequence = sequence;
-        }
-
-        public VarType(byte[] bytes) 
-            : this(new ReadOnlyByteSequence(bytes)) { }
 
         public ByteSequenceReader GetReader()
         {
@@ -60,7 +66,8 @@ namespace CafeLib.Bitcoin.Numerics
         /// Return first four bytes as a big endian integer.
         /// </summary>
         /// <returns></returns>
-        public UInt32 AsUInt32BigEndian() {
+        public UInt32 AsUInt32BigEndian()
+        {
             var r = GetReader();
             if (r.TryReadBigEndian(out Int32 v) == false)
                 throw new InvalidOperationException();
@@ -79,10 +86,12 @@ namespace CafeLib.Bitcoin.Numerics
         {
             var r = GetReader();
             byte v;
-            while (r.TryRead(out v)) {
+            while (r.TryRead(out v)) 
+            {
                 if (v != 0)
                     break;
             }
+
             // False is zero or negative zero
             return v != 0 && (v != 0x80 || r.Remaining != 0); 
 
@@ -271,7 +280,7 @@ namespace CafeLib.Bitcoin.Numerics
             return (new VarType(bytes), true);
 
             fail:
-            return (None, false);
+            return (Empty, false);
         }
 
         /// <summary>
@@ -342,8 +351,13 @@ namespace CafeLib.Bitcoin.Numerics
         }
 
         public override int GetHashCode() => _sequence.GetHashCode();
-        public override bool Equals(object obj) => obj is VarType && this == (VarType)obj;
-        public bool Equals(VarType op) => ((ReadOnlyByteSpan)_sequence).Data.SequenceEqual((ReadOnlyByteSpan)op._sequence);
+
+        public override bool Equals(object obj) => obj is VarType type && this == type;
+        public bool Equals(VarType rhs) => ((ReadOnlyByteSpan)_sequence).Data.SequenceEqual((ReadOnlyByteSpan)rhs._sequence);
+
+        public static implicit operator ReadOnlyByteSequence(VarType rhs) => rhs.Sequence;
+        public static explicit operator VarType(ReadOnlyByteSequence rhs) => new VarType(rhs);
+
         public static bool operator ==(VarType x, VarType y) => x.Equals(y);
         public static bool operator !=(VarType x, VarType y) => !(x == y);
     }

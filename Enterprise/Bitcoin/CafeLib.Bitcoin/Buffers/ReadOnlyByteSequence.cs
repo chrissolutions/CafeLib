@@ -26,6 +26,13 @@ namespace CafeLib.Bitcoin.Buffers
         public long Length => Data.Length;
 
         public byte[] ToArray() => Data.ToArray();
+        public ReadOnlyByteSequence Slice(SequencePosition start, SequencePosition end) => Data.Slice(start, end);
+        public ReadOnlyByteSequence Slice(SequencePosition start, int length) => Data.Slice(start, length);
+        public ReadOnlyByteSequence Slice(SequencePosition start, long length) => Data.Slice(start, length);
+        public ReadOnlyByteSequence Slice(int start, SequencePosition end) => Data.Slice(start, end);
+        public ReadOnlyByteSequence Slice(int start , int length) => Data.Slice(start, length);
+        public ReadOnlyByteSequence Slice(int start) => Data.Slice(start);
+        public ReadOnlyByteSequence Slice(long start) => Data.Slice(start);
         public ByteSpan CopyTo(ByteSpan destination)
         {
             Data.CopyTo(destination);
