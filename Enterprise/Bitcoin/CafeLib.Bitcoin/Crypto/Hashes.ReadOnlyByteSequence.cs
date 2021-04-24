@@ -13,7 +13,7 @@ namespace CafeLib.Bitcoin.Crypto
 {
     public static partial class Hashes
     {
-        public static void Ripemd160(this ReadOnlyByteSequence data, Span<byte> hash)
+        public static void Ripemd160(this ReadOnlyByteSequence data, ByteSpan hash)
         {
             Ripemd.Ripemd160(data, hash);
         }
@@ -25,7 +25,7 @@ namespace CafeLib.Bitcoin.Crypto
             return h;
         }
 
-        public static void Sha1(this ReadOnlyByteSequence data, Span<byte> hash)
+        public static void Sha1(this ReadOnlyByteSequence data, ByteSpan hash)
         {
             using var sha = new SHA1Managed();
             sha.TransformFinalBlock(data, hash);
@@ -38,7 +38,7 @@ namespace CafeLib.Bitcoin.Crypto
             return hash;
         }
 
-        public static void Sha256(this ReadOnlyByteSequence data, Span<byte> hash)
+        public static void Sha256(this ReadOnlyByteSequence data, ByteSpan hash)
         {
             using var sha = new SHA256Managed();
             sha.TransformFinalBlock(data, hash);
