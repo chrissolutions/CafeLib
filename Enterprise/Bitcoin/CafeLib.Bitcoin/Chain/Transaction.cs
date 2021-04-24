@@ -88,7 +88,7 @@ namespace CafeLib.Bitcoin.Chain
             var offset = r.Data.Consumed;
             var start = r.Data.Position;
 
-            if (!r.TryReadLittleEndian(out _version)) return false;;
+            if (!r.TryReadLittleEndian(out _version)) return false;
             if (!r.TryReadVariant(out var countIn)) return false;
 
             bp.TxStart(this, offset);

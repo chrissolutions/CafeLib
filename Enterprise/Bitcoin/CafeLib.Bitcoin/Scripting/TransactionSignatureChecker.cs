@@ -3,6 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using CafeLib.Bitcoin.Keys;
 using CafeLib.Bitcoin.Numerics;
 
 namespace CafeLib.Bitcoin.Scripting
@@ -17,6 +18,8 @@ namespace CafeLib.Bitcoin.Scripting
 
         public override bool CheckSignature(VarType scriptSig, VarType vchPubKey, Script script, ScriptFlags flags)
         {
+            var publicKey = new PublicKey(vchPubKey);
+
             return false;
 
         //    const std::vector<uint8_t> &vchSigIn, const std::vector<uint8_t> &vchPubKey,

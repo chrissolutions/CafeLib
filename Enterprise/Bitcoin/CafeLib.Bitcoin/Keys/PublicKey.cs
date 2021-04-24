@@ -68,6 +68,20 @@ namespace CafeLib.Bitcoin.Keys
             }
         }
 
+        public PublicKey(VarType varType)
+            : this()
+        {
+            var firstByte = varType.FirstByte;
+            var size = firstByte == 2 || firstByte == 3
+                ? 33
+                : firstByte == 4 || firstByte == 6 || firstByte == 7
+                    ? 65
+                    : 0;
+
+            _bytes = new byte[size]; 
+            varType.CopyTo(_bytes);
+        }
+
         public PublicKey(string hex)
             : this()
         {

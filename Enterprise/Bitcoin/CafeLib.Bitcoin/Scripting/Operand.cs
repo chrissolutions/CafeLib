@@ -128,13 +128,15 @@ namespace CafeLib.Bitcoin.Scripting
             span[0] = (byte)Code;
             span = span[1..];
             length = _data.Length;
-            if (Code >= Opcode.OP_PUSHDATA1 && Code <= Opcode.OP_PUSHDATA4) {
+            if (Code >= Opcode.OP_PUSHDATA1 && Code <= Opcode.OP_PUSHDATA4) 
+            {
                 if (!BitConverter.IsLittleEndian) return false;
                 var lengthBytes = BitConverter.GetBytes((uint)_data.Length).AsSpan(0, LengthBytesCount);
                 lengthBytes.CopyTo(span);
                 span = span.Slice(lengthBytes.Length);
             }
-            if (length > 0) {
+            if (length > 0) 
+            {
                 _data.GetReader().TryCopyTo(span.Slice(0, (int)_data.Length));
                 span = span.Slice((int)length);
             }

@@ -39,6 +39,13 @@ namespace CafeLib.Bitcoin.Numerics
 
         public override string ToString() => Encoders.Hex.Encode(_sequence);
 
+        public void CopyTo(byte[] bytes)
+        {
+            var r = GetReader();
+            if (!r.TryCopyTo(bytes))
+                throw new InvalidOperationException();
+        }
+
         public ByteSequenceReader GetReader()
         {
             return new ByteSequenceReader(Sequence);
@@ -352,7 +359,7 @@ namespace CafeLib.Bitcoin.Numerics
         public static bool operator ==(VarType x, VarType y) => x.Equals(y);
         public static bool operator !=(VarType x, VarType y) => !(x == y);
 
-        public byte[] ToBytes()
+        private byte[] ToBytes()
         {
             var bytes = new byte[_sequence.Length];
             if (!GetReader().TryCopyTo(bytes))

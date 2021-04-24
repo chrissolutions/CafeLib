@@ -493,7 +493,7 @@ namespace CafeLib.Bitcoin.Scripting
             if (!ok1 || !ok2 || consumed1 + consumed2 != scriptSigBytes.Length) goto fail;
             if (op2.Data.Length < PublicKey.MinLength || op2.Data.Length > PublicKey.MaxLength) goto fail;
 
-            var pubkey = new PublicKey(op2.Data.ToBytes());
+            var pubkey = new PublicKey(op2.Data);
             if (!pubkey.IsValid) goto fail;
 
             var sig = op1.Data.ToSpan();
