@@ -8,16 +8,17 @@ using System.Buffers;
 using System.Diagnostics;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Encoding;
+using CafeLib.Bitcoin.Scripting;
 
-namespace CafeLib.Bitcoin.Scripting
+namespace CafeLib.Bitcoin.Numerics
 {
-    public struct ValType
+    public struct VarType
     {
         private readonly ReadOnlyByteSequence _sequence;
 
         public ReadOnlyByteSequence Sequence => _sequence;
 
-        public static ValType None = new ValType();
+        public static VarType None = new VarType();
 
         public long Length => Sequence.Length;
 
@@ -28,18 +29,18 @@ namespace CafeLib.Bitcoin.Scripting
 
         public override string ToString() => Encoders.Hex.Encode(_sequence);
 
-        public ValType(ReadOnlyByteSequence sequence) 
+        public VarType(ReadOnlyByteSequence sequence) 
             : this()
         {
             _sequence = sequence;
         }
 
-        public ValType(byte[] bytes) 
+        public VarType(byte[] bytes) 
             : this(new ReadOnlyByteSequence(bytes)) { }
 
         public ByteSequenceReader GetReader()
         {
-            return new SequenceReader<byte>(Sequence);
+            return new ByteSequenceReader(Sequence);
         }
 
         public ReadOnlyByteSpan ToSpan()
@@ -77,7 +78,7 @@ namespace CafeLib.Bitcoin.Scripting
         public bool ToBool()
         {
             var r = GetReader();
-            var v = (byte)0;
+            byte v;
             while (r.TryRead(out v)) {
                 if (v != 0)
                     break;
@@ -108,7 +109,7 @@ namespace CafeLib.Bitcoin.Scripting
 
         public int ToInt32() => new ScriptNum(ToSpan()).GetInt();
 
-        public ValType BitAnd(ValType b)
+        public VarType BitAnd(VarType b)
         {
             if (Length != b.Length) throw new InvalidOperationException();
             var sa = ToSpan();
@@ -117,10 +118,10 @@ namespace CafeLib.Bitcoin.Scripting
             for (var i = 0; i < sa.Length; i++) {
                 r[i] = (byte)(sa[i] & sb[i]);
             }
-            return new ValType(r);
+            return new VarType(r);
         }
 
-        public ValType BitOr(ValType b)
+        public VarType BitOr(VarType b)
         {
             if (Length != b.Length) throw new InvalidOperationException();
             var sa = ToSpan();
@@ -129,10 +130,10 @@ namespace CafeLib.Bitcoin.Scripting
             for (var i = 0; i < sa.Length; i++) {
                 r[i] = (byte)(sa[i] | sb[i]);
             }
-            return new ValType(r);
+            return new VarType(r);
         }
 
-        public ValType BitXor(ValType b)
+        public VarType BitXor(VarType b)
         {
             if (Length != b.Length) throw new InvalidOperationException();
             var sa = ToSpan();
@@ -141,77 +142,77 @@ namespace CafeLib.Bitcoin.Scripting
             for (var i = 0; i < sa.Length; i++) {
                 r[i] = (byte)(sa[i] ^ sb[i]);
             }
-            return new ValType(r);
+            return new VarType(r);
         }
 
-        public ValType BitInvert()
+        public VarType BitInvert()
         {
             var sa = ToSpan();
             var r = new byte[sa.Length];
             for (var i = 0; i < sa.Length; i++) {
                 r[i] = (byte)(~sa[i]);
             }
-            return new ValType(r);
+            return new VarType(r);
         }
 
-        static byte[] maskLShift = new byte[] { 0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01 };
-        static byte[] maskRShift = new byte[] { 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80 };
+        private static readonly byte[] MaskLShift = { 0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01 };
+        private static readonly byte[] MaskRShift = { 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80 };
 
-        public ValType LShift(int n)
+        public VarType LShift(int n)
         {
-            var bit_shift = n % 8;
-            var byte_shift = n / 8;
+            var bitShift = n % 8;
+            var byteShift = n / 8;
 
-            var mask = maskLShift[bit_shift];
-            var overflow_mask = (byte)~mask;
+            var mask = MaskLShift[bitShift];
+            var overflowMask = (byte)~mask;
 
             var x = ToSpan();
             var r = new byte[Length];
             for (int i = r.Length - 1; i >= 0; i--) {
-                int k = i - byte_shift;
+                int k = i - byteShift;
                 if (k >= 0) {
                     var val = (byte)(x[i] & mask);
-                    val <<= bit_shift;
+                    val <<= bitShift;
                     r[k] |= val;
                 }
 
                 if (k - 1 >= 0) {
-                    var carryval = (byte)(x[i] & overflow_mask);
-                    carryval >>= 8 - bit_shift;
-                    r[k - 1] |= carryval;
+                    var carryVal = (byte)(x[i] & overflowMask);
+                    carryVal >>= 8 - bitShift;
+                    r[k - 1] |= carryVal;
                 }
             }
-            return new ValType(r);
+            return new VarType(r);
         }
 
-        public ValType RShift(int n)
+        public VarType RShift(int n)
         {
-            var bit_shift = n % 8;
-            var byte_shift = n / 8;
+            var bitShift = n % 8;
+            var byteShift = n / 8;
 
-            var mask = maskRShift[bit_shift];
-            var overflow_mask = (byte)~mask;
+            var mask = MaskRShift[bitShift];
+            var overflowMask = (byte)~mask;
 
             var x = ToSpan();
             var r = new byte[Length];
             for (int i = 0; i < r.Length; i++) {
-                var k = i + byte_shift;
+                var k = i + byteShift;
                 if (k < r.Length) {
                     var val = (byte)(x[i] & mask);
-                    val >>= bit_shift;
+                    val >>= bitShift;
                     r[k] |= val;
                 }
 
                 if (k + 1 < r.Length) {
-                    var carryval = (byte)(x[i] & overflow_mask);
-                    carryval <<= 8 - bit_shift;
+                    var carryval = (byte)(x[i] & overflowMask);
+                    carryval <<= 8 - bitShift;
                     r[k + 1] |= carryval;
                 }
             }
-            return new ValType(r);
+            return new VarType(r);
         }
 
-        public bool BitEquals(ValType x2)
+        public bool BitEquals(VarType x2)
         {
             if (Length != x2.Length) return false;
             var s1 = ToSpan();
@@ -236,7 +237,7 @@ namespace CafeLib.Bitcoin.Scripting
         /// bin may be original value if size matches, otherwise new storage is allocated. None on failure.
         /// ok is true on success. False if can't fit in size.
         /// </returns>
-        public (ValType bin, bool ok) NumResize(uint? size = null)
+        public (VarType bin, bool ok) NumResize(uint? size = null)
         {
             var data = ToSpan();
             var (tooLong, isNeg, extraBytes) = ScriptNum.EvaluateAsNum(data);
@@ -267,7 +268,7 @@ namespace CafeLib.Bitcoin.Scripting
                 }
             }
 
-            return (new ValType(bytes), true);
+            return (new VarType(bytes), true);
 
             fail:
             return (None, false);
@@ -286,7 +287,7 @@ namespace CafeLib.Bitcoin.Scripting
         /// bin may be original value if size matches, otherwise new storage is allocated. None on failure.
         /// ok is true on success. False if can't fit in size.
         /// </returns>
-        public (ValType bin, bool ok) Num2Bin(uint size) => NumResize(size);
+        public (VarType bin, bool ok) Num2Bin(uint size) => NumResize(size);
 
         /// <summary>
         /// Returns this value as a number resized to the minimal size.
@@ -301,7 +302,7 @@ namespace CafeLib.Bitcoin.Scripting
         /// num may be original value if already minimally encoded, otherwise new storage is allocated. None on failure.
         /// ok is true on success. False if can't fit in KzScriptNum.MAXIMUM_ELEMENT_SIZE.
         /// </returns>
-        public (ValType num, bool ok) Bin2Num() => NumResize();
+        public (VarType num, bool ok) Bin2Num() => NumResize();
 
         /// <summary>
         /// Assumes size is greater than current length.
@@ -309,7 +310,7 @@ namespace CafeLib.Bitcoin.Scripting
         /// </summary>
         /// <param name="size"></param>
         /// <returns></returns>
-        public ValType SignExtend(int size)
+        public VarType SignExtend(int size)
         {
             Trace.Assert(size >= Length);
             var r = new byte[size];
@@ -318,10 +319,10 @@ namespace CafeLib.Bitcoin.Scripting
             var isNeg = (s[^1] & 0x80) != 0;
             r[s.Length - 1] &= 0x7f;
             if (isNeg) r[^1] |= 0x80;
-            return new ValType(r);
+            return new VarType(r);
         }
 
-        public ValType Cat(ValType vch2)
+        public VarType Cat(VarType vch2)
         {
             var r = new byte[Length + vch2.Length];
             var s1 = ToSpan();
@@ -329,21 +330,21 @@ namespace CafeLib.Bitcoin.Scripting
             var sr = r.AsSpan();
             s1.CopyTo(sr);
             s2.CopyTo(sr.Slice(s1.Length));
-            return new ValType(r);
+            return new VarType(r);
         }
 
-        public (ValType x1, ValType x2) Split(int position)
+        public (VarType x1, VarType x2) Split(int position)
         {
             var s = ToSpan();
-            var x1 = new ValType(s.Slice(0, position).ToArray());
-            var x2 = new ValType(s.Slice(position).ToArray());
+            var x1 = new VarType(s.Slice(0, position).ToArray());
+            var x2 = new VarType(s.Slice(position).ToArray());
             return (x1, x2);
         }
 
         public override int GetHashCode() => _sequence.GetHashCode();
-        public override bool Equals(object obj) => obj is ValType && this == (ValType)obj;
-        public bool Equals(ValType op) => ((ReadOnlyByteSpan)_sequence).Data.SequenceEqual((ReadOnlyByteSpan)op._sequence);
-        public static bool operator ==(ValType x, ValType y) => x.Equals(y);
-        public static bool operator !=(ValType x, ValType y) => !(x == y);
+        public override bool Equals(object obj) => obj is VarType && this == (VarType)obj;
+        public bool Equals(VarType op) => ((ReadOnlyByteSpan)_sequence).Data.SequenceEqual((ReadOnlyByteSpan)op._sequence);
+        public static bool operator ==(VarType x, VarType y) => x.Equals(y);
+        public static bool operator !=(VarType x, VarType y) => !(x == y);
     }
 }

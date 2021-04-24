@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Encoding;
+using CafeLib.Bitcoin.Numerics;
 
 namespace CafeLib.Bitcoin.Scripting
 {
@@ -47,7 +48,7 @@ namespace CafeLib.Bitcoin.Scripting
         {
         }
 
-        public ValType ToValType() => new ValType(Bytes());
+        public VarType ToValType() => new VarType(Bytes());
 
         public string GetHex() => Hex.Encode(Bytes());
 

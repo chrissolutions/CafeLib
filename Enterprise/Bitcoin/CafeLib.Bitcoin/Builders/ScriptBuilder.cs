@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Encoding;
+using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Scripting;
 
 namespace CafeLib.Bitcoin.Builders
@@ -85,7 +86,7 @@ namespace CafeLib.Bitcoin.Builders
             return this;
         }
 
-        public ScriptBuilder Add(Opcode opc, ValType v)
+        public ScriptBuilder Add(Opcode opc, VarType v)
         {
             _ops.Add(new Operand(opc, v)); 
             return this;
@@ -110,7 +111,7 @@ namespace CafeLib.Bitcoin.Builders
 
         public ScriptBuilder Add(byte[] raw)
         {
-            _ops.Add(new OperandBuilder(new ValType(raw)));
+            _ops.Add(new OperandBuilder(new VarType(raw)));
             return this;
         }
 
@@ -283,7 +284,7 @@ namespace CafeLib.Bitcoin.Builders
                     if (data == null)
                         sb.Add(opcode);
                     else
-                        sb.Add(opcode, new ValType(data));
+                        sb.Add(opcode, new VarType(data));
                 }
                 ps = ps.Slice(Math.Min(arg + 1, ps.Length));
             }
@@ -347,7 +348,7 @@ namespace CafeLib.Bitcoin.Builders
                     if (data == null)
                         sb.Add(op);
                     else
-                        sb.Add(op, new ValType(data));
+                        sb.Add(op, new VarType(data));
                     ps = ps.Slice(args);
                 } else
                     throw new InvalidOperationException();

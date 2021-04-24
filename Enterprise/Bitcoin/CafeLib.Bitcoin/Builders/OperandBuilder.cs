@@ -6,6 +6,7 @@
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Encoding;
 using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Scripting;
 
 namespace CafeLib.Bitcoin.Builders
@@ -41,7 +42,7 @@ namespace CafeLib.Bitcoin.Builders
             Operand = op;
         }
 
-        public OperandBuilder(ValType data)
+        public OperandBuilder(VarType data)
             : this()
         {
             IsFinal = true; 

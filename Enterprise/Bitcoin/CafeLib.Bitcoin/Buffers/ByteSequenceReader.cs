@@ -183,7 +183,7 @@ namespace CafeLib.Bitcoin.Buffers
         /// Reads an <see cref="UInt64"/> as in bitcoin VarInt format.
         /// </summary>
         /// <returns>False if there wasn't enough data for an <see cref="UInt64"/>.</returns>
-        public bool TryReadVarInt(out long value) => VarInt.TryRead(ref this, out value);
+        public bool TryReadVarInt(out long value) => Variant.TryRead(ref this, out value);
 
         /// <summary>
         /// Reads an <see cref="UInt256"/> as in bitcoin VarInt format.

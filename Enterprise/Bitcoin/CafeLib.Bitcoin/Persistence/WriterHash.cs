@@ -78,7 +78,7 @@ namespace CafeLib.Bitcoin.Persistence
 
         public WriterHash Add(string ascii)
         {
-            _alg.TransformBlock(((VarInt)ascii.Length).ToArray());
+            _alg.TransformBlock(((Variant)ascii.Length).ToArray());
             _alg.TransformBlock(ascii.AsciiToBytes());
             return this;
         } 

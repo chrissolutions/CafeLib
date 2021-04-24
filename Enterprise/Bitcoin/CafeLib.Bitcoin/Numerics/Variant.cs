@@ -9,7 +9,7 @@ using CafeLib.Bitcoin.Extensions;
 
 namespace CafeLib.Bitcoin.Numerics
 {
-    public readonly struct VarInt
+    public readonly struct Variant
     {
         private const int SizeofVarByte = sizeof(byte);
         private const int SizeofVarChar = sizeof(char) + sizeof(byte) ;
@@ -20,12 +20,12 @@ namespace CafeLib.Bitcoin.Numerics
         public int Length { get; }
         public byte Prefix { get; }
 
-        internal VarInt(ulong value)
+        internal Variant(ulong value)
             : this((long)value)
         {
         }
 
-        internal VarInt(int value)
+        internal Variant(int value)
         {
             var (length, prefix) = GetInfo(value);
             Length = length;
@@ -33,7 +33,7 @@ namespace CafeLib.Bitcoin.Numerics
             Value = value;
         }
 
-        internal VarInt(long value)
+        internal Variant(long value)
         {
             var (length, prefix) = GetInfo(value);
             Length = length;
@@ -41,11 +41,11 @@ namespace CafeLib.Bitcoin.Numerics
             Value = value;
         }
 
-        public static implicit operator byte[](VarInt rhs) => rhs.ToArray();
-        public static explicit operator VarInt(int rhs) => new VarInt(rhs);
-        public static explicit operator VarInt(uint rhs) => new VarInt(rhs);
-        public static explicit operator VarInt(long rhs) => new VarInt(rhs);
-        public static explicit operator VarInt(ulong rhs) => new VarInt(rhs);
+        public static implicit operator byte[](Variant rhs) => rhs.ToArray();
+        public static explicit operator Variant(int rhs) => new Variant(rhs);
+        public static explicit operator Variant(uint rhs) => new Variant(rhs);
+        public static explicit operator Variant(long rhs) => new Variant(rhs);
+        public static explicit operator Variant(ulong rhs) => new Variant(rhs);
 
         public byte[] ToArray() => AsBytes(Value);
 

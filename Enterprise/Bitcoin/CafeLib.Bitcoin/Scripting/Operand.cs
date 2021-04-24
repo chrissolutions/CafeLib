@@ -7,6 +7,7 @@ using System;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Encoding;
 using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Persistence;
 
 // ReSharper disable NonReadonlyMemberInGetHashCode
@@ -15,11 +16,11 @@ namespace CafeLib.Bitcoin.Scripting
 {
     public struct Operand
     {
-        private ValType _data;
+        private VarType _data;
 
         public Opcode Code { get; private set; }
 
-        internal ValType Data => _data;
+        internal VarType Data => _data;
 
         public string CodeName => GetOpName(Code);
 
@@ -33,7 +34,7 @@ namespace CafeLib.Bitcoin.Scripting
 
         public long Length => 1 + _data.Length + LengthBytesCount;
 
-        public Operand(Opcode code, ValType data)
+        public Operand(Opcode code, VarType data)
         {
             Code = code;
             _data = data;
@@ -42,13 +43,13 @@ namespace CafeLib.Bitcoin.Scripting
         public Operand(Opcode code)
         {
             Code = code;
-            _data = ValType.None;
+            _data = VarType.None;
         }
 
         public static Operand Push(ReadOnlyByteSpan data)
         {
             var code = Opcode.OP_INVALIDOPCODE;
-            var val = ValType.None;
+            var val = VarType.None;
             if (data.Length == 1 && data[0] <= 16)
             {
                 code = data[0] == 0 ? Opcode.OP_0 : (Opcode)(data[0] - 1 + (int)Opcode.OP_1);
@@ -72,7 +73,7 @@ namespace CafeLib.Bitcoin.Scripting
                     code = Opcode.OP_PUSHDATA4;
                 }
 
-                val = new ValType(data.ToArray());
+                val = new VarType(data.ToArray());
             }
             var op = new Operand(code, val);
             return op;
@@ -81,7 +82,7 @@ namespace CafeLib.Bitcoin.Scripting
         public static Operand Push(long v)
         {
             Opcode code;
-            var val = ValType.None;
+            var val = VarType.None;
 
             if (v == -1) 
             {
@@ -97,22 +98,22 @@ namespace CafeLib.Bitcoin.Scripting
                 if (v <= 0xff) 
                 {
                     code = Opcode.OP_PUSH1;
-                    val = new ValType(bytes.Slice(0, 1).ToArray());
+                    val = new VarType(bytes.Slice(0, 1).ToArray());
                 }
                 else if (v <= 0xffff) 
                 {
                     code = Opcode.OP_PUSH2;
-                    val = new ValType(bytes.Slice(0, 2).ToArray());
+                    val = new VarType(bytes.Slice(0, 2).ToArray());
                 }
                 else if (v <= 0xffffff) 
                 {
                     code = Opcode.OP_PUSH3;
-                    val = new ValType(bytes.Slice(0, 3).ToArray());
+                    val = new VarType(bytes.Slice(0, 3).ToArray());
                 }
                 else 
                 {
                     code = Opcode.OP_PUSH4;
-                    val = new ValType(bytes.Slice(0, 4).ToArray());
+                    val = new VarType(bytes.Slice(0, 4).ToArray());
                 }
             }
             var op = new Operand(code, val);
@@ -231,7 +232,7 @@ namespace CafeLib.Bitcoin.Scripting
         public bool TryReadOperand(ref ByteSequenceReader r)
         {
             Code = Opcode.OP_INVALIDOPCODE;
-            _data = ValType.None;
+            _data = VarType.None;
 
             if (!r.TryRead(out var opcode)) goto fail;
 
@@ -269,7 +270,7 @@ namespace CafeLib.Bitcoin.Scripting
                 if (nSize >= 0)
                 {
                     if (r.Data.Remaining < nSize) goto fail;
-                    _data = new ValType(r.Data.Sequence.Slice(r.Data.Position, (Int32)nSize));
+                    _data = new VarType(r.Data.Sequence.Slice(r.Data.Position, (Int32)nSize));
                     r.Data.Advance(nSize);
                 }
             }

@@ -38,6 +38,9 @@ namespace CafeLib.Bitcoin.Buffers
         public static implicit operator byte[](ReadOnlyByteSequence rhs) => rhs.ToArray();
         public static implicit operator ReadOnlyByteSequence(byte[] rhs) => new ReadOnlyByteSequence(rhs);
 
+        public static implicit operator ReadOnlyByteSpan(ReadOnlyByteSequence rhs) => new ReadOnlyByteSpan(rhs);
+        public static explicit operator ReadOnlyByteSequence(ReadOnlyByteSpan  rhs) => new ReadOnlyByteSequence(rhs);
+
         /// <summary>
         /// Run down both sequences as long as the bytes are equal.
         /// If we've run out of a bytes, return -1, a is less than b.

@@ -19,12 +19,12 @@ namespace CafeLib.Bitcoin.Scripting
 {
     public static class ScriptInterpreter
     {
-        private static SignatureHashType GetHashType(ValType vchSig) 
+        private static SignatureHashType GetHashType(VarType vchSig) 
             => new SignatureHashType(vchSig.Length == 0 ? SignatureHashEnum.Unsupported : (SignatureHashEnum)vchSig.LastByte);
 
         private static readonly SignatureCheckerBase DefaultSignatureChecker = new SignatureCheckerBase();
 
-        private static void CleanupScriptCode(Script scriptCode, ValType vchSig, ScriptFlags flags)
+        private static void CleanupScriptCode(Script scriptCode, VarType vchSig, ScriptFlags flags)
         {
             // Drop the signature in scripts when SIGHASH_FORKID is not used.
             var sigHashType = GetHashType(vchSig);
@@ -33,7 +33,7 @@ namespace CafeLib.Bitcoin.Scripting
             }
         }
 
-        private static bool CheckPubKeyEncoding(ValType vchPubKey, ScriptFlags flags, ref ScriptError error)
+        private static bool CheckPubKeyEncoding(VarType vchPubKey, ScriptFlags flags, ref ScriptError error)
         {
             if ((flags & ScriptFlags.VERIFY_STRICTENC) != 0 && !IsCompressedOrUncompressedPubKey(vchPubKey))
                 return SetError(out error, ScriptError.PUBKEYTYPE);
@@ -47,7 +47,7 @@ namespace CafeLib.Bitcoin.Scripting
             return true;
         }
 
-        private static bool IsCompressedOrUncompressedPubKey(ValType vchPubKey)
+        private static bool IsCompressedOrUncompressedPubKey(VarType vchPubKey)
         {
             var length = vchPubKey.Length;
             var first = vchPubKey.FirstByte;
@@ -102,7 +102,7 @@ namespace CafeLib.Bitcoin.Scripting
                 .Aggregate((ScriptFlags) 0, (current, sf) => current | sf);
         }
 
-        private static bool IsCompressedPubKey(ValType vchPubKey)
+        private static bool IsCompressedPubKey(VarType vchPubKey)
         {
             var length = vchPubKey.Length;
             var first = vchPubKey.FirstByte;
@@ -273,7 +273,7 @@ namespace CafeLib.Bitcoin.Scripting
             return hw.GetHashFinal();
         }
 
-        private static bool CheckSignatureEncoding(ValType vchSig, ScriptFlags flags, ref ScriptError error)
+        private static bool CheckSignatureEncoding(VarType vchSig, ScriptFlags flags, ref ScriptError error)
         {
             // Empty signature. Not strictly DER encoded, but allowed to provide a
             // compact way to provide an invalid signature for use with CHECK(MULTI)SIG
@@ -304,7 +304,7 @@ namespace CafeLib.Bitcoin.Scripting
             return true;
         }
 
-        private static bool IsLowDerSignature(ValType vchSig, ref ScriptError error)
+        private static bool IsLowDerSignature(VarType vchSig, ref ScriptError error)
         {
             if (!IsValidSignatureEncoding(vchSig)) return SetError(out error, ScriptError.SIG_DER);
 
@@ -326,7 +326,7 @@ namespace CafeLib.Bitcoin.Scripting
          *
          * This function is consensus-critical since BIP66.
          */
-        private static bool IsValidSignatureEncoding(ValType vchSig)
+        private static bool IsValidSignatureEncoding(VarType vchSig)
         {
             // Format: 0x30 [total-length] 0x02 [R-length] [R] 0x02 [S-length] [S]
             // [sighash]
@@ -494,7 +494,7 @@ namespace CafeLib.Bitcoin.Scripting
                 return SetError(out error, ScriptError.SIG_PUSHONLY);
             }
 
-            var stack = new ScriptStack<ValType>();
+            var stack = new ScriptStack<VarType>();
             if (!EvalScript(stack, scriptSig, flags, checker, out error)) return false;
             if (!EvalScript(stack, scriptPub, flags, checker, out error)) return false;
             if (stack.Count == 0) return SetError(out error, ScriptError.EVAL_FALSE);
@@ -503,9 +503,9 @@ namespace CafeLib.Bitcoin.Scripting
             return SetSuccess(out error);
         }
 
-        private static readonly ValType VchZero = new ValType(new byte[0]);
-        private static readonly ValType VchFalse = new ValType(new byte[0]);
-        private static readonly ValType VchTrue = new ValType(new byte[] { 1 });
+        private static readonly VarType VchZero = new VarType(new byte[0]);
+        private static readonly VarType VchFalse = new VarType(new byte[0]);
+        private static readonly VarType VchTrue = new VarType(new byte[] { 1 });
 
         /// <summary>
         /// Modeled on Bitcoin-SV interpreter.cpp 0.1.1 lines 384-1520
@@ -516,7 +516,7 @@ namespace CafeLib.Bitcoin.Scripting
         /// <param name="checker"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public static bool EvalScript(ScriptStack<ValType> stack, Script script, ScriptFlags flags, SignatureCheckerBase checker, out ScriptError error)
+        public static bool EvalScript(ScriptStack<VarType> stack, Script script, ScriptFlags flags, SignatureCheckerBase checker, out ScriptError error)
         {
             var ros = script.Sequence;
             var pc = ros.Data.Start;
@@ -524,7 +524,7 @@ namespace CafeLib.Bitcoin.Scripting
             var pbegincodehash = ros.Data.Start;
             var op = new Operand();
             var vfExec = new ScriptStack<bool>();
-            var altStack = new ScriptStack<ValType>();
+            var altStack = new ScriptStack<VarType>();
             checker ??= DefaultSignatureChecker;
 
             SetError(out error, ScriptError.UNKNOWN_ERROR);
@@ -1154,7 +1154,7 @@ namespace CafeLib.Bitcoin.Scripting
                                         default:
                                             return SetError(out error, ScriptError.BAD_OPCODE);
                                     }
-                                    stack.Push(new ValType(data));
+                                    stack.Push(new VarType(data));
                                 }
                                 break;
 

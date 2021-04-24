@@ -9,6 +9,7 @@ using CafeLib.Bitcoin.Chain;
 using CafeLib.Bitcoin.Encoding;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Persistence;
 using Newtonsoft.Json;
 
@@ -64,8 +65,11 @@ namespace CafeLib.Bitcoin.Scripting
         public void Write(BinaryWriter s)
         {
             if (_script.IsEmpty)
+            {
                 s.Write(-1);
-            else {
+            }
+            else
+            {
                 s.Write((int)_script.Length);
                 foreach (var m in _script)
                     s.Write(m.Span);
@@ -74,15 +78,17 @@ namespace CafeLib.Bitcoin.Scripting
 
         public Script Slice(SequencePosition start, SequencePosition end) => new Script(_script.Data.Slice(start, end));
 
-        private Script(ReadOnlySequence<byte> script) 
+        private Script(ReadOnlyByteSequence script) 
             : this()
         {
             _script = script;
         }
 
-        public Script(byte[] script) : this(new ReadOnlySequence<byte>(script)) { }
+        public Script(byte[] script)
+            : this(new ReadOnlyByteSequence(script)) { }
 
-        public Script(string hex) : this(Encoders.Hex.Decode(hex)) { }
+        public Script(string hex) 
+            : this(Encoders.Hex.Decode(hex)) { }
 
         public bool IsPushOnly()
         {
@@ -110,7 +116,7 @@ namespace CafeLib.Bitcoin.Scripting
             return (s.TryReadScript(ref sr, withoutLength), s);
         }
 
-        public int FindAndDelete(ValType vchSig)
+        public int FindAndDelete(VarType vchSig)
         {
             int nFound = 0;
             var s = _script;

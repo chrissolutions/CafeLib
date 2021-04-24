@@ -54,7 +54,5 @@ namespace CafeLib.Bitcoin.Buffers
 
         public static implicit operator byte[](ReadOnlyByteSpan rhs) => rhs.Data.ToArray();
         public static implicit operator ReadOnlyByteSpan(byte[] rhs) => new ReadOnlyByteSpan(rhs);
-
-        public static implicit operator ReadOnlyByteSpan(ReadOnlyByteSequence rhs) => new ReadOnlyByteSpan(rhs);
     }
 }
