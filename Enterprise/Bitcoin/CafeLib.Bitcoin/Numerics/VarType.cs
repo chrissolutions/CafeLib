@@ -21,11 +21,6 @@ namespace CafeLib.Bitcoin.Numerics
             _sequence = data;
         }
 
-        public VarType(VarType data)
-            : this(data.Sequence.Data)
-        {
-        }
-
         public VarType(byte[] bytes)
             : this(new ReadOnlyByteSequence(bytes))
         {
@@ -348,7 +343,9 @@ namespace CafeLib.Bitcoin.Numerics
         public override bool Equals(object obj) => obj is VarType type && this == type;
         public bool Equals(VarType rhs) => ((ReadOnlyByteSpan)_sequence).Data.SequenceEqual((ReadOnlyByteSpan)rhs._sequence);
 
+        public static explicit operator VarType(byte[] rhs) => new VarType(rhs);
         public static implicit operator byte[](VarType rhs) => rhs.ToBytes();
+
         public static implicit operator ReadOnlyByteSequence(VarType rhs) => rhs.ToBytes();
         public static explicit operator VarType(ReadOnlyByteSequence rhs) => new VarType(rhs);
 

@@ -111,8 +111,12 @@ namespace CafeLib.Bitcoin.Numerics
 
         public bool Equals(UInt512 o) => N0 == o.N0 && _n1 == o._n1 && _n2 == o._n2 && _n3 == o._n3 && _n4 == o._n4 && _n5 == o._n5 && _n6 == o._n6 && _n7 == o._n7;
 
+        public static explicit operator UInt512(byte[] rhs) => new UInt512(rhs);
+        public static implicit operator byte[](UInt512 rhs) => rhs.Span.ToArray();
+
         public static explicit operator UInt512(ByteSpan rhs) => new UInt512(rhs);
         public static explicit operator UInt512(ReadOnlyByteSpan rhs) => new UInt512(rhs);
+
         public static implicit operator ByteSpan(UInt512 rhs) => rhs.Span;
         public static implicit operator ReadOnlyByteSpan(UInt512 rhs) => rhs.Span;
 
