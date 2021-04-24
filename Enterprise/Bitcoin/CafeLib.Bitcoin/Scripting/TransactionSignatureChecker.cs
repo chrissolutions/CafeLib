@@ -3,22 +3,32 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using System.Transactions;
 using CafeLib.Bitcoin.Keys;
 using CafeLib.Bitcoin.Numerics;
+using CafeLib.Bitcoin.Units;
 
 namespace CafeLib.Bitcoin.Scripting
 {
     public class TransactionSignatureChecker : SignatureCheckerBase
     {
-        public TransactionSignatureChecker()
+        private Transaction _tx;
+        private int _index;
+        private Amount _amount;
+
+        public TransactionSignatureChecker(Transaction tx, int index, Amount amount)
         {
-
+            _tx = tx;
+            _index = index;
+            _amount = amount;
         }
-
 
         public override bool CheckSignature(VarType scriptSig, VarType vchPubKey, Script script, ScriptFlags flags)
         {
             var publicKey = new PublicKey(vchPubKey);
+            if (!publicKey.IsValid) return false;
+            if (vchPubKey == VarType.Empty) return false;
+            var sigHashType = new SignatureHashType(scriptSig.LastByte);
 
             return false;
 
