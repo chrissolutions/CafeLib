@@ -208,7 +208,7 @@ namespace CafeLib.Bitcoin.Chain
 
         public byte[] ToBytes()
         {
-            var wl = new WriterLength();
+            var wl = new LengthWriter();
             wl.Add(this);
             var length = wl.Length;
             var bytes = new byte[length];

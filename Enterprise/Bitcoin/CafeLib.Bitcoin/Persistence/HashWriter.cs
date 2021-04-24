@@ -13,7 +13,7 @@ using CafeLib.Bitcoin.Numerics;
 
 namespace CafeLib.Bitcoin.Persistence
 {
-    public class WriterHash : IDisposable, IBitcoinWriter
+    public class HashWriter : IDisposable, IBitcoinWriter
     {
         private readonly SHA256Managed _alg = new SHA256Managed();
 
@@ -76,7 +76,7 @@ namespace CafeLib.Bitcoin.Persistence
             return this;
         } 
 
-        public WriterHash Add(string ascii)
+        public HashWriter Add(string ascii)
         {
             _alg.TransformBlock(((Variant)ascii.Length).ToArray());
             _alg.TransformBlock(ascii.AsciiToBytes());

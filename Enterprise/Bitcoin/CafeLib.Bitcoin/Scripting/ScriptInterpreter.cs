@@ -144,12 +144,12 @@ namespace CafeLib.Bitcoin.Scripting
                 } 
                 else if (sigHashType.GetBaseType() == BaseSignatureHashEnum.Single && nIn < txTo.Outputs.Length) 
                 {
-                    using var hw = new WriterHash();
+                    using var hw = new HashWriter();
                     hw.Add(txTo.Outputs[nIn]);
                     hashOutputs = hw.GetHashFinal();
                 }
 
-                using var writer = new WriterHash();
+                using var writer = new HashWriter();
                 writer
                     // Version
                     .Add(txTo.Version)
@@ -190,7 +190,7 @@ namespace CafeLib.Bitcoin.Scripting
                 // Original digest algorithm...
                 var hasAnyoneCanPay = sigHashType.HasAnyoneCanPay;
                 var numberOfInputs = hasAnyoneCanPay ? 1 : txTo.Inputs.Length;
-                using var writer = new WriterHash();
+                using var writer = new HashWriter();
                 // Start with the version...
                 writer.Add(txTo.Version);
                 // Add Input(s)...
@@ -242,7 +242,7 @@ namespace CafeLib.Bitcoin.Scripting
 
         public static UInt256 GetPrevOutHash(Transaction txTo)
         {
-            using var hw = new WriterHash();
+            using var hw = new HashWriter();
             foreach (var i in txTo.Inputs)
             {
                 hw.Add(i.PrevOut);
@@ -253,7 +253,7 @@ namespace CafeLib.Bitcoin.Scripting
 
         public static UInt256 GetSequenceHash(Transaction txTo)
         {
-            using var hw = new WriterHash();
+            using var hw = new HashWriter();
             foreach (var i in txTo.Inputs)
             {
                 hw.Add(i.Sequence);
@@ -264,7 +264,7 @@ namespace CafeLib.Bitcoin.Scripting
 
         public static UInt256 GetOutputsHash(Transaction txTo)
         {
-            using var hw = new WriterHash();
+            using var hw = new HashWriter();
             foreach (var o in txTo.Outputs)
             {
                 hw.Add(o);

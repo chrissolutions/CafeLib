@@ -19,7 +19,7 @@ namespace CafeLib.Bitcoin.Extensions
         private static UInt256 GetMessageHash(UInt256 message)
         {
             var messageHash = Hashes.Sha256(message).ToHex();
-            return new WriterHash().Add(MessageMagic).Add(messageHash).GetHashFinal();
+            return new HashWriter().Add(MessageMagic).Add(messageHash).GetHashFinal();
         }
 
         public static byte[] SignMessage(this PrivateKey key, string message) => SignMessage(key, (UInt256)message.Utf8ToBytes());

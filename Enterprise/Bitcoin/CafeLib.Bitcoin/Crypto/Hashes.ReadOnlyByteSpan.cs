@@ -94,7 +94,7 @@ namespace CafeLib.Bitcoin.Crypto
         /// </summary>
         /// <param name="data">Input: bytes to be hashed.</param>
         /// <param name="hash">Output: RIPEMD160 of SHA256 of data.</param>
-        public static void Hash160(this ReadOnlyByteSpan data, Span<byte> hash)
+        public static void Hash160(this ReadOnlyByteSpan data, ByteSpan hash)
         {
             var x = data.Sha256();
             Ripemd160(x.Span, hash);
