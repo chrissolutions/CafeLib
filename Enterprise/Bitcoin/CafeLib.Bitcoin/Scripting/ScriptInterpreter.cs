@@ -6,6 +6,7 @@
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Chain;
 using CafeLib.Bitcoin.Crypto;
 using CafeLib.Bitcoin.Extensions;
@@ -518,10 +519,10 @@ namespace CafeLib.Bitcoin.Scripting
         /// <returns></returns>
         public static bool EvalScript(ScriptStack<VarType> stack, Script script, ScriptFlags flags, SignatureCheckerBase checker, out ScriptError error)
         {
-            var ros = script.Sequence;
+            var ros = script.Data.Sequence;
             var pc = ros.Data.Start;
             var pend = ros.Data.End;
-            var pbegincodehash = ros.Data.Start;
+            var beginCodeHash = ros.Data.Start;
             var op = new Operand();
             var vfExec = new ScriptStack<bool>();
             var altStack = new ScriptStack<VarType>();
@@ -1161,7 +1162,7 @@ namespace CafeLib.Bitcoin.Scripting
                             case Opcode.OP_CODESEPARATOR: 
                                 {
                                     // Hash starts after the code separator
-                                    pbegincodehash = ros.Data.Start;
+                                    beginCodeHash = ros.Data.Start;
                                 }
                                 break;
 
@@ -1180,7 +1181,7 @@ namespace CafeLib.Bitcoin.Scripting
                                     }
 
                                     // Subset of script starting at the most recent codeseparator
-                                    var scriptCode = script.Slice(pbegincodehash, pend);
+                                    var scriptCode = script.Slice(beginCodeHash, pend);
 
                                     // Remove signature for pre-fork scripts
                                     CleanupScriptCode(scriptCode, vchSig, flags);

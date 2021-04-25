@@ -36,7 +36,7 @@ namespace CafeLib.Bitcoin.Scripting
         {
         }
 
-        public ReadOnlyByteSequence Sequence => _script;
+        internal VarType Data => _script;
 
         public static Script None => new Script();
 
@@ -330,10 +330,13 @@ namespace CafeLib.Bitcoin.Scripting
         //public static Script ParseTestScript(string testScript) => KzBScript.ParseTestScript(testScript).ToScript();
 
         public override int GetHashCode() => _script.GetHashCode();
-        public override bool Equals(object obj) => obj is Script && this == (Script)obj;
+        public override bool Equals(object obj) => obj is Script script && this == script;
         public bool Equals(Script o) => Length == o.Length; //&& _script.CompareTo(o._script) == 0;
         public static bool operator ==(Script x, Script y) => x.Equals(y);
         public static bool operator !=(Script x, Script y) => !(x == y);
+
+        public static implicit operator Script(VarType rhs) => new Script(rhs);
+        public static explicit operator VarType(Script rhs) => rhs.Data;
 
         /// <summary>
         /// Template 1 P2PK
