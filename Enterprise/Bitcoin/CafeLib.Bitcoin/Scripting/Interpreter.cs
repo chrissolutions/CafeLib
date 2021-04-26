@@ -130,7 +130,7 @@ namespace CafeLib.Bitcoin.Scripting
 
             // Finally the nLockTime feature can be disabled and thus
             // CHECKLOCKTIMEVERIFY bypassed if every txIn has been
-            // finalized by setting nSequence to maxint. The
+            // finalized by setting nSequence to max int. The
             // transaction would be allowed into the blockchain, making
             // the opCode ineffective.
             //
