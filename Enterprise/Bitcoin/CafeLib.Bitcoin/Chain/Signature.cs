@@ -29,7 +29,7 @@ namespace CafeLib.Bitcoin.Chain
             if (!signature.IsEmpty)
             {
                 var hashType = new SignatureHashType(signature.LastByte);
-                //const derbuf = buf.slice(0, buf.length - 1)
+                var derBuffer = signature.Slice(0, (int)signature.Length - 1);
                 //this.fromDer(derbuf, false)
                 _hashType = hashType;
             }
