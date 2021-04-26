@@ -39,7 +39,6 @@ namespace CafeLib.Bitcoin.Scripting
         private const ScriptFlags DefaultFlags = ScriptFlags.VERIFY_P2SH | ScriptFlags.VERIFY_CHECKLOCKTIMEVERIFY;
         private const int LocktimeThreshold = 500000000;  // Tue Nov  5 00:53:20 1985 UTC
 
-
         public Interpreter(Script script, Transaction tx, int inIndex)
         {
             _script = script;
@@ -265,12 +264,7 @@ namespace CafeLib.Bitcoin.Scripting
 
             // Null bytes at the start of S are not allowed, unless S would otherwise be
             // interpreted as a negative number.
-            if (lenS > 1 && (sig[lenR + 6] == 0x00) && (sig[lenR + 7] & 0x80) == 0)
-            {
-                return false;
-            }
-
-            return true;
+            return lenS <= 1 || (sig[lenR + 6] != 0x00) || (sig[lenR + 7] & 0x80) != 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
