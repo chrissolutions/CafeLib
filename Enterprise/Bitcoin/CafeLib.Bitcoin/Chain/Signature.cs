@@ -30,7 +30,9 @@ namespace CafeLib.Bitcoin.Chain
             {
                 var hashType = new SignatureHashType(signature.LastByte);
                 var derBuffer = signature.Slice(0, (int)signature.Length - 1);
-                //this.fromDer(derbuf, false)
+                var (r, s) = ParseDer(derBuffer);
+                _r = r;
+                _s = s;
                 _hashType = hashType;
             }
         }
@@ -65,19 +67,9 @@ namespace CafeLib.Bitcoin.Chain
             return true;
         }
 
-
-        public static Signature FromTxFormat(VarType vchSig)
+        private (UInt256 r, UInt256 s) ParseDer(VarType der)
         {
-            if (vchSig.IsEmpty)
-            {
-                return new Signature();
-            }
-
-            var hashType = vchSig.LastByte;
-            //const derbuf = buf.slice(0, buf.length - 1)
-            //this.fromDer(derbuf, false)
-            //this.nHashType = nHashType
-            return new Signature();
+            return (UInt256.Zero, UInt256.Zero);
         }
     }
 }
