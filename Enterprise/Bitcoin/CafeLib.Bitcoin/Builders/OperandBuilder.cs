@@ -85,7 +85,7 @@ namespace CafeLib.Bitcoin.Builders
         public PublicKey ToPubKey()
         {
             var pubKey = new PublicKey();
-            pubKey.Set(Operand.Data.ToSpan());
+            pubKey.Set(Operand.Data);
             return pubKey.IsValid ? pubKey : null;
         }
     }

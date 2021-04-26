@@ -32,7 +32,8 @@ namespace CafeLib.Bitcoin.Scripting
         private ScriptFlags _flags;
         private string _errStr;
         private int _opCount;
-        private BigInteger _value;
+        private UInt256 _value;
+        private ScriptError _error;
 
         private const ScriptFlags DefaultFlags = ScriptFlags.VERIFY_P2SH | ScriptFlags.VERIFY_CHECKLOCKTIMEVERIFY;
 
@@ -53,13 +54,45 @@ namespace CafeLib.Bitcoin.Scripting
             _errStr = "";
             _flags = DefaultFlags;
             _opCount = 0;
-            _value = new BigInteger(0);
+            _value = new UInt256(0);
         }
 
 
         private bool CheckSigEncoding(VarType vchSig)
         {
-            return false;
+            // Empty signature. Not strictly DER encoded, but allowed to provide a
+            // compact way to provide an invalid signature for use with CHECK(MULTI)SIG
+            if (vchSig.IsEmpty)
+            {
+                return true;
+            }
+            if ((_flags &
+                 (ScriptFlags.VERIFY_DERSIG |
+                  ScriptFlags.VERIFY_LOW_S |
+                  ScriptFlags.VERIFY_STRICTENC)) != 0
+                && !Signature.IsTxDer(vchSig))
+            {
+                _errStr = "SCRIPT_ERR_SIG_DER";
+                return false;
+            }
+            else if ((_flags & ScriptFlags.VERIFY_LOW_S) != 0)
+            {
+                if (!IsLowDerSignature(vchSig, ref _error))
+                {
+                    return false;
+                }
+            }
+            else if ((_flags & ScriptFlags.VERIFY_STRICTENC) != 0)
+            {
+                //let sig = new Sig().fromTxFormat(buf)
+                //if (!sig.hasDefinedHashType())
+                //{
+                //    this.errStr = 'SCRIPT_ERR_SIG_HASHTYPE'
+                //    return false
+                //}
+            }
+
+            return true;
         }
 
         private bool CheckPubKeyEncoding()
@@ -69,6 +102,17 @@ namespace CafeLib.Bitcoin.Scripting
 
         private bool CheckLockTime(int nLockTime)
         {
+            return true;
+        }
+
+        private static bool IsLowDerSignature(VarType vchSig, ref ScriptError error)
+        {
+            //if (!IsValidSignatureEncoding(vchSig)) return SetError(out error, ScriptError.SIG_DER);
+
+            var sigInput = vchSig.Slice(0, (int)vchSig.Length - 1);
+
+            //if (!PublicKey.CheckLowS(sigInput)) return SetError(out error, ScriptError.SIG_HIGH_S);
+
             return true;
         }
     }

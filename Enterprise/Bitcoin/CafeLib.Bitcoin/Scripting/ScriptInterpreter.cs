@@ -6,6 +6,7 @@
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Chain;
 using CafeLib.Bitcoin.Crypto;
 using CafeLib.Bitcoin.Extensions;
@@ -31,7 +32,7 @@ namespace CafeLib.Bitcoin.Scripting
             if ((flags & ScriptFlags.ENABLE_SIGHASH_FORKID) == 0 || !sigHashType.HasForkId) {
                 scriptCode.FindAndDelete(vchSig);
             }
-        }
+        }   
 
         private static bool CheckPubKeyEncoding(VarType vchPubKey, ScriptFlags flags, ref ScriptError error)
         {
@@ -347,7 +348,7 @@ namespace CafeLib.Bitcoin.Scripting
             if (length < 9) return false;
             if (length > 73) return false;
 
-            var sig = vchSig.ToSpan();
+            ReadOnlyByteSpan sig = vchSig;
 
             // A signature is of type 0x30 (compound).
             if (sig[0] != 0x30) return false;

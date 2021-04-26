@@ -499,7 +499,7 @@ namespace CafeLib.Bitcoin.Scripting
             var pubkey = new PublicKey(op2.Data);
             if (!pubkey.IsValid) goto fail;
 
-            var sig = op1.Data.ToSpan();
+            ReadOnlyByteSpan sig = op1.Data;
             if (sig.Length < 7 || sig[0] != 0x30 || sig[2] != 0x02) goto fail;
             var lenDer = sig[1];
             var lenR = sig[3];

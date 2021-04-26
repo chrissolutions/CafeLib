@@ -69,6 +69,15 @@ namespace CafeLib.Bitcoin.Buffers
         public static implicit operator ReadOnlyByteSpan(ReadOnlyByteSequence rhs) => new ReadOnlyByteSpan(rhs);
         public static explicit operator ReadOnlyByteSequence(ReadOnlyByteSpan  rhs) => new ReadOnlyByteSequence(rhs);
 
+        public override int GetHashCode() => Data.GetHashCode();
+
+        public override bool Equals(object obj) => obj is ReadOnlyByteSequence type && this == type;
+        public bool Equals(ReadOnlyByteSequence rhs) => ((ReadOnlyByteSpan)this).Data.SequenceEqual((ReadOnlyByteSpan)rhs);
+
+        public static bool operator ==(ReadOnlyByteSequence x, ReadOnlyByteSequence y) => x.Equals(y);
+        public static bool operator !=(ReadOnlyByteSequence x, ReadOnlyByteSequence y) => !(x == y);
+
+
         /// <summary>
         /// Run down both sequences as long as the bytes are equal.
         /// If we've run out of a bytes, return -1, a is less than b.

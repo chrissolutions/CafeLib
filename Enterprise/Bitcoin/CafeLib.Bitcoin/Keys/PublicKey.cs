@@ -196,7 +196,7 @@ namespace CafeLib.Bitcoin.Keys
             return key.RecoverCompact(hash, sig) ? key : null;
         }
 
-        public bool Verify(UInt256 hash, ReadOnlySpan<byte> sig)
+        public bool Verify(UInt256 hash, ReadOnlyByteSpan sig)
         {
             if (!IsValid || sig.Length == 0) return false;
 

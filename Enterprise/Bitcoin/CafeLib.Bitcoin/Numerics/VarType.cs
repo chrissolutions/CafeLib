@@ -30,6 +30,7 @@ namespace CafeLib.Bitcoin.Numerics
 
         public static VarType Empty = new VarType();
 
+        public bool IsEmpty => Length == 0;
         public long Length => Sequence.Length;
 
         public byte FirstByte => _sequence.Data.First.Span[0];
@@ -51,7 +52,7 @@ namespace CafeLib.Bitcoin.Numerics
             return new ByteSequenceReader(Sequence);
         }
 
-        public ReadOnlyByteSpan ToSpan()
+        private ReadOnlyByteSpan ToSpan()
         {
             var r = GetReader();
 
@@ -68,12 +69,12 @@ namespace CafeLib.Bitcoin.Numerics
         /// Return first four bytes as a big endian integer.
         /// </summary>
         /// <returns></returns>
-        public UInt32 AsUInt32BigEndian()
+        public uint AsUInt32BigEndian()
         {
             var r = GetReader();
-            if (r.TryReadBigEndian(out Int32 v) == false)
+            if (r.TryReadBigEndian(out int v) == false)
                 throw new InvalidOperationException();
-            return (UInt32)v;
+            return (uint)v;
         }
 
         public bool ToBool()
@@ -353,6 +354,7 @@ namespace CafeLib.Bitcoin.Numerics
         public static explicit operator VarType(byte[] rhs) => new VarType(rhs);
         public static implicit operator byte[](VarType rhs) => rhs.ToBytes();
 
+        public static implicit operator ReadOnlyByteSpan(VarType rhs) => rhs.ToSpan();
         public static implicit operator ReadOnlyByteSequence(VarType rhs) => rhs.ToBytes();
         public static explicit operator VarType(ReadOnlyByteSequence rhs) => new VarType(rhs);
 
