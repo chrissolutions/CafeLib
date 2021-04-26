@@ -504,10 +504,6 @@ namespace CafeLib.Bitcoin.Scripting
             return SetSuccess(out error);
         }
 
-        private static readonly VarType VchZero = new VarType(new byte[0]);
-        private static readonly VarType VchFalse = new VarType(new byte[0]);
-        private static readonly VarType VchTrue = new VarType(new byte[] { 1 });
-
         /// <summary>
         /// Modeled on Bitcoin-SV interpreter.cpp 0.1.1 lines 384-1520
         /// </summary>
@@ -940,8 +936,9 @@ namespace CafeLib.Bitcoin.Scripting
                                     // (numerically, 0x01 == 0x0001 == 0x000001)
                                     // if (opcode == OP_NOTEQUAL)
                                     //    fEqual = !fEqual;
-                                    stack.Push(fEqual ? VchTrue : VchFalse);
-                                    if (op.Code == Opcode.OP_EQUALVERIFY) {
+                                    stack.Push(fEqual ? VarType.True : VarType.False);
+                                    if (op.Code == Opcode.OP_EQUALVERIFY) 
+                                    {
                                         if (fEqual)
                                             stack.Pop();
                                         else
@@ -1108,7 +1105,7 @@ namespace CafeLib.Bitcoin.Scripting
                                     var bn1 = stack.Pop().ToScriptNum(fRequireMinimal);
                                     var bn = new ScriptNum(0);
                                     var fValue = (bn2 <= bn1 && bn1 < bn3);
-                                    stack.Push(fValue ? VchTrue : VchFalse);
+                                    stack.Push(fValue ? VarType.True : VarType.False);
                                 }
                                 break;
 
@@ -1192,7 +1189,7 @@ namespace CafeLib.Bitcoin.Scripting
                                         return SetError(out error, ScriptError.SIG_NULLFAIL);
                                     }
 
-                                    stack.Push(fSuccess ? VchTrue : VchFalse);
+                                    stack.Push(fSuccess ? VarType.True : VarType.False);
                                     if (op.Code == Opcode.OP_CHECKSIGVERIFY) {
                                         if (fSuccess) {
                                             stack.Pop();

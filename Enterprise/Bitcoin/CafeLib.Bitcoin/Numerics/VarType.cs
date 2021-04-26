@@ -28,7 +28,10 @@ namespace CafeLib.Bitcoin.Numerics
 
         public ReadOnlyByteSequence Sequence => _sequence;
 
-        public static VarType Empty = new VarType();
+        public static readonly VarType Empty = new VarType();
+        public static readonly VarType Zero = new VarType(new byte[0]);
+        public static readonly VarType False = new VarType(new byte[0]);
+        public static readonly VarType True = new VarType(new byte[] { 1 });
 
         public bool IsEmpty => Length == 0;
         public long Length => Sequence.Length;
