@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Extensions;
 
 namespace CafeLib.Bitcoin.Numerics
@@ -121,52 +120,5 @@ namespace CafeLib.Bitcoin.Numerics
 
             return (len, prefix);
         }
-
-        /// <summary>
-        /// Reads an <see cref="long"/> as in bitcoin varint format.
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="value"></param>
-        /// <returns>False if there wasn't enough data for an <see cref="ulong"/>.</returns>
-        public static bool TryRead(ref ByteSequenceReader reader, out ulong value)
-        {
-            value = 0;
-            if (!TryRead(ref reader, out long tempValue)) return false;
-            value = (ulong) tempValue;
-            return true;
-        }
-
-        /// <summary>
-        /// Reads an <see cref="long"/> as in bitcoin varint format.
-        /// </summary>
-        /// <returns>False if there wasn't enough data for an <see cref="long"/>.</returns>
-        public static bool TryRead(ref ByteSequenceReader reader, out long value) 
-        {
-			value = 0L;
-
-            var b = reader.TryRead(out var b0);
-			if (!b) return false;
-
-			if (b0 <= 0xfc) 
-            {
-				value = b0;
-			}
-            else if (b0 == 0xfd) 
-            {
-				b = reader.TryReadLittleEndian(out short v16);
-				value = v16;
-			}
-            else if (b0 == 0xfe) 
-            {
-				b = reader.TryReadLittleEndian(out int v32);
-				value = v32;
-			}
-            else 
-            {
-				b = reader.TryReadLittleEndian(out value);
-			}
-
-			return b;
-		}
     }
 }
