@@ -38,7 +38,7 @@ namespace CafeLib.Bitcoin.Encoding
             var i = 0;
             foreach (var m in bytes)
             {
-                foreach (var b in m.Span)
+                foreach (var b in m.Data.Span)
                 {
                     var chs = ByteToChs[b];
                     s[i++] = chs[0];

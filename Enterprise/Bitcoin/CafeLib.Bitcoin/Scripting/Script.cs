@@ -86,7 +86,7 @@ namespace CafeLib.Bitcoin.Scripting
             {
                 s.Write((int)_script.Length);
                 foreach (var m in _script.Sequence)
-                    s.Write(m.Span);
+                    s.Write(m.Data.Span);
             }
         }
 
@@ -249,7 +249,7 @@ namespace CafeLib.Bitcoin.Scripting
         /// <summary>
         /// Return the Template String representation of script bytes.
         /// If the returned string does not include all the script opcodes, either because the scriptLen or limitLen
-        /// arguments are greater than zero, or if the script sequence ends with an incomplete multibyte opcode,
+        /// arguments are greater than zero, or if the script sequence ends with an incomplete multi-byte opcode,
         /// then "..." is appended following the last complete opcode.
         ///
         /// scriptLen argument should be used when the actual script is longer than the script sequence provided,

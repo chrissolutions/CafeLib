@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Runtime.CompilerServices;
 
 namespace CafeLib.Bitcoin.Buffers
 {
@@ -19,8 +20,6 @@ namespace CafeLib.Bitcoin.Buffers
             Data = data;
         }
 
-        public ReadOnlySequence<byte>.Enumerator GetEnumerator() => Data.GetEnumerator();
-
         public bool IsEmpty => Data.IsEmpty;
 
         public long Length => Data.Length;
@@ -37,6 +36,28 @@ namespace CafeLib.Bitcoin.Buffers
         {
             Data.CopyTo(destination);
             return destination;
+        }
+
+        public Enumerator GetEnumerator() => new Enumerator(this);
+
+        public ref struct Enumerator
+        {
+            private ReadOnlySequence<byte>.Enumerator _enumerator;
+
+            /// <summary>Initialize the enumerator.</summary>
+            /// <param name="span">The span to enumerate.</param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal Enumerator(ReadOnlyByteSequence span)
+            {
+                _enumerator = span.Data.GetEnumerator();
+            }
+
+            /// <summary>Advances the enumerator to the next element of the span.</summary>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public bool MoveNext() => _enumerator.MoveNext();
+
+            /// <summary>Gets the element at the current position of the enumerator.</summary>
+            public ReadOnlyByteMemory Current => _enumerator.Current;
         }
 
         public static implicit operator ReadOnlySequence<byte>(ReadOnlyByteSequence rhs) => rhs.Data;
@@ -68,8 +89,8 @@ namespace CafeLib.Bitcoin.Buffers
             var bSpan = ReadOnlySpan<byte>.Empty;
             while (aok && bok)
             {
-                if (ai == -1) { aSpan = ae.Current.Span; ai = 0; }
-                if (bi == -1) { bSpan = be.Current.Span; bi = 0; }
+                if (ai == -1) { aSpan = ae.Current.Data.Span; ai = 0; }
+                if (bi == -1) { bSpan = be.Current.Data.Span; bi = 0; }
                 if (ai >= aSpan.Length) { ai = -1; aok = ae.MoveNext(); }
                 if (bi >= bSpan.Length) { bi = -1; bok = ae.MoveNext(); }
                 if (ai == -1 || bi == -1) continue;

@@ -4,7 +4,7 @@ namespace CafeLib.Bitcoin.Buffers
 {
     public readonly ref struct ReadOnlyByteMemory
     {
-        public ReadOnlyMemory<byte> Data { get; }
+        internal ReadOnlyMemory<byte> Data { get; }
 
         public ReadOnlyByteMemory(byte[] data = null)
         {
@@ -13,6 +13,16 @@ namespace CafeLib.Bitcoin.Buffers
         public ReadOnlyByteMemory(byte[] data, int start, int length)
         {
             Data = new ReadOnlyMemory<byte>(data, start, length);
+        }
+
+        public ReadOnlyByteMemory(ReadOnlyMemory<byte> data)
+        {
+            Data = data;
+        }
+
+        public ReadOnlyByteMemory(Memory<byte> data)
+        {
+            Data = data;
         }
 
         public ReadOnlyByteMemory(ByteSpan data)
@@ -24,7 +34,6 @@ namespace CafeLib.Bitcoin.Buffers
         {
             Data = data.Data;
         }
-
 
         public byte this[int index] => Data.Span[index];
 
@@ -40,6 +49,7 @@ namespace CafeLib.Bitcoin.Buffers
         public byte[] ToArray() => Data.ToArray();
 
         public static implicit operator ReadOnlyMemory<byte>(ReadOnlyByteMemory rhs) => rhs.Data;
+        public static implicit operator ReadOnlyByteMemory(ReadOnlyMemory<byte> rhs) => new ReadOnlyByteMemory(rhs);
         public static implicit operator ReadOnlyByteMemory(Memory<byte> rhs) => new ReadOnlyByteMemory(rhs);
         public static implicit operator ReadOnlyByteMemory(ByteMemory rhs) => new ReadOnlyByteMemory(rhs);
 

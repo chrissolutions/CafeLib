@@ -180,7 +180,7 @@ namespace CafeLib.Bitcoin.Crypto
                     var mOff = 0;
                     do {
                         var mLen = Math.Min(array.Length, m.Length - mOff);
-                        m.Span.Slice(mOff, mLen).CopyTo(array);
+                        m.Data.Span.Slice(mOff, mLen).CopyTo(array);
                         mOff += mLen;
                         alg.TransformBlock(array, 0, mLen, null, 0);
                     } while (mOff < m.Length);
