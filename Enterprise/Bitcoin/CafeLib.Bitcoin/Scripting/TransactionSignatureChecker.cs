@@ -26,10 +26,40 @@ namespace CafeLib.Bitcoin.Scripting
 
         public override bool CheckSignature(VarType scriptSig, VarType vchPubKey, Script script, ScriptFlags flags)
         {
-            var publicKey = new PublicKey(vchPubKey);
-            if (!publicKey.IsValid) return false;
-            if (vchPubKey == VarType.Empty) return false;
-            var sigHashType = new SignatureHashType(scriptSig.LastByte);
+            //var sigHashType = new SignatureHashType(scriptSig.LastByte);
+
+            var fSuccess = false;
+            try
+            {
+                //var publicKey = new PublicKey(vchPubKey);
+                //if (!publicKey.IsValid) return false;
+                //if (vchPubKey == VarType.Empty) return false;
+                //var sig = new Signature(scriptSig);
+                //fSuccess = this.tx.verify(
+                //    sig,
+                //    pubKey,
+                //    this.nIn,
+                //    subScript,
+                //    Boolean(this.flags & Interp.SCRIPT_VERIFY_LOW_S),
+                //    this.valueBn,
+                //    this.flags
+                //)
+            }
+            catch
+            {
+                // invalid sig or pubKey
+                fSuccess = false;
+            }
+
+
+
+
+
+
+
+
+
+
 
             return false;
 

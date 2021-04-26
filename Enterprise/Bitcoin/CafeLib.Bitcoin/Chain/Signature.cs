@@ -23,6 +23,11 @@ namespace CafeLib.Bitcoin.Chain
             _hashType = hashType;
         }
 
+        public Signature(VarType signature)
+        {
+
+        }
+
         public static bool IsTxDer(VarType vchSig)
         {
             return true;

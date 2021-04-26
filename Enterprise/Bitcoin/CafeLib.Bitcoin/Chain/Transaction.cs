@@ -216,5 +216,10 @@ namespace CafeLib.Bitcoin.Chain
             wm.Add(this);
             return bytes;
         }
+
+        public bool Verify()
+        {
+            return false;
+        }
     }
 }
