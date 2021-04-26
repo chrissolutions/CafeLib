@@ -24,8 +24,15 @@ namespace CafeLib.Bitcoin.Chain
         }
 
         public Signature(VarType signature)
+            : this()
         {
-
+            if (!signature.IsEmpty)
+            {
+                var hashType = new SignatureHashType(signature.LastByte);
+                //const derbuf = buf.slice(0, buf.length - 1)
+                //this.fromDer(derbuf, false)
+                _hashType = hashType;
+            }
         }
 
         public static bool IsTxDer(VarType vchSig)
