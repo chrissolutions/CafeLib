@@ -6,25 +6,22 @@
 using CafeLib.Bitcoin.Chain;
 using CafeLib.Bitcoin.Keys;
 using CafeLib.Bitcoin.Numerics;
-using CafeLib.Bitcoin.Persistence;
-using CafeLib.Bitcoin.Units;
 
 namespace CafeLib.Bitcoin.Scripting
 {
     public class TransactionSignatureChecker : SignatureCheckerBase
     {
+        private Script _script;
         private Transaction _tx;
         private int _index;
-        private Amount _amount;
 
-        public TransactionSignatureChecker(Transaction tx, int index, Amount amount)
+        private const int LocktimeThreshold = 500000000;  // Tue Nov  5 00:53:20 1985 UTC
+
+        public TransactionSignatureChecker(Script script, Transaction tx, int index)
         {
+            _script = script;
             _tx = tx;
             _index = index;
-            _amount = amount;
-
-            var prevOuts = new OutPoint(tx.Hash, index);
-
         }
 
         public override bool CheckSignature(VarType scriptSig, VarType vchPubKey, Script script, ScriptFlags flags)
@@ -66,7 +63,44 @@ namespace CafeLib.Bitcoin.Scripting
             //    }
         }
 
-        public override bool CheckLockTime(ScriptNum nLockTime) => false;
+        public bool CheckLockTime(int nLockTime)
+        {
+            // There are two kinds of nLockTime: lock-by-blockheight
+            // and lock-by-blocktime, distinguished by whether
+            // nLockTime < LOCKTIME_THRESHOLD.
+            //
+            // We want to compare apples to apples, so fail the script
+            // unless the type of nLockTime being tested is the same as
+            // the nLockTime in the transaction.
+            if (
+                !(
+                    _tx.LockTime < LocktimeThreshold && nLockTime < LocktimeThreshold ||
+                    _tx.LockTime >= LocktimeThreshold && nLockTime >= LocktimeThreshold
+                )
+            )
+            {
+                return false;
+            }
+
+            // Now that we know we're comparing apples-to-apples, the
+            // comparison is a simple numeric one.
+            if (nLockTime > _tx.LockTime)
+            {
+                return false;
+            }
+
+            // Finally the nLockTime feature can be disabled and thus
+            // CHECKLOCKTIMEVERIFY bypassed if every txIn has been
+            // finalized by setting nSequence to max int. The
+            // transaction would be allowed into the blockchain, making
+            // the opCode ineffective.
+            //
+            // Testing if this vin is not final is sufficient to
+            // prevent this condition. Alternatively we could test all
+            // inputs, but testing just this input minimizes the data
+            // required to prove correct CHECKLOCKTIMEVERIFY execution.
+            return TxIn.SequenceFinal != _tx.Inputs[_index].Sequence;
+        }
 
         public override bool CheckSequence(ScriptNum nSequence) => false;
     }
