@@ -521,7 +521,7 @@ namespace CafeLib.Bitcoin.Scripting
             var ros = script.Data.Sequence;
             var pc = ros.Data.Start;
             var pend = ros.Data.End;
-            var beginCodeHash = ros.Data.Start;
+            var pBeginCodeHash = ros.Data.Start;
             var op = new Operand();
             var vfExec = new ScriptStack<bool>();
             var altStack = new ScriptStack<VarType>();
@@ -1161,7 +1161,7 @@ namespace CafeLib.Bitcoin.Scripting
                             case Opcode.OP_CODESEPARATOR: 
                                 {
                                     // Hash starts after the code separator
-                                    beginCodeHash = ros.Data.Start;
+                                    pBeginCodeHash = ros.Data.Start;
                                 }
                                 break;
 
@@ -1180,7 +1180,7 @@ namespace CafeLib.Bitcoin.Scripting
                                     }
 
                                     // Subset of script starting at the most recent codeseparator
-                                    var scriptCode = script.Slice(beginCodeHash, pend);
+                                    var scriptCode = script.Slice(pBeginCodeHash, pend);
 
                                     // Remove signature for pre-fork scripts
                                     CleanupScriptCode(scriptCode, vchSig, flags);
