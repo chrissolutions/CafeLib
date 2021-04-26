@@ -12,8 +12,8 @@ namespace CafeLib.Bitcoin.Scripting
     public class TransactionSignatureChecker : SignatureCheckerBase
     {
         private Script _script;
-        private Transaction _tx;
-        private int _index;
+        private readonly Transaction _tx;
+        private readonly int _index;
 
         private const int LocktimeThreshold = 500000000;  // Tue Nov  5 00:53:20 1985 UTC
 
@@ -102,6 +102,61 @@ namespace CafeLib.Bitcoin.Scripting
             return TxIn.SequenceFinal != _tx.Inputs[_index].Sequence;
         }
 
-        public override bool CheckSequence(ScriptNum nSequence) => false;
+        /// <summary>
+        /// Translated from bitcoin core's CheckSequence.
+        /// </summary>
+        /// <param name="nSequence"></param>
+        /// <returns></returns>
+        public override bool CheckSequence(ScriptNum nSequence)
+        {
+            // Relative lock times are supported by comparing the passed
+            // in operand to the sequence number of the input.
+            var txToSequence = _tx.Inputs[_index].Sequence;
+
+            // Fail if the transaction's version number is not set high
+            // enough to trigger Bip 68 rules.
+            if (_tx.Version < 2)
+            {
+                return false;
+            }
+
+            // Sequence numbers with their most significant bit set are not
+            // consensus constrained. Testing that the transaction's sequence
+            // number do not have this bit set prevents using this property
+            // to get around a CHECKSEQUENCEVERIFY check.
+            if ((txToSequence & TxIn.SequenceLocktimeDisableFlag) != 0)
+            {
+                return false;
+            }
+
+            // Mask off any bits that do not have consensus-enforced meaning
+            // before doing the integer comparisons
+            const uint nLockTimeMask = TxIn.SequenceLocktimeTypeFlag | TxIn.SequenceLocktimeMask;
+            var txToSequenceMasked = txToSequence & nLockTimeMask;
+            var nSequenceMasked = nSequence.GetInt() & nLockTimeMask;
+
+            // There are two kinds of nSequence: lock-by-blockheight
+            // and lock-by-blocktime, distinguished by whether
+            // nSequenceMasked < CTxIn::SEQUENCE_LOCKTIME_TYPE_FLAG.
+            //
+            // We want to compare apples to apples, so fail the script
+            // unless the type of nSequenceMasked being tested is the same as
+            // the nSequenceMasked in the transaction.
+            if (
+                !(
+                    txToSequenceMasked < TxIn.SequenceLocktimeTypeFlag &&
+                    nSequenceMasked < TxIn.SequenceLocktimeTypeFlag ||
+                    txToSequenceMasked >= TxIn.SequenceLocktimeTypeFlag &&
+                    nSequenceMasked >= TxIn.SequenceLocktimeTypeFlag
+                )
+            )
+            {
+                return false;
+            }
+
+            // Now that we know we're comparing apples-to-apples, the
+            // comparison is a simple numeric one.
+            return nSequenceMasked <= txToSequenceMasked;
+        }
     }
 }
