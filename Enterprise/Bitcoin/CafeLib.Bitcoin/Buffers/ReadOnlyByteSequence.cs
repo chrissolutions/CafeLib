@@ -85,8 +85,8 @@ namespace CafeLib.Bitcoin.Buffers
             var bok = be.MoveNext();
             var ai = -1;
             var bi = -1;
-            var aSpan = ReadOnlySpan<byte>.Empty;
-            var bSpan = ReadOnlySpan<byte>.Empty;
+            var aSpan = ReadOnlyByteSpan.Empty;
+            var bSpan = ReadOnlyByteSpan.Empty;
             while (aok && bok)
             {
                 if (ai == -1) { aSpan = ae.Current.Data.Span; ai = 0; }
