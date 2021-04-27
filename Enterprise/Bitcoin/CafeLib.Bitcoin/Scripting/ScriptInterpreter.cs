@@ -1171,19 +1171,19 @@ namespace CafeLib.Bitcoin.Scripting
                                     var vchPubKey = stack.Pop();
                                     var vchSig = stack.Pop();
 
-                                    if (!CheckSignatureEncoding(vchSig, flags, ref error) ||
-                                        !CheckPubKeyEncoding(vchPubKey, flags, ref error)) {
+                                    if (!CheckSignatureEncoding(vchSig, flags, ref error) || !CheckPubKeyEncoding(vchPubKey, flags, ref error))
+                                    {
                                         // error is set
                                         return false;
                                     }
 
                                     // Subset of script starting at the most recent codeseparator
-                                    var scriptCode = script.Slice(pBeginCodeHash, pend);
+                                    var subScript = script.Slice(pBeginCodeHash, pend);
 
                                     // Remove signature for pre-fork scripts
-                                    CleanupScriptCode(scriptCode, vchSig, flags);
+                                    CleanupScriptCode(subScript, vchSig, flags);
 
-                                    bool fSuccess = checker.CheckSignature(vchSig, vchPubKey, scriptCode, flags);
+                                    bool fSuccess = checker.CheckSignature(vchSig, vchPubKey, subScript, flags);
 
                                     if (!fSuccess && (flags & ScriptFlags.VERIFY_NULLFAIL) != 0 && vchSig.Length > 0) {
                                         return SetError(out error, ScriptError.SIG_NULLFAIL);

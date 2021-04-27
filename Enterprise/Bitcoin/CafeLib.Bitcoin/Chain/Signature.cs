@@ -1,4 +1,7 @@
-﻿using CafeLib.Bitcoin.Numerics;
+﻿using System;
+using System.Linq;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Scripting;
 
 namespace CafeLib.Bitcoin.Chain
@@ -29,8 +32,8 @@ namespace CafeLib.Bitcoin.Chain
             if (!signature.IsEmpty)
             {
                 var hashType = new SignatureHashType(signature.LastByte);
-                var derBuffer = signature.Slice(0, (int)signature.Length - 1);
-                var (r, s) = ParseDer(derBuffer);
+                var derSig = signature.Slice(0, (int)signature.Length - 1);
+                var (r, s) = ParseDer(derSig);
                 _r = r;
                 _s = s;
                 _hashType = hashType;
@@ -67,8 +70,91 @@ namespace CafeLib.Bitcoin.Chain
             return true;
         }
 
-        private (UInt256 r, UInt256 s) ParseDer(VarType der)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="derSig"></param>
+        /// <param name="strict"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// In order to mimic the non-strict DER encoding of OpenSSL, set strict = false.
+        /// </remarks>
+        private (UInt256 r, UInt256 s) ParseDer(VarType derSig, bool strict = true)
         {
+            byte[] buffer = derSig;
+            var header = buffer.First();
+            if (header != 0x30)
+            {
+                throw new InvalidOperationException("Header byte should be 0x30");
+            }
+
+            var length = buffer[1];
+            var bufLength = buffer.Slice(2).Length;
+            if (strict && length != bufLength)
+            {
+                throw new InvalidOperationException("Length byte should length of what follows");
+            }
+            else
+            {
+                length = length < buflength ? length : buflength
+            }
+
+                const rheader = buf[2 + 0]
+                if (rheader !== 0x02)
+                {
+                    throw new Error('Integer byte for r should be 0x02')
+                }
+
+                const rlength = buf[2 + 1]
+                const rbuf = buf.slice(2 + 2, 2 + 2 + rlength)
+                const r = new Bn().fromBuffer(rbuf)
+                const rneg = buf[2 + 1 + 1] === 0x00
+                if (rlength !== rbuf.length)
+                {
+                    throw new Error('LEngth of r incorrect')
+                }
+
+                const sheader = buf[2 + 2 + rlength + 0]
+                if (sheader !== 0x02)
+                {
+                    throw new Error('Integer byte for s should be 0x02')
+                }
+
+                const slength = buf[2 + 2 + rlength + 1]
+                const sbuf = buf.slice(2 + 2 + rlength + 2, 2 + 2 + rlength + 2 + slength)
+                const s = new Bn().fromBuffer(sbuf)
+                const sneg = buf[2 + 2 + rlength + 2 + 2] === 0x00
+                if (slength !== sbuf.length)
+                {
+                    throw new Error('LEngth of s incorrect')
+                }
+
+                const sumlength = 2 + 2 + rlength + 2 + slength
+                if (length !== sumlength - 2)
+                {
+                    throw new Error('LEngth of signature incorrect')
+                }
+
+                const obj = {
+                    header: header,
+                    length: length,
+                    rheader: rheader,
+                    rlength: rlength,
+                    rneg: rneg,
+                    rbuf: rbuf,
+                    r: r,
+                    sheader: sheader,
+                    slength: slength,
+                    sneg: sneg,
+                    sbuf: sbuf,
+                    s: s
+                }
+
+                return obj
+            }
+
+
+
             return (UInt256.Zero, UInt256.Zero);
         }
     }

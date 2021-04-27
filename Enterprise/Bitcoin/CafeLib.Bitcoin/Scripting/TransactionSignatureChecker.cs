@@ -26,7 +26,7 @@ namespace CafeLib.Bitcoin.Scripting
 
         public override bool CheckSignature(VarType scriptSig, VarType vchPubKey, Script script, ScriptFlags flags)
         {
-            //var sigHashType = new SignatureHashType(scriptSig.LastByte);
+            var signature = new Signature(scriptSig);
 
             var fSuccess = false;
             try
