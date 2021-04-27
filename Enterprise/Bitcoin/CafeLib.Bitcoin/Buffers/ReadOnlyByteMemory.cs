@@ -48,6 +48,10 @@ namespace CafeLib.Bitcoin.Buffers
         public void CopyTo(ByteMemory destination) => Data.CopyTo(destination);
         public byte[] ToArray() => Data.ToArray();
 
+
+        public static implicit operator ReadOnlyByteMemory(byte[] rhs) => new ReadOnlyByteMemory(rhs);
+        public static implicit operator byte[](ReadOnlyByteMemory rhs) => rhs.ToArray();
+
         public static implicit operator ReadOnlyMemory<byte>(ReadOnlyByteMemory rhs) => rhs.Data;
         public static implicit operator ReadOnlyByteMemory(ReadOnlyMemory<byte> rhs) => new ReadOnlyByteMemory(rhs);
         public static implicit operator ReadOnlyByteMemory(Memory<byte> rhs) => new ReadOnlyByteMemory(rhs);

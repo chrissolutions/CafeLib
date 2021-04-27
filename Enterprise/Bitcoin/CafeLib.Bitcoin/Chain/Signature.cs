@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Scripting;
@@ -40,10 +41,108 @@ namespace CafeLib.Bitcoin.Chain
             }
         }
 
-        public static bool IsTxDer(VarType vchSig)
+        /// <summary>
+        /// This function is translated from bitcoind's IsDERSignature and is used in
+        /// the script interpreter.This "DER" format actually includes an extra byte,
+        /// the nHashType, at the end.It is really the tx format, not DER format.
+        /// 
+        /// A canonical signature exists of: [30] [total len] [02] [len R] [R] [02] [len S] [S] [hashtype]
+        /// Where R and S are not negative (their first byte has its highest bit not set), and not
+        /// excessively padded(do not start with a 0 byte, unless an otherwise negative number follows,
+        /// in which case a single 0 byte is necessary and even required).
+        /// 
+        /// See https://bitcointalk.org/index.php?topic=8392.msg127623#msg127623
+        /// </summary>
+        /// <param name="signature"></param>
+        /// <returns></returns>
+        public static bool IsTxDer(VarType signature)
         {
             return true;
         }
+
+
+        /**
+           */
+    //    static IsTxDer(buf)
+    //    {
+    //        if (buf.length < 9)
+    //        {
+    //            //  Non-canonical signature: too short
+    //            return false
+    //        }
+    //        if (buf.length > 73)
+    //        {
+    //            // Non-canonical signature: too long
+    //            return false
+    //        }
+    //        if (buf[0] !== 0x30)
+    //        {
+    //            //  Non-canonical signature: wrong type
+    //            return false
+    //        }
+    //        if (buf[1] !== buf.length - 3)
+    //        {
+    //            //  Non-canonical signature: wrong length marker
+    //            return false
+    //        }
+    //        const nLEnR = buf[3]
+    //      if (5 + nLEnR >= buf.length)
+    //        {
+    //            //  Non-canonical signature: S length misplaced
+    //            return false
+    //}
+    //        const nLEnS = buf[5 + nLEnR]
+    //      if (nLEnR + nLEnS + 7 !== buf.length)
+    //        {
+    //            //  Non-canonical signature: R+S length mismatch
+    //            return false
+    //}
+
+    //        const R = buf.slice(4)
+    //      if (buf[4 - 2] !== 0x02)
+    //        {
+    //            //  Non-canonical signature: R value type mismatch
+    //            return false
+    //}
+    //        if (nLEnR === 0)
+    //        {
+    //            //  Non-canonical signature: R length is zero
+    //            return false
+    //        }
+    //        if (R[0] & 0x80)
+    //        {
+    //            //  Non-canonical signature: R value negative
+    //            return false
+    //        }
+    //        if (nLEnR > 1 && R[0] === 0x00 && !(R[1] & 0x80))
+    //        {
+    //            //  Non-canonical signature: R value excessively padded
+    //            return false
+    //        }
+
+    //        const S = buf.slice(6 + nLEnR)
+    //      if (buf[6 + nLEnR - 2] !== 0x02)
+    //        {
+    //            //  Non-canonical signature: S value type mismatch
+    //            return false
+    //}
+    //        if (nLEnS === 0)
+    //        {
+    //            //  Non-canonical signature: S length is zero
+    //            return false
+    //        }
+    //        if (S[0] & 0x80)
+    //        {
+    //            //  Non-canonical signature: S value negative
+    //            return false
+    //        }
+    //        if (nLEnS > 1 && S[0] === 0x00 && !(S[1] & 0x80))
+    //        {
+    //            //  Non-canonical signature: S value excessively padded
+    //            return false
+    //        }
+    //        return true
+    //    }
 
         /// <summary>
         /// 
@@ -56,8 +155,8 @@ namespace CafeLib.Bitcoin.Chain
         /// </remarks>
         private static (UInt256 r, UInt256 s) ParseDer(VarType derSig, bool strict = true)
         {
-            byte[] buffer = derSig;
-            var header = buffer.First();
+            ReadOnlyByteMemory buffer = derSig;
+            var header = buffer[0];
             if (header != 0x30)
             {
                 throw new InvalidOperationException("Header byte should be 0x30");

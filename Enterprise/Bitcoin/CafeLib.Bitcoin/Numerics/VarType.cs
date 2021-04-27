@@ -43,6 +43,14 @@ namespace CafeLib.Bitcoin.Numerics
 
         public override string ToString() => Encoders.Hex.Encode(_sequence);
 
+        private byte[] ToArray()
+        {
+            var bytes = new byte[_sequence.Length];
+            if (!GetReader().TryCopyTo(bytes))
+                throw new InvalidOperationException();
+            return bytes;
+        }
+
         public void CopyTo(byte[] bytes)
         {
             var r = GetReader();
@@ -355,21 +363,14 @@ namespace CafeLib.Bitcoin.Numerics
         public bool Equals(VarType rhs) => ((ReadOnlyByteSpan)_sequence).Data.SequenceEqual((ReadOnlyByteSpan)rhs._sequence);
 
         public static explicit operator VarType(byte[] rhs) => new VarType(rhs);
-        public static implicit operator byte[](VarType rhs) => rhs.ToBytes();
+        public static implicit operator byte[](VarType rhs) => rhs.ToArray();
 
+        public static implicit operator ReadOnlyByteMemory(VarType rhs) => rhs.ToArray();
         public static implicit operator ReadOnlyByteSpan(VarType rhs) => rhs.ToSpan();
-        public static implicit operator ReadOnlyByteSequence(VarType rhs) => rhs.ToBytes();
+        public static implicit operator ReadOnlyByteSequence(VarType rhs) => rhs.ToArray();
         public static explicit operator VarType(ReadOnlyByteSequence rhs) => new VarType(rhs);
 
         public static bool operator ==(VarType x, VarType y) => x.Equals(y);
         public static bool operator !=(VarType x, VarType y) => !(x == y);
-
-        private byte[] ToBytes()
-        {
-            var bytes = new byte[_sequence.Length];
-            if (!GetReader().TryCopyTo(bytes))
-                throw new InvalidOperationException();
-            return bytes;
-        }
     }
 }
