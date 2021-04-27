@@ -46,31 +46,6 @@ namespace CafeLib.Bitcoin.Chain
         }
 
         /// <summary>
-        /// Compares to bitcoind's IsLowDERSignature
-        /// See also Ecdsa signature algorithm which enforces this.
-        /// See also Bip 62, "low S values in signatures"
-        /// </summary>
-        /// <returns></returns>
-        public bool HasLowS()
-        {
-            //if (
-            //    this.s.lt(1) ||
-            //    this.s.gt(
-            //        Bn.fromBuffer(
-            //            Buffer.from(
-            //                '7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0',
-            //                'hex'
-            //            )
-            //        )
-            //    )
-            //)
-            //{
-            //    return false
-            //}
-            return true;
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="derSig"></param>
@@ -79,7 +54,7 @@ namespace CafeLib.Bitcoin.Chain
         /// <remarks>
         /// In order to mimic the non-strict DER encoding of OpenSSL, set strict = false.
         /// </remarks>
-        private (UInt256 r, UInt256 s) ParseDer(VarType derSig, bool strict = true)
+        private static (UInt256 r, UInt256 s) ParseDer(VarType derSig, bool strict = true)
         {
             byte[] buffer = derSig;
             var header = buffer.First();
@@ -108,7 +83,7 @@ namespace CafeLib.Bitcoin.Chain
             int rLength = buffer[2 + 1];
             var rBuffer = buffer.Slice(2 + 2, 2 + 2 + rLength);
             var r = new UInt256(rBuffer);
-            var rNegative = buffer[2 + 1 + 1] == 0x00;
+            //var rNegative = buffer[2 + 1 + 1] == 0x00;
             if (rLength != rBuffer.Length)
             {
                 throw new InvalidOperationException("Length of r incorrect");
@@ -123,39 +98,19 @@ namespace CafeLib.Bitcoin.Chain
             int sLength = buffer[2 + 2 + rLength + 1];
             var sBuffer = buffer.Slice(2 + 2 + rLength + 2, 2 + 2 + rLength + 2 + sLength);
             var s = new UInt256(sBuffer);
-            var sNegative = buffer[2 + 2 + rLength + 2 + 2] == 0x00;
+            //var sNegative = buffer[2 + 2 + rLength + 2 + 2] == 0x00;
             if (sLength != sBuffer.Length)
             {
-                throw new InvalidOperationException("LEngth of s incorrect');
+                throw new InvalidOperationException("Length of s incorrect");
             }
 
-            const sumlength = 2 + 2 + rlength + 2 + slength
-            if (length !== sumlength - 2)
+            var sumLength = 2 + 2 + rLength + 2 + sLength;
+            if (length != sumLength - 2)
             {
-                throw new Error('LEngth of signature incorrect')
+                throw new InvalidOperationException("Length of signature incorrect");
             }
 
-                const obj = {
-                    header: header,
-                    length: length,
-                    rheader: rheader,
-                    rlength: rlength,
-                    rneg: rneg,
-                    rbuf: rbuf,
-                    r: r,
-                    sheader: sheader,
-                    slength: slength,
-                    sneg: sneg,
-                    sbuf: sbuf,
-                    s: s
-                }
-
-                return obj
-            }
-
-
-
-            return (UInt256.Zero, UInt256.Zero);
+            return (r, s);
         }
     }
 }
