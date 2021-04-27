@@ -3,8 +3,8 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System;
 using CafeLib.Bitcoin.Buffers;
+using CafeLib.Bitcoin.Builders;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Persistence;
@@ -16,15 +16,14 @@ namespace CafeLib.Bitcoin.Chain
     /// Closely mirrors the data and layout of a Bitcoin transaction input as stored in each block.
     /// Focus is on performance when processing large numbers of transactions, including blocks of transactions.
     /// Not used for making dynamic changes (building scripts).
-    /// See <see cref="KzBTxIn"/> when dynamically building a transaction input.
+    /// See <see cref="TxInBuilder"/> when dynamically building a transaction input.
     /// <seealso cref="Transaction"/>
     /// </summary>
     public struct TxIn
     {
         private OutPoint _prevOutPoint;
         private Script _scriptSig;
-        private UInt32 _sequence;
-        private UInt256 _hash;
+        private uint _sequence;
 
         /// <summary>
         /// Setting nSequence to this value for every input in a transaction disables nLockTime.
@@ -57,16 +56,21 @@ namespace CafeLib.Bitcoin.Chain
            * shifting up by 9 bits. */
         public const uint SequenceLocktimeGranularity = 9;
 
+        public UInt256 TxId => PrevOut.TxId;
         public OutPoint PrevOut => _prevOutPoint;
         public Script ScriptSig => _scriptSig;
-        public UInt32 Sequence => _sequence;
+        public uint Sequence => _sequence;
 
-        public TxIn(OutPoint prevOutPoint, Script scriptSig, UInt32 sequence)
+        public TxIn(OutPoint prevOutPoint, Script scriptSig, uint sequence)
         {
             _prevOutPoint = prevOutPoint;
             _scriptSig = scriptSig;
             _sequence = sequence;
-            _hash = UInt256.Zero;
+        }
+
+        public TxIn(UInt256 prevTxId, int outIndex, Script scriptSigIn = new Script(), uint nSequenceIn = SequenceFinal)
+            : this(new OutPoint(prevTxId, outIndex), scriptSigIn, nSequenceIn)
+        {
         }
 
         public bool TryParseTxIn(ref ByteSequenceReader r, IBlockParser bp)

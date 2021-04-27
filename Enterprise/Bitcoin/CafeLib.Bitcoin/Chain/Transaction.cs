@@ -38,7 +38,7 @@ namespace CafeLib.Bitcoin.Chain
         private UInt32 _lockTime;
 
         /// The following fields are computed or external, not essential.
-        private readonly UInt256 _hashTx = new UInt256();
+        private readonly UInt256 _txHash = new UInt256();
         //Int64 _valueIn;
         //Int64 _valueOut;
 
@@ -51,7 +51,8 @@ namespace CafeLib.Bitcoin.Chain
 
         /// Public access to computed or external, not essential.
 
-        public UInt256 Hash => _hashTx;
+        public UInt256 TxId => _txHash;
+        public UInt256 Hash => _txHash;
 
         public Transaction() { }
 
@@ -119,7 +120,7 @@ namespace CafeLib.Bitcoin.Chain
             {
                 var hash1 = sha256.ComputeHash(txBytes);
                 var hash2 = sha256.ComputeHash(hash1);
-                hash2.CopyTo(_hashTx.Span);
+                hash2.CopyTo(_txHash.Span);
             }
 
             bp.TxParsed(this, r.Data.Consumed);
@@ -160,7 +161,7 @@ namespace CafeLib.Bitcoin.Chain
             {
                 var hash1 = sha256.ComputeHash(txBytes);
                 var hash2 = sha256.ComputeHash(hash1);
-                hash2.CopyTo(_hashTx.Span);
+                hash2.CopyTo(_txHash.Span);
             }
 
             return true;
