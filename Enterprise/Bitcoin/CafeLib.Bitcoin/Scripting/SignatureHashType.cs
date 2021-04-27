@@ -7,23 +7,21 @@ namespace CafeLib.Bitcoin.Scripting
     /// </summary>
     public class SignatureHashType
     {
-        private readonly uint _signatureHash;
-
-        private SignatureHashEnum SignatureHash => (SignatureHashEnum)_signatureHash;
+        private SignatureHashEnum SignatureHash => (SignatureHashEnum)RawSigHashType;
 
         public SignatureHashType()
         {
-            _signatureHash = (uint)SignatureHashEnum.All;
+            RawSigHashType = (uint)SignatureHashEnum.All;
         }
 
         public SignatureHashType(SignatureHashEnum sigHash)
         {
-            _signatureHash = (uint)sigHash;
+            RawSigHashType = (uint)sigHash;
         }
 
         public SignatureHashType(uint sigHash)
         {
-            _signatureHash = sigHash;
+            RawSigHashType = sigHash;
         }
 
         public bool IsDefined 
@@ -39,35 +37,35 @@ namespace CafeLib.Bitcoin.Scripting
 
         public bool HasAnyoneCanPay => (SignatureHash & SignatureHashEnum.AnyoneCanPay) != 0;
 
-        public UInt32 rawSigHashType => _signatureHash;
+        public UInt32 RawSigHashType { get; }
 
         public SignatureHashType WithBaseType(BaseSignatureHashEnum baseSigHashType)
         {
-            return new SignatureHashType((_signatureHash & ~(uint)0x1f) | (uint)baseSigHashType);
+            return new SignatureHashType((RawSigHashType & ~(uint)0x1f) | (uint)baseSigHashType);
         }
 
         public SignatureHashType WithForkValue(uint forkId)
         {
-            return new SignatureHashType((forkId << 8) | (_signatureHash & 0xff));
+            return new SignatureHashType((forkId << 8) | (RawSigHashType & 0xff));
         }
 
         public SignatureHashType WithForkId(bool forkId = true)
         {
-            return new SignatureHashType((_signatureHash & ~(uint)SignatureHashEnum.ForkId) | (forkId ? (uint)SignatureHashEnum.ForkId : 0));
+            return new SignatureHashType((RawSigHashType & ~(uint)SignatureHashEnum.ForkId) | (forkId ? (uint)SignatureHashEnum.ForkId : 0));
         }
 
         public SignatureHashType WithAnyoneCanPay(bool anyoneCanPay = true)
         {
-            return new SignatureHashType((_signatureHash & ~(uint)SignatureHashEnum.AnyoneCanPay) | (anyoneCanPay ? (uint)SignatureHashEnum.AnyoneCanPay : 0));
+            return new SignatureHashType((RawSigHashType & ~(uint)SignatureHashEnum.AnyoneCanPay) | (anyoneCanPay ? (uint)SignatureHashEnum.AnyoneCanPay : 0));
         }
 
-        public BaseSignatureHashEnum GetBaseType() { return (BaseSignatureHashEnum)((int)_signatureHash & 0x1f); }
+        public BaseSignatureHashEnum GetBaseType() { return (BaseSignatureHashEnum)((int)RawSigHashType & 0x1f); }
 
-        public bool IsBaseNone => ((int)_signatureHash & 0x1f) == (int)BaseSignatureHashEnum.None;
+        public bool IsBaseNone => ((int)RawSigHashType & 0x1f) == (int)BaseSignatureHashEnum.None;
 
-        public bool IsBaseSingle => ((int)_signatureHash & 0x1f) == (int)BaseSignatureHashEnum.Single;
+        public bool IsBaseSingle => ((int)RawSigHashType & 0x1f) == (int)BaseSignatureHashEnum.Single;
 
-        public uint GetForkValue() { return _signatureHash >> 8; }
+        public uint GetForkValue() { return RawSigHashType >> 8; }
 
         public override string ToString() {
             return string.Empty;

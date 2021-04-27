@@ -6,6 +6,7 @@
 using System;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Persistence;
 using CafeLib.Bitcoin.Scripting;
 
@@ -20,9 +21,10 @@ namespace CafeLib.Bitcoin.Chain
     /// </summary>
     public struct TxIn
     {
-        OutPoint _prevOutPoint;
-        Script _scriptSig;
-        UInt32 _sequence;
+        private OutPoint _prevOutPoint;
+        private Script _scriptSig;
+        private UInt32 _sequence;
+        private UInt256 _hash;
 
         /// <summary>
         /// Setting nSequence to this value for every input in a transaction disables nLockTime.
@@ -64,6 +66,7 @@ namespace CafeLib.Bitcoin.Chain
             _prevOutPoint = prevOutPoint;
             _scriptSig = scriptSig;
             _sequence = sequence;
+            _hash = UInt256.Zero;
         }
 
         public bool TryParseTxIn(ref ByteSequenceReader r, IBlockParser bp)

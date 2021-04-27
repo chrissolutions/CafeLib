@@ -15,30 +15,30 @@ namespace CafeLib.Bitcoin.Chain
     /// </summary>
     public struct OutPoint
     {
-        public UInt256 Txid { get; private set; }
+        public UInt256 TxHash { get; private set; }
 
         public int Index { get; private set; }
 
-        public OutPoint(UInt256 hashTx, int index)
+        public OutPoint(UInt256 txHash, int index)
         {
-            Txid = hashTx; 
+            TxHash = txHash; 
             Index = index;
         }
 
         public bool TryReadOutPoint(ref ByteSequenceReader r)
         {
-            var txid = Txid;
+            var txHash = TxHash;
 
-            if (!r.TryReadUInt256(ref txid) || !r.TryReadLittleEndian(out int index)) return false;
+            if (!r.TryReadUInt256(ref txHash) || !r.TryReadLittleEndian(out int index)) return false;
 
-            Txid = txid;
+            TxHash = txHash;
             Index = index;
             return true;
         }
 
         public IBitcoinWriter AddTo(IBitcoinWriter writer)
         {
-            writer.Add(Txid).Add(Index);
+            writer.Add(TxHash).Add(Index);
             return writer;
         }
     }

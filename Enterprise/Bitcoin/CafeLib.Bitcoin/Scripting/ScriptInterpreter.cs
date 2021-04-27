@@ -169,7 +169,7 @@ namespace CafeLib.Bitcoin.Scripting
                     // Locktime
                     .Add(txTo.LockTime)
                     // Sighash type
-                    .Add(sigHashType.rawSigHashType)
+                    .Add(sigHashType.RawSigHashType)
                     ;
                 return writer.GetHashFinal();
             }
@@ -235,7 +235,7 @@ namespace CafeLib.Bitcoin.Scripting
                 // Finish up...
                 writer
                     .Add(txTo.LockTime)
-                    .Add(sigHashType.rawSigHashType)
+                    .Add(sigHashType.RawSigHashType)
                     ;
                 return writer.GetHashFinal();
             }

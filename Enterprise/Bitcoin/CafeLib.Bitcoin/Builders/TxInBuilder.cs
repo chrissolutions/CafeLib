@@ -59,7 +59,7 @@ namespace CafeLib.Bitcoin.Builders
             get => new OutPoint(PrevOutHashTx, PrevOutIndex);
             set
             {
-                PrevOutHashTx = value.Txid; 
+                PrevOutHashTx = value.TxHash; 
                 PrevOutIndex = value.Index;
             }
         }
@@ -68,7 +68,7 @@ namespace CafeLib.Bitcoin.Builders
 
         public TxInBuilder(TxIn txIn)
         {
-            PrevOutHashTx = txIn.PrevOut.Txid;
+            PrevOutHashTx = txIn.PrevOut.TxHash;
             PrevOutIndex = txIn.PrevOut.Index;
             ScriptSig.Set(txIn.ScriptSig);
             Sequence = txIn.Sequence;

@@ -10,7 +10,7 @@ namespace CafeLib.Bitcoin.Persistence
 {
     public class LengthWriter : IBitcoinWriter
     {
-        public long Length;
+        public long Length { get; private set; }
 
         public IBitcoinWriter Add(byte[] data)
         {

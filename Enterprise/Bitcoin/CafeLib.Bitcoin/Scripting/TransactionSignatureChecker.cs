@@ -15,7 +15,7 @@ namespace CafeLib.Bitcoin.Scripting
         private readonly Transaction _tx;
         private readonly int _index;
 
-        private const int LocktimeThreshold = 500000000;  // Tue Nov  5 00:53:20 1985 UTC
+        private const int LocktimeThreshold = 500000000; // Tue Nov  5 00:53:20 1985 UTC
 
         public TransactionSignatureChecker(Script script, Transaction tx, int index)
         {
@@ -201,21 +201,51 @@ namespace CafeLib.Bitcoin.Scripting
             uint flags = (uint) ScriptFlags.ENABLE_SIGHASH_FORKID
         )
         {
-            var 
-            v
             return false;
         }
 
 
-        private UInt256 SigHash(
-            SignatureHashType hashType,
-            int nin,
-            Script subScript,
-            UInt256 value,
-            uint flags
-        )
-        {
+        //private UInt256 SigHash(
+        //    SignatureHashType hashType,
+        //    int nin,
+        //    Script subScript,
+        //    UInt256 value,
+        //    uint flags
+        //)
+        //{
+        //    // start with UAHF part (Bitcoin SV)
+        //    // https://github.com/Bitcoin-UAHF/spec/blob/master/replay-protected-sighash.md
 
-        }
+        //    if ((hashType.RawSigHashType & (uint) SignatureHashEnum.ForkId) != 0U &&
+        //        (flags & (uint) ScriptFlags.ENABLE_SIGHASH_FORKID) != 0U)
+        //    {
+        //        let hashPrevouts = Buffer.alloc(32, 0)
+        //        let hashSequence = Buffer.alloc(32, 0)
+        //        let hashOutputs = Buffer.alloc(32, 0)
+
+        //    }
+        //}
+
+
+        //private UInt256 HashPrevOuts()
+        //{
+        //    foreach (var txIn in _tx.Inputs)
+        //    {
+        //        txIn
+        //    }
+
+
+
+        //        const bw = new Bw()
+        //        for (const i in this.txIns) {
+        //            const txIn = this.txIns[i]
+        //            bw.write(txIn.txHashBuf) // outpoint (1/2)
+        //            bw.writeUInt32LE(txIn.txOutNum) // outpoint (2/2)
+        //        }
+        //        return Hash.sha256Sha256(bw.toBuffer())
+        //    }
+
+        //}
+
     }
 }
