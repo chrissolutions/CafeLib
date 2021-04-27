@@ -188,5 +188,34 @@ namespace CafeLib.Bitcoin.Scripting
             // comparison is a simple numeric one.
             return nSequenceMasked <= txToSequenceMasked;
         }
+
+
+        public bool VerifyTransaction
+        (
+            VarType sig,
+            VarType pubKey,
+            int nIn,
+            Script subScript,
+            UInt256 value,
+            bool enforceLowS = false,
+            uint flags = (uint) ScriptFlags.ENABLE_SIGHASH_FORKID
+        )
+        {
+            var 
+            v
+            return false;
+        }
+
+
+        private UInt256 SigHash(
+            SignatureHashType hashType,
+            int nin,
+            Script subScript,
+            UInt256 value,
+            uint flags
+        )
+        {
+
+        }
     }
 }
