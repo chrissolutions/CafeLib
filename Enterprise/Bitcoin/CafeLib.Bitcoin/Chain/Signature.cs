@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
 using CafeLib.Bitcoin.Buffers;
-using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Scripting;
+// ReSharper disable InconsistentNaming
 
 namespace CafeLib.Bitcoin.Chain
 {
@@ -57,92 +56,89 @@ namespace CafeLib.Bitcoin.Chain
         /// <returns></returns>
         public static bool IsTxDer(VarType signature)
         {
+            ReadOnlyByteMemory buf = signature;
+
+            if (buf.Length < 9)
+            {
+                //  Non-canonical signature: too short
+                return false;
+            }
+            if (buf.Length > 73)
+            {
+                // Non-canonical signature: too long
+                return false;
+            }
+            if (buf[0] != 0x30)
+            {
+                //  Non-canonical signature: wrong type
+                return false;
+            }
+            if (buf[1] != buf.Length - 3)
+            {
+                //  Non-canonical signature: wrong length marker
+                return false;
+            }
+
+            var nLEnR = buf[3];
+            if (5 + nLEnR >= buf.Length)
+            {
+                //  Non-canonical signature: S length misplaced
+                return false;
+            }
+
+            var nLEnS = buf[5 + nLEnR];
+            if (nLEnR + nLEnS + 7 != buf.Length)
+            {
+                //  Non-canonical signature: R+S length mismatch
+                return false;
+            }
+
+            var R = buf.Slice(4);
+            if (buf[4 - 2] != 0x02)
+            {
+                //  Non-canonical signature: R value type mismatch
+                return false;
+            }
+            if (nLEnR == 0)
+            {
+                //  Non-canonical signature: R length is zero
+                return false;
+            }
+            if ((R[0] & 0x80) != 0)
+            {
+                //  Non-canonical signature: R value negative
+                return false;
+            }
+            if (nLEnR > 1 && R[0] == 0x00 && (R[1] & 0x80) != 0)
+            {
+                //  Non-canonical signature: R value excessively padded
+                return false;
+            }
+
+            var S = buf.Slice(6 + nLEnR);
+            if (buf[6 + nLEnR - 2] != 0x02)
+            {
+                //  Non-canonical signature: S value type mismatch
+                return false;
+            }
+            if (nLEnS == 0)
+            {
+                //  Non-canonical signature: S length is zero
+                return false;
+            }
+            if ((S[0] & 0x80) != 0)
+            {
+                //  Non-canonical signature: S value negative
+                return false;
+            }
+            if (nLEnS > 1 && S[0] == 0x00 && (S[1] & 0x80) != 0)
+            {
+                //  Non-canonical signature: S value excessively padded
+                return false;
+            }
+
             return true;
         }
-
-
-        /**
-           */
-    //    static IsTxDer(buf)
-    //    {
-    //        if (buf.length < 9)
-    //        {
-    //            //  Non-canonical signature: too short
-    //            return false
-    //        }
-    //        if (buf.length > 73)
-    //        {
-    //            // Non-canonical signature: too long
-    //            return false
-    //        }
-    //        if (buf[0] !== 0x30)
-    //        {
-    //            //  Non-canonical signature: wrong type
-    //            return false
-    //        }
-    //        if (buf[1] !== buf.length - 3)
-    //        {
-    //            //  Non-canonical signature: wrong length marker
-    //            return false
-    //        }
-    //        const nLEnR = buf[3]
-    //      if (5 + nLEnR >= buf.length)
-    //        {
-    //            //  Non-canonical signature: S length misplaced
-    //            return false
-    //}
-    //        const nLEnS = buf[5 + nLEnR]
-    //      if (nLEnR + nLEnS + 7 !== buf.length)
-    //        {
-    //            //  Non-canonical signature: R+S length mismatch
-    //            return false
-    //}
-
-    //        const R = buf.slice(4)
-    //      if (buf[4 - 2] !== 0x02)
-    //        {
-    //            //  Non-canonical signature: R value type mismatch
-    //            return false
-    //}
-    //        if (nLEnR === 0)
-    //        {
-    //            //  Non-canonical signature: R length is zero
-    //            return false
-    //        }
-    //        if (R[0] & 0x80)
-    //        {
-    //            //  Non-canonical signature: R value negative
-    //            return false
-    //        }
-    //        if (nLEnR > 1 && R[0] === 0x00 && !(R[1] & 0x80))
-    //        {
-    //            //  Non-canonical signature: R value excessively padded
-    //            return false
-    //        }
-
-    //        const S = buf.slice(6 + nLEnR)
-    //      if (buf[6 + nLEnR - 2] !== 0x02)
-    //        {
-    //            //  Non-canonical signature: S value type mismatch
-    //            return false
-    //}
-    //        if (nLEnS === 0)
-    //        {
-    //            //  Non-canonical signature: S length is zero
-    //            return false
-    //        }
-    //        if (S[0] & 0x80)
-    //        {
-    //            //  Non-canonical signature: S value negative
-    //            return false
-    //        }
-    //        if (nLEnS > 1 && S[0] === 0x00 && !(S[1] & 0x80))
-    //        {
-    //            //  Non-canonical signature: S value excessively padded
-    //            return false
-    //        }
-    //        return true
-    //    }
 
         /// <summary>
         /// 

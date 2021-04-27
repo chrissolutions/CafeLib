@@ -11,7 +11,7 @@ namespace CafeLib.Bitcoin.Buffers
 
         public ByteSequenceReader(byte[] bytes)
         {
-            Data = new SequenceReader<byte>(new ReadOnlySequence<byte>(bytes ?? Array.Empty<byte>()));
+            Data = new SequenceReader<byte>(new ReadOnlyByteSequence(bytes ?? Array.Empty<byte>()));
         }
 
         public ByteSequenceReader(SequenceReader<byte> sequence)

@@ -12,6 +12,8 @@ using CafeLib.Bitcoin.Builders;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Persistence;
+using CafeLib.Bitcoin.Scripting;
+using CafeLib.Bitcoin.Units;
 
 namespace CafeLib.Bitcoin.Chain
 {
@@ -207,15 +209,94 @@ namespace CafeLib.Bitcoin.Chain
             return writer;
         }
 
-        public byte[] ToBytes()
+        //public byte[] ToBytes()
+        //{
+        //    var wl = new LengthWriter();
+        //    wl.Add(this);
+        //    var length = wl.Length;
+        //    var bytes = new byte[length];
+        //    var wm = new MemoryWriter(new Memory<byte>(bytes));
+        //    wm.Add(this);
+        //    return bytes;
+        //}
+
+        public bool Verify
+        (
+            VarType sig,
+            VarType pubKey,
+            int index,
+            VarType subScript,
+            Amount amount,
+            bool enforceLowS = false,
+            ScriptFlags flags = ScriptFlags.ENABLE_SIGHASH_FORKID,
+            object hashCache = null
+        )
         {
-            var wl = new LengthWriter();
-            wl.Add(this);
-            var length = wl.Length;
-            var bytes = new byte[length];
-            var wm = new MemoryWriter(new Memory<byte>(bytes));
-            wm.Add(this);
-            return bytes;
+            return true;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hashType"></param>
+        /// <param name="index"></param>
+        /// <param name="subScript"></param>
+        /// <param name="amount"></param>
+        /// <param name="flags"></param>
+        /// <param name="hashCache"></param>
+        private UInt256 SigHash
+        (
+            SignatureHashType hashType,
+            int index,
+            VarType subScript,
+            Amount amount,
+            ScriptFlags flags = ScriptFlags.ENABLE_SIGHASH_FORKID,
+            object hashCache = null
+        )
+        {
+            //// start with UAHF part (Bitcoin SV)
+            //// https://github.com/Bitcoin-UAHF/spec/blob/master/replay-protected-sighash.md
+            //if (
+            //    (hashType.RawSigHashType & (uint)SignatureHashEnum.ForkId) != 0 &&
+            //    (flags & ScriptFlags.ENABLE_SIGHASH_FORKID) != 0
+            //)
+            //{
+            //    let hashPrevouts = Buffer.alloc(32, 0)
+            //    let hashSequence = Buffer.alloc(32, 0)
+            //    let hashOutputs = Buffer.alloc(32, 0)
+        
+            //    if (!(nHashType & Sig.SIGHASH_ANYONECANPAY))
+            //    {
+            //        hashPrevouts = hashCache.prevoutsHashBuf ? hashCache.prevoutsHashBuf : hashCache.prevoutsHashBuf = this.hashPrevouts()
+            //    }
+
+            //    if (
+            //        !(nHashType & Sig.SIGHASH_ANYONECANPAY) &&
+            //            (nHashType & 0x1f) !== Sig.SIGHASH_SINGLE &&
+            //                                   (nHashType & 0x1f) !== Sig.SIGHASH_NONE
+            //    )
+            //    {
+            //        hashSequence = hashCache.sequenceHashBuf ? hashCache.sequenceHashBuf : hashCache.sequenceHashBuf = this.hashSequence()
+            //    }
+
+            //    if (
+            //        (nHashType & 0x1f) !== Sig.SIGHASH_SINGLE &&
+            //                               (nHashType & 0x1f) !== Sig.SIGHASH_NONE
+            //    )
+            //    {
+            //        hashOutputs = hashCache.outputsHashBuf ? hashCache.outputsHashBuf : hashCache.outputsHashBuf = this.hashOutputs()
+            //    }
+            //    else if (
+            //        (nHashType & 0x1f) === Sig.SIGHASH_SINGLE &&
+            //                               nIn < this.txOuts.length
+            //    )
+            //    {
+            //        hashOutputs = Hash.sha256Sha256(this.txOuts[nIn].toBuffer())
+            //    }
+
+
+            return UInt256.Zero;
+        }
+
     }
 }
