@@ -88,7 +88,7 @@ namespace CafeLib.Bitcoin.Chain
                 throw new InvalidOperationException("Header byte should be 0x30");
             }
 
-            var length = buffer[1];
+            var length = (int)buffer[1];
             var bufLength = buffer.Slice(2).Length;
             if (strict && length != bufLength)
             {
@@ -96,44 +96,44 @@ namespace CafeLib.Bitcoin.Chain
             }
             else
             {
-                length = length < buflength ? length : buflength
+                length = length < bufLength ? length : bufLength;
             }
 
-                const rheader = buf[2 + 0]
-                if (rheader !== 0x02)
-                {
-                    throw new Error('Integer byte for r should be 0x02')
-                }
+            var rheader = buffer[2 + 0];
+            if (rheader != 0x02)
+            {
+                throw new InvalidOperationException("Integer byte for r should be 0x02");
+            }
 
-                const rlength = buf[2 + 1]
-                const rbuf = buf.slice(2 + 2, 2 + 2 + rlength)
-                const r = new Bn().fromBuffer(rbuf)
-                const rneg = buf[2 + 1 + 1] === 0x00
-                if (rlength !== rbuf.length)
-                {
-                    throw new Error('LEngth of r incorrect')
-                }
+            int rLength = buffer[2 + 1];
+            var rBuffer = buffer.Slice(2 + 2, 2 + 2 + rLength);
+            var r = new UInt256(rBuffer);
+            var rNegative = buffer[2 + 1 + 1] == 0x00;
+            if (rLength != rBuffer.Length)
+            {
+                throw new InvalidOperationException("Length of r incorrect");
+            }
 
-                const sheader = buf[2 + 2 + rlength + 0]
-                if (sheader !== 0x02)
-                {
-                    throw new Error('Integer byte for s should be 0x02')
-                }
+            var sHeader = buffer[2 + 2 + rLength + 0];
+            if (sHeader != 0x02)
+            {
+                throw new InvalidOperationException("Integer byte for s should be 0x02");
+            }
 
-                const slength = buf[2 + 2 + rlength + 1]
-                const sbuf = buf.slice(2 + 2 + rlength + 2, 2 + 2 + rlength + 2 + slength)
-                const s = new Bn().fromBuffer(sbuf)
-                const sneg = buf[2 + 2 + rlength + 2 + 2] === 0x00
-                if (slength !== sbuf.length)
-                {
-                    throw new Error('LEngth of s incorrect')
-                }
+            int sLength = buffer[2 + 2 + rLength + 1];
+            var sBuffer = buffer.Slice(2 + 2 + rLength + 2, 2 + 2 + rLength + 2 + sLength);
+            var s = new UInt256(sBuffer);
+            var sNegative = buffer[2 + 2 + rLength + 2 + 2] == 0x00;
+            if (sLength != sBuffer.Length)
+            {
+                throw new InvalidOperationException("LEngth of s incorrect');
+            }
 
-                const sumlength = 2 + 2 + rlength + 2 + slength
-                if (length !== sumlength - 2)
-                {
-                    throw new Error('LEngth of signature incorrect')
-                }
+            const sumlength = 2 + 2 + rlength + 2 + slength
+            if (length !== sumlength - 2)
+            {
+                throw new Error('LEngth of signature incorrect')
+            }
 
                 const obj = {
                     header: header,
