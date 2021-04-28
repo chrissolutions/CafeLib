@@ -138,7 +138,7 @@ namespace CafeLib.Bitcoin.Keys
         public ReadOnlyByteSpan ReadOnlySpan => _bytes;
         public ByteSpan Bytes => _bytes;
 
-        public byte[] GetBytes() => ReadOnlySpan;
+        public byte[] ToArray() => ReadOnlySpan;
 
         public void Set(ReadOnlyByteSpan data)
         {
@@ -180,14 +180,15 @@ namespace CafeLib.Bitcoin.Keys
         /// <returns></returns>
         public bool RecoverCompact(UInt256 hash, ReadOnlyByteSpan sig)
         {
-            var (ok, vch) = Secp256K1.PublicKeyRecoverCompact(hash.Span, sig);
+            var key = KeyService.RecoverCompactKey(hash, sig);
+            if (key != null)
+            {
+                _bytes = key;
+                return true;
+            }
 
-            if (!ok)
-                Invalidate();
-            else
-                _bytes = vch;
-
-            return ok;
+            Invalidate();
+            return false;
         }
 
         public static PublicKey FromRecoverCompact(UInt256 hash, ReadOnlyByteSpan sig)
@@ -198,9 +199,7 @@ namespace CafeLib.Bitcoin.Keys
 
         public bool Verify(UInt256 hash, ReadOnlyByteSpan sig)
         {
-            if (!IsValid || sig.Length == 0) return false;
-
-            return Secp256K1.PublicKeyVerify(hash.Span, sig, _bytes.AsSpan());
+            return KeyService.Verify(sig, this, hash);
         }
 
         /// <summary>
@@ -253,6 +252,15 @@ namespace CafeLib.Bitcoin.Keys
 
         public bool Equals(PublicKey o) => !(o is null) && _bytes.SequenceEqual(o._bytes);
         public override bool Equals(object obj) => obj is PublicKey key && this == key;
+
+        public static explicit operator PublicKey(byte[] rhs) => new PublicKey(rhs);
+        public static implicit operator byte[](PublicKey rhs) => rhs._bytes;
+
+        public static implicit operator ByteSpan(PublicKey rhs) => rhs._bytes;
+        public static implicit operator PublicKey(ByteSpan rhs) => new PublicKey(rhs);
+
+        public static implicit operator ReadOnlyByteSpan(PublicKey rhs) => rhs._bytes;
+        public static implicit operator PublicKey(ReadOnlyByteSpan rhs) => new PublicKey(rhs);
 
         public static bool operator ==(PublicKey x, PublicKey y) => x?.Equals(y) ?? y is null;
         public static bool operator !=(PublicKey x, PublicKey y) => !(x == y);

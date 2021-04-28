@@ -4,94 +4,46 @@
 #endregion
 
 using CafeLib.Bitcoin.Chain;
+using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Keys;
 using CafeLib.Bitcoin.Numerics;
+using CafeLib.Bitcoin.Persistence;
+using CafeLib.Bitcoin.Units;
 
 namespace CafeLib.Bitcoin.Scripting
 {
     public class TransactionSignatureChecker : SignatureCheckerBase
     {
-        private Script _script;
         private readonly Transaction _tx;
         private readonly int _index;
+        private readonly Amount _amount;
 
         private const int LocktimeThreshold = 500000000; // Tue Nov  5 00:53:20 1985 UTC
 
-        public TransactionSignatureChecker(Script script, Transaction tx, int index)
+        public TransactionSignatureChecker(Transaction tx, int index, Amount amount)
         {
-            _script = script;
             _tx = tx;
             _index = index;
+            _amount = amount;
         }
 
         public override bool CheckSignature(VarType scriptSig, VarType vchPubKey, Script script, ScriptFlags flags)
         {
-            var fSuccess = false;
             try
             {
+                if (scriptSig.IsEmpty) return false;
+                if (vchPubKey.IsEmpty) return false;
                 var publicKey = new PublicKey(vchPubKey);
                 if (!publicKey.IsValid) return false;
-                if (vchPubKey == VarType.Empty) return false;
+
                 var sig = new Signature(scriptSig);
-                VerifyTransaction(sig, publicKey, _index, script, UInt256.Zero);
-
-
-                //fSuccess = this.tx.verify(
-                //    sig,
-                //    pubKey,
-                //    this.nIn,
-                //    subScript,
-                //    Boolean(this.flags & Interp.SCRIPT_VERIFY_LOW_S),
-                //    this.valueBn,
-                //    this.flags
-                //)
+                return VerifyTransaction(sig, publicKey, script, _amount);
             }
             catch
             {
                 // invalid sig or pubKey
-                fSuccess = false;
+                return false;
             }
-
-
-
-
-
-
-
-
-
-
-
-            return false;
-
-            //    const std::vector<uint8_t> &vchSigIn, const std::vector<uint8_t> &vchPubKey,
-            //    const CScript &scriptCode, bool enabledSighashForkid) const
-            //    {
-            //        CPubKey pubkey(vchPubKey);
-            //        if (!pubkey.IsValid())
-            //        {
-            //            return false;
-            //        }
-
-            //        // Hash type is one byte tacked on to the end of the signature
-            //        std::vector<uint8_t> vchSig(vchSigIn);
-            //        if (vchSig.empty())
-            //        {
-            //            return false;
-            //        }
-            //        SigHashType sigHashType = GetHashType(vchSig);
-            //        vchSig.pop_back();
-
-            //        uint256 sighash = SignatureHash(scriptCode, *txTo, nIn, sigHashType, amount,
-            //            this->txdata, enabledSighashForkid);
-
-            //        if (!VerifySignature(vchSig, pubkey, sighash))
-            //        {
-            //            return false;
-            //        }
-
-            //        return true;
-            //    }
         }
 
         public bool CheckLockTime(int nLockTime)
@@ -190,63 +142,185 @@ namespace CafeLib.Bitcoin.Scripting
             return nSequenceMasked <= txToSequenceMasked;
         }
 
-
-        public bool VerifyTransaction
+        private bool VerifyTransaction
         (
-            Signature sig,
-            PublicKey pubKey,
-            int nIn,
+            Signature signature,
+            PublicKey publicKey,
             Script subScript,
-            UInt256 value,
-            bool enforceLowS = false,
-            uint flags = (uint) ScriptFlags.ENABLE_SIGHASH_FORKID
+            Amount amount,
+            ScriptFlags flags = ScriptFlags.ENABLE_SIGHASH_FORKID
         )
         {
-            return false;
+            var sigHash = ComputeSignatureHash(subScript, _tx, _index, signature.HashType, amount, flags);
+            return KeyService.Verify(signature, publicKey, sigHash);
         }
 
+        public static UInt256 ComputeSignatureHash
+        (
+            Script scriptCode,
+            Transaction txTo,
+            int nIn,
+            SignatureHashType sigHashType,
+            Amount amount,
+            ScriptFlags flags = ScriptFlags.ENABLE_SIGHASH_FORKID
+        )
+        {
+            if (sigHashType.HasForkId && (flags & ScriptFlags.ENABLE_SIGHASH_FORKID) != 0)
+            {
+                var hashPrevOuts = new UInt256();
+                var hashSequence = new UInt256();
+                var hashOutputs = new UInt256();
 
-        //private UInt256 SigHash(
-        //    SignatureHashType hashType,
-        //    int nin,
-        //    Script subScript,
-        //    UInt256 value,
-        //    uint flags
-        //)
-        //{
-        //    // start with UAHF part (Bitcoin SV)
-        //    // https://github.com/Bitcoin-UAHF/spec/blob/master/replay-protected-sighash.md
+                if (!sigHashType.HasAnyoneCanPay)
+                {
+                    hashPrevOuts = GetPrevOutHash(txTo);
+                }
 
-        //    if ((hashType.RawSigHashType & (uint) SignatureHashEnum.ForkId) != 0U &&
-        //        (flags & (uint) ScriptFlags.ENABLE_SIGHASH_FORKID) != 0U)
-        //    {
-        //        let hashPrevouts = Buffer.alloc(32, 0)
-        //        let hashSequence = Buffer.alloc(32, 0)
-        //        let hashOutputs = Buffer.alloc(32, 0)
+                var baseNotSingleOrNone =
+                    (sigHashType.GetBaseType() != BaseSignatureHashEnum.Single) &&
+                    (sigHashType.GetBaseType() != BaseSignatureHashEnum.None);
 
-        //    }
-        //}
+                if (!sigHashType.HasAnyoneCanPay && baseNotSingleOrNone)
+                {
+                    hashSequence = GetSequenceHash(txTo);
+                }
 
+                if (baseNotSingleOrNone)
+                {
+                    hashOutputs = GetOutputsHash(txTo);
+                }
+                else if (sigHashType.GetBaseType() == BaseSignatureHashEnum.Single && nIn < txTo.Outputs.Length)
+                {
+                    using var hw = new HashWriter();
+                    hw.Add(txTo.Outputs[nIn]);
+                    hashOutputs = hw.GetHashFinal();
+                }
 
-        //private UInt256 HashPrevOuts()
-        //{
-        //    foreach (var txIn in _tx.Inputs)
-        //    {
-        //        txIn
-        //    }
+                using var writer = new HashWriter();
+                writer
+                    // Version
+                    .Add(txTo.Version)
+                    // Input prevouts/nSequence (none/all, depending on flags)
+                    .Add(hashPrevOuts)
+                    .Add(hashSequence)
+                    // The input being signed (replacing the scriptSig with scriptCode +
+                    // amount). The prevout may already be contained in hashPrevout, and the
+                    // nSequence may already be contain in hashSequence.
+                    .Add(txTo.Inputs[nIn].PrevOut)
+                    .Add(scriptCode)
+                    .Add(amount.Satoshis)
+                    .Add(txTo.Inputs[nIn].Sequence)
+                    // Outputs (none/one/all, depending on flags)
+                    .Add(hashOutputs)
+                    // Locktime
+                    .Add(txTo.LockTime)
+                    // Sighash type
+                    .Add(sigHashType.RawSigHashType);
 
+                return writer.GetHashFinal();
+            }
 
+            if (nIn >= txTo.Inputs.Length)
+            {
+                //  nIn out of range
+                return UInt256.One;
+            }
 
-        //        const bw = new Bw()
-        //        for (const i in this.txIns) {
-        //            const txIn = this.txIns[i]
-        //            bw.write(txIn.txHashBuf) // outpoint (1/2)
-        //            bw.writeUInt32LE(txIn.txOutNum) // outpoint (2/2)
-        //        }
-        //        return Hash.sha256Sha256(bw.toBuffer())
-        //    }
+            // Check for invalid use of SIGHASH_SINGLE
+            if (sigHashType.GetBaseType() == BaseSignatureHashEnum.Single && nIn >= txTo.Outputs.Length)
+            {
+                //  nOut out of range
+                return UInt256.One;
+            }
 
-        //}
+            {
+                // Original digest algorithm...
+                var hasAnyoneCanPay = sigHashType.HasAnyoneCanPay;
+                // ReSharper disable once UnusedVariable
+                var numberOfInputs = hasAnyoneCanPay ? 1 : txTo.Inputs.Length;
+                using var writer = new HashWriter();
+                // Start with the version...
+                writer.Add(txTo.Version);
+                // Add Input(s)...
+                if (hasAnyoneCanPay)
+                {
+                    // AnyoneCanPay serializes only the input being signed.
+                    var i = txTo.Inputs[nIn];
+                    writer
+                        .Add((byte)1)
+                        .Add(i.PrevOut)
+                        .Add(scriptCode, true)
+                        .Add(i.Sequence);
+                }
+                else
+                {
+                    // Non-AnyoneCanPay case. Process all inputs but handle input being signed in its own way.
+                    var isSingleOrNone = sigHashType.IsBaseSingle || sigHashType.IsBaseNone;
+                    writer.Add(txTo.Inputs.Length.AsVarIntBytes());
+                    for (var nInput = 0; nInput < txTo.Inputs.Length; nInput++)
+                    {
+                        var i = txTo.Inputs[nInput];
+                        writer.Add(i.PrevOut);
+                        if (nInput != nIn)
+                            writer.Add(Script.None);
+                        else
+                            writer.Add(scriptCode, true);
+                        if (nInput != nIn && isSingleOrNone)
+                            writer.Add(0);
+                        else
+                            writer.Add(i.Sequence);
+                    }
+                }
+                // Add Output(s)...
+                var nOutputs = sigHashType.IsBaseNone ? 0 : sigHashType.IsBaseSingle ? nIn + 1 : txTo.Outputs.Length;
+                writer.Add(nOutputs.AsVarIntBytes());
+                for (var nOutput = 0; nOutput < nOutputs; nOutput++)
+                {
+                    if (sigHashType.IsBaseSingle && nOutput != nIn)
+                        writer.Add(TxOut.Null);
+                    else
+                        writer.Add(txTo.Outputs[nOutput]);
+                }
+                // Finish up...
+                writer
+                    .Add(txTo.LockTime)
+                    .Add(sigHashType.RawSigHashType)
+                    ;
+                return writer.GetHashFinal();
+            }
+        }
 
+        private static UInt256 GetPrevOutHash(Transaction txTo)
+        {
+            using var hw = new HashWriter();
+            foreach (var i in txTo.Inputs)
+            {
+                hw.Add(i.PrevOut);
+            }
+
+            return hw.GetHashFinal();
+        }
+
+        private static UInt256 GetSequenceHash(Transaction txTo)
+        {
+            using var hw = new HashWriter();
+            foreach (var i in txTo.Inputs)
+            {
+                hw.Add(i.Sequence);
+            }
+
+            return hw.GetHashFinal();
+        }
+
+        private static UInt256 GetOutputsHash(Transaction txTo)
+        {
+            using var hw = new HashWriter();
+            foreach (var o in txTo.Outputs)
+            {
+                hw.Add(o);
+            }
+
+            return hw.GetHashFinal();
+        }
     }
 }

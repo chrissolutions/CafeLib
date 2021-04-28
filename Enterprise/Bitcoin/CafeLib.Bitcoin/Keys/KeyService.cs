@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using CafeLib.Bitcoin.Buffers;
+using CafeLib.Bitcoin.Chain;
 using CafeLib.Bitcoin.Numerics;
 using Secp256k1Net;
 
@@ -27,7 +28,7 @@ namespace CafeLib.Bitcoin.Keys
             var ok = Library.PublicKeyCreate(pubKeySecp256k1, privateKey.Bytes);
             Trace.Assert(ok);
             var pubKey = new PublicKey(privateKey.IsCompressed);
-            LazySecpLibrary.Value.PublicKeySerialize(pubKey.Bytes, pubKeySecp256k1, privateKey.IsCompressed ? Flags.SECP256K1_EC_COMPRESSED : Flags.SECP256K1_EC_UNCOMPRESSED);
+            LazySecpLibrary.Value.PublicKeySerialize((ByteSpan)pubKey, pubKeySecp256k1, privateKey.IsCompressed ? Flags.SECP256K1_EC_COMPRESSED : Flags.SECP256K1_EC_UNCOMPRESSED);
             Trace.Assert(pubKey.IsValid);
             return pubKey;
         }
@@ -59,6 +60,18 @@ namespace CafeLib.Bitcoin.Keys
         }
 
         /// <summary>
+        /// The complement function is KzPrivKey's SignCompact.
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <param name="signature"></param>
+        /// <returns></returns>
+        public static byte[] RecoverCompactKey(UInt256 hash, Signature signature)
+        {
+            var (ok, bytes) = Library.PublicKeyRecoverCompact(hash.Span, (ReadOnlyByteSpan) signature);
+            return ok ? bytes : null;
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="secretKey"></param>
@@ -86,6 +99,12 @@ namespace CafeLib.Bitcoin.Keys
             }
 
             return result;
+        }
+
+        public static bool Verify(Signature signature, PublicKey publicKey, UInt256 sigHash)
+        {
+            if (!publicKey.IsValid || signature.Length == 0) return false;
+            return Library.PublicKeyVerify(sigHash.Span, (ReadOnlyByteSpan)signature, (ReadOnlyByteSpan)publicKey);
         }
     }
 }

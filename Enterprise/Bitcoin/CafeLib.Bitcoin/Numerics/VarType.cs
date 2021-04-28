@@ -63,7 +63,7 @@ namespace CafeLib.Bitcoin.Numerics
             return new ByteSequenceReader(Sequence);
         }
 
-        private ReadOnlyByteSpan ToSpan()
+        internal ReadOnlyByteSpan ToSpan()
         {
             var r = GetReader();
 

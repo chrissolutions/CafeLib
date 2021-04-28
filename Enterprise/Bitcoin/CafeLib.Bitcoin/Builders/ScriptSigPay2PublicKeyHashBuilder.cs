@@ -16,7 +16,7 @@ namespace CafeLib.Bitcoin.Builders
             _TemplateId = TemplateId.Pay2PublicKeyHash;
             this
                 .Push(new byte[72]) // This will become the CHECKSIG signature
-                .Push(pubKey.Bytes)
+                .Push(pubKey)
                 ;
         }
     }
