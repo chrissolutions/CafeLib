@@ -12,8 +12,6 @@ using CafeLib.Bitcoin.Builders;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Persistence;
-using CafeLib.Bitcoin.Scripting;
-using CafeLib.Bitcoin.Units;
 
 namespace CafeLib.Bitcoin.Chain
 {
