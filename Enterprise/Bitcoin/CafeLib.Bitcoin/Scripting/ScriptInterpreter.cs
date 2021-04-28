@@ -520,8 +520,8 @@ namespace CafeLib.Bitcoin.Scripting
             var pend = ros.Data.End;
             var pBeginCodeHash = ros.Data.Start;
             var op = new Operand();
-            var vfExec = new ScriptStack<bool>();
-            var altStack = new ScriptStack<VarType>();
+            var vfExec = new ScriptExecutionStack();
+            var altStack = new ScriptAltStack();
             checker ??= DefaultSignatureChecker;
 
             SetError(out error, ScriptError.UNKNOWN_ERROR);
