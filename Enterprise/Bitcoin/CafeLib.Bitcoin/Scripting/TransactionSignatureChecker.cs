@@ -208,7 +208,7 @@ namespace CafeLib.Bitcoin.Scripting
                     // nSequence may already be contain in hashSequence.
                     .Add(txTo.Inputs[nIn].PrevOut)
                     .Add(scriptCode)
-                    .Add(amount.Satoshis)
+                    .Add(amount)
                     .Add(txTo.Inputs[nIn].Sequence)
                     // Outputs (none/one/all, depending on flags)
                     .Add(hashOutputs)
