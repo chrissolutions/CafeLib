@@ -190,6 +190,7 @@ namespace CafeLib.Bitcoin.Scripting
             {
                 // Original digest algorithm...
                 var hasAnyoneCanPay = sigHashType.HasAnyoneCanPay;
+                // ReSharper disable once UnusedVariable
                 var numberOfInputs = hasAnyoneCanPay ? 1 : txTo.Inputs.Length;
                 using var writer = new HashWriter();
                 // Start with the version...
@@ -418,6 +419,7 @@ namespace CafeLib.Bitcoin.Scripting
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsValidMaxOpsPerScript(int nOpCount) => nOpCount <= RootService.Network.Consensus.MaxOperationsPerScript;
 
+        // ReSharper disable once UnusedParameter.Local
         private static bool IsOpcodeDisabled(Opcode opcode, ScriptFlags flags)
         {
             return opcode switch
@@ -516,11 +518,12 @@ namespace CafeLib.Bitcoin.Scripting
         public static bool EvalScript(ScriptStack<VarType> stack, Script script, ScriptFlags flags, SignatureCheckerBase checker, out ScriptError error)
         {
             var ros = script.Data.Sequence;
+            // ReSharper disable once UnusedVariable
             var pc = ros.Data.Start;
             var pend = ros.Data.End;
             var pBeginCodeHash = ros.Data.Start;
             var op = new Operand();
-            var vfExec = new ScriptExecutionStack();
+            var executionStatck = new ScriptExecutionStack();
             var altStack = new ScriptAltStack();
             checker ??= DefaultSignatureChecker;
 
@@ -536,7 +539,7 @@ namespace CafeLib.Bitcoin.Scripting
             {
                 while (ros.Length > 0) 
                 {
-                    var fExec = vfExec.Contains(false) == false;
+                    var fExec = executionStatck.Contains(false) == false;
 
                     if (!op.TryReadOperand(ref ros)) 
                     {
@@ -655,27 +658,27 @@ namespace CafeLib.Bitcoin.Scripting
                                             fValue = !fValue;
                                         }
                                     }
-                                    vfExec.Push(fValue);
+                                    executionStatck.Push(fValue);
                                 }
                                 break;
 
                             case Opcode.OP_ELSE:
                                 {
-                                    if (vfExec.Count < 1) 
+                                    if (executionStatck.Count < 1) 
                                     {
                                         return SetError(out error, ScriptError.UNBALANCED_CONDITIONAL);
                                     }
-                                    vfExec.Push(!vfExec.Pop());
+                                    executionStatck.Push(!executionStatck.Pop());
                                 }
                                 break;
 
                             case Opcode.OP_ENDIF: 
                                 {
-                                    if (vfExec.Count < 1) 
+                                    if (executionStatck.Count < 1) 
                                     {
                                         return SetError(out error, ScriptError.UNBALANCED_CONDITIONAL);
                                     }
-                                    vfExec.Pop();
+                                    executionStatck.Pop();
                                 }
                                 break;
 
@@ -1009,6 +1012,7 @@ namespace CafeLib.Bitcoin.Scripting
                                     if (stack.Count < 2) return SetError(out error, ScriptError.INVALID_STACK_OPERATION);
                                     var bn2 = stack.Pop().ToScriptNum(fRequireMinimal);
                                     var bn1 = stack.Pop().ToScriptNum(fRequireMinimal);
+                                    // ReSharper disable once RedundantAssignment
                                     var bn = new ScriptNum(0);
                                     switch (op.Code) {
                                         case Opcode.OP_ADD:
@@ -1103,6 +1107,7 @@ namespace CafeLib.Bitcoin.Scripting
                                     var bn3 = stack.Pop().ToScriptNum(fRequireMinimal);
                                     var bn2 = stack.Pop().ToScriptNum(fRequireMinimal);
                                     var bn1 = stack.Pop().ToScriptNum(fRequireMinimal);
+                                    // ReSharper disable once UnusedVariable
                                     var bn = new ScriptNum(0);
                                     var fValue = (bn2 <= bn1 && bn1 < bn3);
                                     stack.Push(fValue ? VarType.True : VarType.False);
@@ -1121,7 +1126,7 @@ namespace CafeLib.Bitcoin.Scripting
                                     // (in -- hash)
                                     if (stack.Count < 1) return SetError(out error, ScriptError.INVALID_STACK_OPERATION);
                                     var vch = stack.Pop();
-                                    var data = (byte[])null;
+                                    byte[] data;
                                     switch (op.Code) 
                                     {
                                         case Opcode.OP_SHA1:
@@ -1288,7 +1293,7 @@ namespace CafeLib.Bitcoin.Scripting
                 return SetError(out error, ScriptError.UNKNOWN_ERROR);
             }
 
-            return vfExec.Count != 0 
+            return executionStatck.Count != 0 
                 ? SetError(out error, ScriptError.UNBALANCED_CONDITIONAL) 
                 : SetSuccess(out error);
         }
