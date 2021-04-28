@@ -14,20 +14,21 @@ namespace CafeLib.Bitcoin.Chain
     {
         private UInt256 _r;
         private UInt256 _s;
-        private SignatureHashType _hashType;
+
+        public SignatureHashType HashType { get; }
 
         public Signature()
         {
             _r = UInt256.One;
             _s = UInt256.One;
-            _hashType = new SignatureHashType(SignatureHashEnum.All);
+            HashType = new SignatureHashType(SignatureHashEnum.All);
         }
 
         public Signature(UInt256 r, UInt256 s, SignatureHashType hashType)
         {
             _r = r;
             _s = s;
-            _hashType = hashType;
+            HashType = hashType;
         }
 
         public Signature(VarType signature)
@@ -40,7 +41,7 @@ namespace CafeLib.Bitcoin.Chain
                 var (r, s) = ParseDer(derSig);
                 _r = r;
                 _s = s;
-                _hashType = hashType;
+                HashType = hashType;
             }
         }
 

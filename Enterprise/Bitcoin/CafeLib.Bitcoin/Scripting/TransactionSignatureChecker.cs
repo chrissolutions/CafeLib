@@ -33,7 +33,7 @@ namespace CafeLib.Bitcoin.Scripting
                 if (!publicKey.IsValid) return false;
                 if (vchPubKey == VarType.Empty) return false;
                 var sig = new Signature(scriptSig);
-
+                VerifyTransaction(sig, publicKey, _index, script, UInt256.Zero);
 
 
                 //fSuccess = this.tx.verify(
@@ -193,8 +193,8 @@ namespace CafeLib.Bitcoin.Scripting
 
         public bool VerifyTransaction
         (
-            VarType sig,
-            VarType pubKey,
+            Signature sig,
+            PublicKey pubKey,
             int nIn,
             Script subScript,
             UInt256 value,
