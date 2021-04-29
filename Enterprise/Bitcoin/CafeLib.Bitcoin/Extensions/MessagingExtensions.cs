@@ -16,17 +16,17 @@ namespace CafeLib.Bitcoin.Extensions
     {
         private const string MessageMagic = "Bitcoin Signed Message:\n";
 
-        private static UInt256 GetMessageHash(UInt256 message)
+        private static UInt256 GetMessageHash(ReadOnlyByteSpan message)
         {
-            var messageHash = Hashes.Sha256(message).ToHex();
+            var messageHash = message.Sha256().ToHex();
             return new HashWriter().Add(MessageMagic).Add(messageHash).GetHashFinal();
         }
 
         public static byte[] SignMessage(this PrivateKey key, string message) => SignMessage(key, (UInt256)message.Utf8ToBytes());
 
-        public static byte[] SignMessage(this PrivateKey key, UInt256 message)
+        public static byte[] SignMessage(this PrivateKey key, ReadOnlyByteSpan message)
         {
-            return key.CreateSignature(message);
+            return SignMessageCompact(key, GetMessageHash(message));
         }
 
         public static byte[] SignMessageCompact(this PrivateKey key, UInt256 message)
@@ -34,19 +34,19 @@ namespace CafeLib.Bitcoin.Extensions
             return key.CreateCompactSignature(message);
         }
 
-        public static string SignMessageToBase64(this PrivateKey key, UInt256 message)
+        public static string SignMessageToBase64(this PrivateKey key, ReadOnlyByteSpan message)
         {
             var sigBytes = SignMessage(key, message);
             return sigBytes == null ? null : Convert.ToBase64String(sigBytes);
         }
 
         public static string SignMessageToBase64(this PrivateKey key, string message) 
-            => SignMessageToBase64(key, (UInt256)message.Utf8ToBytes());
+            => SignMessageToBase64(key, message.Utf8ToBytes());
 
-        public static PublicKey RecoverPubKeyFromMessage(UInt256 message, ReadOnlyByteSpan signature)
+        public static PublicKey RecoverPubKeyFromMessage(ReadOnlyByteSpan message, ReadOnlyByteSpan signature)
             => PublicKey.FromRecoverCompact(GetMessageHash(message), signature);
 
-        public static bool VerifyMessage(this PublicKey key, UInt256 message, ReadOnlyByteSpan signature)
+        public static bool VerifyMessage(this PublicKey key, ReadOnlyByteSpan message, ReadOnlyByteSpan signature)
         {
             var rkey = RecoverPubKeyFromMessage(message, signature);
             return rkey != null && rkey == key;
@@ -59,7 +59,7 @@ namespace CafeLib.Bitcoin.Extensions
         }
 
         public static bool VerifyMessage(this PublicKey key, string message, string signature) 
-            => VerifyMessage(key, (UInt256)message.Utf8ToBytes(), Convert.FromBase64String(signature));
+            => VerifyMessage(key, message.Utf8ToBytes(), Convert.FromBase64String(signature));
 
         public static bool VerifyMessage(this UInt160 keyId, string message, string signature)
             => VerifyMessage(keyId, (UInt256)message.Utf8ToBytes(), Convert.FromBase64String(signature));
