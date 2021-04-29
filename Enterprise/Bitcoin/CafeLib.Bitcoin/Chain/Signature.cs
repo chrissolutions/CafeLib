@@ -176,7 +176,7 @@ namespace CafeLib.Bitcoin.Chain
             }
 
             var length = (int)buffer[1];
-            var bufLength = buffer.Slice(2).Length;
+            var bufLength = buffer[2..].Length;
             if (strict && length != bufLength)
             {
                 throw new InvalidOperationException("Length byte should length of what follows");

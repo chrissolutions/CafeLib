@@ -180,15 +180,14 @@ namespace CafeLib.Bitcoin.Keys
         /// <returns></returns>
         public bool RecoverCompact(UInt256 hash, ReadOnlyByteSpan sig)
         {
-            var key = KeyService.RecoverCompactKey(hash, sig);
-            if (key != null)
-            {
-                _bytes = key;
-                return true;
-            }
+            var (ok, vch) = Secp256K1.PublicKeyRecoverCompact(hash.Span, sig);
 
-            Invalidate();
-            return false;
+            if (!ok)
+                Invalidate();
+            else
+                _bytes = vch;
+
+            return ok;
         }
 
         public static PublicKey FromRecoverCompact(UInt256 hash, ReadOnlyByteSpan sig)
@@ -197,9 +196,10 @@ namespace CafeLib.Bitcoin.Keys
             return key.RecoverCompact(hash, sig) ? key : null;
         }
 
-        public bool Verify(UInt256 hash, ReadOnlyByteSpan sig)
+        public bool Verify(UInt256 hash, VarType sig)
         {
-            return KeyService.Verify(sig, this, hash);
+            if (!IsValid || sig.Length == 0) return false;
+            return Secp256K1.PublicKeyVerify(hash.Span, (ReadOnlyByteSpan)sig, (ReadOnlyByteSpan)this);
         }
 
         /// <summary>
@@ -256,10 +256,10 @@ namespace CafeLib.Bitcoin.Keys
         public static explicit operator PublicKey(byte[] rhs) => new PublicKey(rhs);
         public static implicit operator byte[](PublicKey rhs) => rhs._bytes;
 
-        public static implicit operator ByteSpan(PublicKey rhs) => rhs._bytes;
+        public static implicit operator ByteSpan(PublicKey rhs) => rhs._bytes.AsSpan();
         public static implicit operator PublicKey(ByteSpan rhs) => new PublicKey(rhs);
 
-        public static implicit operator ReadOnlyByteSpan(PublicKey rhs) => rhs._bytes;
+        public static implicit operator ReadOnlyByteSpan(PublicKey rhs) => rhs._bytes.AsSpan();
         public static implicit operator PublicKey(ReadOnlyByteSpan rhs) => new PublicKey(rhs);
 
         public static bool operator ==(PublicKey x, PublicKey y) => x?.Equals(y) ?? y is null;

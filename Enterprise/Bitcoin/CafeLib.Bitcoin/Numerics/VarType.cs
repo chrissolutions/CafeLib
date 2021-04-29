@@ -11,12 +11,16 @@ using CafeLib.Bitcoin.Scripting;
 
 namespace CafeLib.Bitcoin.Numerics
 {
-    public readonly struct VarType
+    public sealed class VarType
     {
         private readonly ReadOnlyByteSequence _sequence;
 
+        private VarType()
+        {
+            _sequence = new ReadOnlyByteSequence(Array.Empty<byte>());
+        }
+
         public VarType(ReadOnlyByteSequence data)
-            : this()
         {
             _sequence = data;
         }
@@ -360,17 +364,19 @@ namespace CafeLib.Bitcoin.Numerics
         public override int GetHashCode() => _sequence.GetHashCode();
 
         public override bool Equals(object obj) => obj is VarType type && this == type;
-        public bool Equals(VarType rhs) => ((ReadOnlyByteSpan)_sequence).Data.SequenceEqual((ReadOnlyByteSpan)rhs._sequence);
+        public bool Equals(VarType rhs) => !(rhs is null) && ((ReadOnlyByteSpan)_sequence).Data.SequenceEqual((ReadOnlyByteSpan)rhs._sequence);
 
-        public static explicit operator VarType(byte[] rhs) => new VarType(rhs);
+        public static implicit operator VarType(byte[] rhs) => new VarType(rhs);
         public static implicit operator byte[](VarType rhs) => rhs.ToArray();
+
+        public static implicit operator bool(VarType rhs) => rhs.ToBool();
 
         public static implicit operator ReadOnlyByteMemory(VarType rhs) => rhs.ToArray();
         public static implicit operator ReadOnlyByteSpan(VarType rhs) => rhs.ToSpan();
         public static implicit operator ReadOnlyByteSequence(VarType rhs) => rhs.ToArray();
         public static explicit operator VarType(ReadOnlyByteSequence rhs) => new VarType(rhs);
 
-        public static bool operator ==(VarType x, VarType y) => x.Equals(y);
+        public static bool operator ==(VarType x, VarType y) => x?.Equals(y) ?? y is null;
         public static bool operator !=(VarType x, VarType y) => !(x == y);
     }
 }

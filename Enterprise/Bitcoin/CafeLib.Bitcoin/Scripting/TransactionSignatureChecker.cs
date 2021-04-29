@@ -36,8 +36,7 @@ namespace CafeLib.Bitcoin.Scripting
                 var publicKey = new PublicKey(vchPubKey);
                 if (!publicKey.IsValid) return false;
 
-                var sig = new Signature(scriptSig);
-                return VerifyTransaction(sig, publicKey, script, _amount);
+                return VerifyTransaction(publicKey, scriptSig, script, _amount);
             }
             catch
             {
@@ -144,15 +143,16 @@ namespace CafeLib.Bitcoin.Scripting
 
         private bool VerifyTransaction
         (
-            Signature signature,
             PublicKey publicKey,
+            VarType signature,
             Script subScript,
             Amount amount,
             ScriptFlags flags = ScriptFlags.ENABLE_SIGHASH_FORKID
         )
         {
-            var sigHash = ComputeSignatureHash(subScript, _tx, _index, signature.HashType, amount, flags);
-            return KeyService.Verify(signature, publicKey, sigHash);
+            var hashType = new SignatureHashType(signature.LastByte);
+            var sigHash = ComputeSignatureHash(subScript, _tx, _index, hashType, amount, flags);
+            return KeyService.Verify(publicKey, signature, sigHash);
         }
 
         public static UInt256 ComputeSignatureHash

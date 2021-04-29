@@ -65,9 +65,9 @@ namespace CafeLib.Bitcoin.Keys
         /// <param name="hash"></param>
         /// <param name="signature"></param>
         /// <returns></returns>
-        public static byte[] RecoverCompactKey(UInt256 hash, Signature signature)
+        public static byte[] RecoverCompactKey(UInt256 hash, ReadOnlyByteSpan signature)
         {
-            var (ok, bytes) = Library.PublicKeyRecoverCompact(hash.Span, (ReadOnlyByteSpan) signature);
+            var (ok, bytes) = Library.PublicKeyRecoverCompact(hash.Span, signature);
             return ok ? bytes : null;
         }
 
@@ -101,10 +101,21 @@ namespace CafeLib.Bitcoin.Keys
             return result;
         }
 
-        public static bool Verify(Signature signature, PublicKey publicKey, UInt256 sigHash)
+        public static bool Verify(PublicKey publicKey, VarType signature, UInt256 sigHash)
         {
-            if (!publicKey.IsValid || signature.Length == 0) return false;
-            return Library.PublicKeyVerify(sigHash.Span, (ReadOnlyByteSpan)signature, (ReadOnlyByteSpan)publicKey);
+            try
+            {
+                var ctx = new Secp256k1(sign: true, verify: false);
+                ctx.Randomize(Randomizer.GetStrongRandBytes(32));
+
+                if (!publicKey.IsValid || signature.Length == 0) return false;
+                return ctx.PublicKeyVerify(sigHash.Span, (ReadOnlyByteSpan)signature, (ReadOnlyByteSpan)publicKey);
+            }
+            catch
+            {
+                //Console.WriteLine(ex);
+                return false;
+            }
         }
     }
 }

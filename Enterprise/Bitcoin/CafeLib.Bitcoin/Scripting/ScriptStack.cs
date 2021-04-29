@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace CafeLib.Bitcoin.Scripting
 {
-    public class ScriptStack<T> where T: struct
+    internal class ScriptStack<T>
     {
         private T[] _array;
 

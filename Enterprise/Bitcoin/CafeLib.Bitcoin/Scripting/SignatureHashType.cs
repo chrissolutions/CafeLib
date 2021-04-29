@@ -1,4 +1,5 @@
 ﻿using System;
+using CafeLib.Bitcoin.Numerics;
 
 namespace CafeLib.Bitcoin.Scripting
 {
@@ -22,6 +23,13 @@ namespace CafeLib.Bitcoin.Scripting
         public SignatureHashType(uint sigHash)
         {
             RawSigHashType = sigHash;
+        }
+
+        public SignatureHashType(VarType vchSig)
+        {
+            RawSigHashType = vchSig.Length == 0
+                ? (uint) SignatureHashEnum.Unsupported
+                : (uint) (SignatureHashEnum) vchSig.LastByte;
         }
 
         public bool IsDefined 

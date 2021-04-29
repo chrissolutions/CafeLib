@@ -122,7 +122,7 @@ namespace CafeLib.Bitcoin.Keys
             var hash = Hashes.Hash256(System.Text.Encoding.ASCII.GetBytes(str).Concat(rnd).ToArray());
 
             var sig = this.CreateSignature(hash);
-            return (sig != null) && publicKey.Verify(hash, sig);
+            return sig != null && publicKey.Verify(hash, sig);
         }
 
         public (bool ok, PrivateKey keyChild, UInt256 ccChild) Derive(uint nChild, UInt256 cc)
