@@ -38,7 +38,7 @@ namespace CafeLib.Bitcoin.Scripting
 
         internal VarType Data => _script;
 
-        public static Script None => new Script();
+        public static Script None => new Script(Array.Empty<byte>());
 
         public long Length => _script.Length;
 
