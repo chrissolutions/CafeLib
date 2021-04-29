@@ -22,11 +22,11 @@ namespace CafeLib.Bitcoin.Extensions
             return new HashWriter().Add(MessageMagic).Add(messageHash).GetHashFinal();
         }
 
-        public static byte[] SignMessage(this PrivateKey key, string message) => SignMessage(key, (UInt256)message.Utf8ToBytes());
+        public static byte[] SignMessage(this PrivateKey key, string message) => SignMessage(key, message.Utf8ToBytes());
 
         public static byte[] SignMessage(this PrivateKey key, ReadOnlyByteSpan message)
         {
-            return SignMessageCompact(key, GetMessageHash(message));
+            return key.CreateSignature(message);
         }
 
         public static byte[] SignMessageCompact(this PrivateKey key, UInt256 message)
@@ -36,7 +36,7 @@ namespace CafeLib.Bitcoin.Extensions
 
         public static string SignMessageToBase64(this PrivateKey key, ReadOnlyByteSpan message)
         {
-            var sigBytes = SignMessage(key, message);
+            var sigBytes = key.SignMessageCompact(GetMessageHash(message));
             return sigBytes == null ? null : Convert.ToBase64String(sigBytes);
         }
 
