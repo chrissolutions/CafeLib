@@ -103,19 +103,8 @@ namespace CafeLib.Bitcoin.Keys
 
         public static bool Verify(PublicKey publicKey, VarType signature, UInt256 sigHash)
         {
-            try
-            {
-                var ctx = new Secp256k1(sign: true, verify: false);
-                ctx.Randomize(Randomizer.GetStrongRandBytes(32));
-
-                if (!publicKey.IsValid || signature.Length == 0) return false;
-                return ctx.PublicKeyVerify(sigHash.Span, (ReadOnlyByteSpan)signature, (ReadOnlyByteSpan)publicKey);
-            }
-            catch
-            {
-                //Console.WriteLine(ex);
-                return false;
-            }
+            if (!publicKey.IsValid || signature.Length == 0) return false;
+            return Library.PublicKeyVerify(sigHash.Span, (ReadOnlyByteSpan)signature, (ReadOnlyByteSpan)publicKey);
         }
     }
 }
