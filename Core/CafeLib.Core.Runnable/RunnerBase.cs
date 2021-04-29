@@ -135,7 +135,7 @@ namespace CafeLib.Core.Runnable
                         OnAdvise(new RunnerEventMessage(ex.Message, ex));
                     }
 
-                    await Task.Delay(Delay, _cancellationSource.Token).ConfigureAwait(false);
+                    await Task.Delay(Delay, _cancellationSource?.Token ?? default).ConfigureAwait(false);
                 }
 
             }, _cancellationSource.Token);
