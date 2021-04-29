@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using CafeLib.Bitcoin.Buffers;
-using CafeLib.Bitcoin.Chain;
 using CafeLib.Bitcoin.Numerics;
 using Secp256k1Net;
 

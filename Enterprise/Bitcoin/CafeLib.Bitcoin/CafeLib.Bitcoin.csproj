@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Chain\Signature.cs" />
     <Compile Remove="Scripting\Interpreter.cs" />
   </ItemGroup>
 
