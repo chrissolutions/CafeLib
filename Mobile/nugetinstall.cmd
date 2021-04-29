@@ -11,7 +11,7 @@ set configuration=Debug
 set libPath=bin\%configuration%
 set apikey=
 set nugetRepo=C:\Nuget\repo
-set sourcepath=C:\Projects\ChrisSolutions\CafeLib\%type%
+set sourcepath=.
 set solution=CafeLib.%type%
 set version=
 
