@@ -152,7 +152,7 @@ namespace CafeLib.Bitcoin.Scripting
         {
             var hashType = new SignatureHashType(signature.LastByte);
             var sigHash = ComputeSignatureHash(subScript, _tx, _index, hashType, amount, flags);
-            return KeyService.Verify(publicKey, signature, sigHash);
+            return publicKey.Verify(sigHash, signature);
         }
 
         public static UInt256 ComputeSignatureHash

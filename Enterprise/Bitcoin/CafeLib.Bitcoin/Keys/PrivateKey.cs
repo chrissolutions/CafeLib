@@ -10,6 +10,7 @@ using System.Numerics;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Crypto;
 using CafeLib.Bitcoin.Numerics;
+using Secp256k1Net;
 
 namespace CafeLib.Bitcoin.Keys
 {
@@ -22,6 +23,24 @@ namespace CafeLib.Bitcoin.Keys
 
         private const uint HardenedBit = 0x80000000;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private static readonly Lazy<Secp256k1> LazySecp256K1 = new Lazy<Secp256k1>(() =>
+        {
+            var ctx = new Secp256k1();
+            ctx.Randomize(Randomizer.GetStrongRandBytes(32));
+            return ctx;
+        }, true);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static Secp256k1 Secp256K1 => LazySecp256K1.Value;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsValid { get; private set; }
 
         /// <summary>
@@ -35,7 +54,7 @@ namespace CafeLib.Bitcoin.Keys
 
         private static bool Check(ReadOnlyByteSpan vch)
         {
-            return KeyService.SecretKeyVerify(vch);
+            return Secp256K1.SecretKeyVerify(vch);
         }
 
         public PrivateKey()
@@ -144,13 +163,14 @@ namespace CafeLib.Bitcoin.Keys
                 Hashes.Bip32Hash(cc, nChild, 0, _keyData.Span, vout);
             }
 
-            var sout = vout.AsSpan();
+            var output = vout.AsSpan();
             var ccChild = new UInt256();
-            sout.Slice(32, 32).CopyTo(ccChild.Span);
+            output.Slice(32, 32).CopyTo(ccChild.Span);
 
-            var ok = this.TweakAdd( sout.Slice(0, 32), out var keyChild);
+            var dataChild = new UInt256(_keyData);
+            var ok = Secp256K1.PrivKeyTweakAdd(dataChild.Span,  output.Slice(0, 32));
             if (!ok) goto fail;
-            return (true, keyChild, ccChild);
+            return (true, new PrivateKey(dataChild), ccChild);
 
         fail:
             return (false, null, UInt256.Zero);

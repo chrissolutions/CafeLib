@@ -57,53 +57,5 @@ namespace CafeLib.Bitcoin.Keys
             var (ok, sig) = Library.PrivateKeySign(hash, privateKey.Bytes);
             return ok ? sig : default;
         }
-
-        /// <summary>
-        /// The complement function is KzPrivKey's SignCompact.
-        /// </summary>
-        /// <param name="hash"></param>
-        /// <param name="signature"></param>
-        /// <returns></returns>
-        public static byte[] RecoverCompactKey(UInt256 hash, ReadOnlyByteSpan signature)
-        {
-            var (ok, bytes) = Library.PublicKeyRecoverCompact(hash.Span, signature);
-            return ok ? bytes : null;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="secretKey"></param>
-        /// <returns></returns>
-        public static bool SecretKeyVerify(ReadOnlyByteSpan secretKey)
-        {
-            return Library.SecretKeyVerify(secretKey);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="privateKey"></param>
-        /// <param name="bytes"></param>
-        /// <param name="childKey"></param>
-        /// <returns></returns>
-        public static bool TweakAdd(this PrivateKey privateKey, ByteSpan bytes, out PrivateKey childKey)
-        {
-            childKey = null;
-            var dataChild = (UInt256)privateKey.Bytes;
-            var result = Library.PrivKeyTweakAdd(dataChild.Span, bytes.Slice(0, 32));
-            if (result)
-            {
-                childKey = new PrivateKey(dataChild);
-            }
-
-            return result;
-        }
-
-        public static bool Verify(PublicKey publicKey, VarType signature, UInt256 sigHash)
-        {
-            if (!publicKey.IsValid || signature.Length == 0) return false;
-            return Library.PublicKeyVerify(sigHash.Span, (ReadOnlyByteSpan)signature, (ReadOnlyByteSpan)publicKey);
-        }
     }
 }

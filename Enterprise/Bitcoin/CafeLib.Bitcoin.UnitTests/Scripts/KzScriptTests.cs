@@ -8,11 +8,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CafeLib.Bitcoin.Builders;
+using CafeLib.Bitcoin.Chain;
 using CafeLib.Bitcoin.Encoding;
 using CafeLib.Bitcoin.Keys;
 using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Scripting;
 using CafeLib.Bitcoin.Services;
+using CafeLib.Bitcoin.Units;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -203,7 +205,9 @@ namespace CafeLib.Bitcoin.UnitTests.Scripts
                     _testOutputHelper.WriteLine($"{opcode} {i}");
                     _testOutputHelper.WriteLine($"Sig: {tv.scriptSig.ToHexString()} => {tv.scriptSig}");
                     _testOutputHelper.WriteLine($"Pub: {tv.scriptPub.ToHexString()} => {tv.scriptPub}");
-                    var ok = ScriptInterpreter.VerifyScript(tv.scriptSig, tv.scriptPub, tv.scriptFlags, null, out var error);
+
+                    var checker = new TransactionSignatureChecker(new Transaction(), 0, Amount.Zero);
+                    var ok = ScriptInterpreter.VerifyScript(tv.scriptSig, tv.scriptPub, tv.scriptFlags, checker, out var error);
 
                     var correct = (ok && tv.scriptError == ScriptError.OK) || tv.scriptError == error;
 
