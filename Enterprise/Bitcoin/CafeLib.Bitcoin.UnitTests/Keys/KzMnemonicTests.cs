@@ -37,12 +37,15 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
         [Fact]
         public void Base6AndBase10()
         {
-            //var e = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
             var e = new byte[] { 0, 1 };
             var s10 = Mnemonic.ToDigitsBase10(e);
+            Assert.Equal("256", s10);
             var s6 = Mnemonic.ToDigitsBase6(e);
+            Assert.Equal("1104", s6);
             var bn10 = Mnemonic.Base10ToBigInteger(s10);
+            Assert.Equal(256, bn10);
             var bn6 = Mnemonic.Base6ToBigInteger(s6);
+            Assert.Equal(256, bn6);
         }
 
         [Fact]

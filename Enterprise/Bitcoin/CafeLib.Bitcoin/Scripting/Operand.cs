@@ -16,11 +16,9 @@ namespace CafeLib.Bitcoin.Scripting
 {
     public struct Operand
     {
-        private VarType _data;
-
         public Opcode Code { get; private set; }
 
-        internal VarType Data => _data;
+        internal VarType Data { get; private set; }
 
         public string CodeName => GetOpName(Code);
 
@@ -32,23 +30,23 @@ namespace CafeLib.Bitcoin.Scripting
             _ => 0
         };
 
-        public long Length => 1 + _data.Length + LengthBytesCount;
+        public long Length => 1 + Data.Length + LengthBytesCount;
 
         public Operand(Opcode code, VarType data)
         {
             Code = code;
-            _data = data;
+            Data = data;
         }
 
         public Operand(Opcode code)
         {
             Code = code;
-            _data = VarType.Empty;
+            Data = VarType.Empty;
         }
 
         public static Operand Push(ReadOnlyByteSpan data)
         {
-            var code = Opcode.OP_INVALIDOPCODE;
+            Opcode code;
             var val = VarType.Empty;
             if (data.Length == 1 && data[0] <= 16)
             {
@@ -127,17 +125,17 @@ namespace CafeLib.Bitcoin.Scripting
                 return false;
             span[0] = (byte)Code;
             span = span[1..];
-            length = _data.Length;
+            length = Data.Length;
             if (Code >= Opcode.OP_PUSHDATA1 && Code <= Opcode.OP_PUSHDATA4) 
             {
                 if (!BitConverter.IsLittleEndian) return false;
-                var lengthBytes = BitConverter.GetBytes((uint)_data.Length).AsSpan(0, LengthBytesCount);
+                var lengthBytes = BitConverter.GetBytes((uint)Data.Length).AsSpan(0, LengthBytesCount);
                 lengthBytes.CopyTo(span);
                 span = span.Slice(lengthBytes.Length);
             }
             if (length > 0) 
             {
-                _data.GetReader().TryCopyTo(span.Slice(0, (int)_data.Length));
+                Data.GetReader().TryCopyTo(span.Slice(0, (int)Data.Length));
                 span = span.Slice((int)length);
             }
             return true;
@@ -148,24 +146,24 @@ namespace CafeLib.Bitcoin.Scripting
             w.Add((byte)Code);
             if (Code >= Opcode.OP_PUSHDATA1 && Code <= Opcode.OP_PUSHDATA4) 
             {
-                ByteSpan lengthBytes = BitConverter.GetBytes((uint)_data.Length).AsSpan(0, LengthBytesCount);
+                ByteSpan lengthBytes = BitConverter.GetBytes((uint)Data.Length).AsSpan(0, LengthBytesCount);
                 w.Add(lengthBytes);
             }
 
-            if (_data.Length > 0)
-                w.Add(_data.Sequence);
+            if (Data.Length > 0)
+                w.Add(Data.Sequence);
 
             return w;
         }
 
-        public byte[] GetDataBytes() => _data.Sequence.ToArray();
+        public byte[] GetDataBytes() => Data.Sequence.ToArray();
 
         public byte[] GetBytes()
         {
             var bytes = new byte[Length];
             bytes[0] = (byte)Code;
             if (bytes.Length > 1)
-                _data.GetReader().TryCopyTo(bytes.AsSpan().Slice(1));
+                Data.GetReader().TryCopyTo(bytes.AsSpan().Slice(1));
             return bytes;
         }
 
@@ -234,7 +232,7 @@ namespace CafeLib.Bitcoin.Scripting
         public bool TryReadOperand(ref ByteSequenceReader r)
         {
             Code = Opcode.OP_INVALIDOPCODE;
-            _data = VarType.Empty;
+            Data = VarType.Empty;
 
             if (!r.TryRead(out var opcode)) goto fail;
 
@@ -248,7 +246,7 @@ namespace CafeLib.Bitcoin.Scripting
             
             if (opcode <= (byte)Opcode.OP_PUSHDATA4) 
             {
-                var nSize = 0U;
+                var nSize = -1U;
                 if (opcode < (byte)Opcode.OP_PUSHDATA1) 
                 {
                     nSize = opcode;
@@ -272,7 +270,7 @@ namespace CafeLib.Bitcoin.Scripting
                 if (nSize >= 0)
                 {
                     if (r.Data.Remaining < nSize) goto fail;
-                    _data = new VarType(r.Data.Sequence.Slice(r.Data.Position, (Int32)nSize));
+                    Data = new VarType(r.Data.Sequence.Slice(r.Data.Position, (Int32)nSize));
                     r.Data.Advance(nSize);
                 }
             }
