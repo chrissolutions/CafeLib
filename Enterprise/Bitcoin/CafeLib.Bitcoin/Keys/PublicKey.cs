@@ -31,6 +31,8 @@ namespace CafeLib.Bitcoin.Keys
         /// </summary>
         private byte[] _bytes;
 
+        private readonly Guid _hashCode;
+
         /// <summary>
         /// 
         /// </summary>
@@ -50,10 +52,12 @@ namespace CafeLib.Bitcoin.Keys
 
         public PublicKey()
         {
+            _hashCode = new Guid();
             Invalidate();
         }
 
         public PublicKey(bool compressed)
+            : this()
         {
             _bytes = new byte[compressed ? 33 : 65];
         }
@@ -108,8 +112,6 @@ namespace CafeLib.Bitcoin.Keys
                 clone._bytes = _bytes.ToArray();
             return clone;
         }
-
-        public UInt256 GetX() => new UInt256(((ReadOnlyByteSpan) _bytes).Slice(1, 32));
 
         /// <summary>
         /// True if key is stored in an array of 33 bytes.
@@ -248,10 +250,12 @@ namespace CafeLib.Bitcoin.Keys
             return (false, null, UInt256.Zero);
         }
 
-        public override int GetHashCode() => _bytes.AggregateHashCode();
+        public override int GetHashCode() =>_hashCode.GetHashCode();
 
         public bool Equals(PublicKey o) => !(o is null) && _bytes.SequenceEqual(o._bytes);
         public override bool Equals(object obj) => obj is PublicKey key && this == key;
+
+        public static explicit operator UInt256(PublicKey rhs) => new UInt256(rhs._bytes.Slice(1, 32));
 
         public static explicit operator PublicKey(byte[] rhs) => new PublicKey(rhs);
         public static implicit operator byte[](PublicKey rhs) => rhs._bytes;
