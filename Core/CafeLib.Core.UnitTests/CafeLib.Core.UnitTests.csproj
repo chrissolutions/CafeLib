@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CafeLib.Core.Caching\CafeLib.Core.Caching.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Collections\CafeLib.Core.Collections.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Dynamic\CafeLib.Core.Dynamic.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Hashing\CafeLib.Core.Hashing.csproj" />
