@@ -88,7 +88,7 @@ namespace CafeLib.Core.Runnable
         {
             if (IsRunning)
             {
-                Cancel();
+                _cancellationSource.Cancel();
                 OnAdvise(new RunnerStopMessage($"{Name} stopped."));
             }
 
@@ -102,7 +102,8 @@ namespace CafeLib.Core.Runnable
         /// <summary>
         /// Run the service.
         /// </summary>
-        protected abstract Task Run();
+        /// <param name="token"></param>
+        protected abstract Task Run(CancellationToken token);
 
         /// <summary>
         /// Raise advise event.
@@ -128,24 +129,16 @@ namespace CafeLib.Core.Runnable
                 {
                     try
                     {
-                        await Run().ConfigureAwait(false);
+                        await Run(_cancellationSource.Token).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
                         OnAdvise(new RunnerEventMessage(ex.Message, ex));
                     }
 
-                    await Task.Delay(Delay, _cancellationSource?.Token ?? default).ConfigureAwait(false);
+                    await Task.Delay(Delay, _cancellationSource.Token).ConfigureAwait(false);
                 }
-
-            }, _cancellationSource.Token);
-        }
-
-        private void Cancel()
-        {
-            _cancellationSource.Cancel();
-            _cancellationSource.Dispose();
-            _cancellationSource = null;
+            });
         }
 
         #endregion

@@ -1,6 +1,6 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
-using CafeLib.Core.Extensions;
 using CafeLib.Core.Runnable;
 using Xunit;
 
@@ -11,9 +11,8 @@ namespace CafeLib.Core.UnitTests
         private DateTime _checkTime;
         private TaskCompletionSource<bool> _taskCompletionSource;
 
-        private Task RecurrentCallback()
+        private Task RecurrentCallback(CancellationToken token)
         {
-            Assert.Equal((_checkTime + TimeSpan.FromSeconds(5)).TruncateMilliseconds(), DateTime.Now.TruncateMilliseconds());
             _taskCompletionSource.SetResult(true);
             return Task.CompletedTask;
         }

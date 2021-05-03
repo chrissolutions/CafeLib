@@ -16,7 +16,7 @@ namespace CafeLib.Core.Caching
         private static readonly int DefaultLifetimeMinutes = (int)TimeSpan.FromMinutes(15).TotalMilliseconds;
 
         /// <summary>
-        /// 
+        /// MemoryCache default constructor.
         /// </summary>
         public MemoryCache()
         {
@@ -25,13 +25,32 @@ namespace CafeLib.Core.Caching
         }
 
         /// <summary>
-        /// 
+        /// MemoryCache constructor.
         /// </summary>
         /// <param name="lifetimeMilliseconds"></param>
         public MemoryCache(int lifetimeMilliseconds)
             : this()
         {
             _lifetimeMilliseconds = lifetimeMilliseconds > 0 ? lifetimeMilliseconds : DefaultLifetimeMinutes;
+        }
+
+        /// <summary>
+        /// Clear cache.
+        /// </summary>
+        public void Clear()
+        {
+            _cache.Dispose();
+        }
+
+        /// <summary>
+        /// Determine whether the cache key exists.
+        /// </summary>
+        /// <typeparam name="T">item type</typeparam>
+        /// <param name="key">item key</param>
+        /// <returns>true if the key exists otherwise false</returns>
+        public bool Contains<T>(NonNullable<string> key) where T : class
+        {
+            return _cache.Contains(CacheKey<T>(key));
         }
 
         /// <summary>
@@ -124,11 +143,14 @@ namespace CafeLib.Core.Caching
         }
 
         /// <summary>
-        /// Clear cache.
+        /// Remove entry from cache.
         /// </summary>
-        public void Clear()
+        /// <typeparam name="T">item type</typeparam>
+        /// <param name="key">item key</param>
+        /// <returns></returns>
+        public bool Remove<T>(NonNullable<string> key) where T : class
         {
-            _cache.Dispose();
+            return _cache.Remove(CacheKey<T>(key)) != null;
         }
 
         /// <summary>
@@ -137,17 +159,6 @@ namespace CafeLib.Core.Caching
         public void Dispose()
         {
             _cache.Dispose();
-        }
-
-        /// <summary>
-        /// Determine whether the cache key exists.
-        /// </summary>
-        /// <typeparam name="T">item type</typeparam>
-        /// <param name="key">item key</param>
-        /// <returns>true if the key exists otherwise false</returns>
-        public bool Contains<T>(NonNullable<string> key) where T : class
-        {
-            return _cache.Contains(CacheKey<T>(key));
         }
 
         /// <summary>

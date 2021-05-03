@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.Core.Collections;
 using CafeLib.Core.Runnable;
@@ -116,12 +117,13 @@ namespace CafeLib.Core.Queueing
         /// <summary>
         /// Process queued items.
         /// </summary>
+        /// <param name="token"></param>
         /// <returns>awaitable task</returns>
-        protected sealed override Task Run()
+        protected sealed override async Task Run(CancellationToken token)
         {
             var item = _queue.Dequeue();
             var tasks = _consumers.Select(x => x.Consume(item));
-            return Task.WhenAll(tasks);
+            await Task.Run(async () => await Task.WhenAll(tasks), token);
         }
 
         /// <summary>
@@ -132,7 +134,6 @@ namespace CafeLib.Core.Queueing
         {
             while (_queue.Any())
             {
-                await Task.Delay(Delay).ConfigureAwait(false);
             }
 
             await base.Stop().ConfigureAwait(false);

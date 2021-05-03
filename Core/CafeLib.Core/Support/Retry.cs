@@ -80,19 +80,6 @@ namespace CafeLib.Core.Support
             return await Run(limit, interval, x => Task.FromResult(operation(x)));
         }
 
-        ///// <summary>
-        ///// Run retry function.
-        ///// </summary>
-        ///// <typeparam name="T">return type</typeparam>
-        ///// <param name="limit">retry limit</param>
-        ///// <param name="interval">interval between retries</param>
-        ///// <param name="function">retry function</param>
-        ///// <returns>asynchronous task</returns>
-        //public static Task<T> Run<T>(int limit, int interval, Func<int, Task<T>> function)
-        //{
-        //    return new Retry(limit, interval).Do(function);
-        //}
-
         /// <summary>
         /// Run retry function.
         /// </summary>

@@ -24,8 +24,7 @@ namespace CafeLib.Core.UnitTests
 
             producer.Add(consumer1);
             producer.Add(consumer2);
-
-
+            
             await producer.Start();
 
             for (var x = 0; x < limit; ++x)
@@ -41,7 +40,7 @@ namespace CafeLib.Core.UnitTests
         [Fact]
         public async Task PriorityProducerConsumerTest()
         {
-            var producer = new TestProducerQueue();
+            var producer = new TestPriorityProducerQueue();
             var consumer1 = new TestQueueConsumer { Notify = Verify };
             var consumer2 = new TestQueueConsumer { Notify = Verify };
 
@@ -52,7 +51,6 @@ namespace CafeLib.Core.UnitTests
 
             producer.Add(consumer1);
             producer.Add(consumer2);
-
 
             await producer.Start();
 
