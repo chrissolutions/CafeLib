@@ -76,9 +76,7 @@ namespace CafeLib.Core.Support
         /// <param name="operation">retry function</param>
         /// <returns>asynchronous task</returns>
         public static async Task<T> Run<T>(int limit, int interval, Func<int, T> operation)
-        {
-            return await Run(limit, interval, x => Task.FromResult(operation(x)));
-        }
+            => await Run(limit, interval, x => Task.FromResult(operation(x)));
 
         /// <summary>
         /// Run retry function.
