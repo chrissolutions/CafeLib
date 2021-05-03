@@ -2,10 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-// ReSharper disable InvertIf
-// ReSharper disable SuggestVarOrType_SimpleTypes
-// ReSharper disable SuggestVarOrType_BuiltInTypes
-// ReSharper disable StaticMemberInGenericType
 
 namespace CafeLib.Core.Collections
 {
@@ -15,7 +11,7 @@ namespace CafeLib.Core.Collections
 
         private readonly List<T> _list;
         private readonly int _comparison;
-        private static readonly object _mutex = new object();
+        private readonly object _mutex = new object();
 
         #endregion
 

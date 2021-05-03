@@ -165,6 +165,7 @@ namespace CafeLib.Core.Runnable
             try
             {
                 _cancellationSource?.Dispose();
+                _cancellationSource = null;
             }
             catch
             {

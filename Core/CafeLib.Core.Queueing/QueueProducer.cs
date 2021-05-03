@@ -127,6 +127,7 @@ namespace CafeLib.Core.Queueing
         {
             while (_queue.Any())
             {
+                await Task.Delay(Delay).ConfigureAwait(false);
             }
 
             await base.Stop().ConfigureAwait(false);
