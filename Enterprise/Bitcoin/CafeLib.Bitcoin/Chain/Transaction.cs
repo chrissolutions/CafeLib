@@ -33,9 +33,8 @@ namespace CafeLib.Bitcoin.Chain
     {
         /// Essential fields of a Bitcoin SV transaction.
         private int _version;
-        private TxIn[] _vin = new TxIn[0];
-        private TxOut[] _vout = new TxOut[0];
-        private UInt32 _lockTime;
+
+        private uint _lockTime;
 
         /// The following fields are computed or external, not essential.
         private readonly UInt256 _txHash = new UInt256();
@@ -46,8 +45,9 @@ namespace CafeLib.Bitcoin.Chain
         public Int32 Version => _version;
         public uint LockTime => _lockTime;
 
-        public TxIn[] Inputs => _vin;
-        public TxOut[] Outputs => _vout;
+        public TxIn[] Inputs { get; private set; } = new TxIn[0];
+
+        public TxOut[] Outputs { get; private set; } = new TxOut[0];
 
         /// Public access to computed or external, not essential.
 
@@ -59,16 +59,16 @@ namespace CafeLib.Bitcoin.Chain
         public Transaction(int version, TxIn[] vin, TxOut[] vout, uint lockTime)
         {
             _version = version;
-            _vin = vin;
-            _vout = vout;
+            Inputs = vin;
+            Outputs = vout;
             _lockTime = lockTime;
         }
 
         public Transaction(TransactionBuilder tb)
         {
             _version = tb.Version;
-            _vin = tb.Vin.Select(i => i.ToTxIn()).ToArray();
-            _vout = tb.Vout.Select(o => o.ToTxOut()).ToArray();
+            Inputs = tb.Vin.Select(i => i.ToTxIn()).ToArray();
+            Outputs = tb.Vout.Select(o => o.ToTxOut()).ToArray();
             _lockTime = tb.LockTime;
         }
 
@@ -94,19 +94,19 @@ namespace CafeLib.Bitcoin.Chain
 
             bp.TxStart(this, offset);
 
-            _vin = new TxIn[countIn];
+            Inputs = new TxIn[countIn];
             for (var i = 0L; i < countIn; i++)
             {
-                ref var txIn = ref _vin[i];
+                ref var txIn = ref Inputs[i];
                 if (!txIn.TryParseTxIn(ref r, bp)) return false;
             }
 
             if (!r.TryReadVariant(out var countOut)) return false;
 
-            _vout = new TxOut[countOut];
+            Outputs = new TxOut[countOut];
             for (var i = 0L; i < countOut; i++)
             {
-                ref var txOut = ref _vout[i];
+                ref var txOut = ref Outputs[i];
                 if (!txOut.TryParseTxOut(ref r, bp)) return false;
             }
 
@@ -135,19 +135,19 @@ namespace CafeLib.Bitcoin.Chain
             if (!r.TryReadLittleEndian(out _version)) goto fail;
             if (!r.TryReadVariant(out var countIn)) goto fail;
 
-            _vin = new TxIn[countIn];
+            Inputs = new TxIn[countIn];
             for (var i = 0L; i < countIn; i++)
             {
-                ref var txIn = ref _vin[i];
+                ref var txIn = ref Inputs[i];
                 if (!txIn.TryReadTxIn(ref r)) goto fail;
             }
 
             if (!r.TryReadVariant(out long countOut)) goto fail;
 
-            _vout = new TxOut[countOut];
+            Outputs = new TxOut[countOut];
             for (var i = 0L; i < countOut; i++)
             {
-                ref var txOut = ref _vout[i];
+                ref var txOut = ref Outputs[i];
                 if (!txOut.TryReadTxOut(ref r)) goto fail;
             }
 
@@ -188,16 +188,16 @@ namespace CafeLib.Bitcoin.Chain
         {
             writer
                 .Add(_version)
-                .Add(_vin.Length.AsVarIntBytes())
+                .Add(Inputs.Length.AsVarIntBytes())
                 ;
-            foreach (var txIn in _vin)
+            foreach (var txIn in Inputs)
                 writer
                     .Add(txIn)
                     ;
             writer
-                .Add(_vout.Length.AsVarIntBytes())
+                .Add(Outputs.Length.AsVarIntBytes())
                 ;
-            foreach (var txOut in _vout)
+            foreach (var txOut in Outputs)
                 writer
                     .Add(txOut)
                     ;
