@@ -101,6 +101,13 @@ namespace CafeLib.Bitcoin.Keys
         public static PrivateKey FromHex(string hex, bool compressed = true) => new PrivateKey(new UInt256(hex, true), compressed);
         public static PrivateKey FromBase58(string base58) => new Base58PrivateKey(base58).GetKey();
         public static PrivateKey FromWif(string wif) => new Base58PrivateKey(wif).GetKey();
+        public static PrivateKey FromRandom() 
+        {
+            var bytes = new byte[UInt256.Length];
+            var random = new Random();
+            random.NextBytes(bytes);
+            return new PrivateKey(bytes);
+        }
 
         public void Set(ReadOnlyByteSpan data, bool compressed = true)
         {
