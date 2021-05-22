@@ -29,20 +29,10 @@ namespace CafeLib.Bitcoin.Scripting
 
         public override bool CheckSignature(VarType scriptSig, VarType vchPubKey, Script script, ScriptFlags flags)
         {
-            try
-            {
-                if (scriptSig.IsEmpty) return false;
-                if (vchPubKey.IsEmpty) return false;
-                var publicKey = new PublicKey(vchPubKey);
-                if (!publicKey.IsValid) return false;
-
-                return VerifyTransaction(publicKey, scriptSig, script, _amount);
-            }
-            catch
-            {
-                // invalid sig or pubKey
-                return false;
-            }
+            if (scriptSig?.IsEmpty ?? false) return false;
+            if (vchPubKey?.IsEmpty ?? false) return false;
+            var publicKey = new PublicKey(vchPubKey);
+            return publicKey.IsValid && VerifyTransaction(publicKey, scriptSig, script, _amount);
         }
 
         public bool CheckLockTime(int nLockTime)
