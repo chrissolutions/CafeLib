@@ -5,8 +5,8 @@ setlocal
 set type=Core
 
 :: Settings
-set msbld=msbuild.exe
-set nuget=nuget.exe
+set msbld=dotnet build
+set nuget=dotnet nuget
 set configuration=Debug
 set libPath=bin\%configuration%
 set apikey=
@@ -27,8 +27,8 @@ if '%arg%' == '/c' set configuration=%1&&shift&&shift&&goto nextarg
 goto usage
 
 :start
-if '%version' == '' goto usage
-if '%configuration' == '' goto usage
+if '%version%' == '' goto usage
+if '%configuration%' == '' goto usage
 
 set libs=%solution%
 set libs=%libs% %solution%.Caching 
@@ -49,7 +49,7 @@ echo Create Nuget Package for %solution% ...
 for %%X in (%libs%) DO @echo on&&%msbld% %sourcepath%\%%X\%%X.csproj -t:pack -p:PackageVersion=%version% -p:Configuration=%configuration%&&@echo off
 
 echo Push Package to Nuget repository ...
-for %%X in (%libs%) DO @echo on&&%nuget% push %sourcepath%\%%X\%libPath%\%%X.%version%.nupkg %apikey% -source %nugetRepo%&&@echo off
+for %%X in (%libs%) DO @echo on&&%nuget% push %sourcepath%\%%X\%libPath%\%%X.%version%.nupkg %apikey% -s %nugetRepo%&&@echo off
 goto exit
 
 :usage

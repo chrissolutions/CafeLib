@@ -29,6 +29,14 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
             Assert.Equal(b58, key2.ToString());
         }
 
+        [Fact]
+        public void FromRandom()
+        {
+            var key1 = PrivateKey.FromRandom();
+            var pubkey1 = key1.CreatePublicKey();
+            Assert.True(key1.VerifyPubKey(pubkey1));
+        }
+
         private const string StrSecret1 = "5HxWvvfubhXpYYpS3tJkw6fq9jE9j18THftkZjHHfmFiWtmAbrj";
         private const string StrSecret2 = "5KC4ejrDjv152FGwP386VD1i2NYc5KkfSMyv1nGy1VGDxGHqVY3";
         private const string StrSecret1C = "Kwr371tjA9u2rFSMZjTNun2PXXP3WPZu2afRHTcta6KxEUdm1vEw";
