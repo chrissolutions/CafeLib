@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace CafeLib.Core.Collections.Graph
+namespace CafeLib.Core.Collections.DirectedGraph
 {
 	/// <summary>
 	///	Represents the graph edge allowing for edge content.

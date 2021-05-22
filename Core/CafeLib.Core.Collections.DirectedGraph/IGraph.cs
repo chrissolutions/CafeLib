@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-namespace CafeLib.Core.Collections.Graph
+
+namespace CafeLib.Core.Collections.DirectedGraph
 {
 	/// <summary>
 	///	Contains reference to the node value and is the vertex inner object.

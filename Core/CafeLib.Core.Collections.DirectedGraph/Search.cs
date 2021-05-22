@@ -11,7 +11,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CafeLib.Core.Collections.Graph
+namespace CafeLib.Core.Collections.DirectedGraph
 {
     /// <summary>
     ///	Abstract base class for all search types.

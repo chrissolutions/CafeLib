@@ -1,6 +1,6 @@
 using System;
 
-namespace CafeLib.Core.Collections.Graph
+namespace CafeLib.Core.Collections.DirectedGraph
 {
     /// <summary>
     ///	Defines graph vertex with content.

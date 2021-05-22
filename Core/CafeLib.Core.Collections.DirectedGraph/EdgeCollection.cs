@@ -1,7 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 
-namespace CafeLib.Core.Collections.Graph
+namespace CafeLib.Core.Collections.DirectedGraph
 {
     /// <summary>
     /// Edge collection

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CafeLib.Core.Collections.Graph
+namespace CafeLib.Core.Collections.DirectedGraph
 {
     /// <summary>
     ///	Performs depth-first search
