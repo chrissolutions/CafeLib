@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CafeLib.Core.Support;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Collections.DirectedGraph
