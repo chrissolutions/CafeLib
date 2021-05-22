@@ -5,6 +5,7 @@
 
 using System;
 using System.Security.Cryptography;
+using CafeLib.Bitcoin.Buffers;
 
 namespace CafeLib.Bitcoin.Keys
 {
@@ -17,7 +18,7 @@ namespace CafeLib.Bitcoin.Keys
         /// Centralized source of a cryptographic strong random entropy.
         /// </summary>
         /// <param name="entropy">Output bytes.</param>
-        public static void GetStrongRandBytes(Span<byte> entropy)
+        public static void GetStrongRandBytes(ByteSpan entropy)
         {
             GetStrongRandBytes(entropy.Length).CopyTo(entropy);
         }

@@ -17,7 +17,7 @@ namespace CafeLib.Bitcoin.Keys
 {
     public class ExtPrivateKey : ExtKey
     {
-        public PrivateKey PrivateKey { get; private set; } = PrivateKey.FromRandom();
+        public PrivateKey PrivateKey { get; private set; } = new PrivateKey();
 
         /// <summary>
         /// Sets this extended private key to be a master (depth 0) with the given private key and chaincode and verifies required key paths.

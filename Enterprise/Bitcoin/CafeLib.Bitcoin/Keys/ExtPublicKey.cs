@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Extensions;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.Bitcoin.Keys
 {
@@ -83,7 +84,7 @@ namespace CafeLib.Bitcoin.Keys
             code[5] = (byte)((Child >> 24) & 0xFF);
             code[6] = (byte)((Child >> 16) & 0xFF);
             code[7] = (byte)((Child >> 8) & 0xFF);
-            code[8] = (byte)((Child >> 0) & 0xFF);
+            code[8] = (byte)(Child & 0xFF);
             ChainCode.Span.CopyTo(code.Slice(9, 32));
             var key = PublicKey.ReadOnlySpan;
             Debug.Assert(key.Length == 33);

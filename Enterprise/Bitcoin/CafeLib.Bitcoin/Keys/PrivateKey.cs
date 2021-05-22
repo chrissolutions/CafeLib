@@ -57,8 +57,14 @@ namespace CafeLib.Bitcoin.Keys
             return Secp256K1.SecretKeyVerify(vch);
         }
 
-        private PrivateKey()
+        public PrivateKey()
         {
+            do
+            {
+                Randomizer.GetStrongRandBytes(_keyData.Span);
+            }
+            while (!Check(_keyData));
+            IsValid = true;
         }
 
         public PrivateKey(ReadOnlyByteSpan span, bool compressed = true)
@@ -103,17 +109,7 @@ namespace CafeLib.Bitcoin.Keys
         public static PrivateKey FromHex(string hex, bool compressed = true) => new PrivateKey(new UInt256(hex, true), compressed);
         public static PrivateKey FromBase58(string base58) => new Base58PrivateKey(base58).GetKey();
         public static PrivateKey FromWif(string wif) => new Base58PrivateKey(wif).GetKey();
-        public static PrivateKey FromRandom()
-        {
-            var privateKey = new PrivateKey();
-            do
-            {
-                Randomizer.GetStrongRandBytes(privateKey._keyData.Span);
-            }
-            while (!Check(privateKey._keyData.Span));
-            privateKey.IsValid = true;
-            return privateKey;
-        }
+        public static PrivateKey FromRandom() => new PrivateKey();
 
         internal void Set(ReadOnlyByteSpan data, bool compressed = true)
         {
