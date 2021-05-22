@@ -9,18 +9,18 @@ namespace Secp256k1Net.DynamicLinking
         // This results in "System.DllNotFoundException: Unable to load shared library 'libdl'.."
         // when not using the shared lib version naming convention.
         // Run "ldconfig -p | grep libdl" on a fresh Ubuntu Server to see only "libdl.so.2"
-        const string LIBDL = "libdl.so.2";
+        private const string DllName = "libdl.so.2";
 
-        [DllImport(LIBDL)]
+        [DllImport(DllName)]
         public static extern IntPtr dlopen(string path, int flags);
 
-        [DllImport(LIBDL)]
+        [DllImport(DllName)]
         public static extern int dlclose(IntPtr handle);
 
-        [DllImport(LIBDL)]
+        [DllImport(DllName)]
         public static extern IntPtr dlerror();
 
-        [DllImport(LIBDL)]
+        [DllImport(DllName)]
         public static extern IntPtr dlsym(IntPtr handle, string name);
     }
 }

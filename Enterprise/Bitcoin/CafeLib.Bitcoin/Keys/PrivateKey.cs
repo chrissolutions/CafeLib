@@ -57,7 +57,7 @@ namespace CafeLib.Bitcoin.Keys
             return Secp256K1.SecretKeyVerify(vch);
         }
 
-        public PrivateKey()
+        private PrivateKey()
         {
         }
 
@@ -96,39 +96,35 @@ namespace CafeLib.Bitcoin.Keys
         }
 
         public PrivateKey(string hex, UInt256 keyData, bool compressed = true)
-            : this(new UInt256(hex, true), keyData, compressed) { }
+            : this(new UInt256(hex, true), keyData, compressed)
+        {
+        }
 
         public static PrivateKey FromHex(string hex, bool compressed = true) => new PrivateKey(new UInt256(hex, true), compressed);
         public static PrivateKey FromBase58(string base58) => new Base58PrivateKey(base58).GetKey();
         public static PrivateKey FromWif(string wif) => new Base58PrivateKey(wif).GetKey();
-        public static PrivateKey FromRandom() 
+        public static PrivateKey FromRandom()
         {
-            var bytes = new byte[UInt256.Length];
-            var random = new Random();
-            random.NextBytes(bytes);
-            return new PrivateKey(bytes);
+            var privateKey = new PrivateKey();
+            do
+            {
+                Randomizer.GetStrongRandBytes(privateKey._keyData.Span);
+            }
+            while (!Check(privateKey._keyData.Span));
+            privateKey.IsValid = true;
+            return privateKey;
         }
 
-        public void Set(ReadOnlyByteSpan data, bool compressed = true)
+        internal void Set(ReadOnlyByteSpan data, bool compressed = true)
         {
             if (data.Length != UInt256.Length || !Check(data))
                 IsValid = false;
-            else {
+            else
+            {
                 data.CopyTo(_keyData.Span);
                 IsCompressed = compressed;
                 IsValid = true;
             }
-        }
-
-        public void MakeNewKey(bool compressed)
-        {
-            do 
-            {
-                Randomizer.GetStrongRandBytes(_keyData.Span);
-            } 
-            while (!Check(_keyData.Span));
-            IsValid = true;
-            IsCompressed = compressed;
         }
 
         /// <summary>
@@ -153,11 +149,13 @@ namespace CafeLib.Bitcoin.Keys
 
         internal (bool ok, PrivateKey keyChild, UInt256 ccChild) Derive(uint nChild, UInt256 chainCode)
         {
-            if (!IsValid || !IsCompressed) goto fail;
+            (bool, PrivateKey, UInt256) invalid = (false, null, UInt256.Zero);
+            if (!IsValid || !IsCompressed) return invalid;
 
             var vout = new byte[64];
 
-            if (nChild < HardenedBit) {
+            if (nChild < HardenedBit) 
+            {
                 // Not hardened.
                 var pubkey = this.CreatePublicKey();
                 Debug.Assert(pubkey.ReadOnlySpan.Length == 33);
@@ -175,12 +173,9 @@ namespace CafeLib.Bitcoin.Keys
             output.Slice(32, 32).CopyTo(ccChild.Span);
 
             var dataChild = new UInt256(_keyData);
-            var ok = Secp256K1.PrivKeyTweakAdd(dataChild.Span,  output.Slice(0, 32));
-            if (!ok) goto fail;
-            return (true, new PrivateKey(dataChild), ccChild);
-
-        fail:
-            return (false, null, UInt256.Zero);
+            return Secp256K1.PrivKeyTweakAdd(dataChild.Span, output.Slice(0, 32))
+                ? (true, new PrivateKey(dataChild), ccChild)
+                : invalid;
         }
 
         public string ToHex() => _keyData.ToStringFirstByteFirst();

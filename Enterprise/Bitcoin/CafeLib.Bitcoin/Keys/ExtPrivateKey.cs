@@ -11,12 +11,13 @@ using CafeLib.Bitcoin.Crypto;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Services;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.Bitcoin.Keys
 {
     public class ExtPrivateKey : ExtKey
     {
-        public PrivateKey PrivateKey { get; private set; } = new PrivateKey();
+        public PrivateKey PrivateKey { get; private set; } = PrivateKey.FromRandom();
 
         /// <summary>
         /// Sets this extended private key to be a master (depth 0) with the given private key and chaincode and verifies required key paths.
@@ -213,7 +214,7 @@ namespace CafeLib.Bitcoin.Keys
             code[5] = (byte)((Child >> 24) & 0xFF);
             code[6] = (byte)((Child >> 16) & 0xFF);
             code[7] = (byte)((Child >> 8) & 0xFF);
-            code[8] = (byte)((Child >> 0) & 0xFF);
+            code[8] = (byte)(Child & 0xFF);
             ChainCode.Span.CopyTo(code.Slice(9, 32));
             code[41] = 0;
             var key = PrivateKey.Bytes;

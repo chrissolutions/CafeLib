@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+// ReSharper disable InconsistentNaming
 
 namespace Secp256k1Net.DynamicLinking
 {
     static class DynamicLinkingMacOS
     {
-        const string LIBDL = "libdl";
+        private const string DllName = "libdl";
 
-        [DllImport(LIBDL)]
+        [DllImport(DllName)]
         public static extern IntPtr dlopen(string path, int flags);
 
-        [DllImport(LIBDL)]
+        [DllImport(DllName)]
         public static extern int dlclose(IntPtr handle);
 
-        [DllImport(LIBDL)]
+        [DllImport(DllName)]
         public static extern IntPtr dlerror();
 
-        [DllImport(LIBDL)]
+        [DllImport(DllName)]
         public static extern IntPtr dlsym(IntPtr handle, string name);
     }
 }

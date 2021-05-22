@@ -6,16 +6,17 @@ using System.Runtime.InteropServices;
 using static System.Runtime.InteropServices.OSPlatform;
 using static System.Runtime.InteropServices.Architecture;
 using static System.Runtime.InteropServices.RuntimeInformation;
-using PlatInfo = System.ValueTuple<System.Runtime.InteropServices.OSPlatform, System.Runtime.InteropServices.Architecture>;
+using PlatformInfo = System.ValueTuple<System.Runtime.InteropServices.OSPlatform, System.Runtime.InteropServices.Architecture>;
 using System.Reflection;
 using System.Collections.Concurrent;
+// ReSharper disable InconsistentNaming
 
 namespace Secp256k1Net
 {
     public static class LibPathResolver
     {
 
-        static readonly Dictionary<PlatInfo, (string Prefix, string LibPrefix, string Extension)> PlatformPaths = new Dictionary<PlatInfo, (string, string, string)>
+        private static readonly Dictionary<PlatformInfo, (string Prefix, string LibPrefix, string Extension)> PlatformPaths = new Dictionary<PlatformInfo, (string, string, string)>
         {
             [(Windows, X64)] = ("win-x64", "", ".dll"),
             [(Windows, X86)] = ("win-x86", "", ".dll"),
@@ -23,16 +24,16 @@ namespace Secp256k1Net
             [(OSX, X64)] = ("osx-x64", "lib", ".dylib"),
         };
 
-        static readonly OSPlatform[] SupportedPlatforms = { Windows, OSX, Linux };
-        static string SupportedPlatformDescriptions() => string.Join("\n", PlatformPaths.Keys.Select(GetPlatformDesc));
+        private static readonly OSPlatform[] SupportedPlatforms = { Windows, OSX, Linux };
+        private static string SupportedPlatformDescriptions() => string.Join("\n", PlatformPaths.Keys.Select(GetPlatformDesc));
 
-        static string GetPlatformDesc((OSPlatform OS, Architecture Arch) info) => $"{info.OS}; {info.Arch}";
+        private static string GetPlatformDesc((OSPlatform OS, Architecture Arch) info) => $"{info.OS}; {info.Arch}";
 
-        static readonly OSPlatform CurrentOSPlatform = SupportedPlatforms.FirstOrDefault(IsOSPlatform);
-        static readonly PlatInfo CurrentPlatformInfo = (CurrentOSPlatform, ProcessArchitecture);
-        static readonly Lazy<string> CurrentPlatformDesc = new Lazy<string>(() => GetPlatformDesc((CurrentOSPlatform, ProcessArchitecture)), true);
+        private static readonly OSPlatform CurrentOSPlatform = SupportedPlatforms.FirstOrDefault(IsOSPlatform);
+        private static readonly PlatformInfo CurrentPlatformInfo = (CurrentOSPlatform, ProcessArchitecture);
+        private static readonly Lazy<string> CurrentPlatformDesc = new Lazy<string>(() => GetPlatformDesc((CurrentOSPlatform, ProcessArchitecture)), true);
 
-        static readonly ConcurrentDictionary<PlatInfo, string> Cache = new ConcurrentDictionary<PlatInfo, string>();
+        private static readonly ConcurrentDictionary<PlatformInfo, string> Cache = new ConcurrentDictionary<PlatformInfo, string>();
 
         public static List<string> ExtraNativeLibSearchPaths = new List<string>();
 
@@ -66,11 +67,11 @@ namespace Secp256k1Net
 
         }
 
-        static IEnumerable<string> GetSearchLocations()
+        private static IEnumerable<string> GetSearchLocations()
         {
             yield return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             yield return Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
-            yield return Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            yield return Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
             foreach(var extraPath in ExtraNativeLibSearchPaths)
             {
                 yield return extraPath;
@@ -78,11 +79,11 @@ namespace Secp256k1Net
             // If the this lib is being executed from its nuget package directory then the native
             // files should be found up a couple directories.
             yield return Path.GetFullPath(
-                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new InvalidOperationException(),
                 "../../content"));
         }
 
-        static IEnumerable<string> SearchContainerPaths(string containerDir, string library, (string Prefix, string LibPrefix, string Extension) platform)
+        private static IEnumerable<string> SearchContainerPaths(string containerDir, string library, (string Prefix, string LibPrefix, string Extension) platform)
         {
             foreach(var subDir in GetSearchSubDir(library, platform))
             {
@@ -91,16 +92,14 @@ namespace Secp256k1Net
             }
         }
 
-        static IEnumerable<string> GetSearchSubDir(string library, (string Prefix, string LibPrefix, string Extension) platform)
+        private static IEnumerable<string> GetSearchSubDir(string library, (string Prefix, string LibPrefix, string Extension) platform)
         {
-            string libFileName = platform.LibPrefix + library + platform.Extension;
+            var libFileName = platform.LibPrefix + library + platform.Extension;
 
             yield return libFileName;
-            yield return Path.Combine(platform.Prefix, libFileName); ;
-            yield return Path.Combine("native", platform.Prefix, libFileName); ;
+            yield return Path.Combine(platform.Prefix, libFileName);
+            yield return Path.Combine("native", platform.Prefix, libFileName);
             yield return Path.Combine("runtimes", platform.Prefix, "native", libFileName);
-
         }
-
     }
 }
