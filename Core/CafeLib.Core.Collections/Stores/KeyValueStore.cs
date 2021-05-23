@@ -9,7 +9,7 @@ using CafeLib.Core.Extensions;
 
 namespace CafeLib.Core.Collections
 {
-    public class KeyValueStore : IDictionary<string, string>
+    public class KeyValueStore : IDictionary<string, string>, IKeyValueStore
     {
         private readonly IDictionary<string, string> _storage;
         private readonly string _filePath;
