@@ -16,14 +16,14 @@ namespace CafeLib.Bitcoin.Numerics
     [JsonConverter(typeof(JsonConverterUInt512))]
     public struct UInt512
     {
-        public UInt64 N0;
-        private UInt64 _n1;
-        private UInt64 _n2;
-        private UInt64 _n3;
-        private UInt64 _n4;
-        private UInt64 _n5;
-        private UInt64 _n6;
-        private UInt64 _n7;
+        private ulong _n0;
+        private ulong _n1;
+        private ulong _n2;
+        private ulong _n3;
+        private ulong _n4;
+        private ulong _n5;
+        private ulong _n6;
+        private ulong _n7;
 
         private static readonly Encoder Hex = Encoders.Hex;
         private static readonly Encoder HexReverse = Encoders.HexReverse;
@@ -41,9 +41,9 @@ namespace CafeLib.Bitcoin.Numerics
                 Span.Reverse();
         }
 
-        public UInt512(UInt64 v0 = 0, UInt64 v1 = 0, UInt64 v2 = 0, UInt64 v3 = 0, UInt64 v4 = 0, UInt64 v5 = 0, UInt64 v6 = 0, UInt64 v7 = 0)
+        public UInt512(ulong v0 = 0, ulong v1 = 0, ulong v2 = 0, ulong v3 = 0, ulong v4 = 0, ulong v5 = 0, ulong v6 = 0, ulong v7 = 0)
 		{
-            N0 = v0;
+            _n0 = v0;
             _n1 = v1;
             _n2 = v2;
             _n3 = v3;
@@ -68,10 +68,10 @@ namespace CafeLib.Bitcoin.Numerics
             {
                 unsafe
                 {
-                    fixed (UInt64* p = &N0)
+                    fixed (ulong* p = &_n0)
                     {
-                        byte* pb = (byte*)p;
-                        var bytes = new Span<byte>(pb, 64);
+                        var pb = (byte*)p;
+                        var bytes = new Span<byte>(pb, Length);
                         return bytes;
                     }
                 }
@@ -105,11 +105,11 @@ namespace CafeLib.Bitcoin.Numerics
         /// <returns></returns>
 		//public string ToHex() => Kz.Hex.Encode(Bytes);
 
-        public override int GetHashCode() => N0.GetHashCode() ^ _n1.GetHashCode() ^ _n2.GetHashCode() ^ _n3.GetHashCode();
+        public override int GetHashCode() => _n0.GetHashCode() ^ _n1.GetHashCode() ^ _n2.GetHashCode() ^ _n3.GetHashCode();
 
         public override bool Equals(object obj) => obj is UInt512 int512 && this == int512;
 
-        public bool Equals(UInt512 o) => N0 == o.N0 && _n1 == o._n1 && _n2 == o._n2 && _n3 == o._n3 && _n4 == o._n4 && _n5 == o._n5 && _n6 == o._n6 && _n7 == o._n7;
+        public bool Equals(UInt512 o) => _n0 == o._n0 && _n1 == o._n1 && _n2 == o._n2 && _n3 == o._n3 && _n4 == o._n4 && _n5 == o._n5 && _n6 == o._n6 && _n7 == o._n7;
 
         public static explicit operator UInt512(byte[] rhs) => new UInt512(rhs);
         public static implicit operator byte[](UInt512 rhs) => rhs.Span.ToArray();
@@ -127,7 +127,7 @@ namespace CafeLib.Bitcoin.Numerics
         {
             var r = new UInt512
             {
-                N0 = x.N0 ^ y.N0,
+                _n0 = x._n0 ^ y._n0,
                 _n1 = x._n1 ^ y._n1,
                 _n2 = x._n2 ^ y._n2,
                 _n3 = x._n3 ^ y._n3,
