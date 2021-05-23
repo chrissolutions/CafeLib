@@ -17,14 +17,19 @@ namespace CafeLib.Bitcoin.Numerics
     [JsonConverter(typeof(JsonConverterUInt256))]
     public struct UInt256 : IComparable<UInt256>
     {
-        public ulong N0;
+        private ulong _n0;
         private ulong _n1;
         private ulong _n2;
         private ulong _n3;
 
         public const int Length = 32;
 
-		public UInt256(ReadOnlyByteSpan span, bool reverse = false)
+        public UInt256(UInt256 uint256)
+            : this(uint256.Span)
+        {
+        }
+
+        public UInt256(ReadOnlyByteSpan span, bool reverse = false)
             : this()
         {
             if (span.Length < Length)
@@ -37,7 +42,7 @@ namespace CafeLib.Bitcoin.Numerics
 
 		public UInt256(ulong v0 = 0, ulong v1 = 0, ulong v2 = 0, ulong v3 = 0)
 		{
-            N0 = v0;
+            _n0 = v0;
             _n1 = v1;
             _n2 = v2;
             _n3 = v3;
@@ -58,7 +63,7 @@ namespace CafeLib.Bitcoin.Numerics
             {
                 unsafe 
                 {
-                    fixed (ulong* p = &N0)
+                    fixed (ulong* p = &_n0)
                     {
                         var pb = p;
                         var span = new Span<ulong>(pb, Length/sizeof(ulong));
@@ -74,7 +79,7 @@ namespace CafeLib.Bitcoin.Numerics
             {
                 unsafe
                 {
-                    fixed (ulong* p = &N0)
+                    fixed (ulong* p = &_n0)
                     {
                         var pb = (uint*)p;
                         var span = new Span<uint>(pb, Length/sizeof(uint));
@@ -90,7 +95,7 @@ namespace CafeLib.Bitcoin.Numerics
             {
                 unsafe 
                 {
-                    fixed (ulong* p = &N0) 
+                    fixed (ulong* p = &_n0) 
                     {
                         var pb = (byte*)p;
                         var bytes = new Span<byte>(pb, Length);
@@ -139,10 +144,10 @@ namespace CafeLib.Bitcoin.Numerics
         /// <returns></returns>
 		public string ToHex() => Encoders.Hex.Encode(Span);
 
-        public override int GetHashCode() => N0.GetHashCode() ^ _n1.GetHashCode() ^ _n2.GetHashCode() ^ _n3.GetHashCode();
+        public override int GetHashCode() => _n0.GetHashCode() ^ _n1.GetHashCode() ^ _n2.GetHashCode() ^ _n3.GetHashCode();
 
         public override bool Equals(object obj) => obj is UInt256 int256 && this == int256;
-        public readonly bool Equals(UInt256 o) => N0 == o.N0 && _n1 == o._n1 && _n2 == o._n2 && _n3 == o._n3;
+        public readonly bool Equals(UInt256 o) => _n0 == o._n0 && _n1 == o._n1 && _n2 == o._n2 && _n3 == o._n3;
 
         public static bool operator ==(UInt256 x, UInt256 y) => x.Equals(y);
         public static bool operator !=(UInt256 x, UInt256 y) => !(x == y);
@@ -156,6 +161,15 @@ namespace CafeLib.Bitcoin.Numerics
         public static explicit operator UInt256(byte[] rhs) => new UInt256(rhs);
         public static implicit operator byte[](UInt256 rhs) => rhs.Span.ToArray();
 
+        public static implicit operator int(UInt256 rhs) => (int)rhs._n0;
+        public static implicit operator UInt256(int rhs) => new UInt256((ulong)rhs);
+        public static implicit operator uint(UInt256 rhs) => (uint)rhs._n0;
+        public static implicit operator UInt256(uint rhs) => new UInt256((ulong)rhs);
+        public static implicit operator long(UInt256 rhs) => (long)rhs._n0;
+        public static implicit operator UInt256(long rhs) => new UInt256((ulong)rhs);
+        public static implicit operator ulong(UInt256 rhs) => rhs._n0;
+        public static implicit operator UInt256(ulong rhs) => new UInt256(rhs);
+
         public static explicit operator UInt256(ByteSpan rhs) => new UInt256(rhs);
         public static explicit operator UInt256(ReadOnlyByteSpan rhs) => new UInt256(rhs);
 
@@ -167,7 +181,7 @@ namespace CafeLib.Bitcoin.Numerics
             var r = _n3.CompareTo(o._n3);
             if (r == 0) r = _n2.CompareTo(o._n2);
             if (r == 0) r = _n1.CompareTo(o._n1);
-            if (r == 0) r = N0.CompareTo(o.N0);
+            if (r == 0) r = _n0.CompareTo(o._n0);
             return r;
         }
 
@@ -210,7 +224,7 @@ namespace CafeLib.Bitcoin.Numerics
         }
 
         public static UInt256 operator ~(UInt256 v) {
-            v.N0 = ~v.N0;
+            v._n0 = ~v._n0;
             v._n1 = ~v._n1;
             v._n2 = ~v._n2;
             v._n3 = ~v._n3;

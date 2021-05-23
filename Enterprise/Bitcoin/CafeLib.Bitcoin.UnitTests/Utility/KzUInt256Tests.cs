@@ -163,12 +163,14 @@ namespace CafeLib.Bitcoin.UnitTests.Utility
 
             var hold = new List<SafetySmallObj>();
 
-            while (true) {
-                for (var i = 0; i < 1000; i++) {
+            while (true) 
+            {
+                for (var i = 0; i < 1000; i++)
+                {
                     var o1 = new SafetySmallObj();
                     var o2 = new SafetySmallObj();
                     hold.Add(o2);
-                    o2.l0.N0 = (uint)hold.Count;
+                    o2.l0 = (uint)hold.Count;
                     var o3 = new SafetySmallObj();
                     var o4 = new SafetySmallObj();
                     var o5 = new SafetySmallObj();
@@ -182,12 +184,14 @@ namespace CafeLib.Bitcoin.UnitTests.Utility
                 GC.Collect();
                 var a1 = GetAddress(ref hold[0].l0);
                 var span1 = hold[0].l0.Span;
-                if (hold.Any(o => o.HasMoved())) {
+                if (hold.Any(o => o.HasMoved())) 
+                {
                     var o = hold.First(t => t.HasMoved());
                     var c = hold.Count(t => t.HasMoved());
                     var i = 1u;
-                    foreach (var ot in hold) {
-                        Assert.True(ot.l0.N0 == i, "Unexpected initialization.");
+                    foreach (var ot in hold)
+                    {
+                        Assert.True(ot.l0 == i, "Unexpected initialization.");
                         var b = (byte)i;
                         Assert.True(ot.l0.Span[0] == b, "Span access failed.");
                         i++;
