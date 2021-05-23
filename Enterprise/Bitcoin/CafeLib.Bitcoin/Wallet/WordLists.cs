@@ -4,12 +4,9 @@
 #endregion
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using CafeLib.Bitcoin.Extensions;
-using CafeLib.Bitcoin.Scripting;
 
 namespace CafeLib.Bitcoin.Wallet
 {
