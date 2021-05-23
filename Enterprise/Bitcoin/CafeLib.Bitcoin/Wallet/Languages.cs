@@ -14,6 +14,6 @@ namespace CafeLib.Bitcoin.Wallet
         Japanese,
         PortugueseBrazil,
         ChineseSimplified,
-        ChineseTraditional,
+        ChineseTraditional
     }
 }
