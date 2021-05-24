@@ -6,6 +6,7 @@
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Keys;
 using CafeLib.Bitcoin.Numerics;
+using CafeLib.Bitcoin.Wallet;
 using Xunit;
 
 namespace CafeLib.Bitcoin.UnitTests.Keys {
@@ -198,7 +199,7 @@ namespace CafeLib.Bitcoin.UnitTests.Keys {
             foreach (var tv in _testValues) 
             {
                 tv.Entropy.HexToBytes();
-                var mnemonic = new Mnemonic(tv.Words, Mnemonic.Languages.English);
+                var mnemonic = new Mnemonic(tv.Words, Languages.English);
                 Assert.NotNull(mnemonic); // If checksum doesn't match returns null.
                 var seed = new UInt512(tv.Seed, true);
                 var seedBip39 = ExtPrivateKey.Bip39Seed(tv.Words, "TREZOR");

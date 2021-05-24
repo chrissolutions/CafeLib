@@ -7,7 +7,7 @@ using System;
 using System.Security.Cryptography;
 using CafeLib.Bitcoin.Buffers;
 
-namespace CafeLib.Bitcoin.Keys
+namespace CafeLib.Bitcoin.Numerics
 {
     public static class Randomizer
     {

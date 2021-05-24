@@ -12,18 +12,20 @@ namespace CafeLib.Bitcoin.Wallet
 {
     public static class WordLists
     {
-        private static readonly IDictionary<Languages, string[]> CultureMap = new Dictionary<Languages, string[]>();
+        public static readonly IDictionary<Languages, string[]> Cultures = new Dictionary<Languages, string[]>();
 
         public static string[] GetWords(Languages language)
         {
-            if (CultureMap.TryGetValue(language, out var words)) return words;
+            return Cultures.GetOrAdd(language, () => LoadWords(language));
+        }
+
+        private static string[] LoadWords(Languages language)
+        {
             var manifest = $"{typeof(WordLists).Namespace}.Cultures.{language.GetName()}.words";
             using var stream = typeof(WordLists).Assembly.GetManifestResourceStream(manifest);
             using var reader = new StreamReader(stream ?? throw new NotSupportedException(nameof(language)));
             var text = reader.ReadToEnd();
-            words = text.Split("\n");
-            CultureMap.Add(language, words);
-            return words;
+            return text.Split("\n", StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }

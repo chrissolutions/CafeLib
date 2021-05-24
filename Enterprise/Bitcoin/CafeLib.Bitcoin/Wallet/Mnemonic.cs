@@ -12,27 +12,16 @@ using System.Text;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Crypto;
 using CafeLib.Bitcoin.Encoding;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Numerics;
 
-namespace CafeLib.Bitcoin.Keys {
-
+namespace CafeLib.Bitcoin.Wallet
+{
 	/// <summary>
 	/// BIP39 based support for converting binary data of specific lengths into sequences of words to facilitate written record keeping and verbal transmission.
 	/// </summary>
-	public partial class Mnemonic
+	public class Mnemonic
     {
-        private static readonly Lazy<Dictionary<Languages, string[]>> LazyWordList = new Lazy<Dictionary<Languages, string[]>>(() => 
-        {
-            var wl = new Dictionary<Languages, string[]>();
-            LoadWordLists(wl);
-            return wl;
-        }, true);
-
-        /// <summary>
-        /// Lazy initialized Dictionary of standard Languages word lists.
-        /// Each word list contains 2048 words and encodes 11 bits of data or checksum per word.
-        /// </summary>
-        public static Dictionary<Languages, string[]> WordLists => LazyWordList.Value;
-
         /// <summary>
         /// Space separated word list. Each word encodes 11 bits. Words are all in Language and are contained in WordList.
         /// In addition to encoding Entropy, Words also encodes a checksum to catch transcription errors.
@@ -115,7 +104,10 @@ namespace CafeLib.Bitcoin.Keys {
         /// </summary>
         /// <param name="length">Optional length in bits, default is 128. Should be a multiple of 32.</param>
         /// <param name="language">Optional language to use, default is english.</param>
-        public Mnemonic(int length = 128, Languages language = Languages.English) : this(length, WordLists[language], language) { } 
+        public Mnemonic(int length = 128, Languages language = Languages.English)
+            : this(length, WordLists.GetWords(language), language)
+        {
+        } 
 
         /// <summary>
         /// Create a new KzMnemonic from a sequence of words.
@@ -126,13 +118,17 @@ namespace CafeLib.Bitcoin.Keys {
         public Mnemonic(string words, string[] wordList, Languages language = Languages.Unknown)
         {
             Words = words.Normalize(NormalizationForm.FormKD);
-            if (wordList != null) {
+            if (wordList != null) 
+            {
                 Language = language;
                 WordList = wordList;
-            } else if (language != Languages.Unknown) {
+            } 
+            else if (language != Languages.Unknown) 
+            {
                 Language = language;
-                WordList = WordLists[Language];
-            } else
+                WordList = WordLists.GetWords(Language);
+            } 
+            else
                 (Language, WordList) = GetWordList(words);
 
             Entropy = GetEntropy(Words, WordList);
@@ -143,7 +139,10 @@ namespace CafeLib.Bitcoin.Keys {
         /// </summary>
         /// <param name="words"></param>
         /// <param name="language"></param>
-        public Mnemonic(string words, Languages language = Languages.Unknown) : this(words, null, language) { }
+        public Mnemonic(string words, Languages language = Languages.Unknown)
+            : this(words, null, language)
+        {
+        }
 
         /// <summary>
         /// Create a new KzMnemonic from given Entropy.
@@ -165,7 +164,7 @@ namespace CafeLib.Bitcoin.Keys {
         /// <param name="entropy">Binary data to encode.</param>
         /// <param name="language">Optional language key to select WordList from WordLists. Defaults to English.</param>
         public Mnemonic(ByteSpan entropy, Languages language = Languages.English)
-            : this(entropy, WordLists[language], language) { }
+            : this(entropy, WordLists.GetWords(language), language) { }
 
         private static string ConvertDataToWords(ByteSpan entropy, string[] wordList)
         {
@@ -204,10 +203,13 @@ namespace CafeLib.Bitcoin.Keys {
 
         private static (Languages, string[]) GetWordList(string words)
         {
-            foreach (var wlk in WordLists.Keys) {
-                var wl = WordLists[wlk];
-                if (BelongsToWordList(words, wl)) return (wlk, wl);
+            foreach (var language in EnumExtensions.GetEnumValues<Languages>()) 
+            {
+                if (language == Languages.Unknown) continue;
+                var wl = WordLists.GetWords(language);
+                if (BelongsToWordList(words, wl)) return (language, wl);
             }
+
             return (Languages.Unknown, null);
         }
 
@@ -219,12 +221,13 @@ namespace CafeLib.Bitcoin.Keys {
         /// <returns></returns>
         public static string GetChecksum(ReadOnlyByteSequence entropy)
         {
-            var hash = entropy.Sha256();
+            var hash = Hashes.Sha256(entropy);
             var bits = (int)entropy.Length * 8;
             var cs = bits / 32;
 
             var sb = new StringBuilder();
-            foreach (var b in hash.Span) {
+            foreach (var b in hash.Span) 
+            {
                 sb.Append(Convert.ToString(b, 2).PadLeft(8, '0'));
                 cs -= 8;
                 if (cs <= 0) break;

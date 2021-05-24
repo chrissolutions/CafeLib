@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
+using CafeLib.Bitcoin.Keys;
 
 // ReSharper disable UnusedMember.Global
 
@@ -40,6 +43,11 @@ namespace CafeLib.Bitcoin.Extensions
         {
             var fieldInfo = value.GetType().GetField(value.GetName());
             return fieldInfo.GetCustomAttribute<EnumMemberAttribute>()?.Value;
+        }
+
+        public static IEnumerable<T> GetEnumValues<T>() where T : Enum
+        {
+            return Enum.GetValues(typeof(T)).Cast<T>();
         }
 
         /// <summary>

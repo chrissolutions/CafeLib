@@ -4,20 +4,22 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Linq;
 using CafeLib.Bitcoin.Crypto;
 using CafeLib.Bitcoin.Extensions;
-using CafeLib.Bitcoin.Keys;
+using CafeLib.Bitcoin.Wallet;
 using Xunit;
 
-namespace CafeLib.Bitcoin.UnitTests.Keys
+namespace CafeLib.Bitcoin.UnitTests.Wallet
 {
     public class MnemonicTests
     {
         [Fact]
         public void RecoverLastWord() {
             var valid = new List<string>();
-            var words = "sword victory much blossom cradle sense boy float soda render arrive";
-            foreach (var word in Mnemonic.WordLists[Mnemonic.Languages.English]) {
+            const string words = "sword victory much blossom cradle sense boy float soda render arrive";
+            foreach (var word in WordLists.GetWords(Languages.English))
+            {
                 var t = $"{words} {word}";
                 if (Mnemonic.IsValid(t)) {
                     valid.Add(t);
@@ -51,22 +53,22 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
         [Fact]
         public void WordListsComplete()
         {
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.English].Length == 2048);
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.English][0] == "abandon");
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.Spanish].Length == 2048);
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.Spanish][0] == "ábaco");
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.French].Length == 2048);
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.French][0] == "abaisser");
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.Italian].Length == 2048);
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.Italian][0] == "abaco");
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.Japanese].Length == 2048);
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.Japanese][0] == "あいこくしん");
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.PortugueseBrazil].Length == 2048);
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.PortugueseBrazil][0] == "abacate");
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.ChineseSimplified].Length == 2048);
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.ChineseSimplified][0] == "的");
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.ChineseTraditional].Length == 2048);
-            Assert.True(Mnemonic.WordLists[Mnemonic.Languages.ChineseTraditional][0] == "的");
+            Assert.True(WordLists.GetWords(Languages.English).Length == 2048);
+            Assert.True(WordLists.GetWords(Languages.English).First() == "abandon");
+            Assert.True(WordLists.GetWords(Languages.Spanish).Length == 2048);
+            Assert.True(WordLists.GetWords(Languages.Spanish).First() == "ábaco");
+            Assert.True(WordLists.GetWords(Languages.French).Length == 2048);
+            Assert.True(WordLists.GetWords(Languages.French).First() == "abaisser");
+            Assert.True(WordLists.GetWords(Languages.Italian).Length == 2048);
+            Assert.True(WordLists.GetWords(Languages.Italian).First() == "abaco");
+            Assert.True(WordLists.GetWords(Languages.Japanese).Length == 2048);
+            Assert.True(WordLists.GetWords(Languages.Japanese).First() == "あいこくしん");
+            Assert.True(WordLists.GetWords(Languages.PortugueseBrazil).Length == 2048);
+            Assert.True(WordLists.GetWords(Languages.PortugueseBrazil).First() == "abacate");
+            Assert.True(WordLists.GetWords(Languages.ChineseSimplified).Length == 2048);
+            Assert.True(WordLists.GetWords(Languages.ChineseSimplified).First() == "的");
+            Assert.True(WordLists.GetWords(Languages.ChineseTraditional).Length == 2048);
+            Assert.True(WordLists.GetWords(Languages.ChineseTraditional).First() == "的");
         }
 
         [Fact]
@@ -88,14 +90,14 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
         {
             var words = "afirmar diseño hielo fideo etapa ogro cambio fideo toalla pomelo número buscar";
             var m1 = new Mnemonic(words);
-            Assert.Equal(Mnemonic.Languages.Spanish, m1.Language);
+            Assert.Equal(Languages.Spanish, m1.Language);
             Assert.Equal(m1.Words, Mnemonic.FromWords(words).Words);
 
             var m2 = new Mnemonic(m1.Entropy, m1.Language);
             Assert.Equal(m1.Words, m2.Words);
             Assert.Equal(m2.Words, Mnemonic.FromEntropy(m1.Entropy, m1.Language).Words);
 
-            var m3 = new Mnemonic(new byte[] { 5, 40, 161, 175, 172, 69, 19, 67, 74, 26, 196, 233, 87, 10, 119, 18 }, Mnemonic.Languages.Spanish);
+            var m3 = new Mnemonic(new byte[] { 5, 40, 161, 175, 172, 69, 19, 67, 74, 26, 196, 233, 87, 10, 119, 18 }, Languages.Spanish);
             Assert.Equal(m1.Words, m3.Words);
 
             var m4 = new Mnemonic(length:256);
@@ -107,7 +109,7 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
         [Fact]
         public void WordListLength()
         {
-            Assert.Equal(12, new Mnemonic(32 * 4).Words.Split(' ').Length);
+            Assert.Equal(12, new Mnemonic().Words.Split(' ').Length);
             Assert.Equal(15, new Mnemonic(32 * 5).Words.Split(' ').Length);
             Assert.Equal(18, new Mnemonic(32 * 6).Words.Split(' ').Length);
             Assert.Equal(21, new Mnemonic(32 * 7).Words.Split(' ').Length);
