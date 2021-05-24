@@ -150,7 +150,7 @@ namespace CafeLib.Bitcoin.Wallet
 		/// <param name="entropy">Binary data to encode.</param>
 		/// <param name="wordList"></param>
 		/// <param name="language">Optional language key. Defaults to Unknown.</param>
-		public Mnemonic(Span<byte> entropy, string[] wordList, Languages language = Languages.Unknown)
+		public Mnemonic(ByteSpan entropy, string[] wordList, Languages language = Languages.Unknown)
 		{
 			Entropy = entropy.ToArray();
 			Language = language;
@@ -169,7 +169,7 @@ namespace CafeLib.Bitcoin.Wallet
 		private static string ConvertDataToWords(ByteSpan entropy, string[] wordList)
 		{
 			var checksum = GetChecksum(entropy);
-			var bin = ConvertBytestoBinaryString(entropy) + checksum;
+			var bin = ConvertBytesToBinaryString(entropy) + checksum;
 			var words = BinaryStringToWords(bin, wordList);
 			return words;
 		}
@@ -305,7 +305,7 @@ namespace CafeLib.Bitcoin.Wallet
 		/// </summary>
 		/// <param name="data"></param>
 		/// <returns>data byte[] converted to a binary string.</returns>
-		public static string ConvertBytestoBinaryString(Span<byte> data)
+		public static string ConvertBytesToBinaryString(ByteSpan data)
 		{
 			var dataBits = "";
 			foreach (var b in data) {
