@@ -33,10 +33,10 @@ namespace CafeLib.Bitcoin.Numerics
         public UInt512(ReadOnlyByteSpan span, bool reverse = false)
             : this()
         {
-            if (span.Length < 64)
-                throw new ArgumentException("54 bytes are required.");
+            if (span.Length < Length)
+                throw new ArgumentException($"{Length} bytes are required.");
 
-            span.Slice(0, 64).CopyTo(Span);
+            span.Slice(0, Length).CopyTo(Span);
             if (reverse)
                 Span.Reverse();
         }
@@ -96,14 +96,7 @@ namespace CafeLib.Bitcoin.Numerics
         /// But the high nibble, first hex digit, of the each byte still appears before the low nibble (big-endian by nibble order).
         /// </summary>
         /// <returns></returns>
-		public string ToStringFirstByteFirst() => Hex.Encode(Span);
-
-        /// <summary>
-        /// The bytes appear in little-endian order, first byte in memory first.
-        /// But the high nibble, first hex digit, of the each byte still appears before the low nibble (big-endian by nibble order).
-        /// </summary>
-        /// <returns></returns>
-		//public string ToHex() => Kz.Hex.Encode(Bytes);
+		public string ToHex() => Hex.Encode(Span);
 
         public override int GetHashCode() => _n0.GetHashCode() ^ _n1.GetHashCode() ^ _n2.GetHashCode() ^ _n3.GetHashCode();
 
