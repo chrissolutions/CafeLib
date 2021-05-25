@@ -100,7 +100,7 @@ namespace CafeLib.Bitcoin.UnitTests.Wallet
             var m3 = new Mnemonic(new byte[] { 5, 40, 161, 175, 172, 69, 19, 67, 74, 26, 196, 233, 87, 10, 119, 18 }, Languages.Spanish);
             Assert.Equal(m1.Words, m3.Words);
 
-            var m4 = new Mnemonic(length:256);
+            var m4 = new Mnemonic(bitLength:256);
             Assert.Equal(24, m4.Words.Split(' ').Length);
             Assert.Equal(24, Mnemonic.FromLength(256).Words.Split(' ').Length);
 

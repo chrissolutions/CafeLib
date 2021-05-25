@@ -85,12 +85,27 @@ namespace CafeLib.Bitcoin.Wallet
 		/// Create a new KzMnemonic from a desired entropy length in bits.
 		/// length should be a multiple of 32.
 		/// </summary>
-		/// <param name="length">Entropy length in bits. Should be a multiple of 32.</param>
+		/// <param name="bitLength">Entropy length in bits. Should be a multiple of 32.</param>
 		/// <param name="wordList">string[] of 2048 unique words.</param>
 		/// <param name="language">optional Languages key to use. Defaults to Unknown.</param>
-		public Mnemonic(int length, string[] wordList, Languages language = Languages.Unknown)
+		public Mnemonic(int bitLength, string[] wordList, Languages language = Languages.Unknown)
 		{
-			Entropy = new byte[length / 8];
+            if (bitLength <= 0)
+            {
+                bitLength = 128;
+            }
+
+            if (bitLength % 32 != 0)
+            {
+                throw new ArgumentException($"{nameof(bitLength)} must be multiple of 32");
+            }
+
+            if (bitLength < 128)
+            {
+                throw new ArgumentException($"{nameof(bitLength)} at least 128 bits");
+            }
+
+			Entropy = new byte[bitLength / 8];
 			Randomizer.GetStrongRandBytes(Entropy);
 
 			Language = language;
@@ -102,10 +117,10 @@ namespace CafeLib.Bitcoin.Wallet
 		/// Create a new KzMnemonic from a desired entropy length in bits.
 		/// length should be a multiple of 32.
 		/// </summary>
-		/// <param name="length">Optional length in bits, default is 128. Should be a multiple of 32.</param>
+		/// <param name="bitLength">Optional length in bits, default is 128. Should be a multiple of 32.</param>
 		/// <param name="language">Optional language to use, default is english.</param>
-		public Mnemonic(int length = 128, Languages language = Languages.English)
-			: this(length, WordLists.GetWords(language), language)
+		public Mnemonic(int bitLength = 128, Languages language = Languages.English)
+			: this(bitLength, WordLists.GetWords(language), language)
 		{
 		} 
 
@@ -201,7 +216,7 @@ namespace CafeLib.Bitcoin.Wallet
 			return words.Split(' ', StringSplitOptions.RemoveEmptyEntries).All(wordList.Contains);
 		}
 
-		private static (Languages, string[]) GetWordList(string words)
+		private static (Languages language, string[] wordList) GetWordList(string words)
 		{
 			foreach (var language in EnumExtensions.GetEnumValues<Languages>()) 
 			{
@@ -260,7 +275,7 @@ namespace CafeLib.Bitcoin.Wallet
 		public static string WordsToBinaryString(string words, string[] wordList = null)
 		{
 			words = words.Normalize(NormalizationForm.FormKD);
-			wordList ??= GetWordList(words).Item2;
+			wordList ??= GetWordList(words).wordList;
 
 			if (wordList == null) return null;
 
@@ -283,53 +298,6 @@ namespace CafeLib.Bitcoin.Wallet
 				words.Append(wordList[i]);
 			}
 			return words.ToString();
-		}
-
-		/// <summary>
-		/// Converts a binary string of "0" and "1" into a byte[].
-		/// Length of string must be a multiple of 8.
-		/// </summary>
-		/// <param name="dataBits"></param>
-		/// <returns>dataBits converted to byte array.</returns>
-		public static byte[] ConvertBinaryStringToBytes(string dataBits)
-		{
-			var data = new byte[dataBits.Length / 8];
-			for (var i = 0; i < data.Length; i++) {
-				data[i] = Convert.ToByte(dataBits.Substring(i * 8, 8), 2);
-			}
-			return data;
-		}
-
-		/// <summary>
-		/// Converts data byte[] to a binary string of "0" and "1".
-		/// </summary>
-		/// <param name="data"></param>
-		/// <returns>data byte[] converted to a binary string.</returns>
-		public static string ConvertBytesToBinaryString(ByteSpan data)
-		{
-			var dataBits = "";
-			foreach (var b in data) {
-				dataBits += Convert.ToString(b, 2).PadLeft(8, '0');
-			}
-			return dataBits;
-		}
-
-		/// <summary>
-		/// Splits a binary string into its data and checksum parts.
-		/// Converts the data to an array of bytes.
-		/// Returns (data as byte[], checksum as binary string).
-		/// </summary>
-		/// <param name="bin">Binary string to be split.</param>
-		/// <returns>Returns (data as byte[], checksum as binary string).</returns>
-		public static (byte[], string) BinaryStringToDataAndChecksum(string bin)
-		{
-			var cs = bin.Length / 33; // one bit of checksum for every 32 bits of data.
-			var checksum = bin.Substring(bin.Length - cs);
-			var dataBits = bin.Substring(0, bin.Length - cs);
-
-			var data = ConvertBinaryStringToBytes(dataBits);
-
-			return (data, checksum);
 		}
 
 		/// <summary>
@@ -359,6 +327,37 @@ namespace CafeLib.Bitcoin.Wallet
 			return Words;
 		}
 
+        /// <summary>
+        /// Converts a binary string of "0" and "1" into a byte[].
+        /// Length of string must be a multiple of 8.
+        /// </summary>
+        /// <param name="dataBits"></param>
+        /// <returns>dataBits converted to byte array.</returns>
+        private static byte[] ConvertBinaryStringToBytes(string dataBits)
+        {
+            var data = new byte[dataBits.Length / 8];
+            for (var i = 0; i < data.Length; i++)
+            {
+                data[i] = Convert.ToByte(dataBits.Substring(i * 8, 8), 2);
+            }
+            return data;
+        }
+
+        /// <summary>
+        /// Converts data byte[] to a binary string of "0" and "1".
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns>data byte[] converted to a binary string.</returns>
+        private static string ConvertBytesToBinaryString(ByteSpan data)
+        {
+            var dataBits = "";
+            foreach (var b in data)
+            {
+                dataBits += Convert.ToString(b, 2).PadLeft(8, '0');
+            }
+            return dataBits;
+        }
+
 		/// <summary>
 		/// Returns low order digits of a BigInteger as a byte array length / 8 bytes.
 		/// CAUTION: Will pad array with zero bytes if number is small.
@@ -366,7 +365,7 @@ namespace CafeLib.Bitcoin.Wallet
 		/// <param name="big"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		static byte[] BigIntegerToEntropy(BigInteger big, int length = 128)
+		private static byte[] BigIntegerToEntropy(BigInteger big, int length = 128)
 		{
 			if (length % 8 != 0)
 				throw new ArgumentException("length must be a multiple of eight.");
@@ -438,7 +437,25 @@ namespace CafeLib.Bitcoin.Wallet
 			sb.Reverse();
 			return new string(sb.ToArray());
 		}
-		
+
+        /// <summary>
+        /// Splits a binary string into its data and checksum parts.
+        /// Converts the data to an array of bytes.
+        /// Returns (data as byte[], checksum as binary string).
+        /// </summary>
+        /// <param name="bin">Binary string to be split.</param>
+        /// <returns>Returns (data as byte[], checksum as binary string).</returns>
+        private static (byte[], string) BinaryStringToDataAndChecksum(string bin)
+        {
+            var cs = bin.Length / 33; // one bit of checksum for every 32 bits of data.
+            var checksum = bin.Substring(bin.Length - cs);
+            var dataBits = bin.Substring(0, bin.Length - cs);
+
+            var data = ConvertBinaryStringToBytes(dataBits);
+
+            return (data, checksum);
+        }
+
 		/// <summary>
 		/// Returns the entropy as a byte[] from a string of base 6 digits.
 		/// Verifies that there are at least length / Log2(6) rounded up digits in string.
