@@ -36,5 +36,16 @@ namespace CafeLib.Bitcoin.UnitTests.Encrypt
                 Assert.Equal(msg, Encoders.Utf8.Encode(ddata1));
             }
         }
+
+        [Fact]
+        public void AesEncryptStringTests()
+        {
+            const string msg = "all good men must act";
+            const string password = "really strong password...;-)";
+
+            var encrypt = SymmetricEncryption.EncryptString(msg, password);
+            var decrypt = SymmetricEncryption.DecryptToString(encrypt, password);
+            Assert.Equal(msg, decrypt);
+        }
     }
 }
