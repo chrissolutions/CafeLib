@@ -2,14 +2,15 @@
 using System.IO;
 using System.Security.Cryptography;
 using CafeLib.Bitcoin.Buffers;
+using CafeLib.Bitcoin.Encoding;
 using CafeLib.Bitcoin.Extensions;
 
 namespace CafeLib.Bitcoin.Crypto
 {
     public class Encryption 
     {
-        public static byte[] InitializationVector(ReadOnlySpan<byte> key, ReadOnlySpan<byte> data, int length = 16)
-            => Hashes.HmacSha256(key, data).Span.Slice(0, length).ToArray();
+        public static byte[] InitializationVector(ReadOnlyByteSpan key, ReadOnlySpan<byte> data, int length = 16)
+            => key.HmacSha256(data).Span.Slice(0, length).ToArray();
 
         public static byte[] SaltBytes(int length = 8) 
         {
@@ -47,25 +48,28 @@ namespace CafeLib.Bitcoin.Crypto
         public static byte[] AesEncrypt(ReadOnlyByteSpan data, byte[] key, byte[] iv = null, bool noInitVector = false)
         {
             using var aes = new AesCryptoServiceProvider { Padding = PaddingMode.PKCS7, Mode = CipherMode.CBC, Key = key };
-            if (iv == null) {
+            using var ms = new MemoryStream();
+            if (iv == null) 
+            {
                 aes.GenerateIV();
                 iv = aes.IV;
-            } else {
+            } 
+            else 
+            {
                 aes.IV = iv;
             }
 
-            byte[] r;
-
-            using (var ms = new MemoryStream())
+            if (!noInitVector)
             {
-                if (!noInitVector)
-                    ms.Write(iv);
-                using (var cs = new CryptoStream(ms, aes.CreateEncryptor(key, iv), CryptoStreamMode.Write)) {
-                    cs.Write(data);
-                }
-                r = ms.ToArray();
+                ms.Write(iv);
             }
-            return r;
+
+            using (var cs = new CryptoStream(ms, aes.CreateEncryptor(key, iv), CryptoStreamMode.Write))
+            {
+                cs.Write(data);
+            }
+
+            return ms.ToArray();
         }
 
         /// <summary>
@@ -76,25 +80,22 @@ namespace CafeLib.Bitcoin.Crypto
         /// <param name="key"></param>
         /// <param name="iv">The IV to use. If null, the first 16 bytes of data are used.</param>
         /// <returns>Decryption of data.</returns>
-        public static byte[] AesDecrypt(ReadOnlySpan<byte> data, byte[] key, byte[] iv = null)
+        public static byte[] AesDecrypt(ReadOnlyByteSpan data, byte[] key, byte[] iv = null)
         {
-            if (iv == null) {
+            if (iv == null)
+            {
                 iv = data.Slice(0, 16).ToArray();
                 data = data[16..];
             }
 
             using var aes = new AesCryptoServiceProvider { Padding = PaddingMode.PKCS7, Mode = CipherMode.CBC, Key = key, IV = iv };
-
-            byte[] r;
-
-            using (var ms = new MemoryStream())
+            using var ms = new MemoryStream();
+            using (var cs = new CryptoStream(ms, aes.CreateDecryptor(key, iv), CryptoStreamMode.Write)) 
             {
-                using (var cs = new CryptoStream(ms, aes.CreateDecryptor(key, iv), CryptoStreamMode.Write)) {
-                    cs.Write(data);
-                }
-                r = ms.ToArray();
+                cs.Write(data);
             }
-            return r;
+
+            return ms.ToArray();
         }
     }
 }
