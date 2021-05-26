@@ -2,7 +2,6 @@
 using System.IO;
 using System.Security.Cryptography;
 using CafeLib.Bitcoin.Buffers;
-using CafeLib.Bitcoin.Encoding;
 using CafeLib.Bitcoin.Extensions;
 
 namespace CafeLib.Bitcoin.Crypto
