@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Cryptography;
+using CafeLib.Bitcoin.Encoding;
 
 namespace CafeLib.Bitcoin.Crypto
 {
@@ -21,7 +22,7 @@ namespace CafeLib.Bitcoin.Crypto
             AesBlockByteSize + // cipher text min length
             SignatureByteSize; // signature tag
 
-        private static readonly System.Text.Encoding StringEncoding = System.Text.Encoding.UTF8;
+        private static readonly Utf8Encoder StringEncoding = Encoders.Utf8;
         private static readonly RandomNumberGenerator Random = RandomNumberGenerator.Create();
 
         public static byte[] EncryptString(string toEncrypt, string password)
@@ -34,9 +35,9 @@ namespace CafeLib.Bitcoin.Crypto
             byte[] cipherText;
             using (var aes = CreateAes())
             {
-                using var encryptor = aes.CreateEncryptor(key, iv);
-                var plainText = StringEncoding.GetBytes(toEncrypt);
-                cipherText = encryptor.TransformFinalBlock(plainText, 0, plainText.Length);
+                using var encrypt = aes.CreateEncryptor(key, iv);
+                var plainText = StringEncoding.Decode(toEncrypt);
+                cipherText = encrypt.TransformFinalBlock(plainText, 0, plainText.Length);
             }
 
             // sign
@@ -105,7 +106,7 @@ namespace CafeLib.Bitcoin.Crypto
             using var aes = CreateAes();
             using var decryption = aes.CreateDecryptor(key, iv);
             var decryptedBytes = decryption.TransformFinalBlock(encryptedData, cipherTextIndex, cipherTextLength);
-            return StringEncoding.GetString(decryptedBytes);
+            return StringEncoding.Encode(decryptedBytes);
         }
 
         private static Aes CreateAes()
@@ -118,12 +119,14 @@ namespace CafeLib.Bitcoin.Crypto
 
         private static byte[] GetKey(string password, byte[] passwordSalt)
         {
-            var keyBytes = StringEncoding.GetBytes(password);
+            var keyBytes = StringEncoding.Decode(password);
 
-            using var derivator = new Rfc2898DeriveBytes(
-                keyBytes, passwordSalt,
-                PasswordIterationCount, HashAlgorithmName.SHA256);
-            return derivator.GetBytes(PasswordByteSize);
+            using var derive = new Rfc2898DeriveBytes(
+                keyBytes,
+                passwordSalt,
+                PasswordIterationCount,
+                HashAlgorithmName.SHA256);
+            return derive.GetBytes(PasswordByteSize);
         }
 
         private static byte[] GenerateRandomBytes(int numberOfBytes)
