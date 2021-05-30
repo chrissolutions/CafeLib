@@ -124,7 +124,7 @@ namespace CafeLib.Bitcoin.Crypto
         /// <returns>decrypted message</returns>
         public static string AesDecrypt(byte[] encrypted, string password)
         {
-            var (salt, key, iv, encrypt) = SplitBytes(encrypted);
+            var (salt, key, iv, encrypt) = RestoreArrays(encrypted);
 
             ReadOnlyByteSpan keySpan = key;
             ReadOnlyByteSpan authKey = Encryption.KeyFromPassword(password, salt);
@@ -165,27 +165,26 @@ namespace CafeLib.Bitcoin.Crypto
         }
 
         /// <summary>
-        /// Split merged encrypted data into encryption components
+        /// Restore encryption components from merged encrypted data
         /// </summary>
-        /// <param name="bytes">encrypted bytes</param>
+        /// <param name="encryptedBytes">encrypted bytes</param>
         /// <returns>encrypted components</returns>
-        private static (byte[] salt, byte[] key, byte[] iv, byte[] data) SplitBytes(byte[] bytes)
+        private static (byte[] salt, byte[] key, byte[] iv, byte[] data) RestoreArrays(byte[] encryptedBytes)
         {
             var arrays = new byte[4][];
 
             var index = 0;
             for (var item = 0; item < arrays.Length; ++item)
             {
-                var length = BitConverter.ToInt32(bytes, index);
+                var length = BitConverter.ToInt32(encryptedBytes, index);
                 index += sizeof(int);
                 arrays[item] = new byte[length];
-                Array.Copy(bytes, index, arrays[item], 0, length);
+                Array.Copy(encryptedBytes, index, arrays[item], 0, length);
                 index += length;
             }
 
             return (arrays[0], arrays[1], arrays[2], arrays[3]);
         }
-
 
         #endregion
     }
