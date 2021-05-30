@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using CafeLib.Bitcoin.Crypto;
 using CafeLib.Bitcoin.Encoding;
 using CafeLib.Bitcoin.Extensions;
@@ -48,6 +49,18 @@ namespace CafeLib.Bitcoin.UnitTests.Encrypt
             const string password = "really strong password...;-)";
 
             var encrypt = Encryption.AesEncrypt(msg, password);
+            var decrypt = Encryption.AesDecrypt(encrypt, password);
+            Assert.Equal(msg, decrypt);
+        }
+
+        [Fact]
+        public void AesEncryptStringTests_BadPassword()
+        {
+            const string msg = "all good men must act";
+            const string password = "really strong password...;-)";
+
+            var encrypt = Encryption.AesEncrypt(msg, password);
+            Assert.Throws<CryptographicException>(() => Encryption.AesDecrypt(encrypt, "Bad password"));
             var decrypt = Encryption.AesDecrypt(encrypt, password);
             Assert.Equal(msg, decrypt);
         }
