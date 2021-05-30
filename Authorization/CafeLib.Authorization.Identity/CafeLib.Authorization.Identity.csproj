@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Core.Hashing" Version="1.0.0" />
+    <PackageReference Include="CafeLib.Core.Security" Version="1.0.0" />
     <PackageReference Include="CafeLib.Data" Version="1.0.0" />
   </ItemGroup>
 

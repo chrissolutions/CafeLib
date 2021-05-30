@@ -1,5 +1,5 @@
 ﻿using System;
-using CafeLib.Core.Hashing;
+using CafeLib.Core.Security;
 using Microsoft.Extensions.Options;
 using Xunit;
 
