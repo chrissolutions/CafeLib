@@ -1,4 +1,4 @@
-﻿namespace CafeLib.Core.Hashing
+﻿namespace CafeLib.Core.Security
 {
 	public enum PasswordHashAlgorithm
 	{		

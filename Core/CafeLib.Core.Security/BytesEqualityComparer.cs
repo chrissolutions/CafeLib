@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using CafeLib.Core.Extensions;
 
-namespace CafeLib.Core.Hashing
+namespace CafeLib.Core.Security
 {
 	internal class BytesEqualityComparer : EqualityComparer<byte[]>
     {

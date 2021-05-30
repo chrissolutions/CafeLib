@@ -2,13 +2,18 @@
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using CafeLib.Core.Support;
 
 namespace CafeLib.Core.Security
 {
     public class Encryption
     {
-        public static byte[] InitializationVector(byte[] key, byte[] data, int length = 16)
+        private const int DefaultVectorLength = 16;
+        private const int DefaultKeyLength = 16;
+        private const int DefaultIterations = 2048;
+
+        public static byte[] InitializationVector(byte[] key, byte[] data, int length = DefaultVectorLength)
         {
             return new HMACSHA256(key).TransformFinalBlock(data, 0,length);
         }
@@ -21,13 +26,13 @@ namespace CafeLib.Core.Security
             return salt;
         }
 
-        public static byte[] KeyFromPassword(NonNullable<string> password, byte[] salt = null, int iterations = 2048, int keyLength = 16)
-            => KeyFromPassword(password.Value.Utf8ToBytes(), salt, iterations, keyLength);
+        public static byte[] KeyFromPassword(NonNullable<string> password, byte[] salt = null, int iterations = DefaultIterations, int keyLength = DefaultKeyLength)
+            => KeyFromPassword(Encoding.UTF8.GetBytes(password.Value), salt, iterations, keyLength);
 
-        public static byte[] KeyFromPassword(NonNullable<byte[]> password, byte[] salt = null, int iterations = 2048, int keyLength = 16)
+        public static byte[] KeyFromPassword(NonNullable<byte[]> password, byte[] salt = null, int iterations = DefaultIterations, int keyLength = DefaultKeyLength)
             => KeyFromPassword(password, HashAlgorithmName.SHA512, salt, iterations, keyLength);
 
-        public static byte[] KeyFromPassword(NonNullable<byte[]> password, HashAlgorithmName algorithm, byte[] salt = null, int iterations = 2048, int keyLength = 16)
+        public static byte[] KeyFromPassword(NonNullable<byte[]> password, HashAlgorithmName algorithm, byte[] salt = null, int iterations = DefaultIterations, int keyLength = DefaultKeyLength)
         {
             salt ??= SaltBytes();
             using var keyGen = new Rfc2898DeriveBytes(password, salt, iterations, algorithm);
@@ -46,7 +51,7 @@ namespace CafeLib.Core.Security
         /// <param name="iv">null or 16 bytes of random initialization vector data</param>
         /// <param name="noInitVector">If true, the initialization vector used is not prepended to the encrypted result.</param>
         /// <returns>16 bytes of IV followed by encrypted data bytes.</returns>
-        public static byte[] AesEncrypt(ReadOnlyByteSpan data, byte[] key, byte[] iv = null, bool noInitVector = false)
+        public static byte[] AesEncrypt(byte[] data, byte[] key, byte[] iv = null, bool noInitVector = false)
         {
             using var aes = new AesCryptoServiceProvider { Padding = PaddingMode.PKCS7, Mode = CipherMode.CBC, Key = key };
             using var ms = new MemoryStream();
@@ -79,13 +84,13 @@ namespace CafeLib.Core.Security
         /// <param name="message">message to be encrypted</param>
         /// <param name="password">password</param>
         /// <returns></returns>
-        public static byte[] AesEncrypt(string message, string password)
+        public static byte[] AesEncrypt(NonNullable<string> message, NonNullable<string> password)
         {
-            var bytes = message.Utf8ToBytes();
-            var keySalt = Encryption.SaltBytes();
-            var key = Encryption.KeyFromPassword(password, keySalt);
-            var iv = Encryption.InitializationVector(key, bytes);
-            var data = Encryption.AesEncrypt(bytes, key, iv, true);
+            var bytes = Encoding.UTF8.GetBytes(message.Value);
+            var keySalt = SaltBytes();
+            var key = KeyFromPassword(password, keySalt);
+            var iv = InitializationVector(key, bytes);
+            var data = AesEncrypt(bytes, key, iv, true);
 
             return MergeArrays(keySalt, key, iv, data);
         }
@@ -97,12 +102,13 @@ namespace CafeLib.Core.Security
         /// <param name="data"></param>
         /// <param name="key"></param>
         /// <param name="iv">The IV to use. If null, the first 16 bytes of data are used.</param>
+        /// <param name="ivLength">IV length</param>
         /// <returns>Decryption of data.</returns>
-        public static byte[] AesDecrypt(ReadOnlyByteSpan data, byte[] key, byte[] iv = null)
+        public static byte[] AesDecrypt(byte[] data, byte[] key, byte[] iv = null, int ivLength = DefaultVectorLength)
         {
             if (iv == null)
             {
-                iv = data.Slice(0, 16).ToArray();
+                iv = data[..(DefaultVectorLength-1)];
                 data = data[16..];
             }
 
@@ -126,16 +132,14 @@ namespace CafeLib.Core.Security
         {
             var (salt, key, iv, encrypt) = RestoreArrays(encrypted);
 
-            ReadOnlyByteSpan keySpan = key;
-            ReadOnlyByteSpan authKey = Encryption.KeyFromPassword(password, salt);
-
-            if (authKey.Data.SequenceCompareTo(keySpan.Data) != 0)
+            var authKey = KeyFromPassword(password, salt);
+            if (authKey.AsSpan().SequenceCompareTo(key) != 0)
             {
                 throw new CryptographicException("Invalid signature");
             }
 
-            var decrypt = Encryption.AesDecrypt(encrypt, key, iv);
-            return Encoders.Utf8.Encode(decrypt);
+            var decrypt = AesDecrypt(encrypt, key, iv);
+            return Encoding.UTF8.GetString(decrypt);
         }
 
         #region Helpers

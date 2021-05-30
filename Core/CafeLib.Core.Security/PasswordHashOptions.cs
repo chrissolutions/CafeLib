@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 
-namespace CafeLib.Core.Hashing
+namespace CafeLib.Core.Security
 {
 	public class PasswordHashOptions : IOptions<PasswordHashOptions>
 	{

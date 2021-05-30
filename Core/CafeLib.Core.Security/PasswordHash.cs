@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Options;
 
-namespace CafeLib.Core.Hashing
+namespace CafeLib.Core.Security
 {
 	public class PasswordHash : IPasswordHash
 	{
