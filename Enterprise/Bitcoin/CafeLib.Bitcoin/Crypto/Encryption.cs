@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using CafeLib.Bitcoin.Buffers;
+using CafeLib.Bitcoin.Encoding;
 using CafeLib.Bitcoin.Extensions;
 
 namespace CafeLib.Bitcoin.Crypto
@@ -72,6 +74,23 @@ namespace CafeLib.Bitcoin.Crypto
         }
 
         /// <summary>
+        /// Encrypted message
+        /// </summary>
+        /// <param name="message">message to be encrypted</param>
+        /// <param name="password">password</param>
+        /// <returns></returns>
+        public static byte[] AesEncrypt(string message, string password)
+        {
+            var bytes = message.Utf8ToBytes();
+            var keySalt = Encryption.SaltBytes();
+            var key = Encryption.KeyFromPassword(password, keySalt);
+            var iv = Encryption.InitializationVector(key, bytes);
+            var data = Encryption.AesEncrypt(bytes, key, iv, true);
+
+            return MergeArrays(keySalt, key, iv, data);
+        }
+
+        /// <summary>
         /// Applies AES decryption to data encrypted with AesEncrypt and the specified key.
         /// The actual iv used is obtained from the first 16 bytes of data if null.
         /// </summary>
@@ -96,5 +115,78 @@ namespace CafeLib.Bitcoin.Crypto
 
             return ms.ToArray();
         }
+
+        /// <summary>
+        /// Decrypted encrypted byte array.
+        /// </summary>
+        /// <param name="encrypted">encrypted byte array</param>
+        /// <param name="password">password</param>
+        /// <returns>decrypted message</returns>
+        public static string AesDecrypt(byte[] encrypted, string password)
+        {
+            var (salt, key, iv, encrypt) = SplitBytes(encrypted);
+
+            ReadOnlyByteSpan keySpan = key;
+            ReadOnlyByteSpan authKey = Encryption.KeyFromPassword(password, salt);
+
+            if (authKey.Data.SequenceCompareTo(keySpan.Data) != 0)
+            {
+                throw new CryptographicException("Invalid signature");
+            }
+
+            var decrypt = Encryption.AesDecrypt(encrypt, key, iv);
+            return Encoders.Utf8.Encode(decrypt);
+        }
+
+        #region Helpers
+
+        /// <summary>
+        /// Merge encryption components. 
+        /// </summary>
+        /// <param name="salt">password salt</param>
+        /// <param name="key">encryption key</param>
+        /// <param name="iv">initialization vector</param>
+        /// <param name="data">encrypted data</param>
+        /// <returns>merged encrypted components</returns>
+        private static byte[] MergeArrays(byte[] salt, byte[] key, byte[] iv, byte[] data)
+        {
+            var arrays = new[] { salt, key, iv, data };
+            var merge = new byte[arrays.Sum(a => a.Length) + arrays.Length * sizeof(int)];
+            var index = 0;
+            foreach (var a in arrays)
+            {
+                Array.Copy(BitConverter.GetBytes(a.Length), 0, merge, index, sizeof(int));
+                index += sizeof(int);
+                Array.Copy(a, 0, merge, index, a.Length);
+                index += a.Length;
+            }
+
+            return merge;
+        }
+
+        /// <summary>
+        /// Split merged encrypted data into encryption components
+        /// </summary>
+        /// <param name="bytes">encrypted bytes</param>
+        /// <returns>encrypted components</returns>
+        private static (byte[] salt, byte[] key, byte[] iv, byte[] data) SplitBytes(byte[] bytes)
+        {
+            var arrays = new byte[4][];
+
+            var index = 0;
+            for (var item = 0; item < arrays.Length; ++item)
+            {
+                var length = BitConverter.ToInt32(bytes, index);
+                index += sizeof(int);
+                arrays[item] = new byte[length];
+                Array.Copy(bytes, index, arrays[item], 0, length);
+                index += length;
+            }
+
+            return (arrays[0], arrays[1], arrays[2], arrays[3]);
+        }
+
+
+        #endregion
     }
 }

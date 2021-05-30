@@ -3,9 +3,13 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using CafeLib.Bitcoin.Crypto;
 using CafeLib.Bitcoin.Encoding;
 using CafeLib.Bitcoin.Extensions;
+using CafeLib.Bitcoin.Numerics;
 using Xunit;
 
 namespace CafeLib.Bitcoin.UnitTests.Encrypt
@@ -43,8 +47,8 @@ namespace CafeLib.Bitcoin.UnitTests.Encrypt
             const string msg = "all good men must act";
             const string password = "really strong password...;-)";
 
-            var encrypt = SymmetricEncryption.EncryptString(msg, password);
-            var decrypt = SymmetricEncryption.DecryptToString(encrypt, password);
+            var encrypt = Encryption.AesEncrypt(msg, password);
+            var decrypt = Encryption.AesDecrypt(encrypt, password);
             Assert.Equal(msg, decrypt);
         }
     }
