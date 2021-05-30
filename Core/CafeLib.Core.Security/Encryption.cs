@@ -2,13 +2,16 @@
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using CafeLib.Core.Support;
 
 namespace CafeLib.Core.Security
 {
     public class Encryption
     {
-        public static byte[] InitializationVector(byte[] key, ReadOnlySpan<byte> data, int length = 16)
-            => key.HmacSha256(data).Span.Slice(0, length).ToArray();
+        public static byte[] InitializationVector(byte[] key, byte[] data, int length = 16)
+        {
+            return new HMACSHA256(key).TransformFinalBlock(data, 0,length);
+        }
 
         public static byte[] SaltBytes(int length = 8)
         {
