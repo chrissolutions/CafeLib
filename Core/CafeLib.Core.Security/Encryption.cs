@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using CafeLib.Core.Support;
@@ -82,13 +83,13 @@ namespace CafeLib.Core.Security
         /// Encrypted message
         /// </summary>
         /// <param name="message">message to be encrypted</param>
-        /// <param name="password">password</param>
+        /// <param name="secret">secret</param>
         /// <returns></returns>
-        public static byte[] AesEncrypt(NonNullable<string> message, NonNullable<string> password)
+        public static byte[] AesEncrypt(NonNullable<string> message, NonNullable<string> secret)
         {
             var bytes = Encoding.UTF8.GetBytes(message.Value);
             var keySalt = SaltBytes();
-            var key = KeyFromPassword(password, keySalt);
+            var key = KeyFromPassword(secret, keySalt);
             var iv = InitializationVector(key, bytes);
             var data = AesEncrypt(bytes, key, iv, true);
 
@@ -108,8 +109,8 @@ namespace CafeLib.Core.Security
         {
             if (iv == null)
             {
-                iv = data[..(DefaultVectorLength-1)];
-                data = data[16..];
+                iv = data[..ivLength];
+                data = data[ivLength..];
             }
 
             using var aes = new AesCryptoServiceProvider { Padding = PaddingMode.PKCS7, Mode = CipherMode.CBC, Key = key, IV = iv };
@@ -126,16 +127,16 @@ namespace CafeLib.Core.Security
         /// Decrypted encrypted byte array.
         /// </summary>
         /// <param name="encrypted">encrypted byte array</param>
-        /// <param name="password">password</param>
+        /// <param name="secret">secret</param>
         /// <returns>decrypted message</returns>
-        public static string AesDecrypt(byte[] encrypted, string password)
+        public static string AesDecrypt(byte[] encrypted, string secret)
         {
             var (salt, key, iv, encrypt) = RestoreArrays(encrypted);
 
-            var authKey = KeyFromPassword(password, salt);
+            var authKey = KeyFromPassword(secret, salt);
             if (authKey.AsSpan().SequenceCompareTo(key) != 0)
             {
-                throw new CryptographicException("Invalid signature");
+                throw new SecurityException("Secret not authenticated");
             }
 
             var decrypt = AesDecrypt(encrypt, key, iv);

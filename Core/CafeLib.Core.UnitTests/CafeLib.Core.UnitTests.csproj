@@ -25,11 +25,11 @@
     <ProjectReference Include="..\CafeLib.Core.Caching\CafeLib.Core.Caching.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Collections\CafeLib.Core.Collections.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Dynamic\CafeLib.Core.Dynamic.csproj" />
-    <ProjectReference Include="..\CafeLib.Core.Hashing\CafeLib.Core.Hashing.csproj" />
     <ProjectReference Include="..\CafeLib.Core.IoC\CafeLib.Core.IoC.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Logging\CafeLib.Core.Logging.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Queueing\CafeLib.Core.Queueing.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Runnable\CafeLib.Core.Runnable.csproj" />
+    <ProjectReference Include="..\CafeLib.Core.Security\CafeLib.Core.Security.csproj" />
     <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />
   </ItemGroup>
 

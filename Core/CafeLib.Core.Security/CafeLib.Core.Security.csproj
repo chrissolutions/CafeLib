@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Description>Provides classes used for security &amp; authorization.</Description>
+    <PackageIcon>cafelib.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +12,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\cafelib.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

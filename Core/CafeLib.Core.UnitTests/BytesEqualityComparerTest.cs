@@ -1,4 +1,4 @@
-using CafeLib.Core.Hashing;
+using CafeLib.Core.Security;
 using Xunit;
 
 // ReSharper disable ExpressionIsAlwaysNull
@@ -74,6 +74,5 @@ namespace CafeLib.Core.UnitTests
             // Act & assert - failure case
             Assert.False(_comparer.Equals(x, y));
         }
-
     }
 }
