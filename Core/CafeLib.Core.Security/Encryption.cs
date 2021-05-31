@@ -12,6 +12,7 @@ namespace CafeLib.Core.Security
     {
         private const int DefaultVectorLength = 16;
         private const int DefaultKeyLength = 16;
+        private const int DefaultSaltLength = 8;
         private const int DefaultIterations = 2048;
 
         public static byte[] InitializationVector(byte[] key, byte[] data, int length = DefaultVectorLength)
@@ -19,7 +20,7 @@ namespace CafeLib.Core.Security
             return new HMACSHA256(key).TransformFinalBlock(data, 0,length);
         }
 
-        public static byte[] SaltBytes(int length = 8)
+        public static byte[] SaltBytes(int length = DefaultSaltLength)
         {
             var salt = new byte[length];
             using var rngCsp = new RNGCryptoServiceProvider();

@@ -10,10 +10,15 @@ namespace CafeLib.Bitcoin.Crypto
 {
     public class Encryption 
     {
-        public static byte[] InitializationVector(ReadOnlyByteSpan key, ReadOnlySpan<byte> data, int length = 16)
+        private const int DefaultVectorLength = 16;
+        private const int DefaultKeyLength = 16;
+        private const int DefaultSaltLength = 8;
+        private const int DefaultIterations = 2048;
+
+        public static byte[] InitializationVector(ReadOnlyByteSpan key, ReadOnlySpan<byte> data, int length = DefaultVectorLength)
             => key.HmacSha256(data).Span.Slice(0, length).ToArray();
 
-        public static byte[] SaltBytes(int length = 8) 
+        public static byte[] SaltBytes(int length = DefaultSaltLength) 
         {
             var salt = new byte[length];
             using var rngCsp = new RNGCryptoServiceProvider();
@@ -21,13 +26,13 @@ namespace CafeLib.Bitcoin.Crypto
             return salt;
         }
 
-        public static byte[] KeyFromPassword(NonNullable<string> password, byte[] salt = null, int iterations = 2048, int keyLength = 16)
+        public static byte[] KeyFromPassword(NonNullable<string> password, byte[] salt = null, int iterations = DefaultIterations, int keyLength = DefaultKeyLength)
             => KeyFromPassword(password.Value.Utf8ToBytes(), salt, iterations, keyLength);
 
-        public static byte[] KeyFromPassword(NonNullable<byte[]> password, byte[] salt = null, int iterations = 2048, int keyLength = 16)
+        public static byte[] KeyFromPassword(NonNullable<byte[]> password, byte[] salt = null, int iterations = DefaultIterations, int keyLength = DefaultKeyLength)
             => KeyFromPassword(password, HashAlgorithmName.SHA512, salt, iterations, keyLength);
 
-        public static byte[] KeyFromPassword(NonNullable<byte[]> password, HashAlgorithmName algorithm, byte[] salt = null, int iterations = 2048, int keyLength = 16) 
+        public static byte[] KeyFromPassword(NonNullable<byte[]> password, HashAlgorithmName algorithm, byte[] salt = null, int iterations = DefaultIterations, int keyLength = DefaultKeyLength) 
         {
             salt ??= SaltBytes();
             using var keyGen = new Rfc2898DeriveBytes(password, salt, iterations, algorithm);
@@ -98,12 +103,12 @@ namespace CafeLib.Bitcoin.Crypto
         /// <param name="key"></param>
         /// <param name="iv">The IV to use. If null, the first 16 bytes of data are used.</param>
         /// <returns>Decryption of data.</returns>
-        public static byte[] AesDecrypt(ReadOnlyByteSpan data, byte[] key, byte[] iv = null)
+        public static byte[] AesDecrypt(ReadOnlyByteSpan data, byte[] key, byte[] iv = null, int ivLength = DefaultVectorLength)
         {
             if (iv == null)
             {
-                iv = data.Slice(0, 16).ToArray();
-                data = data[16..];
+                iv = data[..ivLength];
+                data = data[ivLength..];
             }
 
             using var aes = new AesCryptoServiceProvider { Padding = PaddingMode.PKCS7, Mode = CipherMode.CBC, Key = key, IV = iv };
