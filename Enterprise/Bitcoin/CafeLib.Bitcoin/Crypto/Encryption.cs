@@ -87,10 +87,10 @@ namespace CafeLib.Bitcoin.Crypto
         public static byte[] AesEncrypt(string message, string password)
         {
             var bytes = message.Utf8ToBytes();
-            var keySalt = Encryption.SaltBytes();
-            var key = Encryption.KeyFromPassword(password, keySalt);
-            var iv = Encryption.InitializationVector(key, bytes);
-            var data = Encryption.AesEncrypt(bytes, key, iv, true);
+            var keySalt = SaltBytes();
+            var key = KeyFromPassword(password, keySalt);
+            var iv = InitializationVector(key, bytes);
+            var data = AesEncrypt(bytes, key, iv, true);
 
             return MergeArrays(keySalt, key, iv, data);
         }
@@ -102,6 +102,7 @@ namespace CafeLib.Bitcoin.Crypto
         /// <param name="data"></param>
         /// <param name="key"></param>
         /// <param name="iv">The IV to use. If null, the first 16 bytes of data are used.</param>
+        /// <param name="ivLength">IV length</param>
         /// <returns>Decryption of data.</returns>
         public static byte[] AesDecrypt(ReadOnlyByteSpan data, byte[] key, byte[] iv = null, int ivLength = DefaultVectorLength)
         {
