@@ -40,20 +40,15 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
             Assert.Equal(expectedKey, paymailKey);
         }
 
-        [Fact]
-        public async Task GetPublicKey_List_Test()
+        [Theory]
+        [InlineData("kzpaymailasp@kzbsv.org", "02c4aa80834a289b43870b56a6483c924b57650eebe6e5185b19258c76656baa35")]
+        [InlineData("testpaymail@kizmet.org", "02fe6a13c0734578b77d28680aac58a78eb1722dd654117451b8820c9380b10e68")]
+        [InlineData("tonesnotes@moneybutton.com", "02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef")]
+        public async Task GetPublicKey_List_Test(string paymail, string pubkey)
         {
-            foreach (var tc in new[]
-            {
-                new { p = "kzpaymailasp@kzbsv.org", k = "02c4aa80834a289b43870b56a6483c924b57650eebe6e5185b19258c76656baa35" },
-                new { p = "testpaymail@kizmet.org", k = "02fe6a13c0734578b77d28680aac58a78eb1722dd654117451b8820c9380b10e68" },
-                new { p = "tonesnotes@moneybutton.com", k = "02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef" },
-            })
-            {
-                var paymailKey = await Paymail.GetPublicKey(tc.p);
-                var expectedKey = new PublicKey(tc.k);
-                Assert.Equal(expectedKey, paymailKey);
-            }
+            var paymailKey = await Paymail.GetPublicKey(paymail);
+            var expectedKey = new PublicKey(pubkey);
+            Assert.Equal(expectedKey, paymailKey);
         }
 
         [Theory]
@@ -126,7 +121,6 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
             //var PubKey = "";
             const string from = "tone@simply.cash";
             const string when = "2019-07-11T12:24:04.260Z";
-            const string amount = "";
             const string purpose = "";
             const string signature = "IJ1C3gXhnUxKpU8JOIjGHC8talwIgfIXKMmRZ5mjysb0eHjLPQP5Tlx29Xi5KNDZuOsOPk8HiVtwKAefq1pJVDs=";
 
@@ -134,7 +128,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
             // var pub = new PublicKey();
             // pub.Set("02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef".HexToBytes());
 
-            var message = $"{from}{(amount == "" ? "0" : amount)}{when}{purpose}";
+            var message = $"{from}{("0")}{when}{purpose}";
             var ok = pub.VerifyMessage(message, signature);
 
             Assert.True(ok);
