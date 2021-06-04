@@ -160,16 +160,16 @@ namespace CafeLib.Bitcoin.Keys
             else
             {
                 // Hardened.
-                Debug.Assert(_keyData.Span.Length == 32);
+                Debug.Assert(_keyData.Span.Length == UInt256.Length);
                 Hashes.Bip32Hash(chainCode, nChild, 0, _keyData.Span, vout);
             }
 
             var output = vout.AsSpan();
             var ccChild = new UInt256();
-            output.Slice(32, 32).CopyTo(ccChild.Span);
+            output.Slice(UInt256.Length, UInt256.Length).CopyTo(ccChild.Span);
 
             var dataChild = new UInt256(_keyData);
-            return Secp256K1.PrivKeyTweakAdd(dataChild.Span, output.Slice(0, 32))
+            return Secp256K1.PrivKeyTweakAdd(dataChild.Span, output.Slice(0, UInt256.Length))
                 ? (true, new PrivateKey(dataChild), ccChild)
                 : invalid;
         }
@@ -179,8 +179,6 @@ namespace CafeLib.Bitcoin.Keys
         public override string ToString() => ToBase58().ToString();
 
         public override int GetHashCode() => _keyData.GetHashCode();
-
-        
         public bool Equals(PrivateKey o) => !(o is null) && IsCompressed.Equals(o.IsCompressed) && _keyData.Equals(o._keyData);
         public override bool Equals(object obj) => obj is PrivateKey key && this == key;
 
