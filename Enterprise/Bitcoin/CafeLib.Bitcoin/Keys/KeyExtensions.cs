@@ -8,7 +8,7 @@ using Secp256k1Net;
 
 namespace CafeLib.Bitcoin.Keys
 {
-    public static class KeyService
+    public static class KeyExtensions
     {
         private static readonly Lazy<Secp256k1> LazySecpLibrary = new Lazy<Secp256k1>(() => {
             var ctx = new Secp256k1(sign: true, verify: false);

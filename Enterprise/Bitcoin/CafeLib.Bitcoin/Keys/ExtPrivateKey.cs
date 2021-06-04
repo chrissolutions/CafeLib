@@ -181,7 +181,7 @@ namespace CafeLib.Bitcoin.Keys
         /// associated with an extended private key.
         /// </summary>
         /// <returns></returns>
-        public ExtPublicKey GetExtPublicKey() => ExtPublicKey.FromPrivate(this);
+        public ExtPublicKey GetExtPublicKey() => ExtPublicKey.FromPrivateKey(this);
         public PublicKey GetPublicKey() => PrivateKey.CreatePublicKey();
 
         /// <summary>
