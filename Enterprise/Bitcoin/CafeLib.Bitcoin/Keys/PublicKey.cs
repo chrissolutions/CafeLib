@@ -227,7 +227,7 @@ namespace CafeLib.Bitcoin.Keys
             Hashes.Bip32Hash(cc, nChild, ReadOnlySpan[0], ReadOnlySpan[1..], vout);
 
             var ccChild = new UInt256();
-            vout[UInt256.Length..].CopyTo(ccChild.Span);
+            vout[UInt256.Length..].CopyTo(ref ccChild);
 
             var pkBytes = new byte[64];
             if (!Secp256K1.PublicKeyParse(pkBytes.AsSpan(), ReadOnlySpan)) return invalid;
