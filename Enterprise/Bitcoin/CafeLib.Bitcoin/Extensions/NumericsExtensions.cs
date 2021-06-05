@@ -174,12 +174,34 @@ namespace CafeLib.Bitcoin.Extensions
         public static byte[] AsVarIntBytes(this long v) => ((Variant)v).ToArray();
 
         /// <summary>
+        /// Copy to UInt160 from byte array.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CopyTo(this byte[] source, ref UInt160 destination)
+        {
+            ((ReadOnlyByteSpan)source).CopyTo(destination.Span);
+        }
+
+        /// <summary>
         /// Copy to UInt256 from byte array.
         /// </summary>
         /// <param name="source"></param>
         /// <param name="destination"></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyTo(this byte[] source, ref UInt256 destination)
+        {
+            ((ReadOnlyByteSpan)source).CopyTo(destination.Span);
+        }
+
+        /// <summary>
+        /// Copy to UInt512 from byte array.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CopyTo(this byte[] source, ref UInt512 destination)
         {
             ((ReadOnlyByteSpan)source).CopyTo(destination.Span);
         }
