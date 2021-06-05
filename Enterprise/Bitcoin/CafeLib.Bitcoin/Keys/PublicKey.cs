@@ -47,8 +47,8 @@ namespace CafeLib.Bitcoin.Keys
 
         private static Secp256k1 Secp256K1 => LazySecp256K1.Value;
 
-        public const int MinLength = 33;
-        public const int MaxLength = 65;
+        internal const int CompressedLength = 33;
+        internal const int UncompressedLength = 65;
 
         public PublicKey()
         {
@@ -59,7 +59,7 @@ namespace CafeLib.Bitcoin.Keys
         public PublicKey(bool compressed)
             : this()
         {
-            _bytes = new byte[compressed ? 33 : 65];
+            _bytes = new byte[compressed ? CompressedLength : UncompressedLength];
         }
 
         public PublicKey(ReadOnlyByteSpan bytes)
@@ -76,11 +76,7 @@ namespace CafeLib.Bitcoin.Keys
             : this()
         {
             var firstByte = varType.FirstByte;
-            var size = firstByte == 2 || firstByte == 3
-                ? 33
-                : firstByte == 4 || firstByte == 6 || firstByte == 7
-                    ? 65
-                    : 0;
+            var size = PredictLength(firstByte);
 
             _bytes = new byte[size]; 
             varType.CopyTo(_bytes);
@@ -92,7 +88,7 @@ namespace CafeLib.Bitcoin.Keys
             try
             {
                 var vch = hex.HexToBytes();
-                if ((vch.Length == 33 || vch.Length == 65) && vch.Length == PredictLength(vch[0]))
+                if ((vch.Length == CompressedLength || vch.Length == UncompressedLength) && vch.Length == PredictLength(vch[0]))
                     _bytes = vch;
             }
             catch
@@ -132,8 +128,8 @@ namespace CafeLib.Bitcoin.Keys
         /// <returns>0, 33, or 65</returns>
         private static int PredictLength(byte firstByte)
         {
-            if (firstByte == 2 || firstByte == 3) return 33;
-            if (firstByte == 4 || firstByte == 6 || firstByte == 7) return 65;
+            if (firstByte == 2 || firstByte == 3) return CompressedLength;
+            if (firstByte == 4 || firstByte == 6 || firstByte == 7) return UncompressedLength;
             return 0;
         }
 

@@ -494,7 +494,7 @@ namespace CafeLib.Bitcoin.Scripting
             var (ok1, op1) = Operand.TryRead(ref ros, out var consumed1);
             var (ok2, op2) = Operand.TryRead(ref ros, out var consumed2);
             if (!ok1 || !ok2 || consumed1 + consumed2 != scriptSigBytes.Length) goto fail;
-            if (op2.Data.Length < PublicKey.MinLength || op2.Data.Length > PublicKey.MaxLength) goto fail;
+            if (op2.Data.Length < PublicKey.CompressedLength || op2.Data.Length > PublicKey.UncompressedLength) goto fail;
 
             var pubkey = new PublicKey(op2.Data);
             if (!pubkey.IsValid) goto fail;
