@@ -226,14 +226,14 @@ namespace CafeLib.Bitcoin.Keys
             var vout = new byte[64];
             Hashes.Bip32Hash(cc, nChild, ReadOnlySpan[0], ReadOnlySpan.Slice(1), vout);
 
-            var sout = vout.AsSpan();
+            //var sout = vout.AsSpan();
             var ccChild = new UInt256();
-            sout.Slice(UInt256.Length, UInt256.Length).CopyTo(ccChild.Span);
+            vout.Slice(UInt256.Length, UInt256.Length).CopyTo(ccChild.Span);
 
             var pkbs = new byte[64];
             if (!Secp256K1.PublicKeyParse(pkbs.AsSpan(), ReadOnlySpan)) return invalid;
 
-            if (!Secp256K1.PubKeyTweakAdd(pkbs.AsSpan(), sout.Slice(0, UInt256.Length))) return invalid;
+            if (!Secp256K1.PubKeyTweakAdd(pkbs.AsSpan(), vout.Slice(0, UInt256.Length))) return invalid;
 
             var dataChild = new byte[CompressedLength];
             if (!Secp256K1.PublicKeySerialize(dataChild.AsSpan(), pkbs, Flags.SECP256K1_EC_COMPRESSED)) return invalid;
