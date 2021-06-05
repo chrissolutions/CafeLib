@@ -151,19 +151,19 @@ namespace CafeLib.Bitcoin.UnitTests.Keys
                     pub.Encode(data);
 
                     // Test private key
-                    var b58key = new Base58ExtPrivateKey();
-                    b58key.SetKey(priv);
-                    Assert.Equal(d.prv, b58key.ToString());
+                    var b58Key = new Base58ExtPrivateKey();
+                    b58Key.SetKey(priv);
+                    Assert.Equal(d.prv, b58Key.ToString());
 
-                    var b58keyDecodeCheck = new Base58ExtPrivateKey(d.prv);
-                    var checkKey = b58keyDecodeCheck.GetKey();
-                    var eq = checkKey == priv;
+                    var b58KeyDecodeCheck = new Base58ExtPrivateKey(d.prv);
+                    var checkKey = b58KeyDecodeCheck.GetKey();
                     // ensure a base58 decoded pubkey also matches
                     Assert.Equal(checkKey, priv);
 
-                    if (priv.Hardened == false && path.Parent != null) {
+                    if (priv.Hardened == false && path.Parent != null)
+                    {
                         // Compare with public derivation
-                        var pubkeyNew2 = m.Derive(path.Parent).GetExtPublicKey().Derive((int)path.Indices.Last());
+                        var pubkeyNew2 = m.Derive(path.Parent).GetExtPublicKey().Derive((int)path.Last());
                         Assert.True(pubkeyNew2 != null);
                         Assert.Equal(pub, pubkeyNew2);
                     }

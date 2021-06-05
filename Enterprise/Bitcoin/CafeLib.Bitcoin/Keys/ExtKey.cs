@@ -69,7 +69,7 @@ namespace CafeLib.Bitcoin.Keys
         public ExtKey DeriveBase(KeyPath kp)
         {
             var k = this;
-            foreach (var i in kp.Indices)
+            foreach (var i in kp)
             {
                 k = k.DeriveBase((int)(i & ~HardenedBit), (i & HardenedBit) != 0);
                 if (k == null) break;
