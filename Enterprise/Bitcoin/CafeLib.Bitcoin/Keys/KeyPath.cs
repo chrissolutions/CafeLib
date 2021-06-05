@@ -4,6 +4,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,62 +15,87 @@ namespace CafeLib.Bitcoin.Keys
     /// <summary>
     /// Represent a BIP32 style key path.
     /// </summary>
-    public class KeyPath
-	{
-        /// <summary>
-        /// Creates an empty path (zero indices) with FromPriv set to null.
-        /// </summary>
-        public KeyPath()
-        {
-            FromPrivateKey = null;
-            Indices = new UInt32[0];
-        }
-
+    public class KeyPath : IEnumerable<uint>
+    {
         /// <summary>
         /// True if the path starts with m.
         /// False if the path starts with M.
         /// null if the path starts with an index.
         /// </summary>
-        public bool? FromPrivateKey { get; }
+        private bool? _fromPrivateKey;
 
         /// <summary>
         /// Path indices, in order.
         /// Hardened indices have the 0x80000000u bit set.
         /// </summary>
-        public UInt32[] Indices { get; }
+        private readonly uint[] _indices;
 
-		public UInt32 this[int index] => Indices[index];
+        public IEnumerator<uint> GetEnumerator() => ((IEnumerable<uint>) _indices).GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Creates an empty path (zero indices) with FromPriv set to null.
+        /// </summary>
+        public KeyPath()
+            : this(new uint[0])
+        {
+        }
+
+        /// <summary>
+        /// Creates a path with the properties provided.
+        /// </summary>
+        /// <param name="indices">Sets the indices. Hardened indices must have the HardenedBit set.</param>
+        public KeyPath(params uint[] indices)
+        {
+            _indices = indices;
+        }
+
+        /// <summary>
+        /// Creates a path based on its formatted string representation.
+        /// </summary>
+        /// <param name="path">The KzHDKeyPath formated like a/b/c'/d. Appostrophe indicates hardened/private. a,b,c,d must convert to 0..2^31.
+        /// Optionally the path can start with "m/" for private extended master key derivations or "M/" for public extended master key derivations.
+        /// </param>
+        /// <returns></returns>
+        public KeyPath(string path)
+        {
+            _fromPrivateKey = path.StartsWith('m') ? true : path.StartsWith('M') ? false : (bool?)null;
+            _indices = ParseIndices(path);
+        }
+
+        /// <summary>
+        /// Creates a path with the properties provided.
+        /// </summary>
+        /// <param name="fromPrivate">From private key true or false.</param>
+        /// <param name="indices">Sets the indices. Hardened indices must have the HardenedBit set.</param>
+        public KeyPath(bool fromPrivate, params uint[] indices)
+        {
+            _fromPrivateKey = fromPrivate;
+            _indices = indices;
+        }
+
+        public uint this[int index] => _indices[index];
 
         /// <summary>
         /// How many numeric Indices there are.
         /// </summary>
-        public int Count => Indices.Length;
+        public int Count => _indices.Length;
 
         /// <summary>
         /// HardenedBit is 0x80000000u.
         /// </summary>
-        public const UInt32 HardenedBit = 0x80000000u;
+        public const uint HardenedBit = 0x80000000u;
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="i"></param>
-        /// <returns></returns>
-		private static UInt32 ParseIndex(string i)
-		{
-			var hardened = i.Length > 0 && i[^1] == '\'' || i[^1] == 'H';
-			var index = UInt32.Parse(hardened ? i[..^1] : i);
-            if (index >= HardenedBit)
-                throw new ArgumentException($"Indices must be less than {HardenedBit}.");
-			return hardened ? index | HardenedBit : index;
-		}
-
-        /// <summary>
-        /// 
+        /// Parse Indices.
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        private static UInt32[] ParseIndices(string path)
+        private static uint[] ParseIndices(string path)
         {
 			return path.Split('/').Where(p => p != "m" && p != "M" && p != "").Select(ParseIndex).ToArray();
         }
@@ -87,48 +113,13 @@ namespace CafeLib.Bitcoin.Keys
         /// <summary>
         /// Parse a KzHDKeyPath
         /// </summary>
-        /// <param name="path">The KzHDKeyPath formated like a/b/c'/d. Appostrophe indicates hardened/private. a,b,c,d must convert to 0..2^31.
+        /// <param name="path">The KzHDKeyPath formatted like a/b/c'/d. Appostrophe indicates hardened/private. a,b,c,d must convert to 0..2^31.
         /// Optionally the path can start with "m/" for private extended master key derivations or "M/" for public extended master key derivations.
         /// </param>
         /// <returns></returns>
         public static KeyPath Parse(string path)
 		{
 			return new KeyPath(path);
-		}
-
-		/// <summary>
-		/// Creates a path based on its formatted string representation.
-		/// </summary>
-		/// <param name="path">The KzHDKeyPath formated like a/b/c'/d. Appostrophe indicates hardened/private. a,b,c,d must convert to 0..2^31.
-        /// Optionally the path can start with "m/" for private extended master key derivations or "M/" for public extended master key derivations.
-        /// </param>
-		/// <returns></returns>
-		public KeyPath(string path)
-		{
-            FromPrivateKey = path.StartsWith('m') ? true : path.StartsWith('M') ? false : (bool?)null;
-            Indices = ParseIndices(path);
-		}
-
-        /// <summary>
-        /// Creates a path with the properties provided.
-        /// FromPriv is set to null.
-        /// </summary>
-        /// <param name="indices">Sets the indices. Hardened indices must have the HardenedBit set.</param>
-		public KeyPath(params UInt32[] indices)
-		{
-            FromPrivateKey = null;
-			Indices = indices;
-		}
-
-        /// <summary>
-        /// Creates a path with the properties provided.
-        /// </summary>
-        /// <param name="fromPrivate">Sets FromPriv if provided.</param>
-        /// <param name="indices">Sets the indices. Hardened indices must have the HardenedBit set.</param>
-		public KeyPath(bool? fromPrivate, params UInt32[] indices)
-		{
-            FromPrivateKey = fromPrivate;
-			Indices = indices;
 		}
 
         /// <summary>
@@ -139,7 +130,10 @@ namespace CafeLib.Bitcoin.Keys
         /// <returns>New path with concatenated indices.</returns>
 		public KeyPath Derive(KeyPath additionalIndices)
 		{
-			return new KeyPath(FromPrivateKey, Indices.Concat(additionalIndices.Indices).ToArray());
+            return new KeyPath(_indices.Concat(additionalIndices._indices).ToArray())
+            {
+                _fromPrivateKey = _fromPrivateKey
+            };
 		}
 
         /// <summary>
@@ -147,10 +141,13 @@ namespace CafeLib.Bitcoin.Keys
         /// </summary>
         /// <param name="index">Values with HardenedBit set are hardened.</param>
         /// <returns>New path with concatenated index.</returns>
-		public KeyPath Derive(UInt32 index)
+		public KeyPath Derive(uint index)
 		{
-            return new KeyPath(FromPrivateKey, Indices.Concat(new[] { index }).ToArray());
-		}
+            return new KeyPath(_indices.Concat(new[] { index }).ToArray())
+            {
+                _fromPrivateKey = _fromPrivateKey
+            };
+        }
 
         /// <summary>
         /// Extends path with additional index.
@@ -161,7 +158,7 @@ namespace CafeLib.Bitcoin.Keys
 		public KeyPath Derive(int index, bool hardened)
 		{
 			if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "Must be non-negative.");
-			var i = (UInt32)index;
+			var i = (uint)index;
             return Derive(hardened ? i | HardenedBit : i);
 		}
 
@@ -179,7 +176,7 @@ namespace CafeLib.Bitcoin.Keys
         /// <summary>
         /// Returns a new path with one less index, or null if path has no indices.
         /// </summary>
-		public KeyPath Parent => Count == 0 ? null : new KeyPath(FromPrivateKey, Indices.Take(Indices.Length - 1).ToArray());
+		public KeyPath Parent => Count == 0 ? null  : new KeyPath(_indices.Take(_indices.Length - 1).ToArray()) { _fromPrivateKey = _fromPrivateKey };
 
         /// <summary>
         /// Returns a new path with the last index incremented by one.
@@ -189,20 +186,20 @@ namespace CafeLib.Bitcoin.Keys
         public KeyPath Increment()
         {
             if (Count == 0) throw new InvalidOperationException();
-            var indices = Indices.ToArray();
+            var indices = _indices.ToArray();
             indices[Count - 1]++;
-            return new KeyPath(FromPrivateKey, indices);
+            return new KeyPath(indices) { _fromPrivateKey = _fromPrivateKey };
         }
 
-		public override string ToString()
+        public override string ToString()
 		{
             var sb = new StringBuilder();
-            sb.Append(FromPrivateKey != null && FromPrivateKey.Value ? "m/" : "M/");
+            sb.Append(_fromPrivateKey != null && _fromPrivateKey.Value ? "m/" : "M/");
 
-            foreach (var i in Indices) 
+            foreach (var index in _indices) 
             {
-                sb.Append(i & ~HardenedBit);
-                if (i >= HardenedBit) sb.Append("'");
+                sb.Append(index & ~HardenedBit);
+                if (index >= HardenedBit) sb.Append("'");
                 sb.Append("/");
             }
 
@@ -210,9 +207,10 @@ namespace CafeLib.Bitcoin.Keys
             return sb.ToString();
 		}
 
-		public override int GetHashCode() => ToString().GetHashCode();
+        public override int GetHashCode() => ToString().GetHashCode();
 
         public bool Equals(KeyPath o) => !(o is null) && ToString().Equals(o.ToString());
+
         public override bool Equals(object obj) => obj is KeyPath path && this == path;
 
         public static bool operator ==(KeyPath x, KeyPath y) => x?.Equals(y) ?? y is null;
@@ -227,10 +225,27 @@ namespace CafeLib.Bitcoin.Keys
 			get
             {
                 if (Count == 0) throw new InvalidOperationException("No index found in this KzHDKeyPath");
-                return (Indices[Count - 1] & HardenedBit) != 0;
+                return (_indices[Count - 1] & HardenedBit) != 0;
             }
         }
 
         public static implicit operator KeyPath(string s) => new KeyPath(s);
+
+        #region Helpers
+
+        /// <summary>
+        /// Parse path index.
+        /// </summary>
+        /// <param name="pathIndex">path index</param>
+        /// <returns>index</returns>
+        private static uint ParseIndex(string pathIndex)
+        {
+            var hardened = pathIndex.Length > 0 && pathIndex[^1] == '\'' || pathIndex[^1] == 'H';
+            var index = uint.Parse(hardened ? pathIndex[..^1] : pathIndex);
+            if (index >= HardenedBit) throw new ArgumentException($"Indices must be less than {HardenedBit}.");
+            return hardened ? index | HardenedBit : index;
+        }
+
+        #endregion
     }
 }

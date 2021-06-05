@@ -16,7 +16,7 @@ namespace CafeLib.Bitcoin.Crypto
     {
         private const int MaxBufferSize = 1 << 20; // Max ArrayPool<byte>.Shared buffer size.
 
-        public static void GetHashFinal(this HashAlgorithm alg, Span<byte> hash)
+        public static void GetHashFinal(this HashAlgorithm alg, ByteSpan hash)
         {
             var data = new byte[0];
             alg.TransformFinalBlock(data, 0, 0);
@@ -30,7 +30,7 @@ namespace CafeLib.Bitcoin.Crypto
             return alg.Hash;
         }
 
-        public static void TransformFinalBlock(this HashAlgorithm alg, byte[] data, int start, int length, Span<byte> hash)
+        public static void TransformFinalBlock(this HashAlgorithm alg, byte[] data, int start, int length, ByteSpan hash)
         {
             alg.TransformFinalBlock(data, start, length);
             alg.Hash.CopyTo(hash);
@@ -110,8 +110,7 @@ namespace CafeLib.Bitcoin.Crypto
 
             var data = new byte[salt.Length + 4];
             salt.CopyTo(data);
-            var loop = 1;
-            loop.AsReadOnlySpan(bigEndian: true).CopyTo(data.AsSpan(salt.Length));
+            1.AsReadOnlySpan(bigEndian: true).CopyTo(data.AsSpan(salt.Length));
             var dataSpan = data.AsSpan();
 
             for (var i = 0; i < iterations; i++)

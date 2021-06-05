@@ -10,7 +10,6 @@ using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Crypto;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Numerics;
-using CafeLib.Bitcoin.Services;
 using CafeLib.Bitcoin.Wallet;
 
 // ReSharper disable NonReadonlyMemberInGetHashCode
@@ -19,6 +18,8 @@ namespace CafeLib.Bitcoin.Keys
 {
     public class ExtPrivateKey : ExtKey
     {
+        private const string MasterBip32Key = "Bitcoin seed";
+
         public PrivateKey PrivateKey { get; private set; } = new PrivateKey();
 
         /// <summary>
@@ -73,7 +74,7 @@ namespace CafeLib.Bitcoin.Keys
         /// <returns>Returns this key unless required key paths aren't valid for generated key.</returns>
         public ExtPrivateKey SetMasterBip32(ReadOnlyByteSpan hmacData, IEnumerable<KeyPath> required = null, string hmacKey = null)
         {
-            hmacKey ??= RootService.MasterBip32Key;
+            hmacKey ??= MasterBip32Key;
             var vout = Hashes.HmacSha512(hmacKey.Utf8NormalizedToBytes(), hmacData);
             return SetMaster(vout, required);
         }
@@ -180,7 +181,7 @@ namespace CafeLib.Bitcoin.Keys
         /// associated with an extended private key.
         /// </summary>
         /// <returns></returns>
-        public ExtPublicKey GetExtPublicKey() => ExtPublicKey.FromPrivate(this);
+        public ExtPublicKey GetExtPublicKey() => ExtPublicKey.FromPrivateKey(this);
         public PublicKey GetPublicKey() => PrivateKey.CreatePublicKey();
 
         /// <summary>

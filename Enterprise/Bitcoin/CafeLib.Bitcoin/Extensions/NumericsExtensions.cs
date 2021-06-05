@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Numerics;
 
@@ -107,9 +108,9 @@ namespace CafeLib.Bitcoin.Extensions
         {
             unsafe
             {
-                fixed (Int64* p = &i)
+                fixed (long* p = &i)
                 {
-                    byte* pb = (byte*)p;
+                    var pb = (byte*)p;
                     var bytes = new Span<byte>(pb, sizeof(long));
                     return bytes;
                 }
@@ -134,7 +135,7 @@ namespace CafeLib.Bitcoin.Extensions
         {
             unsafe
             {
-                fixed (UInt64* p = &i)
+                fixed (ulong* p = &i)
                 {
                     byte* pb = (byte*)p;
                     var bytes = new Span<byte>(pb, sizeof(ulong));
@@ -172,5 +173,37 @@ namespace CafeLib.Bitcoin.Extensions
         /// <returns></returns>
         public static byte[] AsVarIntBytes(this long v) => ((Variant)v).ToArray();
 
+        /// <summary>
+        /// Copy to UInt160 from byte array.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CopyTo(this byte[] source, ref UInt160 destination)
+        {
+            ((ReadOnlyByteSpan)source).CopyTo(destination.Span);
+        }
+
+        /// <summary>
+        /// Copy to UInt256 from byte array.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CopyTo(this byte[] source, ref UInt256 destination)
+        {
+            ((ReadOnlyByteSpan)source).CopyTo(destination.Span);
+        }
+
+        /// <summary>
+        /// Copy to UInt512 from byte array.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CopyTo(this byte[] source, ref UInt512 destination)
+        {
+            ((ReadOnlyByteSpan)source).CopyTo(destination.Span);
+        }
     }
 }

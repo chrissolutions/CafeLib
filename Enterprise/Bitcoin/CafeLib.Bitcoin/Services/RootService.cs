@@ -10,8 +10,6 @@ namespace CafeLib.Bitcoin.Services
         private static readonly object Mutex = new object();
         private static readonly Lazy<IBitcoinNetwork[]> Networks = new Lazy<IBitcoinNetwork[]>(() => new IBitcoinNetwork[EnumExtensions.GetNames<NetworkType>().Length]);
 
-        public const string MasterBip32Key = "Bitcoin seed";
-
         public static IBitcoinNetwork Network => _bitcoinNetwork ??= CreateNetwork(NetworkType.Main);
 
         public static void Bootstrap(NetworkType networkType)

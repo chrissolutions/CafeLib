@@ -47,8 +47,8 @@ namespace CafeLib.Bitcoin.Keys
 
         private static Secp256k1 Secp256K1 => LazySecp256K1.Value;
 
-        public const int MinLength = 33;
-        public const int MaxLength = 65;
+        internal const int CompressedLength = 33;
+        internal const int UncompressedLength = 65;
 
         public PublicKey()
         {
@@ -59,7 +59,7 @@ namespace CafeLib.Bitcoin.Keys
         public PublicKey(bool compressed)
             : this()
         {
-            _bytes = new byte[compressed ? 33 : 65];
+            _bytes = new byte[compressed ? CompressedLength : UncompressedLength];
         }
 
         public PublicKey(ReadOnlyByteSpan bytes)
@@ -76,11 +76,7 @@ namespace CafeLib.Bitcoin.Keys
             : this()
         {
             var firstByte = varType.FirstByte;
-            var size = firstByte == 2 || firstByte == 3
-                ? 33
-                : firstByte == 4 || firstByte == 6 || firstByte == 7
-                    ? 65
-                    : 0;
+            var size = PredictLength(firstByte);
 
             _bytes = new byte[size]; 
             varType.CopyTo(_bytes);
@@ -92,7 +88,7 @@ namespace CafeLib.Bitcoin.Keys
             try
             {
                 var vch = hex.HexToBytes();
-                if ((vch.Length == 33 || vch.Length == 65) && vch.Length == PredictLength(vch[0]))
+                if ((vch.Length == CompressedLength || vch.Length == UncompressedLength) && vch.Length == PredictLength(vch[0]))
                     _bytes = vch;
             }
             catch
@@ -132,8 +128,8 @@ namespace CafeLib.Bitcoin.Keys
         /// <returns>0, 33, or 65</returns>
         private static int PredictLength(byte firstByte)
         {
-            if (firstByte == 2 || firstByte == 3) return 33;
-            if (firstByte == 4 || firstByte == 6 || firstByte == 7) return 65;
+            if (firstByte == 2 || firstByte == 3) return CompressedLength;
+            if (firstByte == 4 || firstByte == 6 || firstByte == 7) return UncompressedLength;
             return 0;
         }
 
@@ -224,38 +220,34 @@ namespace CafeLib.Bitcoin.Keys
 
         public (bool ok, PublicKey keyChild, UInt256 ccChild) Derive(uint nChild, UInt256 cc)
         {
-            if (!IsValid || !IsCompressed || nChild >= HardenedBit) goto fail;
+            (bool ok, PublicKey keyChild, UInt256 ccChild) invalid = (false, null, UInt256.Zero);
+            if (!IsValid || !IsCompressed || nChild >= HardenedBit) return invalid;
 
             var vout = new byte[64];
-            Hashes.Bip32Hash(cc, nChild, ReadOnlySpan[0], ReadOnlySpan.Slice(1), vout);
+            Hashes.Bip32Hash(cc, nChild, ReadOnlySpan[0], ReadOnlySpan[1..], vout);
 
-            var sout = vout.AsSpan();
             var ccChild = new UInt256();
-            sout.Slice(32, 32).CopyTo(ccChild.Span);
+            vout[UInt256.Length..].CopyTo(ref ccChild);
 
-            var pkbs = new byte[64];
-            if (!Secp256K1.PublicKeyParse(pkbs.AsSpan(), ReadOnlySpan)) goto fail;
+            var pkBytes = new byte[64];
+            if (!Secp256K1.PublicKeyParse(pkBytes.AsSpan(), ReadOnlySpan)) return invalid;
+            if (!Secp256K1.PubKeyTweakAdd(pkBytes, vout[..UInt256.Length])) return invalid;
 
-            if (!Secp256K1.PubKeyTweakAdd(pkbs.AsSpan(), sout.Slice(0, 32))) goto fail;
-
-            var dataChild = new byte[33];
-            if (!Secp256K1.PublicKeySerialize(dataChild.AsSpan(), pkbs, Flags.SECP256K1_EC_COMPRESSED)) goto fail;
+            var dataChild = new byte[CompressedLength];
+            if (!Secp256K1.PublicKeySerialize(dataChild.AsSpan(), pkBytes, Flags.SECP256K1_EC_COMPRESSED)) return invalid;
 
             var keyChild = new PublicKey(true);
             dataChild.AsSpan().CopyTo(keyChild.Bytes);
 
             return (true, keyChild, ccChild);
-
-            fail:
-            return (false, null, UInt256.Zero);
         }
 
-        public override int GetHashCode() =>_hashCode.GetHashCode();
+        public override int GetHashCode() => _hashCode.GetHashCode();
 
         public bool Equals(PublicKey o) => !(o is null) && _bytes.SequenceEqual(o._bytes);
         public override bool Equals(object obj) => obj is PublicKey key && this == key;
 
-        public static explicit operator UInt256(PublicKey rhs) => new UInt256(rhs._bytes.Slice(1, 32));
+        public static explicit operator UInt256(PublicKey rhs) => new UInt256(rhs._bytes.Slice(1, UInt256.Length));
 
         public static explicit operator PublicKey(byte[] rhs) => new PublicKey(rhs);
         public static implicit operator byte[](PublicKey rhs) => rhs._bytes;

@@ -25,18 +25,16 @@ namespace CafeLib.Bitcoin.Keys
             Decode(code);
         }
 
-        public static ExtPublicKey FromPrivate(ExtPrivateKey priv)
+        public static ExtPublicKey FromPrivateKey(ExtPrivateKey privateKey)
         {
-            var key = new ExtPublicKey
+            return new ExtPublicKey
             {
-                Depth = priv.Depth,
-                Fingerprint = priv.Fingerprint,
-                Child = priv.IndexWithHardened,
-                ChainCode = priv.ChainCode,
-                PublicKey = priv.PrivateKey.CreatePublicKey()
+                Depth = privateKey.Depth,
+                Fingerprint = privateKey.Fingerprint,
+                Child = privateKey.IndexWithHardened,
+                ChainCode = privateKey.ChainCode,
+                PublicKey = privateKey.PrivateKey.CreatePublicKey()
             };
-
-            return key;
         }
 
         /// <summary>
@@ -70,12 +68,6 @@ namespace CafeLib.Bitcoin.Keys
             return ok ? cek : null;
         }
 
-        public byte[] GetBytes() {
-            var bytes = new byte[Bip32KeySize];
-            Encode(bytes);
-            return bytes;
-        }
-
         public override void Encode(ByteSpan code)
         {
             code[0] = Depth;
@@ -101,6 +93,13 @@ namespace CafeLib.Bitcoin.Keys
             PublicKey.Set(code.Slice(41, 33));
         }
 
+        public byte[] ToArray()
+        {
+            var bytes = new byte[Bip32KeySize];
+            Encode(bytes);
+            return bytes;
+        }
+
         public Base58ExtPublicKey ToBase58() => new Base58ExtPublicKey(this);
         public override string ToString() => ToBase58().ToString();
 
@@ -111,5 +110,7 @@ namespace CafeLib.Bitcoin.Keys
 
         public static bool operator ==(ExtPublicKey x, ExtPublicKey y) => x?.Equals(y) ?? y is null;
         public static bool operator !=(ExtPublicKey x, ExtPublicKey y) => !(x == y);
+
+        public static explicit operator byte[](ExtPublicKey rhs) => rhs.ToArray();
     }
 }
