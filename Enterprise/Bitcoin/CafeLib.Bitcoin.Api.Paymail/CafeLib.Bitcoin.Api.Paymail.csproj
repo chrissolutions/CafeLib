@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Web.Request" Version="0.9.0" />
+    <PackageReference Include="CafeLib.Web.Request" Version="1.0.0" />
     <PackageReference Include="DnsClient" Version="1.4.0" />
   </ItemGroup>
 

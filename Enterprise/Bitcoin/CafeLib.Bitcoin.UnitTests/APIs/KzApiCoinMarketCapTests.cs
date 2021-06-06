@@ -7,12 +7,16 @@ using System.Threading.Tasks;
 using CafeLib.Bitcoin.Api.CoinMarketCap;
 using Xunit;
 
-namespace CafeLib.Bitcoin.UnitTests.APIs {
-    public class KzApiCoinMarketCapTests {
+namespace CafeLib.Bitcoin.UnitTests.APIs
+{
+    public class KzApiCoinMarketCapTests 
+    {
         [Fact]
-        public async Task Test1() {
+        public async Task Test1()
+        {
             var api = new CoinMarketCap("e80d5567-c5cc-473c-8453-6b3cfcd35be0");
             var json = await api.LatestListings();
+            Assert.NotNull(json);
         }
 
         [Fact]
