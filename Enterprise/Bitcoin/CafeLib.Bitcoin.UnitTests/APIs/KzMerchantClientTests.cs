@@ -24,13 +24,13 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
             var mapi = KzMerchantClient.GetClient(baseUrl);
             var feeQuote = await mapi.GetFeeQuote();
             Assert.NotNull(feeQuote);
-            Assert.True(feeQuote.expiryTime > DateTime.UtcNow);
-            Assert.True(Math.Abs((feeQuote.timestamp - DateTime.UtcNow).TotalMinutes) < 1);
-            Assert.Equal(version, feeQuote.apiVersion);
-            Assert.True(feeQuote.currentHighestBlockHeight > 630000);
-            Assert.True(new UInt256(feeQuote.currentHighestBlockHash).ToBigInteger() > 0);
-            Assert.Equal(2, feeQuote.fees.Length);
-            Assert.True(new PublicKey(feeQuote.minerId).IsValid);
+            Assert.True(feeQuote.ExpiryTime > DateTime.UtcNow);
+            Assert.True(Math.Abs((feeQuote.Timestamp - DateTime.UtcNow).TotalMinutes) < 1);
+            Assert.Equal(version, feeQuote.ApiVersion);
+            Assert.True(feeQuote.CurrentHighestBlockHeight > 630000);
+            Assert.True(new UInt256(feeQuote.CurrentHighestBlockHash).ToBigInteger() > 0);
+            Assert.Equal(2, feeQuote.Fees.Length);
+            Assert.True(new PublicKey(feeQuote.MinerId).IsValid);
             Assert.True(feeQuote.MiningRates.standard.Bytes > 0);
             Assert.True(feeQuote.MiningRates.standard.Satoshis >= 0);
             Assert.True(feeQuote.RelayRates.standard.Bytes > 0);
@@ -49,26 +49,26 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
             var hashTx = "3ea6bb35923dbff216aa11084280e0d6d477d78ed8010edac92c3253b3d79024";
             var ts = await mapi.GetTransactionStatus(hashTx);
             Assert.NotNull(ts);
-            Assert.Equal("0.1.0", ts.apiVersion);
-            Assert.True(Math.Abs((ts.timestamp - DateTime.UtcNow).TotalMinutes) < 1);
-            Assert.True(new PublicKey(ts.minerId).IsValid);
-            Assert.Equal("success", ts.returnResult);
-            Assert.Equal("", ts.resultDescription);
-            Assert.Equal("0000000000000000011e0221844b65bfbbc2599bbd7f71ca0f914a53d90fa8b6", ts.blockHash);
-            Assert.Equal(631498, ts.blockHeight);
-            Assert.True(ts.confirmations > 90);
+            Assert.Equal("0.1.0", ts.ApiVersion);
+            Assert.True(Math.Abs((ts.Timestamp - DateTime.UtcNow).TotalMinutes) < 1);
+            Assert.True(new PublicKey(ts.MinerId).IsValid);
+            Assert.Equal("success", ts.ReturnResult);
+            Assert.Equal("", ts.ResultDescription);
+            Assert.Equal("0000000000000000011e0221844b65bfbbc2599bbd7f71ca0f914a53d90fa8b6", ts.BlockHash);
+            Assert.Equal(631498, ts.BlockHeight);
+            Assert.True(ts.Confirmations > 90);
 
             hashTx = "3ea6bb35923dbff200000000000000000077d78ed8010edac92c3253b3d79024";
             ts = await mapi.GetTransactionStatus(hashTx);
             Assert.NotNull(ts);
-            Assert.Equal("0.1.0", ts.apiVersion);
-            Assert.True(Math.Abs((ts.timestamp - DateTime.UtcNow).TotalMinutes) < 1);
-            Assert.True(new PublicKey(ts.minerId).IsValid);
-            Assert.Equal("failure", ts.returnResult);
-            Assert.True(ts.resultDescription.Length > 0);
-            Assert.Null(ts.blockHash);
-            Assert.Null(ts.blockHeight);
-            Assert.True(ts.confirmations == 0);
+            Assert.Equal("0.1.0", ts.ApiVersion);
+            Assert.True(Math.Abs((ts.Timestamp - DateTime.UtcNow).TotalMinutes) < 1);
+            Assert.True(new PublicKey(ts.MinerId).IsValid);
+            Assert.Equal("failure", ts.ReturnResult);
+            Assert.True(ts.ResultDescription.Length > 0);
+            Assert.Null(ts.BlockHash);
+            Assert.Null(ts.BlockHeight);
+            Assert.True(ts.Confirmations == 0);
         }
 
         [Theory]
@@ -86,10 +86,10 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
             var ptr = await mapi.PostTransaction(tx1.HexToBytes(), srl);
             Assert.False(srl.Success);
             Assert.NotNull(ptr);
-            Assert.Equal(version, ptr.apiVersion);
+            Assert.Equal(version, ptr.ApiVersion);
             Assert.True(ptr.currentHighestBlockHeight > 630000);
             Assert.True(new UInt256(ptr.currentHighestBlockHash).ToBigInteger() > 0);
-            Assert.True(Math.Abs((ptr.timestamp - DateTime.UtcNow).TotalMinutes) < 1);
+            Assert.True(Math.Abs((ptr.Timestamp - DateTime.UtcNow).TotalMinutes) < 1);
             Assert.True(new PublicKey(ptr.minerId).IsValid);
             Assert.Equal("failure", ptr.returnResult);
             Assert.True(ptr.resultDescription.Length > 0); // e.g. Not enough fees
