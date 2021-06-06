@@ -10,7 +10,7 @@ using Xunit;
 
 namespace CafeLib.Bitcoin.UnitTests.Keys
 {
-    public class PrivateKeyTests
+    public class KzPrivKeyTests
     {
         [Fact]
         public void FromHexAndB58()

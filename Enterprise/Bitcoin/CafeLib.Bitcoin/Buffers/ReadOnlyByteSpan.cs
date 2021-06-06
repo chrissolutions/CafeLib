@@ -39,6 +39,8 @@ namespace CafeLib.Bitcoin.Buffers
             return destination;
         }
 
+        public int SequenceCompareTo(ReadOnlyByteSpan target) => Data.SequenceCompareTo(target);
+
         public Enumerator GetEnumerator() => new Enumerator(this);
 
         public ref struct Enumerator
