@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Crypto;
 using CafeLib.Bitcoin.Extensions;
@@ -37,18 +38,11 @@ namespace CafeLib.Bitcoin.Keys
             Child = 0;
             Fingerprint = 0;
 
-            if (PrivateKey == null || !PrivateKey.IsValid) goto fail;
+            if (PrivateKey == null || !PrivateKey.IsValid) return null;
 
             // Verify that all the required derivation paths yield valid keys.
             if (required == null) return this;
-            foreach (var r in required) 
-                if (Derive(r) == null) 
-                    goto fail;
-
-            return this;
-
-        fail:
-            return null;
+            return required.Any(r => Derive(r) == null) ? null : this;
         }
 
         /// <summary>
@@ -192,10 +186,29 @@ namespace CafeLib.Bitcoin.Keys
         /// <param name="kp"></param>
         /// <returns>null on derivation failure. Otherwise the derived private key.</returns>
         public ExtPrivateKey Derive(KeyPath kp) => DeriveBase(kp) as ExtPrivateKey;
-        public ExtPrivateKey Derive(int index, bool hardened = false) => DeriveBase(index, hardened) as ExtPrivateKey;
-        public ExtPrivateKey Derive(uint indexWithHardened) => Derive((int)(indexWithHardened & ~HardenedBit), (indexWithHardened & HardenedBit) != 0);
 
-        public override ExtKey DeriveBase(int index, bool hardened)
+        /// <summary>
+        /// Derives a child hierarchical deterministic public key specified by a key path.
+        /// </summary>
+        /// <param name="path">key path</param>
+        /// <returns>extended public key</returns>
+        public ExtPrivateKey Derive(string path) => DeriveBase(new KeyPath(path)) as ExtPrivateKey;
+
+        /// <summary>
+        /// Derives a child hierarchical deterministic public key specified by a key path.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="hardened"></param>
+        /// <returns></returns>
+        public ExtPrivateKey Derive(int index, bool hardened = false) => DeriveBase(index, hardened) as ExtPrivateKey;
+
+        /// <summary>
+        /// Derives a child hierarchical deterministic public key specified by a key path.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="hardened"></param>
+        /// <returns></returns>
+        protected override ExtKey DeriveBase(int index, bool hardened)
         {
             Trace.Assert(index >= 0);
             var cek = new ExtPrivateKey {

@@ -57,7 +57,7 @@ namespace CafeLib.Bitcoin.Keys
         /// <param name="index"></param>
         /// <param name="hardened"></param>
         /// <returns></returns>
-        public abstract ExtKey DeriveBase(int index, bool hardened);
+        protected abstract ExtKey DeriveBase(int index, bool hardened);
 
         /// <summary>
         /// Computes the key specified by a key path.
