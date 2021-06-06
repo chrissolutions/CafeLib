@@ -196,7 +196,7 @@ namespace CafeLib.Bitcoin.Keys
         public bool Verify(UInt256 hash, VarType sig)
         {
             if (!IsValid || sig.Length == 0) return false;
-            return Secp256K1.PublicKeyVerify(hash.Span, (ReadOnlyByteSpan)sig, (ReadOnlyByteSpan)this);
+            return Secp256K1.PublicKeyVerify(hash.Span, (ReadOnlyByteSpan)sig, Data);
         }
 
         /// <summary>

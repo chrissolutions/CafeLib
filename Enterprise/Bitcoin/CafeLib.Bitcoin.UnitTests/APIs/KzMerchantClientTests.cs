@@ -31,10 +31,10 @@ namespace CafeLib.Bitcoin.UnitTests.APIs {
             Assert.True(new UInt256(feeQuote.currentHighestBlockHash).ToBigInteger() > 0);
             Assert.Equal(2, feeQuote.fees.Length);
             Assert.True(new PublicKey(feeQuote.minerId).IsValid);
-            Assert.True(feeQuote.MiningRates.standard.bytes > 0);
-            Assert.True(feeQuote.MiningRates.standard.satoshis >= 0);
-            Assert.True(feeQuote.RelayRates.standard.bytes > 0);
-            Assert.True(feeQuote.RelayRates.standard.satoshis >= 0);
+            Assert.True(feeQuote.MiningRates.standard.Bytes > 0);
+            Assert.True(feeQuote.MiningRates.standard.Satoshis >= 0);
+            Assert.True(feeQuote.RelayRates.standard.Bytes > 0);
+            Assert.True(feeQuote.RelayRates.standard.Satoshis >= 0);
         }
 
         [Theory]

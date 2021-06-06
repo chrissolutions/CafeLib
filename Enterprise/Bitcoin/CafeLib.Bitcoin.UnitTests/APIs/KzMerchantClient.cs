@@ -87,7 +87,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs
 
             var verified = e.VerifySignature(ref _pubKey);
 
-            feeQuote = JsonConvert.DeserializeObject<FeeQuote>(e.payload);
+            feeQuote = JsonConvert.DeserializeObject<FeeQuote>(e.Payload);
 
             if (!verified && feeQuote.minerId != null)
                 throw new InvalidOperationException("Miner did not verify.");
@@ -104,22 +104,30 @@ namespace CafeLib.Bitcoin.UnitTests.APIs
 
         public class FeeQuoteRate
         {
-            public int satoshis;
-            public int bytes;
+            [JsonProperty("satoshis")]
+            public int Satoshis { get; set; }
+
+            [JsonProperty("bytes")]
+            public int Bytes { get; set; }
 
             public Amount ComputeFee(long length)
             {
-                var fee = (length * satoshis) / bytes;
-                if (length > 0 && fee == 0 && satoshis != 0) fee = 1;
+                var fee = (length * Satoshis) / Bytes;
+                if (length > 0 && fee == 0 && Satoshis != 0) fee = 1;
                 return new Amount(fee);
             }
         }
 
         public class FeeQuoteType
         {
-            public string feeType;
-            public FeeQuoteRate miningFee;
-            public FeeQuoteRate relayFee;
+            [JsonProperty("feeType")]
+            public string FeeType { get; set; }
+
+            [JsonProperty("miningFee")]
+            public FeeQuoteRate MiningFee { get; set; }
+
+            [JsonProperty("RelayFee")]
+            public FeeQuoteRate RelayFee { get; set; }
         }
 
         public class FeeQuote
@@ -160,12 +168,12 @@ namespace CafeLib.Bitcoin.UnitTests.APIs
             public string minerReputation;
             public FeeQuoteType[] fees;
 
-            public (FeeQuoteRate standard, FeeQuoteRate data) MiningRates => (fees?.SingleOrDefault(f => f.feeType == "standard")?.miningFee, fees?.SingleOrDefault(f => f.feeType == "data")?.miningFee);
+            public (FeeQuoteRate standard, FeeQuoteRate data) MiningRates => (fees?.SingleOrDefault(f => f.FeeType == "standard")?.MiningFee, fees?.SingleOrDefault(f => f.FeeType == "data")?.MiningFee);
 
-            public (FeeQuoteRate standard, FeeQuoteRate data) RelayRates => (fees?.SingleOrDefault(f => f.feeType == "standard")?.relayFee, fees?.SingleOrDefault(f => f.feeType == "data")?.relayFee);
+            public (FeeQuoteRate standard, FeeQuoteRate data) RelayRates => (fees?.SingleOrDefault(f => f.FeeType == "standard")?.RelayFee, fees?.SingleOrDefault(f => f.FeeType == "data")?.RelayFee);
 
             /// <summary>
-            /// 
+            /// Compute Mining Fee.
             /// </summary>
             /// <param name="txLength">Serialized transaction size in bytes.</param>
             /// <param name="dataLength">Sum of output script bytes that begin with OP_FALSE OP_RETURN.</param>
@@ -197,7 +205,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs
 
             var verified = e.VerifySignature(ref _pubKey);
 
-            status = JsonConvert.DeserializeObject<TransactionStatus>(e.payload);
+            status = JsonConvert.DeserializeObject<TransactionStatus>(e.Payload);
 
             if (srl != null)
             {
@@ -281,7 +289,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs
 
                 srl.Verified = e.VerifySignature(ref _pubKey);
 
-                ptr = JsonConvert.DeserializeObject<PostTransactionResponse>(e.payload);
+                ptr = JsonConvert.DeserializeObject<PostTransactionResponse>(e.Payload);
 
                 srl.Success = ptr?.returnResult == "success";
             }
@@ -321,18 +329,27 @@ namespace CafeLib.Bitcoin.UnitTests.APIs
  }
 #endif
             #endregion
-            public string payload;
-            public string signature;
-            public string publicKey;
-            public string encoding;
-            public string mimetype;
+            [JsonProperty("payload")]
+            public string Payload { get; set; }
+
+            [JsonProperty("signature")]
+            public string Signature { get; set; }
+
+            [JsonProperty("publicKey")]
+            public string PublicKey { get; set; }
+
+            [JsonProperty("encoding")]
+            public string Encoding { get; set; }
+
+            [JsonProperty("mimetype")]
+            public string MimeType { get; set; }
 
             public bool VerifySignature(ref PublicKey pubKey)
             {
 
-                var verifyHash = Hashes.Sha256(payload.Utf8ToBytes());
-                var verifySignature = signature?.HexToBytes();
-                pubKey ??= new PublicKey(publicKey?.HexToBytes());
+                var verifyHash = Hashes.Sha256(Payload.Utf8ToBytes());
+                var verifySignature = Signature?.HexToBytes();
+                pubKey ??= new PublicKey(PublicKey?.HexToBytes());
                 var verified = pubKey?.Verify(verifyHash, verifySignature) ?? false;
 
                 return verified;
