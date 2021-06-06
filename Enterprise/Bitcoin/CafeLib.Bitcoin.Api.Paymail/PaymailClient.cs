@@ -73,7 +73,7 @@ namespace CafeLib.Bitcoin.Api.Paymail
             var json = await GetAsync(url);
             var response = JsonConvert.DeserializeObject<GetPublicKeyResponse>(json);
             var pubkey = new PublicKey(response.PubKey);
-            return pubkey.IsCompressed && new[] { 2, 3 }.ToArray().Contains(pubkey.ReadOnlySpan[0])
+            return pubkey.IsCompressed && new[] { 2, 3 }.ToArray().Contains(pubkey.Data[0])
                 ? pubkey
                 : null;
         }

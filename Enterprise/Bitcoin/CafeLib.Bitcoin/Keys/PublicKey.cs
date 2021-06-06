@@ -113,7 +113,7 @@ namespace CafeLib.Bitcoin.Keys
         /// True if key is stored in an array of 33 bytes.
         /// False if invalid or uncompressed.
         /// </summary>
-        public bool IsCompressed => _bytes?.Length == 33;
+        public bool IsCompressed => _bytes?.Length == CompressedLength;
 
         /// <summary>
         /// True if key is defined and either compressed or uncompressed.
@@ -133,10 +133,9 @@ namespace CafeLib.Bitcoin.Keys
             return 0;
         }
 
-        public ReadOnlyByteSpan ReadOnlySpan => _bytes;
-        public ByteSpan Bytes => _bytes;
+        public ReadOnlyByteSpan Data => _bytes;
 
-        public byte[] ToArray() => ReadOnlySpan;
+        public byte[] ToArray() => Data;
 
         public void Set(ReadOnlyByteSpan data)
         {
@@ -171,7 +170,7 @@ namespace CafeLib.Bitcoin.Keys
         }
 
         /// <summary>
-        /// The complement function is KzPrivKey's SignCompact.
+        /// The complement function is PrivateKey CreateCompatSignature.
         /// </summary>
         /// <param name="hash"></param>
         /// <param name="sig"></param>
@@ -210,7 +209,7 @@ namespace CafeLib.Bitcoin.Keys
         /// RIPEMD160 applied to SHA256 of the 33 or 65 public key bytes.
         /// </summary>
         /// <returns>20 byte hash as a KzUInt160</returns>
-        public UInt160 ToHash160() => ReadOnlySpan.Hash160();
+        public UInt160 ToHash160() => Data.Hash160();
 
         public string ToAddress() => Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress, ToHash160().Span);
 
@@ -224,20 +223,20 @@ namespace CafeLib.Bitcoin.Keys
             if (!IsValid || !IsCompressed || nChild >= HardenedBit) return invalid;
 
             var vout = new byte[64];
-            Hashes.Bip32Hash(cc, nChild, ReadOnlySpan[0], ReadOnlySpan[1..], vout);
+            Hashes.Bip32Hash(cc, nChild, Data[0], Data[1..], vout);
 
             var ccChild = new UInt256();
             vout[UInt256.Length..].CopyTo(ref ccChild);
 
             var pkBytes = new byte[64];
-            if (!Secp256K1.PublicKeyParse(pkBytes.AsSpan(), ReadOnlySpan)) return invalid;
+            if (!Secp256K1.PublicKeyParse(pkBytes.AsSpan(), Data)) return invalid;
             if (!Secp256K1.PubKeyTweakAdd(pkBytes, vout[..UInt256.Length])) return invalid;
 
             var dataChild = new byte[CompressedLength];
             if (!Secp256K1.PublicKeySerialize(dataChild.AsSpan(), pkBytes, Flags.SECP256K1_EC_COMPRESSED)) return invalid;
 
             var keyChild = new PublicKey(true);
-            dataChild.AsSpan().CopyTo(keyChild.Bytes);
+            dataChild.CopyTo(ref keyChild._bytes);
 
             return (true, keyChild, ccChild);
         }

@@ -154,8 +154,8 @@ namespace CafeLib.Bitcoin.Keys
             {
                 // Not hardened.
                 var pubkey = this.CreatePublicKey();
-                Debug.Assert(pubkey.ReadOnlySpan.Length == 33);
-                Hashes.Bip32Hash(chainCode, nChild, pubkey.ReadOnlySpan[0], pubkey.ReadOnlySpan.Slice(1), vout);
+                Debug.Assert(pubkey.Data.Length == PublicKey.CompressedLength);
+                Hashes.Bip32Hash(chainCode, nChild, pubkey.Data[0], pubkey.Data[1..], vout);
             } 
             else
             {
@@ -169,7 +169,7 @@ namespace CafeLib.Bitcoin.Keys
             output.Slice(UInt256.Length, UInt256.Length).CopyTo(ccChild.Span);
 
             var dataChild = new UInt256(_keyData);
-            return Secp256K1.PrivKeyTweakAdd(dataChild.Span, output.Slice(0, UInt256.Length))
+            return Secp256K1.PrivKeyTweakAdd(dataChild.Span, output[..UInt256.Length])
                 ? (true, new PrivateKey(dataChild), ccChild)
                 : invalid;
         }

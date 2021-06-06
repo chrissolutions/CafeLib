@@ -70,7 +70,7 @@ namespace CafeLib.Bitcoin.Crypto
                 // Multiply the public key as an elliptic curve point by the private key a big number: 
                 var bn = _privateKey.BigInteger;
                 var pkbs = new byte[64];
-                if (!secp.PublicKeyParse(pkbs.AsSpan(), _publicKey.ReadOnlySpan)) goto fail;
+                if (!secp.PublicKeyParse(pkbs.AsSpan(), _publicKey.Data)) goto fail;
                 if (!secp.PubKeyTweakMul(pkbs.AsSpan(), _privateKey.Bytes)) goto fail;
                 // Hash the X coordinate of the resulting elliptic curve point.
                 var x = pkbs.Slice(0, 32);
@@ -96,7 +96,7 @@ namespace CafeLib.Bitcoin.Crypto
             var d = Hashes.HmacSha256(_kM.Span, c).Span;
             if (ShortTag) d = d.Slice(0, 4);
 
-            var key = NoKey ? ReadOnlyByteSpan.Empty : _privateKey.CreatePublicKey().ReadOnlySpan;
+            var key = NoKey ? ReadOnlyByteSpan.Empty : _privateKey.CreatePublicKey().Data;
             var len = key.Length + c.Length + d.Length;
             var bytes = new byte[len];
             var result = bytes.AsSpan();
