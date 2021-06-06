@@ -253,12 +253,14 @@ namespace CafeLib.Bitcoin.Scripting
             }
 
             var evaluator = new ScriptEvaluator();
-            if (!evaluator.EvalScript(scriptSig, flags, checker, out error)) return false;
-            if (!evaluator.EvalScript(scriptPub, flags, checker, out error)) return false;
-            if (evaluator.Count == 0) return SetError(out error, ScriptError.EVAL_FALSE);
-            if (evaluator.Peek() == false) return SetError(out error, ScriptError.EVAL_FALSE);
-
-            return SetSuccess(out error);
+            return evaluator switch
+            {
+                _ when !evaluator.EvalScript(scriptSig, flags, checker, out error) => false,
+                _ when !evaluator.EvalScript(scriptPub, flags, checker, out error) => false,
+                _ when evaluator.Count == 0 => SetError(out error, ScriptError.EVAL_FALSE),
+                _ when !evaluator.Peek() => SetError(out error, ScriptError.EVAL_FALSE),
+                _ => SetSuccess(out error)
+            };
         }
     }
 }
