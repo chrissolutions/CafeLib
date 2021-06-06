@@ -60,7 +60,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs
             _baseUrl = baseUrl;
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Accept.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
             if (token != string.Empty)
                 _httpClient.DefaultRequestHeaders.Add("token", token);
@@ -76,7 +76,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs
         {
             var feeQuote = _lastFeeQuote;
 
-            if (feeQuote?.expiryTime > DateTime.UtcNow)
+            if (feeQuote?.ExpiryTime > DateTime.UtcNow)
                 return feeQuote;
 
             var url = $"{_baseUrl}/mapi/feeQuote";
@@ -89,7 +89,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs
 
             feeQuote = JsonConvert.DeserializeObject<FeeQuote>(e.Payload);
 
-            if (!verified && feeQuote.minerId != null)
+            if (!verified && feeQuote.MinerId != null)
                 throw new InvalidOperationException("Miner did not verify.");
 
             _lastFeeQuote = feeQuote;
@@ -159,18 +159,33 @@ namespace CafeLib.Bitcoin.UnitTests.APIs
 }
 #endif
             #endregion
-            public string apiVersion;
-            public DateTime timestamp;
-            public DateTime expiryTime;
-            public string minerId;
-            public string currentHighestBlockHash;
-            public int currentHighestBlockHeight;
-            public string minerReputation;
-            public FeeQuoteType[] fees;
+            [JsonProperty("apiVersion")]
+            public string ApiVersion { get; set; }
 
-            public (FeeQuoteRate standard, FeeQuoteRate data) MiningRates => (fees?.SingleOrDefault(f => f.FeeType == "standard")?.MiningFee, fees?.SingleOrDefault(f => f.FeeType == "data")?.MiningFee);
+            [JsonProperty("timestamp")]
+            public DateTime Timestamp { get; set; }
 
-            public (FeeQuoteRate standard, FeeQuoteRate data) RelayRates => (fees?.SingleOrDefault(f => f.FeeType == "standard")?.RelayFee, fees?.SingleOrDefault(f => f.FeeType == "data")?.RelayFee);
+            [JsonProperty("expiryTime")]
+            public DateTime ExpiryTime { get; set; }
+
+            [JsonProperty("minerId")]
+            public string MinerId { get; set; }
+
+            [JsonProperty("currentHighestBlockHash")]
+            public string CurrentHighestBlockHash { get; set; }
+
+            [JsonProperty("currentHighestBlockHeight")]
+            public int CurrentHighestBlockHeight { get; set; }
+
+            [JsonProperty("minerReputation")]
+            public string MinerReputation { get; set; }
+
+            [JsonProperty("fees")]
+            public FeeQuoteType[] Fees { get; set; }
+
+            public (FeeQuoteRate standard, FeeQuoteRate data) MiningRates => (Fees?.SingleOrDefault(f => f.FeeType == "standard")?.MiningFee, Fees?.SingleOrDefault(f => f.FeeType == "data")?.MiningFee);
+
+            public (FeeQuoteRate standard, FeeQuoteRate data) RelayRates => (Fees?.SingleOrDefault(f => f.FeeType == "standard")?.RelayFee, Fees?.SingleOrDefault(f => f.FeeType == "data")?.RelayFee);
 
             /// <summary>
             /// Compute Mining Fee.
@@ -210,7 +225,7 @@ namespace CafeLib.Bitcoin.UnitTests.APIs
             if (srl != null)
             {
                 srl.Verified = verified;
-                srl.Success = status?.returnResult == "success";
+                srl.Success = status?.ReturnResult == "success";
             }
 
             return status;
@@ -244,18 +259,35 @@ namespace CafeLib.Bitcoin.UnitTests.APIs
 }
 #endif
             #endregion
-            public string apiVersion;
-            public DateTime timestamp;
-            public string returnResult;
-            public string resultDescription;
-            public string blockHash;
-            public int? blockHeight;
-            public int confirmations;
-            public string minerId;
-            public int txSecondMempoolExpiry;
+            [JsonProperty("apiVersion")]
+            public string ApiVersion { get; set; }
+
+            [JsonProperty("timestamp")]
+            public DateTime Timestamp { get; set; }
+
+            [JsonProperty("returnResult")]
+            public string ReturnResult { get; set; }
+
+            [JsonProperty("resultDescription")]
+            public string ResultDescription { get; set; }
+
+            [JsonProperty("blockHash")]
+            public string BlockHash { get; set; }
+
+            [JsonProperty("blockHeight")]
+            public int? BlockHeight { get; set; }
+
+            [JsonProperty("confirmations")]
+            public int Confirmations { get; set; }
+
+            [JsonProperty("minerId")]
+            public string MinerId { get; set; }
+
+            [JsonProperty("txSecondMempoolExpiry")]
+            public int TxSecondMempoolExpiry { get; set; }
         }
 
-        async public Task<PostTransactionResponse> PostTransaction(byte[] txBytes, KzServiceRequestLog srl)
+        public async Task<PostTransactionResponse> PostTransaction(byte[] txBytes, KzServiceRequestLog srl)
         {
 
             var ptr = (PostTransactionResponse)null;
@@ -299,8 +331,12 @@ namespace CafeLib.Bitcoin.UnitTests.APIs
 
         public class PostTransactionResponse
         {
-            public string apiVersion;
-            public DateTime timestamp;
+            [JsonProperty("apiVersion")]
+            public string ApiVersion { get; set; }
+
+            [JsonProperty("timestamp")]
+            public DateTime Timestamp { get; set; }
+
             public string txid;
             public string returnResult;
             public string resultDescription;
