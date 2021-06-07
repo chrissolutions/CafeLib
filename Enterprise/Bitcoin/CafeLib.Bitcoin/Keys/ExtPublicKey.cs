@@ -82,7 +82,6 @@ namespace CafeLib.Bitcoin.Keys
         public override void Encode(ByteSpan code)
         {
             code[0] = Depth;
-
             Fingerprint.AsSpan().CopyTo(code.Slice(1, 4));
             code[5] = (byte)((Child >> 24) & 0xFF);
             code[6] = (byte)((Child >> 16) & 0xFF);
