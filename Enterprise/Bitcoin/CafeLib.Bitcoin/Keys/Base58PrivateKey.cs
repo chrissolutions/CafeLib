@@ -5,6 +5,7 @@
 
 using System;
 using System.Diagnostics;
+using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Services;
 
 namespace CafeLib.Bitcoin.Keys
@@ -20,9 +21,9 @@ namespace CafeLib.Bitcoin.Keys
         public PrivateKey GetKey()
         {
             var data = Data;
-            Debug.Assert(data.Length >= 32);
-            var isCompressed = data.Length > 32 && data[32] == 1;
-            var privateKey = new PrivateKey(data.Slice(0, 32), isCompressed);
+            Debug.Assert(data.Length >= UInt256.Length);
+            var isCompressed = data.Length > UInt256.Length && data[UInt256.Length] == 1;
+            var privateKey = new PrivateKey(data[..UInt256.Length], isCompressed);
             return privateKey;
         }
 
@@ -31,7 +32,7 @@ namespace CafeLib.Bitcoin.Keys
             get 
             {
                 var d = Data;
-                var fExpectedFormat = d.Length == 32 || d.Length == 33 && d[^1] == 1;
+                var fExpectedFormat = d.Length == UInt256.Length || d.Length == UInt256.Length + 1 && d[^1] == 1;
                 var v = Version;
                 var fCorrectVersion = v.Data.SequenceEqual(RootService.Network.SecretKey);
                 return fExpectedFormat && fCorrectVersion;

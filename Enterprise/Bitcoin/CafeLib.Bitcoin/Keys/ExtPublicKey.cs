@@ -11,7 +11,6 @@ using CafeLib.Bitcoin.Extensions;
 
 namespace CafeLib.Bitcoin.Keys
 {
-
     public class ExtPublicKey : ExtKey
     {
         public PublicKey PublicKey { get; private set; }

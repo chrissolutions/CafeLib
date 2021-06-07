@@ -34,12 +34,12 @@ namespace CafeLib.Bitcoin.Keys
         }, true);
 
         /// <summary>
-        /// 
+        /// Secp256k1 library
         /// </summary>
         private static Secp256k1 Secp256K1 => LazySecp256K1.Value;
 
         /// <summary>
-        /// 
+        /// Determines validity of the private key.
         /// </summary>
         public bool IsValid { get; private set; }
 

@@ -70,7 +70,7 @@ namespace CafeLib.Bitcoin.UnitTests.Encode
             const int iterations = 2048;
 
             var hash = Hashes.PbKdf2HmacSha512(seed.Utf8ToBytes(), $"electrum{customWords}".Utf8ToBytes(), iterations);
-            var key = ExtPrivateKey.MasterBip32(hash.Span);
+            var key = ExtPrivateKey.MasterBip32(hash);
 
             Assert.Equal(seedHash, Encoders.Hex.Encode(hash));
             Assert.Equal(pub, key.GetExtPublicKey().ToString());

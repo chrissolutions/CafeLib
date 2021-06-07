@@ -231,11 +231,11 @@ namespace CafeLib.Bitcoin.Keys
             code[6] = (byte)((Child >> 16) & 0xFF);
             code[7] = (byte)((Child >> 8) & 0xFF);
             code[8] = (byte)(Child & 0xFF);
-            ChainCode.Span.CopyTo(code.Slice(9, 32));
+            ChainCode.Span.CopyTo(code.Slice(9, UInt256.Length));
             code[41] = 0;
             var key = PrivateKey.Bytes;
-            Debug.Assert(key.Length == 32);
-            key.CopyTo(code.Slice(42, 32));
+            Debug.Assert(key.Length == UInt256.Length);
+            key.CopyTo(code.Slice(42, UInt256.Length));
         }
 
         public void Decode(ReadOnlyByteSpan code)
@@ -243,8 +243,8 @@ namespace CafeLib.Bitcoin.Keys
             Depth = code[0];
             Fingerprint = BitConverter.ToInt32(code[1..5]);
             Child = (uint)code[5] << 24 | (uint)code[6] << 16 | (uint)code[7] << 8 | code[8];
-            ChainCode = new UInt256(code.Slice(9, 32));
-            PrivateKey.Set(code.Slice(42, 32));
+            ChainCode = new UInt256(code.Slice(9, UInt256.Length));
+            PrivateKey.Set(code.Slice(42, UInt256.Length));
         }
 
         public Base58ExtPrivateKey ToBase58() => new Base58ExtPrivateKey(this);
