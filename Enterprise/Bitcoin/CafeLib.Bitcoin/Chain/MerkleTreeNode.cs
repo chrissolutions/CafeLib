@@ -66,7 +66,7 @@ namespace CafeLib.Bitcoin.Chain
         }
 
         /// <summary>
-        /// 
+        /// Left hash bytes.
         /// </summary>
         public ByteSpan LeftRightHashes
         {
