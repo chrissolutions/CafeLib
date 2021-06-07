@@ -168,8 +168,10 @@ namespace CafeLib.Bitcoin.UnitTests.Scripts
         {
             var tv2s = new List<TV2>();
             var json = JArray.Parse(File.ReadAllText(@"..\..\..\data\script_tests.json"));
-            foreach (var r in json.Children<JToken>().Where(c => c.Count() >= 4)) {
-                if (r[0].Type == JTokenType.String) {
+            foreach (var r in json.Children<JToken>().Where(c => c.Count() >= 4))
+            {
+                if (r[0].Type == JTokenType.String)
+                {
                     var sig = r[0].Value<string>();
                     var pub = r[1].Value<string>();
                     var flags = r[2].Value<string>();
@@ -197,9 +199,11 @@ namespace CafeLib.Bitcoin.UnitTests.Scripts
             }
 
             var i = 0;
-            foreach (var opcode in opcodes) {
+            foreach (var opcode in opcodes) 
+            {
                 var list = opcode.HasValue ? byOpcode[opcode.Value] : noOpcode;
-                foreach (var tv in list) {
+                foreach (var tv in list) 
+                {
                     i++;
                     var tv2 = new TV2(tv.sig, tv.pub, tv.flags, tv.error);
                     _testOutputHelper.WriteLine($"{opcode} {i}");
