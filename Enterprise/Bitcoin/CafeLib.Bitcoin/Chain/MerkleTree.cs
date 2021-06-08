@@ -85,7 +85,7 @@ namespace CafeLib.Bitcoin.Chain
                 if (!hasBoth)
                     node.LeftHash.Span.CopyTo(node.RightHash.Span);
 
-                newHash = ComputeHash(node);
+                newHash = node.ComputeHash();
                 var np = node.Parent;
                 if (np != null)
                 {
@@ -178,7 +178,7 @@ namespace CafeLib.Bitcoin.Chain
                     n.SetRightHash(newHash);
                     do
                     {
-                        newHash = ComputeHash(n);
+                        newHash = n.ComputeHash();
                         var np = n.Parent;
                         if (np == null)
                         {
@@ -193,14 +193,6 @@ namespace CafeLib.Bitcoin.Chain
                     } while (n.HasBoth);
                 }
             }
-        }
-
-        private static UInt256 ComputeHash(MerkleTreeNode node)
-        {
-            // This ToArray call could be eliminated.
-            var h = new UInt256();
-            Hashes.Hash256(node.LeftRightHashes, h);
-            return h;
         }
 
         #endregion

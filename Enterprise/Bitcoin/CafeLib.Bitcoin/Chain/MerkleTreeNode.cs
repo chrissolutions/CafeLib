@@ -1,5 +1,4 @@
-﻿using System;
-using CafeLib.Bitcoin.Buffers;
+﻿using CafeLib.Bitcoin.Crypto;
 using CafeLib.Bitcoin.Numerics;
 
 namespace CafeLib.Bitcoin.Chain
@@ -66,25 +65,6 @@ namespace CafeLib.Bitcoin.Chain
         }
 
         /// <summary>
-        /// Left hash bytes.
-        /// </summary>
-        public ByteSpan LeftRightHashes
-        {
-            get
-            {
-                unsafe
-                {
-                    fixed (UInt256* p = &LeftHash)
-                    {
-                        byte* pb = (byte*)p;
-                        var bytes = new Span<byte>(pb, 64);
-                        return bytes;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// LeftOfParent and RightOfParent indicate whether this node is currently tracking a subtree
         /// to the left or right of its parent node.
         /// </summary>
@@ -105,5 +85,11 @@ namespace CafeLib.Bitcoin.Chain
             RightHash = hash;
             HasRight = true;
         }
+
+        public UInt256 ComputeHash()
+        {
+            return Hashes.Hash256(LeftHash);
+        }
+
     }
 }
