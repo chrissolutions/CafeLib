@@ -11,7 +11,7 @@ using CafeLib.Bitcoin.Numerics;
 
 namespace CafeLib.Bitcoin.Crypto
 {
-    public static partial class Hashes
+    internal static partial class Hashes
     {
         public static void Ripemd160(this ReadOnlyByteSequence data, ByteSpan hash)
         {

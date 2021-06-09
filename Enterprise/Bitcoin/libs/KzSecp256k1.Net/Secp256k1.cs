@@ -98,7 +98,7 @@ namespace Secp256k1Net
 
         Lazy<TDelegate> LazyDelegate<TDelegate>()
         {
-            var symbol = SymbolNameCache<TDelegate>.SymbolName;
+            var symbol = SymbolNameCache<TDelegate>.GetSymbolName();
             return new Lazy<TDelegate>(() => LoadLibNative.GetDelegate<TDelegate>(_libPtr.Value, symbol), isThreadSafe: true);
         }
 
