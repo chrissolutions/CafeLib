@@ -12,7 +12,7 @@ using CafeLib.Bitcoin.Numerics;
 
 namespace CafeLib.Bitcoin.Crypto
 {
-    public static partial class Hashes
+    internal static partial class Hashes
     {
         private const int MaxBufferSize = 1 << 20; // Max ArrayPool<byte>.Shared buffer size.
 
