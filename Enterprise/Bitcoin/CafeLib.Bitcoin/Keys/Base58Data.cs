@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using System.ComponentModel;
 using System.Linq;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Encoding;
