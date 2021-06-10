@@ -4,6 +4,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.Linq;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Encoding;
@@ -19,14 +20,8 @@ namespace CafeLib.Bitcoin.Keys
         private int _versionLength;
 
         protected ByteSpan Version => new Span<byte>(_versionData, 0, _versionLength);
-        protected ByteSpan Data => new Span<byte>(_versionData, _versionLength, _versionData.Length - _versionLength);
-        protected ReadOnlyByteSpan VersionData => _versionData.AsSpan();
-        //protected ReadOnlySpan<byte> Version => _Version;
-        //protected ReadOnlySpan<byte> Data => _Data;
-
-        protected Base58Data()
-        {
-        }
+        protected ByteSpan KeyData => new Span<byte>(_versionData, _versionLength, _versionData.Length - _versionLength);
+        protected ReadOnlyByteSpan VersionData => _versionData;
 
         protected void SetData(byte[] versionData, int versionLength = 1)
         {
@@ -34,35 +29,25 @@ namespace CafeLib.Bitcoin.Keys
             _versionLength = versionLength;
         }
 
-        protected void SetData(ReadOnlySpan<byte> version, ReadOnlySpan<byte> data, bool flag)
+        protected void SetData(ReadOnlyByteSpan version, ReadOnlyByteSpan data, bool flag = false)
         {
             _versionData = new byte[version.Length + data.Length + 1];
             _versionLength = version.Length;
             version.CopyTo(Version);
-            data.CopyTo(Data);
-            Data.Data[^1] = (byte)(flag ? 1 : 0);
-        }
-
-        protected void SetData(ReadOnlySpan<byte> version, ReadOnlySpan<byte> data)
-        {
-            _versionData = new byte[version.Length + data.Length];
-            _versionLength = version.Length;
-            version.CopyTo(Version);
-            data.CopyTo(Data);
+            data.CopyTo(KeyData);
+            KeyData.Data[^1] = (byte)(flag ? 1 : 0);
         }
 
         protected bool SetString(string b58, int nVersionBytes)
         {
-            if (Encoders.Base58Check.TryDecode(b58, out var bytes) && bytes.Length >= nVersionBytes)
-            {
-                _versionData = bytes;
-                _versionLength = nVersionBytes;
-                return true;
-            }
+            var (data, length, result) = 
+                Encoders.Base58Check.TryDecode(b58, out var bytes) && bytes.Length >= nVersionBytes 
+                    ? (bytes, nVersionBytes, true) 
+                    : (new byte[0], 0, false);
 
-            _versionData = new byte[0];
-            _versionLength = 0;
-            return false;
+            _versionData = data;
+            _versionLength = length;
+            return result;
         }
 
         public override string ToString() => Encoders.Base58Check.Encode(_versionData);

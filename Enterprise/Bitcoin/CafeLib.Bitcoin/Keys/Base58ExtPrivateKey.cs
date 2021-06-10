@@ -36,9 +36,9 @@ namespace CafeLib.Bitcoin.Keys
         public ExtPrivateKey GetKey()
         {
             var privateKey = new ExtPrivateKey();
-            if (Data.Length == ExtKey.Bip32KeySize)
+            if (KeyData.Length == ExtKey.Bip32KeySize)
             {
-                privateKey.Decode(Data);
+                privateKey.Decode(KeyData);
             }
             return privateKey;
         }

@@ -22,9 +22,9 @@ namespace CafeLib.Bitcoin.Keys
         public ExtPublicKey GetKey()
         {
             var pubKey = new ExtPublicKey();
-            if (Data.Length == ExtKey.Bip32KeySize) 
+            if (KeyData.Length == ExtKey.Bip32KeySize) 
             {
-                pubKey.Decode(Data);
+                pubKey.Decode(KeyData);
             }
             return pubKey;
         }

@@ -20,7 +20,7 @@ namespace CafeLib.Bitcoin.Keys
 
         public PrivateKey GetKey()
         {
-            var data = Data;
+            var data = KeyData;
             Debug.Assert(data.Length >= UInt256.Length);
             var isCompressed = data.Length > UInt256.Length && data[UInt256.Length] == 1;
             var privateKey = new PrivateKey(data[..UInt256.Length], isCompressed);
@@ -31,7 +31,7 @@ namespace CafeLib.Bitcoin.Keys
         {
             get 
             {
-                var d = Data;
+                var d = KeyData;
                 var fExpectedFormat = d.Length == UInt256.Length || d.Length == UInt256.Length + 1 && d[^1] == 1;
                 var v = Version;
                 var fCorrectVersion = v.Data.SequenceEqual(RootService.Network.SecretKey);
