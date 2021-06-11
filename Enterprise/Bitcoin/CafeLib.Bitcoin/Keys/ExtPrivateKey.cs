@@ -83,10 +83,13 @@ namespace CafeLib.Bitcoin.Keys
         /// <returns>Returns this key unless required key paths aren't valid for generated key.</returns>
         public ExtPrivateKey SetMasterBip32(string mnemonicWords, IEnumerable<KeyPath> required = null, string hmacKey = null)
         {
-            var e = Mnemonic.FromWords(mnemonicWords).Entropy;
-            if (e == null || e.Length < 32)
-                throw new ArgumentException($"{nameof(mnemonicWords)} must provide at least 32 bytes of BIP39 mnemonic entropy.");
-            return SetMasterBip32(e, required, hmacKey);
+            var bytes = Mnemonic.FromWords(mnemonicWords).Entropy;
+            return bytes.Length switch
+            {
+                var length when length < 128 / 8 => throw new ArgumentException($"{nameof(mnemonicWords)} Need more than 128 bits of entropy"),
+                var length when length > 512 / 8 => throw new ArgumentException($"{nameof(mnemonicWords)} More than 512 bits of entropy is nonstandard"),
+                _ => SetMasterBip32(bytes, required, hmacKey),
+            };
         }
 
         /// <summary>

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <Company></Company>
@@ -21,6 +21,7 @@
     <Version Condition="'$(VersionSuffix)' == ''">0.1.0</Version>
     <RootNamespace>Secp256k1Net</RootNamespace>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Copyright>Copyright (c) 2020 TonesNotes</Copyright>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
