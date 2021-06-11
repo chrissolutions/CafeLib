@@ -228,13 +228,23 @@ namespace CafeLib.Bitcoin.Wallet
 			return (Languages.Unknown, null);
 		}
 
+        /// <summary>
+        /// The checksum is a substring of the binary representation of the SHA256 hash of entropy.
+        /// For every four bytes of entropy, one additional bit of the hash is used.
+        /// </summary>
+        /// <param name="entropy"></param>
+        /// <returns></returns>
+        public static string GetChecksum(byte[] entropy) => GetChecksum(new ReadOnlySequence<byte>(entropy));
+
+        private static string GetChecksum(ByteSpan entropy) => GetChecksum(new ReadOnlySequence<byte>(entropy.ToArray()));
+
 		/// <summary>
 		/// The checksum is a substring of the binary representation of the SHA256 hash of entropy.
 		/// For every four bytes of entropy, one additional bit of the hash is used.
 		/// </summary>
 		/// <param name="entropy"></param>
 		/// <returns></returns>
-		public static string GetChecksum(ReadOnlyByteSequence entropy)
+		private static string GetChecksum(ReadOnlyByteSequence entropy)
 		{
 			var hash = entropy.Sha256();
 			var bits = (int)entropy.Length * 8;
@@ -251,16 +261,6 @@ namespace CafeLib.Bitcoin.Wallet
 
 			return sb.ToString();
 		}
-
-		/// <summary>
-		/// The checksum is a substring of the binary representation of the SHA256 hash of entropy.
-		/// For every four bytes of entropy, one additional bit of the hash is used.
-		/// </summary>
-		/// <param name="entropy"></param>
-		/// <returns></returns>
-		public static string GetChecksum(byte[] entropy) => GetChecksum(new ReadOnlySequence<byte>(entropy));
-
-		public static string GetChecksum(ByteSpan entropy) => GetChecksum(new ReadOnlySequence<byte>(entropy.ToArray()));
 
 		/// <summary>
 		/// Returns words converted into a binary string of "0" and "1" based on wordList.
