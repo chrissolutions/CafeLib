@@ -12,7 +12,6 @@ using CafeLib.Bitcoin.Crypto;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Wallet;
-
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.Bitcoin.Keys
