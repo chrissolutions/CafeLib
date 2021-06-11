@@ -66,8 +66,8 @@ namespace CafeLib.Bitcoin.Wallet
 		/// </summary>
 		/// <param name="entropy">Binary data to encode.</param>
 		/// <param name="language">Optional language key to select WordList from WordLists. Defaults to English.</param>
-		public static Mnemonic FromEntropy(Span<byte> entropy, Languages language = Languages.English) => new Mnemonic(entropy, language);
-		public static Mnemonic FromEntropy(Span<byte> entropy, string[] wordList, Languages language = Languages.Unknown) => new Mnemonic(entropy, wordList, language);
+		public static Mnemonic FromEntropy(byte[] entropy, Languages language = Languages.English) => new Mnemonic(entropy, language);
+		public static Mnemonic FromEntropy(byte[] entropy, string[] wordList, Languages language = Languages.Unknown) => new Mnemonic(entropy, wordList, language);
 
 		/// <summary>
 		/// Create a new KzMnemonic from given entropy encoded as base 6 string of digits. e.g. Die rolls.
@@ -165,7 +165,7 @@ namespace CafeLib.Bitcoin.Wallet
 		/// <param name="entropy">Binary data to encode.</param>
 		/// <param name="wordList"></param>
 		/// <param name="language">Optional language key. Defaults to Unknown.</param>
-		public Mnemonic(ByteSpan entropy, string[] wordList, Languages language = Languages.Unknown)
+		public Mnemonic(IEnumerable<byte> entropy, string[] wordList, Languages language = Languages.Unknown)
 		{
 			Entropy = entropy.ToArray();
 			Language = language;
@@ -178,7 +178,7 @@ namespace CafeLib.Bitcoin.Wallet
 		/// </summary>
 		/// <param name="entropy">Binary data to encode.</param>
 		/// <param name="language">Optional language key to select WordList from WordLists. Defaults to English.</param>
-		public Mnemonic(ByteSpan entropy, Languages language = Languages.English)
+		public Mnemonic(IEnumerable<byte> entropy, Languages language = Languages.English)
 			: this(entropy, WordLists.GetWords(language), language) { }
 
 		private static string ConvertDataToWords(ByteSpan entropy, string[] wordList)
