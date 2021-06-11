@@ -110,7 +110,7 @@ namespace CafeLib.Bitcoin.Wallet
 
 			Language = language;
 			WordList = wordList;
-			Words = ConvertDataToWords(Entropy, WordList);
+			Words = ConvertEntropyToWords(Entropy, WordList);
 		}
 
 		/// <summary>
@@ -170,7 +170,7 @@ namespace CafeLib.Bitcoin.Wallet
 			Entropy = entropy.ToArray();
 			Language = language;
 			WordList = wordList;
-			Words = ConvertDataToWords(Entropy, WordList);
+			Words = ConvertEntropyToWords(Entropy, WordList);
 		}
 
 		/// <summary>
@@ -181,7 +181,7 @@ namespace CafeLib.Bitcoin.Wallet
 		public Mnemonic(IEnumerable<byte> entropy, Languages language = Languages.English)
 			: this(entropy, WordLists.GetWords(language), language) { }
 
-		private static string ConvertDataToWords(ByteSpan entropy, string[] wordList)
+		private static string ConvertEntropyToWords(ByteSpan entropy, string[] wordList)
 		{
 			var checksum = GetChecksum(entropy);
 			var bin = ConvertBytesToBinaryString(entropy) + checksum;
