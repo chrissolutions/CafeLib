@@ -12,7 +12,6 @@ using CafeLib.Bitcoin.Crypto;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Wallet;
-
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.Bitcoin.Keys
@@ -97,7 +96,8 @@ namespace CafeLib.Bitcoin.Keys
         /// <param name="password">password and passwordPrefix are combined to generate salt bytes.</param>
         /// <param name="passwordPrefix">password and passwordPrefix are combined to generate salt bytes. Default is "mnemonic".</param>
         /// <returns>Computes 512 bit Bip39 seed.</returns>
-        public static UInt512 Bip39Seed(string passphrase, string password = null, string passwordPrefix = "mnemonic") {
+        public static UInt512 Bip39Seed(string passphrase, string password = null, string passwordPrefix = "mnemonic") 
+        {
             return Hashes.PbKdf2HmacSha512(passphrase.Utf8NormalizedToBytes(), $"{passwordPrefix}{password}".Utf8NormalizedToBytes(), 2048);
         }
 
@@ -110,10 +110,8 @@ namespace CafeLib.Bitcoin.Keys
         /// <param name="required">if not null, each key path will be verified as valid on the generated key or returns null.</param>
         /// <param name="passwordPrefix">password and passwordPrefix are combined to generate salt bytes. Default is "mnemonic".</param>
         /// <returns>Returns this key unless required key paths aren't valid for generated key.</returns>
-        public ExtPrivateKey SetMasterBip39(string passphrase, string password = null, IEnumerable<KeyPath> required = null, string passwordPrefix = "mnemonic") {
-            var seed = Bip39Seed(passphrase, password, passwordPrefix);
-            return SetMasterBip32(seed, required);
-        }
+        public ExtPrivateKey SetMasterBip39(string passphrase, string password = null, IEnumerable<KeyPath> required = null, string passwordPrefix = "mnemonic")
+            => SetMasterBip32(Bip39Seed(passphrase, password, passwordPrefix), required);
 
         /// <summary>
         /// Returns a new extended private key to be a master (depth 0) with the given private key and chaincode and verifies required key paths.
@@ -176,6 +174,11 @@ namespace CafeLib.Bitcoin.Keys
         /// </summary>
         /// <returns></returns>
         public ExtPublicKey GetExtPublicKey() => ExtPublicKey.FromPrivateKey(this);
+
+        /// <summary>
+        /// Get public key from ExtPrivateKey.
+        /// </summary>
+        /// <returns></returns>
         public PublicKey GetPublicKey() => PrivateKey.CreatePublicKey();
 
         /// <summary>
