@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageIcon>cafelib.png</PackageIcon>
+    <PackageIconUrl />
+    <Description>C# implementation of Bitcoin SV library.</Description>
+    <Copyright>Copyright (c) 2020 TonesNotes</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -26,6 +31,10 @@
     <None Remove="Wallet\Cultures\Japanese.words" />
     <None Remove="Wallet\Cultures\PortugueseBrazil.words" />
     <None Remove="Wallet\Cultures\Spanish.words" />
+    <None Include="..\..\..\cafelib.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
