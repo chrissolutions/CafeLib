@@ -60,7 +60,7 @@ namespace Secp256k1Net
 
         public static string LibPath => _libPath.Value;
         static readonly Lazy<string> _libPath = new Lazy<string>(() => LibPathResolver.Resolve(LIB), true);
-        static readonly Lazy<IntPtr> _libPtr = new Lazy<IntPtr>(() => LoadLibNative.LoadLib(_libPath.Value), true);
+        static readonly Lazy<IntPtr> _libPtr = new Lazy<IntPtr>(() => LoadLibNative.LoadLibrary(_libPath.Value), true);
 
         IntPtr _ctx;
 

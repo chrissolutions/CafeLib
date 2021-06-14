@@ -1,127 +1,112 @@
 ﻿using Secp256k1Net.DynamicLinking;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Secp256k1Net
 {
-    static class LoadLibNative
+    public static class LoadLibNative
     {
-        static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-        static readonly bool IsMacOS = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
-        static readonly bool IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+        private static readonly PlatformOS PlatformOS = GetPlatformOS();
 
-        public static IntPtr LoadLib(string libPath)
+        public static IntPtr LoadLibrary(string libPath)
         {
-            IntPtr libPtr;
+            // ReSharper disable once InconsistentNaming
+            const int RTLD_NOW = 2;
+            var libPtr = PlatformOS switch
+            {
+                PlatformOS.Windows => DynamicLinkingWindows.LoadLibrary(libPath),
+                PlatformOS.Linux => DynamicLinkingLinux.dlopen(libPath, RTLD_NOW),
+                PlatformOS.MacOS => DynamicLinkingMacOS.dlopen(libPath, RTLD_NOW),
+                _ => throw new Exception($"Unsupported platform: {RuntimeInformation.OSDescription}. The supported platforms are: {string.Join(", ", new[] { OSPlatform.Windows, OSPlatform.OSX, OSPlatform.Linux })}")
+            };
 
-            if (IsWindows)
-            {
-                libPtr = DynamicLinkingWindows.LoadLibrary(libPath);
-            }
-            else if (IsLinux)
-            {
-                const int RTLD_NOW = 2;
-                libPtr = DynamicLinkingLinux.dlopen(libPath, RTLD_NOW);
-            }
-            else if (IsMacOS)
-            {
-                const int RTLD_NOW = 2;
-                libPtr = DynamicLinkingMacOS.dlopen(libPath, RTLD_NOW);
-            }
-            else
-            {
-                throw new Exception($"Unsupported platform: {RuntimeInformation.OSDescription}. The supported platforms are: {string.Join(", ", new[] { OSPlatform.Windows, OSPlatform.OSX, OSPlatform.Linux })}");
-            }
-            if (libPtr == IntPtr.Zero)
-            {
-                throw new Exception($"Library loading failed, file: {libPath}", GetLastError());
-            }
-
-            return libPtr;
+            return libPtr != IntPtr.Zero
+                ? libPtr 
+                : throw new Exception($"Library loading failed, file: {libPath}", GetLastError());
         }
 
         public static void CloseLibrary(IntPtr lib)
         {
-            if (lib == IntPtr.Zero)
+            if (lib == IntPtr.Zero) return;
+
+            switch (PlatformOS)
             {
-                return;
-            }
-            if (IsWindows)
-            {
-                DynamicLinkingWindows.FreeLibrary(lib);
-            }
-            else if (IsMacOS)
-            {
-                DynamicLinkingMacOS.dlclose(lib);
-            }
-            else if (IsLinux)
-            {
-                DynamicLinkingLinux.dlclose(lib);
-            }
-            else
-            {
-                throw new Exception("Unsupported platform");
+                case PlatformOS.Windows:
+                    DynamicLinkingWindows.FreeLibrary(lib);
+                    break;
+
+                case PlatformOS.Linux:
+                    DynamicLinkingLinux.dlclose(lib);
+                    break;
+
+                case PlatformOS.MacOS:
+                    DynamicLinkingMacOS.dlclose(lib);
+                    break;
+
+                default:
+                    throw new NotSupportedException("Unsupported platform");
             }
         }
 
-        static Exception GetLastError()
+        public static Exception GetLastError()
         {
-            if (IsWindows)
+            switch (PlatformOS)
             {
-                return new Win32Exception(Marshal.GetLastWin32Error());
+                case PlatformOS.Windows:
+                    return new Win32Exception(Marshal.GetLastWin32Error());
+
+                case PlatformOS.Linux:
+                {
+                    var errorPtr = DynamicLinkingLinux.dlerror();
+                    return new Exception(errorPtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(errorPtr) : "Error information could not be found");
+                }
+
+                case PlatformOS.MacOS:
+                {
+                    var errorPtr = DynamicLinkingLinux.dlerror();
+                    return new Exception(errorPtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(errorPtr) : "Error information could not be found");
+                }
+
+                default:
+                    throw new NotSupportedException("Unsupported platform");
             }
-            else
-            {
-                IntPtr errorPtr;
-                if (IsLinux)
-                {
-                    errorPtr = DynamicLinkingLinux.dlerror();
-                }
-                else if (IsMacOS)
-                {
-                    errorPtr = DynamicLinkingMacOS.dlerror();
-                }
-                else
-                {
-                    throw new Exception("Unsupported platform");
-                }
-                if (errorPtr == IntPtr.Zero)
-                {
-                    return new Exception("Error information could not be found");
-                }
-                return new Exception(Marshal.PtrToStringAnsi(errorPtr));
-            }
+
         }
 
         public static TDelegate GetDelegate<TDelegate>(IntPtr libPtr, string symbolName)
         {
-            IntPtr functionPtr;
-            if (IsWindows)
+            var functionPtr = PlatformOS switch
             {
-                functionPtr = DynamicLinkingWindows.GetProcAddress(libPtr, symbolName);
-            }
-            else if (IsMacOS)
+                PlatformOS.Windows => DynamicLinkingWindows.GetProcAddress(libPtr, symbolName),
+                PlatformOS.Linux => DynamicLinkingLinux.dlsym(libPtr, symbolName),
+                PlatformOS.MacOS => DynamicLinkingMacOS.dlsym(libPtr, symbolName),
+                _ => throw new Exception($"Unsupported platform: {RuntimeInformation.OSDescription}. The supported platforms are: {string.Join(", ", new[] { OSPlatform.Windows, OSPlatform.OSX, OSPlatform.Linux })}")
+            };
+
+            return functionPtr != IntPtr.Zero
+                ? Marshal.GetDelegateForFunctionPointer<TDelegate>(functionPtr)
+                : throw new Exception($"Library symbol failed, symbol: {symbolName}", GetLastError());
+        }
+
+        private static PlatformOS GetPlatformOS()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                functionPtr = DynamicLinkingMacOS.dlsym(libPtr, symbolName);
-            }
-            else if (IsLinux)
-            {
-                functionPtr = DynamicLinkingLinux.dlsym(libPtr, symbolName);
-            }
-            else
-            {
-                throw new Exception("Unsupported platform");
+                return PlatformOS.Windows;
             }
 
-            if (functionPtr == IntPtr.Zero)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                throw new Exception($"Library symbol failed, symbol: {symbolName}", GetLastError());
+                return PlatformOS.Linux;
             }
 
-            return Marshal.GetDelegateForFunctionPointer<TDelegate>(functionPtr);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                return PlatformOS.MacOS;
+            }
+
+            throw new NotSupportedException($"Unsupported platform: {RuntimeInformation.OSDescription}. The supported platforms are: {string.Join(", ", new[] { OSPlatform.Windows, OSPlatform.OSX, OSPlatform.Linux })}");
         }
     }
 }

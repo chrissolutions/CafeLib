@@ -215,6 +215,7 @@ namespace Secp256k1Net.Test
         /// Obtains the bytes that represent the BigInteger as if it was a big endian 256-bit integer.
         /// </summary>
         /// <param name="bigInteger">The BigInteger to obtain the byte representation of.</param>
+        /// <param name="byteCount"></param>
         /// <returns>Returns the bytes that represent BigInteger as if it was a 256-bit integer.</returns>
         public static byte[] GetBytes(BigInteger bigInteger, int byteCount = 32)
         {
