@@ -9,7 +9,7 @@ using CafeLib.BsvSharp.Crypto;
 
 namespace CafeLib.BsvSharp.Encoding
 {
-    public class Base58CheckEncoder : Encoder
+    public class Base58CheckEncoder : EncoderBase
     {
         /// <summary>
         /// Appends first 4 bytes of double SHA256 hash to bytes before standard Base58 encoding.

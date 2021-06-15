@@ -7,7 +7,7 @@ namespace CafeLib.BsvSharp.Encoding
 {
     /// <summary>
     /// </summary>
-    public class Base58Encoder : Encoder
+    public class Base58Encoder : EncoderBase
     {
         /** All alphanumeric characters except for "0", "I", "O", and "l" */
         private const string Base58Characters = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";

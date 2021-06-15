@@ -78,7 +78,7 @@ namespace CafeLib.BsvSharp.Scripting
 
         const uint MaximumElementSize = 4;
 
-        private static readonly Encoder Hex = Encoders.HexReverse;
+        private static readonly EncoderBase Hex = Encoders.HexReverse;
 
         public static readonly ScriptNum Zero = new ScriptNum(0);
         public static readonly ScriptNum One = new ScriptNum(1);

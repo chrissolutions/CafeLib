@@ -14,7 +14,7 @@ namespace CafeLib.BsvSharp.Encoding
     /// Only two methods are abstract, one Encode and one TryDecode methods.
     /// Additional overloads of each are virtual to allow optimizations to be provided.
     /// </summary>
-    public abstract class Encoder
+    public abstract class EncoderBase
     {
         public string Encode(ReadOnlyByteSpan data1, ReadOnlyByteSpan data2)
         {

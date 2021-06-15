@@ -15,7 +15,7 @@ namespace CafeLib.BsvSharp.Encoding
     /// Character 0 corresponds to the high nibble of the first byte. 
     /// Character 1 corresponds to the low nibble of the first byte. 
     /// </summary>
-    public class HexEncoder : Encoder
+    public class HexEncoder : EncoderBase
     {
         protected static readonly string[] ByteToChs = Enumerable.Range(0, 256).Select(v => v.ToString("x2")).ToArray();
         protected static readonly int[] CharToNibbleArray;
