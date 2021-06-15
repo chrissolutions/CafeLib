@@ -14,7 +14,7 @@ namespace CafeLib.BsvSharp.Encoding
     /// Character 0 corresponds to the high nibble of the first byte. 
     /// Character 1 corresponds to the low nibble of the first byte. 
     /// </summary>
-    public class Utf8Encoder : EncoderBase
+    public class Utf8Encoder : Encoder
     {
         public override string Encode(ReadOnlyByteSequence data) => System.Text.Encoding.UTF8.GetString(data);
 

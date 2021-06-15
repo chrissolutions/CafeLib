@@ -4,7 +4,7 @@ using CafeLib.BsvSharp.Buffers;
 
 namespace CafeLib.BsvSharp.Encoding
 {
-    public class EndianEncoder : EncoderBase
+    public class EndianEncoder : Encoder
     {
         public int LittleEndianInt32(ReadOnlyByteSpan data) => BinaryPrimitives.ReadInt32LittleEndian(data);
         public int BigEndianInt32(ReadOnlyByteSpan data) => BinaryPrimitives.ReadInt32BigEndian(data);

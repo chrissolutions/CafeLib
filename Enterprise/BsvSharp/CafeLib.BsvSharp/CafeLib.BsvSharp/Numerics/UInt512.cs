@@ -27,8 +27,8 @@ namespace CafeLib.BsvSharp.Numerics
         private ulong _n6;
         private ulong _n7;
 
-        private static readonly EncoderBase Hex = Encoders.Hex;
-        private static readonly EncoderBase HexReverse = Encoders.HexReverse;
+        private static readonly Encoder Hex = Encoders.Hex;
+        private static readonly Encoder HexReverse = Encoders.HexReverse;
 
         public const int Length = 64;
 
