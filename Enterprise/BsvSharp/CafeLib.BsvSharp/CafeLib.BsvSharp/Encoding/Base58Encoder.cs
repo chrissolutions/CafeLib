@@ -113,8 +113,8 @@ namespace CafeLib.BsvSharp.Encoding
             var source58 = new byte[source.Length];
             for (var i = 0; i < source.Length; ++i)
             {
-                char c = source[i];
-                int digit = c < (char)128 ? Indexes[c] : -1;
+                var c = source[i];
+                var digit = c < (char)128 ? Indexes[c] : -1;
                 if (digit < 0)
                 {
                     throw new FormatException("Illegal character " + c + " at position " + i);
@@ -123,7 +123,7 @@ namespace CafeLib.BsvSharp.Encoding
             }
 
             // Count leading zeros.
-            var zeros = source.TakeWhile(x => x == 0).Count();
+            var zeros = source58.TakeWhile(x => x == 0).Count();
 
             // Convert base-58 digits to base-256 digits.
             var decoded = new byte[source.Length];
