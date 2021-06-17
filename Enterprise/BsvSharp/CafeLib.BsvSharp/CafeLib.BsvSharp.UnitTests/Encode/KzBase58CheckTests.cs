@@ -1,4 +1,6 @@
-﻿using CafeLib.BsvSharp.Encoding;
+﻿using System;
+using System.Linq;
+using CafeLib.BsvSharp.Encoding;
 using Xunit;
 
 namespace CafeLib.BsvSharp.UnitTests.Encode
@@ -61,6 +63,17 @@ namespace CafeLib.BsvSharp.UnitTests.Encode
             Assert.Equal(version, ver);
             Assert.Equal(hexBytes, data);
             Assert.Equal(base58, e.Encode(buf));
+        }
+
+
+        [Theory]
+        [InlineData("1AGNa15ZQXAZagFiqJ2i7Z2DPU2J6hW62i", "65a16059864a2fdbc7c99a4723a8395bc6f188eb", 0)]
+        public void KzBase58CheckFailureTestCases(string base58, string hex, int version)
+        {
+            var decodeBytes = Array.Empty<byte>();
+
+           Assert.Throws<FormatException>(() => decodeBytes = Encoders.Base58Check.Decode(base58));
+            Assert.True(Array.Empty<byte>().SequenceEqual(decodeBytes));
         }
     }
 }
