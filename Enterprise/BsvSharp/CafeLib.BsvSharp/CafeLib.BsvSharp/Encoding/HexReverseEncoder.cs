@@ -30,7 +30,7 @@ namespace CafeLib.BsvSharp.Encoding
             if (source.Length % 2 == 1)
                 throw new ArgumentException("Invalid hex bytes string.", nameof(source));
 
-            var bytes = new byte[source.Length * sizeof(char)];
+            var bytes = new byte[source.Length / sizeof(char)];
             for (int i = 0, j = bytes.Length; i < source.Length;)
             {
                 var a = HexEncoder.Current.CharToNibble(source[i++]);
