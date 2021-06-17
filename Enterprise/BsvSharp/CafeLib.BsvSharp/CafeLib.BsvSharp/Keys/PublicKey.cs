@@ -211,7 +211,7 @@ namespace CafeLib.BsvSharp.Keys
         /// <returns>20 byte hash as a KzUInt160</returns>
         public UInt160 ToHash160() => Data.Hash160();
 
-        public string ToAddress() => Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress, ToHash160().Span);
+        public string ToAddress() => Encoders.Base58Check.Encode( new [] {(byte[])RootService.Network.PublicKeyAddress, ToHash160()});
 
         public string ToHex() => _bytes != null ? Encoders.Hex.Encode(_bytes) : "<invalid>";
 

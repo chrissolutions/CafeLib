@@ -4,19 +4,20 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Crypto;
+using CafeLib.Core.Extensions;
 using CafeLib.Core.Support;
 
 namespace CafeLib.BsvSharp.Encoding
 {
     public class Base58CheckEncoder : SingletonBase<Base58CheckEncoder>, IEncoder
     {
-        public string Encode(ReadOnlyByteSpan data1, ReadOnlyByteSpan data2)
+        public string Encode(IEnumerable<byte[]> args)
         {
-            var bytes = new byte[data1.Length + data2.Length].AsSpan();
-            data1.CopyTo(bytes);
-            data2.CopyTo(bytes.Slice(data1.Length));
+            var bytes = new List<byte>();
+            args.ForEach(x => bytes.AddRange(x));
             return Encode(bytes.ToArray());
         }
 

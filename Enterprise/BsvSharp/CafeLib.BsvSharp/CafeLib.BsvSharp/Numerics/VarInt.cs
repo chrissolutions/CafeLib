@@ -8,7 +8,7 @@ using CafeLib.BsvSharp.Extensions;
 
 namespace CafeLib.BsvSharp.Numerics
 {
-    public readonly struct Variant
+    public readonly struct VarInt
     {
         private const int SizeofVarByte = sizeof(byte);
         private const int SizeofVarChar = sizeof(char) + sizeof(byte) ;
@@ -19,12 +19,12 @@ namespace CafeLib.BsvSharp.Numerics
         public int Length { get; }
         public byte Prefix { get; }
 
-        internal Variant(ulong value)
+        internal VarInt(ulong value)
             : this((long)value)
         {
         }
 
-        internal Variant(int value)
+        internal VarInt(int value)
         {
             var (length, prefix) = GetInfo(value);
             Length = length;
@@ -32,7 +32,7 @@ namespace CafeLib.BsvSharp.Numerics
             Value = value;
         }
 
-        internal Variant(long value)
+        internal VarInt(long value)
         {
             var (length, prefix) = GetInfo(value);
             Length = length;
@@ -40,11 +40,11 @@ namespace CafeLib.BsvSharp.Numerics
             Value = value;
         }
 
-        public static implicit operator byte[](Variant rhs) => rhs.ToArray();
-        public static explicit operator Variant(int rhs) => new Variant(rhs);
-        public static explicit operator Variant(uint rhs) => new Variant(rhs);
-        public static explicit operator Variant(long rhs) => new Variant(rhs);
-        public static explicit operator Variant(ulong rhs) => new Variant(rhs);
+        public static implicit operator byte[](VarInt rhs) => rhs.ToArray();
+        public static explicit operator VarInt(int rhs) => new VarInt(rhs);
+        public static explicit operator VarInt(uint rhs) => new VarInt(rhs);
+        public static explicit operator VarInt(long rhs) => new VarInt(rhs);
+        public static explicit operator VarInt(ulong rhs) => new VarInt(rhs);
 
         public byte[] ToArray() => AsBytes(Value);
 
@@ -102,12 +102,12 @@ namespace CafeLib.BsvSharp.Numerics
                 len = SizeofVarByte;
                 prefix = 0;
             }
-            else if (unsigned <= 0xffff)
+            else if (unsigned <= ushort.MaxValue)
             {
                 len = SizeofVarChar; 
                 prefix = 0xfd; 
             }
-            else if (unsigned <= 0xffff_ffff)
+            else if (unsigned <= uint.MaxValue)
             {
                 len = SizeofVarInt; 
                 prefix = 0xfe; 

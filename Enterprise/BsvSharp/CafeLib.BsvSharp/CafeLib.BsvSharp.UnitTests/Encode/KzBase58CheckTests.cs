@@ -7,12 +7,6 @@ namespace CafeLib.BsvSharp.UnitTests.Encode
 {
     public class KzBase58CheckTests
     {
-        private class TestCase { public bool Ok; public byte Version; public string Hex; public string Base58; }
-
-        private readonly TestCase[] _testCases = {
-            //new TestCase { Ok = false, Base58 = "1AGNa15ZQXAZagFiqJ2i7Z2DPU2J6hW62i", Hex = "65a16059864a2fdbc7c99a4723a8395bc6f188eb", Version = 0 },
-        };
-
         [Theory]
         [InlineData("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i", "65a16059864a2fdbc7c99a4723a8395bc6f188eb", 0)]
         [InlineData("3CMNFxN1oHBc4R1EpboAL5yzHGgE611Xou", "74f209f6ea907e2ea48f74fae05782ae8a665257", 5)]
@@ -67,8 +61,9 @@ namespace CafeLib.BsvSharp.UnitTests.Encode
 
 
         [Theory]
-        [InlineData("1AGNa15ZQXAZagFiqJ2i7Z2DPU2J6hW62i", "65a16059864a2fdbc7c99a4723a8395bc6f188eb", 0)]
-        public void KzBase58CheckFailureTestCases(string base58, string hex, int version)
+        //[InlineData("1AGNa15ZQXAZagFiqJ2i7Z2DPU2J6hW62i", "65a16059864a2fdbc7c99a4723a8395bc6f188eb", 0)]
+        [InlineData("1AGNa15ZQXAZagFiqJ2i7Z2DPU2J6hW62i")]
+        public void KzBase58CheckFailureTestCases(string base58)
         {
             var decodeBytes = Array.Empty<byte>();
 
