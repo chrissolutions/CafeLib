@@ -12,12 +12,12 @@ namespace CafeLib.BsvSharp.Encoding
 {
     public class Base58CheckEncoder : SingletonBase<Base58CheckEncoder>, IEncoder
     {
-        public string Encode(ReadOnlyByteSpan data1, ReadOnlyByteSpan data2)
+        public string Encode(byte[] data1, byte[] data2)
         {
-            var bytes = new byte[data1.Length + data2.Length].AsSpan();
+            ByteSpan bytes = new byte[data1.Length + data2.Length].AsSpan();
             data1.CopyTo(bytes);
             data2.CopyTo(bytes.Slice(data1.Length));
-            return Encode(bytes.ToArray());
+            return Encode(bytes);
         }
 
         /// <summary>
