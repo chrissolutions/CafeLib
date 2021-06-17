@@ -1,5 +1,5 @@
 ﻿using System;
-using CafeLib.BsvSharp.Buffers;
+using CafeLib.Core.Support;
 
 namespace CafeLib.BsvSharp.Encoding
 {
@@ -9,55 +9,38 @@ namespace CafeLib.BsvSharp.Encoding
     /// Character 0 corresponds to the high nibble of the last byte. 
     /// Character 1 corresponds to the low nibble of the last byte. 
     /// </summary>
-    public class HexReverseEncoder : HexEncoder
+    public class HexReverseEncoder : SingletonBase<HexReverseEncoder>, IEncoder
     {
-        public override string Encode(ReadOnlyByteSequence bytes)
+        public string Encode(byte[] source)
         {
-            var s = new char[bytes.Length * 2];
+            var s = new char[source.Length * sizeof(char)];
             var i = s.Length;
-            foreach (var m in bytes)
+            foreach (var b in source)
             {
-                foreach (var b in m.Data.Span)
-                {
-                    var chs = ByteToChs[b];
-                    s[--i] = chs[1];
-                    s[--i] = chs[0];
-                }
-            }
-            return new string(s);
-        }
-
-        public override string Encode(ReadOnlyByteSpan bytes)
-        {
-            var s = new char[bytes.Length * 2];
-            var i = s.Length;
-            foreach (var b in bytes)
-            {
-                var chs = ByteToChs[b];
+                var chs = HexEncoder.Current.ByteToChs[b];
                 s[--i] = chs[1];
                 s[--i] = chs[0];
             }
+
             return new string(s);
         }
 
-        public override bool TryDecode(string hex, ByteSpan bytes)
+        public byte[] Decode(string source)
         {
-            if (hex.Length % 2 == 1)
-                throw new ArgumentException("Invalid hex bytes string.", nameof(hex));
+            if (source.Length % 2 == 1)
+                throw new ArgumentException("Invalid hex bytes string.", nameof(source));
 
-            if (hex.Length != bytes.Length * 2)
-                throw new ArgumentException("Length mismatch.", nameof(bytes));
-
-            for (int i = 0, j = bytes.Length; i < hex.Length;)
+            var bytes = new byte[source.Length * sizeof(char)];
+            for (int i = 0, j = bytes.Length; i < source.Length;)
             {
-                var a = CharToNibble(hex[i++]);
-                var b = CharToNibble(hex[i++]);
+                var a = HexEncoder.Current.CharToNibble(source[i++]);
+                var b = HexEncoder.Current.CharToNibble(source[i++]);
 
-                if (a == -1 || b == -1) return false;
+                if (a == -1 || b == -1) throw new FormatException(nameof(source));
                 bytes[--j] = (byte)((a << 4) | b);
             }
 
-            return true;
+            return bytes;
         }
     }
 }

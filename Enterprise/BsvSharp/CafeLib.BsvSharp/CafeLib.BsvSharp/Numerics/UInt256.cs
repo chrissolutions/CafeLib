@@ -30,29 +30,29 @@ namespace CafeLib.BsvSharp.Numerics
         {
         }
 
-        public UInt256(ReadOnlyByteSpan span, bool reverse = false)
+        public UInt256(byte[] bytes)
             : this()
         {
-            if (span.Length < Length)
+            if (bytes.Length < Length)
                 throw new ArgumentException("32 bytes are required.");
 
-            span.Slice(0, 32).CopyTo(Span);
-            if (reverse)
+            bytes[..Length].CopyTo(Span);
+            if (Encoders.Endian.IsLittleEndian)
                 Span.Reverse();
         }
 
-		public UInt256(ulong v0 = 0, ulong v1 = 0, ulong v2 = 0, ulong v3 = 0)
-		{
+        public UInt256(ulong v0 = 0, ulong v1 = 0, ulong v2 = 0, ulong v3 = 0)
+        {
             _n0 = v0;
             _n1 = v1;
             _n2 = v2;
             _n3 = v3;
-		}
+        }
 
-        public UInt256(string hex, bool firstByteFirst = false)
+        public UInt256(string hex)
             : this()
         {
-            (firstByteFirst ? Encoders.Hex : Encoders.HexReverse).TryDecode(hex, Span);
+            Encoders.Hex.Decode(hex).CopyTo(Span);
         }
 
         public static UInt256 Zero { get; } = new UInt256(0);
@@ -62,12 +62,12 @@ namespace CafeLib.BsvSharp.Numerics
         {
             get
             {
-                unsafe 
+                unsafe
                 {
                     fixed (ulong* p = &_n0)
                     {
                         var pb = p;
-                        var span = new Span<ulong>(pb, Length/sizeof(ulong));
+                        var span = new Span<ulong>(pb, Length / sizeof(ulong));
                         return span;
                     }
                 }
@@ -76,14 +76,14 @@ namespace CafeLib.BsvSharp.Numerics
 
         public UInt32Span Span32
         {
-            get 
+            get
             {
                 unsafe
                 {
                     fixed (ulong* p = &_n0)
                     {
                         var pb = (uint*)p;
-                        var span = new Span<uint>(pb, Length/sizeof(uint));
+                        var span = new Span<uint>(pb, Length / sizeof(uint));
                         return span;
                     }
                 }
@@ -92,15 +92,15 @@ namespace CafeLib.BsvSharp.Numerics
 
         public readonly ByteSpan Span
         {
-            get 
+            get
             {
-                unsafe 
+                unsafe
                 {
-                    fixed (ulong* p = &_n0) 
+                    fixed (ulong* p = &_n0)
                     {
                         var pb = (byte*)p;
-                        var bytes = new Span<byte>(pb, Length);
-                        return bytes;
+                        var span = new Span<byte>(pb, Length);
+                        return span;
                     }
                 }
             }
@@ -111,9 +111,9 @@ namespace CafeLib.BsvSharp.Numerics
             s.Read(Span);
         }
 
-        public readonly BigInteger ToBigInteger() => new BigInteger(Span, isUnsigned:true, isBigEndian:true);
+        public readonly BigInteger ToBigInteger() => new BigInteger(Span, isUnsigned: true, isBigEndian: true);
 
-        public byte[] ToArray(bool reverse = false)  => !reverse ? Span : new ByteSpan(Span).Reverse();
+        public byte[] ToArray(bool reverse = false) => !reverse ? Span : new ByteSpan(Span).Reverse();
 
         public void ToArray(ByteSpan destination, bool reverse = false)
         {
@@ -128,22 +128,7 @@ namespace CafeLib.BsvSharp.Numerics
         /// The bytes appear in big-endian order, as a large hexadecimal encoded number.
         /// </summary>
         /// <returns></returns>
-		public override string ToString() => Encoders.HexReverse.Encode(Span);
-
-        /// <summary>
-        /// The bytes appear in little-endian order, first byte in memory first.
-        /// But the high nibble, first hex digit, of the each byte still appears before the low nibble (big-endian by nibble order).
-        /// Equivalent to ToHex.
-        /// </summary>
-        /// <returns></returns>
-		public readonly string ToStringFirstByteFirst() => Encoders.Hex.Encode(Span);
-
-        /// <summary>
-        /// The bytes appear in little-endian order, first byte in memory first.
-        /// But the high nibble, first hex digit, of the each byte still appears before the low nibble (big-endian by nibble order).
-        /// </summary>
-        /// <returns></returns>
-		public string ToHex() => Encoders.Hex.Encode(Span);
+        public override string ToString() => Encoders.HexReverse.Encode(Span);
 
         public override int GetHashCode() => _n0.GetHashCode() ^ _n1.GetHashCode() ^ _n2.GetHashCode() ^ _n3.GetHashCode();
 
@@ -186,7 +171,7 @@ namespace CafeLib.BsvSharp.Numerics
             return r;
         }
 
-        public static UInt256 operator <<(UInt256 a, int shift) 
+        public static UInt256 operator <<(UInt256 a, int shift)
         {
             const int width = 4;
             var r = UInt256.Zero;
@@ -194,7 +179,7 @@ namespace CafeLib.BsvSharp.Numerics
             var apn = a.Span64.Data;
             var k = shift / 64;
             shift %= 64;
-            for (var i = 0; i < width; i++) 
+            for (var i = 0; i < width; i++)
             {
                 if (i + k + 1 < width && shift != 0)
                     rpn[i + k + 1] |= (apn[i] >> (64 - shift));
@@ -205,7 +190,7 @@ namespace CafeLib.BsvSharp.Numerics
             return r;
         }
 
-        public static UInt256 operator >>(UInt256 a, int shift) 
+        public static UInt256 operator >>(UInt256 a, int shift)
         {
             const int width = 4;
             var r = UInt256.Zero;
@@ -213,7 +198,7 @@ namespace CafeLib.BsvSharp.Numerics
             var apn = a.Span64.Data;
             var k = shift / 64;
             shift %= 64;
-            for (var i = 0; i < width; i++) 
+            for (var i = 0; i < width; i++)
             {
                 if (i - k - 1 >= 0 && shift != 0)
                     rpn[i - k - 1] |= (apn[i] << (64 - shift));
@@ -224,7 +209,8 @@ namespace CafeLib.BsvSharp.Numerics
             return r;
         }
 
-        public static UInt256 operator ~(UInt256 v) {
+        public static UInt256 operator ~(UInt256 v)
+        {
             v._n0 = ~v._n0;
             v._n1 = ~v._n1;
             v._n2 = ~v._n2;
@@ -232,14 +218,14 @@ namespace CafeLib.BsvSharp.Numerics
             return v;
         }
 
-        public int Bits() 
+        public int Bits()
         {
             const int width = Length / sizeof(uint);
             var pn = Span32;
             for (var pos = width - 1; pos >= 0; pos--)
             {
                 if (pn[pos] == 0) continue;
-                for (var bits = 31; bits > 0; bits--) 
+                for (var bits = 31; bits > 0; bits--)
                 {
                     if ((pn[pos] & (1 << bits)) != 0)
                     {
@@ -265,14 +251,16 @@ namespace CafeLib.BsvSharp.Numerics
 
         public static UInt256 operator -(UInt256 a, UInt256 b) => a + -b;
         public static UInt256 operator +(UInt256 a, UInt64 b) => a + new UInt256(b);
-        public static UInt256 operator +(UInt256 a, UInt256 b) {
+        public static UInt256 operator +(UInt256 a, UInt256 b)
+        {
             const int width = 8;
             UInt64 carry = 0;
             var r = UInt256.Zero;
             var rpn = r.Span32;
             var apn = a.Span32;
             var bpn = b.Span32;
-            for (int i = 0; i < width; i++) {
+            for (int i = 0; i < width; i++)
+            {
                 UInt64 n = carry + apn[i] + bpn[i];
                 rpn[i] = (UInt32)(n & 0xffffffff);
                 carry = n >> 32;
@@ -280,7 +268,8 @@ namespace CafeLib.BsvSharp.Numerics
             return r;
         }
 
-        public static UInt256 operator -(UInt256 a) {
+        public static UInt256 operator -(UInt256 a)
+        {
             const int width = 4;
             var r = UInt256.Zero;
             var rpn = r.Span64;
@@ -291,19 +280,20 @@ namespace CafeLib.BsvSharp.Numerics
             return r;
         }
 
-        public static UInt256 operator |(UInt256 a, UInt256 b) 
+        public static UInt256 operator |(UInt256 a, UInt256 b)
         {
             const int width = 4;
             var r = UInt256.Zero;
             var rpn = r.Span64;
             var apn = a.Span64;
             var bpn = b.Span64;
-            for (int i = 0; i<width; i++)
+            for (int i = 0; i < width; i++)
                 rpn[i] = apn[i] | bpn[i];
             return r;
         }
 
-        public static UInt256 operator /(UInt256 a, UInt256 b) {
+        public static UInt256 operator /(UInt256 a, UInt256 b)
+        {
             var num = a;
             var div = b;
             var r = UInt256.Zero;
@@ -319,8 +309,10 @@ namespace CafeLib.BsvSharp.Numerics
             int shift = numBits - divBits;
             // shift so that div and num align.
             div <<= shift;
-            while (shift >= 0) {
-                if (num >= div) {
+            while (shift >= 0)
+            {
+                if (num >= div)
+                {
                     num -= div;
                     // set a bit of the result.
                     rpn[shift / 32] |= (UInt32)(1 << (shift & 31));
@@ -375,5 +367,5 @@ namespace CafeLib.BsvSharp.Numerics
             return *this;
         }
 #endif
-        }
+    }
 }

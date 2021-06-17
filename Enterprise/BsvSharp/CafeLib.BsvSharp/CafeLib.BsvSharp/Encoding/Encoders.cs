@@ -9,12 +9,8 @@ namespace CafeLib.BsvSharp.Encoding
 {
     public static class Encoders
     {
-        private static readonly Lazy<HexEncoder> LazyHex = new Lazy<HexEncoder>(() => new HexEncoder(), true);
-        private static readonly Lazy<HexReverseEncoder> LazyHexReverse = new Lazy<HexReverseEncoder>(() => new HexReverseEncoder(), true);
-        private static readonly Lazy<Base58Encoder> LazyBase58 = new Lazy<Base58Encoder>(() => new Base58Encoder());
         private static readonly Lazy<Base58CheckEncoder> LazyBase58Check = new Lazy<Base58CheckEncoder>(() => new Base58CheckEncoder());
         private static readonly Lazy<Utf8Encoder> LazyUtf8 = new Lazy<Utf8Encoder>(() => new Utf8Encoder());
-        private static readonly Lazy<EndianEncoder> LazyEndian = new Lazy<EndianEncoder>(() => new EndianEncoder());
 
         /// <summary>
         /// Encodes a sequence of bytes as hexadecimal digits where:
@@ -22,7 +18,7 @@ namespace CafeLib.BsvSharp.Encoding
         /// Character 0 corresponds to the high nibble of the first byte. 
         /// Character 1 corresponds to the low nibble of the first byte. 
         /// </summary>
-        public static EndianEncoder Endian => LazyEndian.Value;
+        public static EndianEncoder Endian => EndianEncoder.Current;
 
         /// <summary>
         /// Encodes a sequence of bytes as hexadecimal digits where:
@@ -30,7 +26,7 @@ namespace CafeLib.BsvSharp.Encoding
         /// Character 0 corresponds to the high nibble of the first byte. 
         /// Character 1 corresponds to the low nibble of the first byte. 
         /// </summary>
-        public static HexEncoder Hex => LazyHex.Value;
+        public static HexEncoder Hex => HexEncoder.Current;
 
         /// <summary>
         /// Encodes a sequence of bytes as hexadecimal digits where:
@@ -38,12 +34,12 @@ namespace CafeLib.BsvSharp.Encoding
         /// Character 0 corresponds to the high nibble of the last byte. 
         /// Character 1 corresponds to the low nibble of the last byte. 
         /// </summary>
-        public static HexReverseEncoder HexReverse => LazyHexReverse.Value;
+        public static HexReverseEncoder HexReverse => HexReverseEncoder.Current;
 
         // <summary>
         // Base58 encoder.
         // </summary>
-        public static Base58Encoder Base58 => LazyBase58.Value;
+        public static Base58Encoder Base58 => Base58Encoder.Current;
 
         // <summary>
         // Base58 plus checksum encoder.

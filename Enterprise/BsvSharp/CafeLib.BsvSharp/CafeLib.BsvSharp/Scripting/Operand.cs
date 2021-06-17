@@ -4,6 +4,7 @@
 #endregion
 
 using System;
+using System.Buffers;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics;
@@ -445,8 +446,8 @@ namespace CafeLib.BsvSharp.Scripting
                 s = Encoders.Hex.Encode(Data.Sequence);
             else
             {
-                var start = Encoders.Hex.Encode(Data.Sequence.Data.Slice(0, 32));
-                var end = Encoders.Hex.Encode(Data.Sequence.Data.Slice(len - 32));
+                var start = Encoders.Hex.Encode(Data.Sequence.Data.Slice(0, 32).ToArray());
+                var end = Encoders.Hex.Encode(Data.Sequence.Data.Slice(len - 32).ToArray());
                 s = $"{start}...[{Data.Length} bytes]...{end}";
             }
             return s;

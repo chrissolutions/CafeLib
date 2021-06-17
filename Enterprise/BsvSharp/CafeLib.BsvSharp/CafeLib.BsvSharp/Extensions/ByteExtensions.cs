@@ -13,6 +13,13 @@ namespace CafeLib.BsvSharp.Extensions
         public static ByteSpan Slice(this byte[] a, int start) => a.AsSpan().Slice(start);
         public static ByteSpan Slice(this byte[] a, int start, int length) => a.AsSpan().Slice(start, length);
 
+        public static byte[] Duplicate(this byte[] source)
+        {
+            var dup = new byte[source.Length];
+            Buffer.BlockCopy(source, 0, dup, 0, source.Length);
+            return dup;
+        }
+
         /// <summary>
         /// Copy to byte array from another byte array.
         /// </summary>

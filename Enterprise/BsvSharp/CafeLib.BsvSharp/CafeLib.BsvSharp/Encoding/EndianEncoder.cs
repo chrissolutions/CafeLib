@@ -1,39 +1,32 @@
 ﻿using System;
 using System.Buffers.Binary;
-using CafeLib.BsvSharp.Buffers;
+using CafeLib.Core.Support;
 
 namespace CafeLib.BsvSharp.Encoding
 {
-    public class EndianEncoder : Encoder
+    public class EndianEncoder : SingletonBase<EndianEncoder>, IEncoder
     {
-        public int LittleEndianInt32(ReadOnlyByteSpan data) => BinaryPrimitives.ReadInt32LittleEndian(data);
-        public int BigEndianInt32(ReadOnlyByteSpan data) => BinaryPrimitives.ReadInt32BigEndian(data);
+        public int LittleEndianInt32(byte[] data) => BinaryPrimitives.ReadInt32LittleEndian(data);
+        public int BigEndianInt32(byte[] data) => BinaryPrimitives.ReadInt32BigEndian(data);
 
-        public long LittleEndianInt64(ReadOnlyByteSpan data) => BinaryPrimitives.ReadInt64LittleEndian(data);
-        public long BigEndianInt64(ReadOnlyByteSpan data) => BinaryPrimitives.ReadInt64BigEndian(data);
+        public long LittleEndianInt64(byte[] data) => BinaryPrimitives.ReadInt64LittleEndian(data);
+        public long BigEndianInt64(byte[] data) => BinaryPrimitives.ReadInt64BigEndian(data);
 
-        public override string Encode(ReadOnlyByteSpan data)
+        public bool IsBigEndian => !BitConverter.IsLittleEndian;
+        public bool IsLittleEndian => BitConverter.IsLittleEndian;
+
+        public string Encode(byte[] source)
         {
-            return BitConverter.IsLittleEndian
-                ? System.Text.Encoding.Unicode.GetString(data) 
-                : System.Text.Encoding.BigEndianUnicode.GetString(data);
+            return IsLittleEndian
+                ? System.Text.Encoding.Unicode.GetString(source)
+                : System.Text.Encoding.BigEndianUnicode.GetString(source);
         }
 
-        public override bool TryDecode(string encoded, out byte[] bytes)
+        public byte[] Decode(string source)
         {
-            bytes = default;
-            try
-            {
-                bytes = BitConverter.IsLittleEndian
-                    ? System.Text.Encoding.Unicode.GetBytes(encoded)
-                    : System.Text.Encoding.BigEndianUnicode.GetBytes(encoded);
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            return IsLittleEndian
+                ? System.Text.Encoding.Unicode.GetBytes(source)
+                : System.Text.Encoding.BigEndianUnicode.GetBytes(source);
         }
     }
 }
