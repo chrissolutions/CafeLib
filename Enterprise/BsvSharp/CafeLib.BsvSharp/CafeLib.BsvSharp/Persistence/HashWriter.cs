@@ -78,7 +78,7 @@ namespace CafeLib.BsvSharp.Persistence
 
         public HashWriter Add(string ascii)
         {
-            _alg.TransformBlock(((Variant)ascii.Length).ToArray());
+            _alg.TransformBlock(((VarInt)ascii.Length).ToArray());
             _alg.TransformBlock(ascii.AsciiToBytes());
             return this;
         } 
