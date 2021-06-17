@@ -24,4 +24,8 @@
     <ProjectReference Include="..\CafeLib.BsvSharp\CafeLib.BsvSharp.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Encode\" />
+  </ItemGroup>
+
 </Project>
