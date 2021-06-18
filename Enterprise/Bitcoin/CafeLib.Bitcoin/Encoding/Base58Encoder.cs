@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Text;
+using System.Linq;
 using CafeLib.Bitcoin.Buffers;
+using CafeLib.Bitcoin.Extensions;
+using CafeLib.Core.Extensions;
 
 namespace CafeLib.Bitcoin.Encoding
 {
@@ -11,110 +12,114 @@ namespace CafeLib.Bitcoin.Encoding
     {
         /** All alphanumeric characters except for "0", "I", "O", and "l" */
         private const string Base58Characters = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-
-        public static bool IsSpace(char c)
+        private static readonly char EncodedZero = Base58Characters[0];
+        private static readonly int[] Indexes = new int[128];
+        static Base58Encoder()
         {
-            return c switch
-            {
-                ' ' => true,
-                '\t' => true,
-                '\n' => true,
-                '\v' => true,
-                '\f' => true,
-                '\r' => true,
-                _ => false
-            };
+            Array.Fill(Indexes, -1);
+            Base58Characters.ForEach((x, i) => Indexes[x] = i);
         }
 
         public override bool TryDecode(string encoded, out byte[] bytes)
         {
-            bytes = null;
-            var s = encoded.AsSpan();
+            bytes = Array.Empty<byte>();
+            if (encoded.Length == 0) return true;
 
-            while (!s.IsEmpty && IsSpace(s[0])) s = s.Slice(1);
-
-            var zeroes = 0;
-            var length = 0;
-
-            while (!s.IsEmpty && s[0] == '1') { zeroes++; s = s.Slice(1); }
-
-            // Allocate enough space in big-endian base256 representation.
-            // log(58) / log(256), rounded up.
-            var size = s.Length * 733 / 1000 + 1;
-            var b256 = new byte[size];
-
-            // Process the characters.
-            while (!s.IsEmpty && !IsSpace(s[0])) {
-                // Decode base58 character
-                var carry = Base58Characters.IndexOf(s[0]);
-                if (carry < 0)
-                    return false;
-                // Apply "b256 = b256 * 58 + carry".
-                var i = 0;
-                for (var it = 0; (carry != 0 || i < length) && it < b256.Length; it++, i++) {
-                    carry += 58 * b256[it];
-                    b256[it] = (byte)(carry % 256);
-                    carry /= 256;
-                }
-                Debug.Assert(carry == 0);
-                length = i;
-                s = s.Slice(1);
+            // Convert the base58-encoded ASCII chars to a base58 byte sequence (base58 digits).
+            var source58 = new byte[encoded.Length];
+            for (var i = 0; i < encoded.Length; ++i)
+            {
+                var c = encoded[i];
+                var digit = c < (char)128 ? Indexes[c] : -1;
+                if (digit < 0) return false;
+                source58[i] = (byte)digit;
             }
-            // Skip trailing spaces.
-            while (!s.IsEmpty && IsSpace(s[0])) s = s.Slice(1);
-            if (!s.IsEmpty)
-                return false;
 
-            // Skip trailing zeroes in b256.
-            while (length > 0 && b256[length - 1] == 0) length--;
+            // Count leading zeros.
+            var zeros = source58.TakeWhile(x => x == 0).Count();
 
-            // Result is zeroes times zero byte followed by b256[length - 1]...b256[0]
-            var vch = new byte[zeroes + length];
-            var nz = zeroes;
-            while (zeroes-- > 0) vch[zeroes] = 0;
-            while (length-- > 0) vch[nz++] = b256[length];
+            // Convert base-58 digits to base-256 digits.
+            var decoded = new byte[encoded.Length];
+            var outputStart = decoded.Length;
+            for (var sourceStart = zeros; sourceStart < source58.Length;)
+            {
+                decoded[--outputStart] = DivMod(source58, sourceStart, 58, 256);
+                if (source58[sourceStart] == 0)
+                {
+                    ++sourceStart; // optimization - skip leading zeros
+                }
+            }
 
-            bytes = vch;
+            // Ignore extra leading zeroes that were added during the calculation.
+            while (outputStart < decoded.Length && decoded[outputStart] == 0)
+            {
+                ++outputStart;
+            }
+
+            // Return decoded data (including original number of leading zeros).
+            bytes=  decoded[(outputStart - zeros)..decoded.Length];
             return true;
         }
 
         public override string Encode(ReadOnlyByteSpan bytes)
         {
-            // Skip & count leading zeroes.
-            var zeroes = 0;
-            var length = 0;
-            while (!bytes.IsEmpty && bytes[0] == 0) { bytes = bytes.Slice(1); zeroes++; }
+            byte[] source = bytes;
+            if (source.Length == 0) return "";
 
-            // Allocate enough space in big-endian base58 representation.
-            // log(256) / log(58), rounded up.
-            var size = bytes.Length * 138 / 100 + 1;
-            var b58 = new byte[size];
+            // Count leading zeros.
+            var zeros = source.TakeWhile(x => x == 0).Count();
 
-            // Process the bytes.
-            while (!bytes.IsEmpty) {
-                var carry = (int)bytes[0];
-                var i = 0;
-                // Apply "b58 = b58 * 256 + ch".
-                for (var it = 0; (carry != 0 || i < length) && it < b58.Length; it++, i++) {
-                    carry += 256 * b58[it];
-                    b58[it] = (byte)(carry % 58);
-                    carry /= 58;
+            // Convert base-256 digits to base-58 digits (plus conversion to ASCII characters)
+            var span = new ByteSpan(source.Duplicate());
+            var encoded = new char[source.Length * sizeof(char)]; // upper bound
+            var outputStart = encoded.Length;
+            for (var inputStart = zeros; inputStart < span.Length;)
+            {
+                encoded[--outputStart] = Base58Characters[DivMod(span, inputStart, 256, 58)];
+                if (span[inputStart] == 0)
+                {
+                    ++inputStart; // optimization - skip leading zeros
                 }
-                Debug.Assert(carry == 0);
-                length = i;
-                bytes = bytes.Slice(1);
             }
 
-            // Skip trailing zeroes in b58.
-            while (length > 0 && b58[length - 1] == 0) length--;
+            // Preserve exactly as many leading encoded zeros in output as there were leading zeros in input.
+            while (outputStart < encoded.Length && encoded[outputStart] == EncodedZero)
+            {
+                ++outputStart;
+            }
 
-            // Translate the result into a string.
-            // Result is zeroes times "1" followed by pszBase58 indexed by b58[length - 1]...b58[0]
+            while (--zeros >= 0)
+            {
+                encoded[--outputStart] = EncodedZero;
+            }
+            // Return encoded string (including encoded leading zeros).
+            return new string(encoded, outputStart, encoded.Length - outputStart);
+        }
+        
+        /// <summary>
+        /// Divides a number, represented as an array of bytes each containing a single digit
+        /// in the specified base, by the given divisor. The given number is modified in-place
+        /// to contain the quotient, and the return value is the remainder.
+        /// </summary>
+        /// <param name="number"> the number to divide </param>
+        /// <param name="firstDigit"> the index within the array of the first non-zero digit
+        ///        (this is used for optimization by skipping the leading zeros) </param>
+        /// <param name="base"> the base in which the number's digits are represented (up to 256) </param>
+        /// <param name="divisor"> the number to divide by (up to 256) </param>
+        /// <returns> the remainder of the division operation </returns>
+        private static byte DivMod(ByteSpan number, int firstDigit, int @base, int divisor)
+        {
+            // this is just long division which accounts for the base of the input digits
+            var remainder = 0;
+            for (var i = firstDigit; i < number.Length; i++)
+            {
+                var digit = number[i] & 0xFF;
+                var temp = remainder * @base + digit;
+                number[i] = (byte)(temp / divisor);
+                remainder = temp % divisor;
+            }
 
-            var sb = new StringBuilder();
-            while (zeroes-- > 0) sb.Append("1");
-            while (length-- > 0) sb.Append(Base58Characters[b58[length]]);
-            return sb.ToString();
+            return (byte)remainder;
         }
     }
 }
