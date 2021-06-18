@@ -38,11 +38,9 @@ namespace CafeLib.Bitcoin.Chain
 
         /// The following fields are computed or external, not essential.
         private readonly UInt256 _txHash = new UInt256();
-        //Int64 _valueIn;
-        //Int64 _valueOut;
 
         /// Public access to essential header fields.
-        public Int32 Version => _version;
+        public int Version => _version;
         public uint LockTime => _lockTime;
 
         public TxIn[] Inputs { get; private set; } = new TxIn[0];

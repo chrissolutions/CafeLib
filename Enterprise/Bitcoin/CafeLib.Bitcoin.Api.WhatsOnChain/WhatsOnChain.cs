@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CafeLib.Bitcoin.Api.WhatsOnChain.Models;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Network;
+using CafeLib.Core.Extensions;
 using CafeLib.Web.Request;
 using Newtonsoft.Json;
 

@@ -31,18 +31,14 @@ namespace CafeLib.BsvSharp.Chain
     /// </summary>
     public class Transaction
     {
-        /// Essential fields of a Bitcoin SV transaction.
-        private int _version;
-
         private uint _lockTime;
 
         /// The following fields are computed or external, not essential.
         private readonly UInt256 _txHash = new UInt256();
-        //Int64 _valueIn;
-        //Int64 _valueOut;
 
         /// Public access to essential header fields.
-        public Int32 Version => _version;
+        public Int32 Version { get; private set; }
+
         public uint LockTime => _lockTime;
 
         public TxIn[] Inputs { get; private set; } = new TxIn[0];
@@ -58,7 +54,7 @@ namespace CafeLib.BsvSharp.Chain
 
         public Transaction(int version, TxIn[] vin, TxOut[] vout, uint lockTime)
         {
-            _version = version;
+            Version = version;
             Inputs = vin;
             Outputs = vout;
             _lockTime = lockTime;
@@ -66,7 +62,7 @@ namespace CafeLib.BsvSharp.Chain
 
         public Transaction(TransactionBuilder tb)
         {
-            _version = tb.Version;
+            Version = tb.Version;
             Inputs = tb.Vin.Select(i => i.ToTxIn()).ToArray();
             Outputs = tb.Vout.Select(o => o.ToTxOut()).ToArray();
             _lockTime = tb.LockTime;
@@ -89,9 +85,10 @@ namespace CafeLib.BsvSharp.Chain
             var offset = r.Data.Consumed;
             var start = r.Data.Position;
 
-            if (!r.TryReadLittleEndian(out _version)) return false;
-            if (!r.TryReadVariant(out var countIn)) return false;
+            if (!r.TryReadLittleEndian(out int version)) return false;
+            Version = version;
 
+            if (!r.TryReadVariant(out var countIn)) return false;
             bp.TxStart(this, offset);
 
             Inputs = new TxIn[countIn];
@@ -132,7 +129,9 @@ namespace CafeLib.BsvSharp.Chain
         {
             var start = r.Data.Position;
 
-            if (!r.TryReadLittleEndian(out _version)) goto fail;
+            if (!r.TryReadLittleEndian(out int version)) goto fail;
+            Version = version;
+
             if (!r.TryReadVariant(out var countIn)) goto fail;
 
             Inputs = new TxIn[countIn];
@@ -187,7 +186,7 @@ namespace CafeLib.BsvSharp.Chain
         public IBitcoinWriter AddTo(IBitcoinWriter writer)
         {
             writer
-                .Add(_version)
+                .Add(Version)
                 .Add(Inputs.Length.AsVarIntBytes())
                 ;
             foreach (var txIn in Inputs)

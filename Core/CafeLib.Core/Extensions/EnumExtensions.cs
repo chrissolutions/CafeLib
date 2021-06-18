@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -39,6 +40,16 @@ namespace CafeLib.Core.Extensions
         {
             var fieldInfo = value.GetType().GetField(value.GetName());
             return fieldInfo.GetCustomAttribute<EnumMemberAttribute>()?.Value;
+        }
+
+        /// <summary>
+        /// Return enum values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IEnumerable<T> GetEnumValues<T>() where T : Enum
+        {
+            return Enum.GetValues(typeof(T)).Cast<T>();
         }
 
         /// <summary>

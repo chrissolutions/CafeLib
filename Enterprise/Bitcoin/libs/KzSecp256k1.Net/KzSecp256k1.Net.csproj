@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CafeLib.Core" Version="1.0.0" />
     <PackageReference Include="Secp256k1.Native" Version="0.1.20" PrivateAssets="all" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
   </ItemGroup>

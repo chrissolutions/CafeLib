@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using CafeLib.Bitcoin.Extensions;
+using CafeLib.Core.Extensions;
 
 namespace CafeLib.Bitcoin.Wallet
 {

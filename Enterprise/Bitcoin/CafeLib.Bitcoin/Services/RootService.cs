@@ -1,6 +1,7 @@
 ﻿using System;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Network;
+using CafeLib.Core.Extensions;
 
 namespace CafeLib.Bitcoin.Services
 {

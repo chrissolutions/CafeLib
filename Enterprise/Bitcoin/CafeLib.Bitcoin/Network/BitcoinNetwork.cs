@@ -6,8 +6,8 @@
 using System;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Encoding;
-using CafeLib.Bitcoin.Extensions;
 using CafeLib.Bitcoin.Numerics;
+using CafeLib.Core.Extensions;
 
 namespace CafeLib.Bitcoin.Network
 {
