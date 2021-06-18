@@ -97,6 +97,7 @@ namespace CafeLib.BsvSharp.Units
             {
                 BitcoinUnit.Bitcoin => $"{(m ? "-" : " ")}{i:#,0}.{f:000_000_00}",
                 BitcoinUnit.MilliBitcoin => $"{(m ? "-" : " ")}{i:#,0}.{f:000_00}",
+                BitcoinUnit.Duro => $"{(m ? "-" : " ")}{i:#,0}.{f:00}",
                 BitcoinUnit.Bit => $"{(m ? "-" : " ")}{i:#,0}.{f:00}",
                 BitcoinUnit.Satoshi => $"{(m ? "-" : " ")}{i:#,0}",
                 _ => string.Empty
