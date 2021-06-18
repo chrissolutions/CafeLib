@@ -3,24 +3,26 @@ using System.Linq;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Core.Extensions;
+using CafeLib.Core.Support;
 
 namespace CafeLib.Bitcoin.Encoding
 {
     /// <summary>
+    /// Base58 encoder.
     /// </summary>
-    public class Base58Encoder : Encoder
+    public class Base58Encoder : SingletonBase<Base58Encoder>
     {
         /** All alphanumeric characters except for "0", "I", "O", and "l" */
         private const string Base58Characters = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
         private static readonly char EncodedZero = Base58Characters[0];
         private static readonly int[] Indexes = new int[128];
-        static Base58Encoder()
+        private Base58Encoder()
         {
             Array.Fill(Indexes, -1);
             Base58Characters.ForEach((x, i) => Indexes[x] = i);
         }
 
-        public override bool TryDecode(string encoded, out byte[] bytes)
+        public bool TryDecode(string encoded, out byte[] bytes)
         {
             bytes = Array.Empty<byte>();
             if (encoded.Length == 0) return true;
@@ -61,7 +63,7 @@ namespace CafeLib.Bitcoin.Encoding
             return true;
         }
 
-        public override string Encode(ReadOnlyByteSpan bytes)
+        public string Encode(ReadOnlyByteSpan bytes)
         {
             byte[] source = bytes;
             if (source.Length == 0) return "";
