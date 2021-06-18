@@ -123,6 +123,9 @@ namespace CafeLib.BsvSharp.Units
         public static implicit operator Amount(long value) => new Amount(value);
         public static implicit operator long(Amount value) => value.Satoshis;
 
+        public static implicit operator Amount(decimal value) => new Amount(value, BitcoinUnit.Satoshi);
+        public static implicit operator decimal(Amount value) => value.Satoshis;
+
         public static bool operator ==(Amount x, Amount y) => x.Equals(y);
         public static bool operator !=(Amount x, Amount y) => !(x == y);
 
