@@ -15,6 +15,7 @@ using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Scripting;
 using CafeLib.Bitcoin.Services;
 using CafeLib.Bitcoin.Units;
+using CafeLib.Core.Extensions;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -41,8 +42,8 @@ namespace CafeLib.Bitcoin.UnitTests.Scripts
 
             var address = new PublicKey(true);
             var e = new UInt160("c2eaba3b9c29575322c6e24fdc1b49bdfe405bad", true);
-            var s1 = Encoders.Base58Check.Encode(new byte[][]{RootService.Network.PublicKeyAddress, e});
-            var s2 = Encoders.Base58Check.Encode(new byte[][]{RootService.Network.ScriptAddress, e});
+            var s1 = Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress.ToArray().Concat(e));
+            var s2 = Encoders.Base58Check.Encode(RootService.Network.ScriptAddress.ToArray().Concat(e));
             //e.Span.CopyTo(address.Span);
             //var id = address.GetID();
         }

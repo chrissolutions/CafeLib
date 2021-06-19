@@ -10,6 +10,7 @@ using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Encoding;
 using CafeLib.Bitcoin.Numerics.Converters;
 using CafeLib.Bitcoin.Services;
+using CafeLib.Core.Extensions;
 using Newtonsoft.Json;
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
@@ -76,7 +77,7 @@ namespace CafeLib.Bitcoin.Numerics
             s.Read(Span);
         }
 
-        public string ToPublicKeyAddress() => Encoders.Base58Check.Encode(new byte[][] {RootService.Network.PublicKeyAddress, Span});
+        public string ToPublicKeyAddress() => Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress.ToArray().Concat(Span));
         public BigInteger ToBigInteger() => new BigInteger(Span, isUnsigned:true, isBigEndian:true);
 
 
