@@ -76,7 +76,7 @@ namespace CafeLib.Bitcoin.Numerics
             s.Read(Span);
         }
 
-        public string ToPublicKeyAddress() => Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress, Span);
+        public string ToPublicKeyAddress() => Encoders.Base58Check.Encode(new byte[][] {RootService.Network.PublicKeyAddress, Span});
         public BigInteger ToBigInteger() => new BigInteger(Span, isUnsigned:true, isBigEndian:true);
 
 

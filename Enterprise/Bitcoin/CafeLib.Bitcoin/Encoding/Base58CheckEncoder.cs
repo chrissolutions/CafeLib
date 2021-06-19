@@ -4,19 +4,29 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Crypto;
+using CafeLib.Core.Extensions;
+using CafeLib.Core.Support;
 
 namespace CafeLib.Bitcoin.Encoding
 {
-    public class Base58CheckEncoder : Encoder
+    public class Base58CheckEncoder : SingletonBase<Base58CheckEncoder>
     {
+        public string Encode(IEnumerable<byte[]> args)
+        {
+            var bytes = new List<byte>();
+            args.ForEach(x => bytes.AddRange(x));
+            return Encode(bytes.ToArray());
+        }
+        
         /// <summary>
         /// Appends first 4 bytes of double SHA256 hash to bytes before standard Base58 encoding.
         /// </summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
-        public override string Encode(ReadOnlyByteSpan bytes)
+        public string Encode(ReadOnlyByteSpan bytes)
         {
             var checksum = bytes.Hash256();
             var buf = new byte[bytes.Length + 4];
@@ -25,7 +35,7 @@ namespace CafeLib.Bitcoin.Encoding
             return Encoders.Base58.Encode(buf);
         }
 
-        public override bool TryDecode(string encoded, out byte[] bytes)
+        public bool TryDecode(string encoded, out byte[] bytes)
         {
             if (!Encoders.Base58.TryDecode(encoded, out bytes)) return false;
             var span = bytes.AsSpan();
