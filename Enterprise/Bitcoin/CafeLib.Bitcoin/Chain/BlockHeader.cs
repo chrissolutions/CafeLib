@@ -29,13 +29,13 @@ namespace CafeLib.Bitcoin.Chain
         private int _version;
         private UInt256 _hashPrevBlock;
         private UInt256 _hashMerkleRoot;
-        private uint _time;
+        private uint _timestamp;
         private uint _bits;
         private uint _nonce;
 
-        /// The following fields are computed or external, not essential.
 
-        public DateTime TimeWhen => DateTime.UnixEpoch + TimeSpan.FromSeconds(_time);
+        /// The following fields are computed or external, not essential.
+        public DateTime TimeWhen => DateTime.UnixEpoch + TimeSpan.FromSeconds(_timestamp);
 
         private readonly UInt256 _hash = new UInt256();
         public UInt256 Hash => _hash;
@@ -46,7 +46,7 @@ namespace CafeLib.Bitcoin.Chain
         public int Version => _version;
         public UInt256 HashPrevBlock => _hashPrevBlock;
         public UInt256 HashMerkleRoot => _hashMerkleRoot;
-        public uint Time => _time;
+        public uint Timestamp => _timestamp;
         public uint Bits => _bits;
         public uint Nonce => _nonce;
 
@@ -59,7 +59,7 @@ namespace CafeLib.Bitcoin.Chain
             int version,
             UInt256 hashPrevBlock,
             UInt256 hashMerkleRoot,
-            uint time,
+            uint timestamp,
             uint bits,
             uint nonce
         )
@@ -67,7 +67,7 @@ namespace CafeLib.Bitcoin.Chain
             _version = version;
             _hashPrevBlock = hashPrevBlock;
             _hashMerkleRoot = hashMerkleRoot;
-            _time = time;
+            _timestamp = timestamp;
             _bits = bits;
             _nonce = nonce;
         }
@@ -95,7 +95,7 @@ namespace CafeLib.Bitcoin.Chain
             if (!r.TryReadLittleEndian(out _version)) return false;
             if (!r.TryReadUInt256(ref _hashPrevBlock)) return false;
             if (!r.TryReadUInt256(ref _hashMerkleRoot)) return false;
-            if (!r.TryReadLittleEndian(out _time)) return false;
+            if (!r.TryReadLittleEndian(out _timestamp)) return false;
             if (!r.TryReadLittleEndian(out _bits)) return false;
             if (!r.TryReadLittleEndian(out _nonce)) return false;
 
