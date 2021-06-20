@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Collections.Generic;
 using CafeLib.Bitcoin.Chain;
 using CafeLib.Bitcoin.Crypto;
 using CafeLib.Bitcoin.Scripting;
 using CafeLib.Bitcoin.Units;
-using Transaction = System.Transactions.Transaction;
 
 namespace CafeLib.Bitcoin.Builders
 {
