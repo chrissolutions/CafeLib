@@ -12,7 +12,6 @@ namespace CafeLib.Bitcoin.Encoding
         private static readonly Lazy<HexEncoder> LazyHex = new Lazy<HexEncoder>(() => new HexEncoder(), true);
         private static readonly Lazy<HexReverseEncoder> LazyHexReverse = new Lazy<HexReverseEncoder>(() => new HexReverseEncoder(), true);
         private static readonly Lazy<Utf8Encoder> LazyUtf8 = new Lazy<Utf8Encoder>(() => new Utf8Encoder());
-        private static readonly Lazy<EndianEncoder> LazyEndian = new Lazy<EndianEncoder>(() => new EndianEncoder());
 
         /// <summary>
         /// Encodes a sequence of bytes as hexadecimal digits where:
@@ -20,7 +19,7 @@ namespace CafeLib.Bitcoin.Encoding
         /// Character 0 corresponds to the high nibble of the first byte. 
         /// Character 1 corresponds to the low nibble of the first byte. 
         /// </summary>
-        public static EndianEncoder Endian => LazyEndian.Value;
+        public static EndianEncoder Endian => EndianEncoder.Current;
 
         /// <summary>
         /// Encodes a sequence of bytes as hexadecimal digits where:
