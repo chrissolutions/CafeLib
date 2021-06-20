@@ -23,7 +23,7 @@ namespace CafeLib.Bitcoin.Encoding
             var checksum = span.Hash256();
             var buf = new byte[span.Length + 4];
             span.CopyTo(buf);
-            checksum.Span.Slice(0, 4).CopyTo(buf.AsSpan().Slice(span.Length));
+            checksum.Span[..4].CopyTo(buf.AsSpan().Slice(span.Length));
             return Encoders.Base58.Encode(buf);
         }
 
@@ -31,10 +31,10 @@ namespace CafeLib.Bitcoin.Encoding
         {
             if (!Encoders.Base58.TryDecode(encoded, out bytes)) return false;
             var span = bytes.AsSpan();
-            var checksum = span.Slice(span.Length - 4);
-            bytes = span.Slice(0, span.Length - 4).ToArray();
+            var checksum = span[^4..];
+            bytes = span[..^4].ToArray();
             var hash = Hashes.Hash256(bytes);
-            return checksum.SequenceEqual(hash.Span.Slice(0, 4));
+            return checksum.SequenceEqual(hash.Span[..4]);
         }
     }
 }
