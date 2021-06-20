@@ -23,7 +23,7 @@ namespace CafeLib.Bitcoin.Encoding
             var checksum = span.Hash256();
             var buf = new byte[span.Length + 4];
             span.CopyTo(buf);
-            checksum.Span[..4].CopyTo(buf.AsSpan().Slice(span.Length));
+            checksum.Span[..4].CopyTo(buf.AsSpan()[span.Length..]);
             return Encoders.Base58.Encode(buf);
         }
 
