@@ -63,7 +63,7 @@ namespace CafeLib.Bitcoin.Buffers
             public byte Current => _enumerator.Current;
         }
 
-        public byte this[int index] => Data[index];
+        public byte this[Index index] => Data[index];
         public ReadOnlyByteSpan this[Range range] => Data[range];
 
         public static ReadOnlyByteSpan Empty => default;
