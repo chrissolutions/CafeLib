@@ -48,14 +48,11 @@ namespace CafeLib.Bitcoin.Builders
             return this;
         }
 
-        public TxBuilder InputFromScript(UInt256 txHashBuf, int txOutNum, TxOut txOut, Script script, uint sequence)
+        public TxBuilder InputFromScript(UInt256 txHashBuf, int txOutIndex, TxOut txOut, Script script, uint sequence)
         {
-            Vin.Add(new TxIn(txHashBuf, txOutNum, script, sequence));
-            TxOutMap.Set(txHashBuf, txOutNum, txOut);
+            Vin.Add(new TxIn(txHashBuf, txOutIndex, script, sequence));
+            TxOutMap.Set(txHashBuf, txOutIndex, txOut);
             return this;
         }
-
-
-
     }
 }

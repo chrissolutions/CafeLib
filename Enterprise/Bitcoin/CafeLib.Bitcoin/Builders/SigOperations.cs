@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using CafeLib.Bitcoin.Numerics;
+using CafeLib.Bitcoin.Scripting;
 
 namespace CafeLib.Bitcoin.Builders
 {
@@ -20,6 +21,20 @@ namespace CafeLib.Bitcoin.Builders
     /// </summary>
     public class SigOperations
     {
-        private IDictionary<UInt256, (UInt256, uint, uint, string)> _map = new Dictionary<UInt256, (UInt256, uint, uint, string)>();
+        private IDictionary<string, (int, string, string, SignatureHashEnum)[]> _map = new Dictionary<string, (int, string, string, SignatureHashEnum)[]>();
+
+        public SigOperations AddOne(UInt256 txHash, int txOutIndex, int scriptChunkIndex, string type, string addressStr, SignatureHashEnum sigHashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
+        {
+
+            //const arr = this.get(txHashBuf, txOutNum) || []
+            //arr.push({
+            //    nScriptChunk,
+            //    type,
+            //    addressStr,
+            //    nHashType
+            //})
+            //this.setMany(txHashBuf, txOutNum, arr)
+            return this;
+        }
     }
 }
