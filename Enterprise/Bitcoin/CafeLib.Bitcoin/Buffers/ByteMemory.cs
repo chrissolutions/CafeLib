@@ -2,7 +2,7 @@
 
 namespace CafeLib.Bitcoin.Buffers
 {
-    public readonly ref struct ByteMemory
+    public readonly struct ByteMemory
     {
         internal Memory<byte> Data { get; }
 
@@ -31,6 +31,14 @@ namespace CafeLib.Bitcoin.Buffers
         public ByteSpan.Enumerator GetEnumerator() => ((ByteSpan)Data.Span).GetEnumerator();
         public byte[] ToArray() => Data.ToArray();
         public override string ToString() => Data.ToString();
+
+        public byte this[Index index]
+        {
+            get => Data.Span[index];
+            set => Data.Span[index] = value;
+        }
+
+        public ByteMemory this[Range range] => Data[range];
 
         public static implicit operator Memory<byte>(ByteMemory rhs) => rhs.Data;
         public static implicit operator ByteMemory(Memory<byte> rhs) => new ByteMemory(rhs);
