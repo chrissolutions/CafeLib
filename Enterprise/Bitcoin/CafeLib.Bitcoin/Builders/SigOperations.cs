@@ -18,7 +18,7 @@ namespace CafeLib.Bitcoin.Builders
     ///     but may not have access to the private key until the entire tx is sent to
     ///     where the private keys are.
     /// </summary>
-    internal class SigOperations
+    public class SigOperations
     {
         private IDictionary<UInt256, (UInt256, uint, uint, string)> _map = new Dictionary<UInt256, (UInt256, uint, uint, string)>();
     }

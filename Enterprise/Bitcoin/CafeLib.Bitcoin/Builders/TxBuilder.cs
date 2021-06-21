@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CafeLib.Bitcoin.Chain;
 using CafeLib.Bitcoin.Crypto;
+using CafeLib.Bitcoin.Numerics;
 using CafeLib.Bitcoin.Scripting;
 using CafeLib.Bitcoin.Units;
 
@@ -11,19 +12,50 @@ namespace CafeLib.Bitcoin.Builders
     /// </summary>
     public class TxBuilder
     {
-        private Transaction _tx;
-        private List<TxIn> _vin;
-        private List<TxOut> _vout;
-        private TxOutMap _txOutMap;
-        private SigOperations _sigOps;
-        private Script _changeScript;
-        private Amount _changeAmount;
-        private Amount _feePerKbAmount;
-        private uint _lockTime;
-        private uint _version;
-        private uint sigsPerInput;
-        private Amount _dust;
-        private bool _isDustChangeToFees;
-        private HashCache _hashCache;
+        private Transaction Tx { get; set; }
+        private List<TxIn> Vin { get; set; }
+        private List<TxOut> Vout { get; set; }
+        private TxOutMap TxOutMap { get; set; }
+        private SigOperations SigOps { get; set; }
+        private Script ChangeScript { get; set; }
+        private Amount ChangeAmount { get; set; }
+        private Amount FeePerKbAmount { get; set; }
+        private uint LockTime { get; set; }
+        private uint Version { get; set; }
+        private uint SigsPerInput { get; set; }
+        private Amount Dust { get; set; }
+        private bool SendDustChangeToFees { get; set; }
+        private HashCache HashCache { get; set; }
+
+
+        /// <summary>
+        ///     Import a transaction partially signed by someone else. The only thing you
+        ///     can do after this is sign one or more inputs. Usually used for multisig
+        ///     transactions. uTxOutMap is optional. It is not necessary so long as you
+        ///     pass in the txOut when you sign. You need to know the output when signing
+        ///     an input, including the script in the output, which is why this is
+        ///     necessary when signing an input.
+        /// </summary>
+        /// <param name="tx"></param>
+        /// <param name="txOutMap"></param>
+        /// <param name="signOperations"></param>
+        /// <returns></returns>
+        public TxBuilder ImportPartiallySignedTx(Transaction tx, TxOutMap txOutMap = null, SigOperations signOperations = null)
+        {
+            Tx = tx ?? Tx;
+            TxOutMap = txOutMap ?? TxOutMap;
+            SigOps = signOperations ?? SigOps;
+            return this;
+        }
+
+        public TxBuilder InputFromScript(UInt256 txHashBuf, int txOutNum, TxOut txOut, Script script, uint sequence)
+        {
+            Vin.Add(new TxIn(txHashBuf, txOutNum, script, sequence));
+            TxOutMap.Set(txHashBuf, txOutNum, txOut);
+            return this;
+        }
+
+
+
     }
 }
