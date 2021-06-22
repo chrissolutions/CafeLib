@@ -50,7 +50,7 @@ namespace CafeLib.Bitcoin.Numerics
 
         public UInt160(string hex, bool firstByteFirst = false) : this()
         {
-            (firstByteFirst ? Encoders.Hex : Encoders.HexReverse).TryDecode(hex, Span);
+            (firstByteFirst ? Encoders.Hex : Encoders.HexReverse).TryDecodeSpan(hex, Span);
         }
 
         public static UInt160 Zero { get; } = new UInt160(0);

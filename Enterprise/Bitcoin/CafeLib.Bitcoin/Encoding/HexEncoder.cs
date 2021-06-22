@@ -15,7 +15,7 @@ namespace CafeLib.Bitcoin.Encoding
     /// Character 0 corresponds to the high nibble of the first byte. 
     /// Character 1 corresponds to the low nibble of the first byte. 
     /// </summary>
-    public class HexEncoder : Encoder
+    public class HexEncoder : IEncoder
     {
         private const int NumericDigits = '9' - '0' + 1;
         private const int AlphaDigits = 'f' - 'a' + 1;
@@ -33,7 +33,18 @@ namespace CafeLib.Bitcoin.Encoding
             }
         }
 
-        public override string Encode(ReadOnlyByteSpan bytes)
+        public string Encode(byte[] source) => EncodeSpan(source);
+
+        public byte[] Decode(string source) => TryDecode(source, out var bytes) ? bytes : throw new FormatException(nameof(source));
+
+        public bool TryDecode(string hex, out byte[] bytes)
+        {
+            bytes = new byte[hex.Length / 2];
+            var span = bytes.AsSpan();
+            return TryDecodeSpan(hex, span);
+        }
+
+        internal virtual string EncodeSpan(ReadOnlyByteSpan bytes)
         {
             var s = new char[bytes.Length * sizeof(char)];
             var i = 0;
@@ -46,12 +57,7 @@ namespace CafeLib.Bitcoin.Encoding
             return new string(s);
         }
 
-        protected static int CharToNibble(char c)
-        {
-            return c > CharToNibbleArray.Length ? -1 : CharToNibbleArray[c];
-        }
-
-        public override bool TryDecode(string hex, ByteSpan bytes)
+        internal virtual bool TryDecodeSpan(string hex, ByteSpan bytes)
         {
             if (hex.Length % 2 == 1 || hex.Length / 2 > bytes.Length)
                 return false;
@@ -63,19 +69,16 @@ namespace CafeLib.Bitcoin.Encoding
             {
                 var a = CharToNibble(hex[i++]);
                 var b = CharToNibble(hex[i++]);
-                if (a == -1 || b == -1) goto fail;
+                if (a == -1 || b == -1) return false;
                 bytes[j++] = (byte)((a << 4) | b);
             }
+
             return true;
-            fail:
-            return false;
         }
 
-        public override bool TryDecode(string hex, out byte[] bytes)
+        protected static int CharToNibble(char c)
         {
-            bytes = new byte[hex.Length / 2];
-            var span = bytes.AsSpan();
-            return TryDecode(hex, span);
+            return c > CharToNibbleArray.Length ? -1 : CharToNibbleArray[c];
         }
     }
 }

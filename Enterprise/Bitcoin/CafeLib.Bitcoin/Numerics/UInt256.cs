@@ -51,7 +51,7 @@ namespace CafeLib.Bitcoin.Numerics
         public UInt256(string hex, bool firstByteFirst = false)
             : this()
         {
-            (firstByteFirst ? Encoders.Hex : Encoders.HexReverse).TryDecode(hex, Span);
+            (firstByteFirst ? Encoders.Hex : Encoders.HexReverse).TryDecodeSpan(hex, Span);
         }
 
         public static UInt256 Zero { get; } = new UInt256(0);

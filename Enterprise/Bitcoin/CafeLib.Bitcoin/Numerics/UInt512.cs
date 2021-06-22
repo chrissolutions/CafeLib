@@ -26,8 +26,8 @@ namespace CafeLib.Bitcoin.Numerics
         private ulong _n6;
         private ulong _n7;
 
-        private static readonly Encoder Hex = Encoders.Hex;
-        private static readonly Encoder HexReverse = Encoders.HexReverse;
+        private static readonly HexEncoder Hex = Encoders.Hex;
+        private static readonly HexReverseEncoder HexReverse = Encoders.HexReverse;
 
         public const int Length = 64;
 
@@ -57,7 +57,7 @@ namespace CafeLib.Bitcoin.Numerics
         public UInt512(string hex, bool firstByteFirst = false)
             : this()
         {
-            (firstByteFirst ? Hex : HexReverse).TryDecode(hex, Span);
+            (firstByteFirst ? Hex : HexReverse).TryDecodeSpan(hex, Span);
         }
 
         public static UInt512 Zero { get; } = new UInt512(0);

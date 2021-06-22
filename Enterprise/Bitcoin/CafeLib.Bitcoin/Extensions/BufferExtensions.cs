@@ -11,7 +11,7 @@ namespace CafeLib.Bitcoin.Extensions
         public static string ToHex(this ReadOnlyByteSpan data) => Encoders.Hex.Encode(data);
         public static string ToHexReverse(this ReadOnlyByteSpan data) => Encoders.Hex.Encode(data);
 
-        public static string ToHex(this ReadOnlyByteSequence data) => Encoders.Hex.Encode(data);
-        public static string ToHexReverse(this ReadOnlyByteSequence data) => Encoders.Hex.Encode(data);
+        public static string ToHex(this ReadOnlyByteSequence data) => Encoders.Hex.EncodeSpan(data);
+        public static string ToHexReverse(this ReadOnlyByteSequence data) => Encoders.Hex.EncodeSpan(data);
     }
 }

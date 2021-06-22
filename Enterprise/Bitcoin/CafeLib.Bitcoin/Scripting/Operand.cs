@@ -431,7 +431,7 @@ namespace CafeLib.Bitcoin.Scripting
 
             var len = Data.Length;
             if (len > 0)
-                s += " " + Encoders.Hex.Encode(Data.Sequence);
+                s += " " + Encoders.Hex.EncodeSpan(Data.Sequence);
             return s;
         }
 
@@ -442,11 +442,11 @@ namespace CafeLib.Bitcoin.Scripting
             if (len == 0)
                 s = CodeName;
             else if (len < 100)
-                s = Encoders.Hex.Encode(Data.Sequence);
+                s = Encoders.Hex.EncodeSpan(Data.Sequence);
             else
             {
-                var start = Encoders.Hex.Encode(Data.Sequence.Data.Slice(0, 32));
-                var end = Encoders.Hex.Encode(Data.Sequence.Data.Slice(len - 32));
+                var start = Encoders.Hex.EncodeSpan(Data.Sequence.Slice(0, 32));
+                var end = Encoders.Hex.EncodeSpan(Data.Sequence.Slice(len - 32));
                 s = $"{start}...[{Data.Length} bytes]...{end}";
             }
             return s;

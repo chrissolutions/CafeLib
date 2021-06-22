@@ -75,7 +75,7 @@ namespace CafeLib.Bitcoin.Builders
             return false;
         }
 
-        public string ToVerboseString() => IsRaw ? Encoders.Hex.Encode(Operand.Data.Sequence) : Operand.ToVerboseString();
+        public string ToVerboseString() => IsRaw ? Encoders.Hex.EncodeSpan(Operand.Data.Sequence) : Operand.ToVerboseString();
 
         public override string ToString()
         {
