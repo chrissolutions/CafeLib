@@ -17,40 +17,25 @@ namespace CafeLib.Bitcoin.Encoding
     /// </summary>
     public class HexEncoder : Encoder
     {
+        private const int NumericDigits = '9' - '0' + 1;
+        private const int AlphaDigits = 'f' - 'a' + 1;
         protected static readonly string[] ByteToChs = Enumerable.Range(0, 256).Select(v => v.ToString("x2")).ToArray();
-        protected static readonly int[] CharToNibbleArray;
+        protected static readonly int[] CharToNibbleArray = new int['f' + 1];
 
         static HexEncoder()
         {
-            CharToNibbleArray = new int['f' + 1];
-            for (var i = 0; i < 'a'; i++) CharToNibbleArray[i] = -1;
-            for (var i = 0; i < 10; i++) CharToNibbleArray[i + '0'] = i;
-            for (var i = 0; i < 6; i++)
+            for (var i = 0; i < 'a'; ++i) CharToNibbleArray[i] = -1;
+            for (var i = 0; i < NumericDigits; ++i) CharToNibbleArray[i + '0'] = i;
+            for (var i = 0; i < AlphaDigits; ++i)
             {
-                CharToNibbleArray[i + 'a'] = i + 10;
-                CharToNibbleArray[i + 'A'] = i + 10;
+                CharToNibbleArray[i + 'a'] = i + NumericDigits;
+                CharToNibbleArray[i + 'A'] = i + NumericDigits;
             }
         }
 
-        //public override string Encode(ReadOnlyByteSequence bytes)
-        //{
-        //    var s = new char[bytes.Length * 2];
-        //    var i = 0;
-        //    foreach (var m in bytes)
-        //    {
-        //        foreach (var b in m.Data.Span)
-        //        {
-        //            var chs = ByteToChs[b];
-        //            s[i++] = chs[0];
-        //            s[i++] = chs[1];
-        //        }
-        //    }
-        //    return new string(s);
-        //}
-
         public override string Encode(ReadOnlyByteSpan bytes)
         {
-            var s = new char[bytes.Length * 2];
+            var s = new char[bytes.Length * sizeof(char)];
             var i = 0;
             foreach (var b in bytes)
             {

@@ -29,7 +29,7 @@ namespace CafeLib.Bitcoin.Buffers
         public ReadOnlyByteSequence Slice(SequencePosition start, int length) => Data.Slice(start, length);
         public ReadOnlyByteSequence Slice(SequencePosition start, long length) => Data.Slice(start, length);
         public ReadOnlyByteSequence Slice(int start, SequencePosition end) => Data.Slice(start, end);
-        public ReadOnlyByteSequence Slice(int start , int length) => Data.Slice(start, length);
+        //public ReadOnlyByteSequence Slice(int start , int length) => Data.Slice(start, length);
         public ReadOnlyByteSequence Slice(int start) => Data.Slice(start);
         public ReadOnlyByteSequence Slice(long start) => Data.Slice(start);
         public ByteSpan CopyTo(ByteSpan destination)
@@ -63,11 +63,11 @@ namespace CafeLib.Bitcoin.Buffers
         public static implicit operator ReadOnlySequence<byte>(ReadOnlyByteSequence rhs) => rhs.Data;
         public static implicit operator ReadOnlyByteSequence(ReadOnlySequence<byte> rhs) => new ReadOnlyByteSequence(rhs);
 
-        public static implicit operator byte[](ReadOnlyByteSequence rhs) => rhs.ToArray();
+        public static explicit operator byte[](ReadOnlyByteSequence rhs) => rhs.ToArray();
         public static implicit operator ReadOnlyByteSequence(byte[] rhs) => new ReadOnlyByteSequence(rhs);
 
         public static implicit operator ReadOnlyByteSpan(ReadOnlyByteSequence rhs) => new ReadOnlyByteSpan(rhs);
-        public static explicit operator ReadOnlyByteSequence(ReadOnlyByteSpan  rhs) => new ReadOnlyByteSequence(rhs);
+        public static explicit operator ReadOnlyByteSequence(ReadOnlyByteSpan rhs) => new ReadOnlyByteSequence(rhs);
 
         public override int GetHashCode() => Data.GetHashCode();
 
@@ -106,10 +106,10 @@ namespace CafeLib.Bitcoin.Buffers
                 if (aSpan[ai++] != bSpan[bi++]) break;
             }
 
-            return aok 
-                ? 1 
-                : bok 
-                    ? -1 
+            return aok
+                ? 1
+                : bok
+                    ? -1
                     : 0;
         }
 
@@ -138,8 +138,10 @@ namespace CafeLib.Bitcoin.Buffers
             }
             return true;
         }
-        public ReadOnlyByteSequence RemoveSlice(long start, long end) 
+        public ReadOnlyByteSequence RemoveSlice(long start, long end)
             => RemoveSlice(Data.GetPosition(start), Data.GetPosition(end));
+
+
 
         /// <summary>
         /// Returns a new ReadOnlySequence with a slice removed.
@@ -191,7 +193,7 @@ namespace CafeLib.Bitcoin.Buffers
                     last = first.Append(after.First);
                     break;
 
-                default: 
+                default:
                     throw new NotImplementedException();
             }
 
@@ -212,5 +214,50 @@ namespace CafeLib.Bitcoin.Buffers
                 type = SequenceType.String;
             return type;
         }
+
+
+        /// <summary>
+        /// Forms a slice out of the current <see cref="ReadOnlySequence{T}"/>, beginning at <paramref name="start"/>, with <paramref name="length"/> items.
+        /// </summary>
+        /// <param name="start">The index at which to begin this slice.</param>
+        /// <param name="length">The length of the slice.</param>
+        /// <returns>A slice that consists of <paramref name="length" /> elements from the current instance starting at index <paramref name="start" />.</returns>
+        public ReadOnlyByteSpan Slice(int start, int length) => Slice((long)start, length);
+
+
+        public ReadOnlyByteSpan Slice(long start, int length)
+        {
+            var slice = Data.Slice(start, length);
+            return slice.IsSingleSegment ? (ReadOnlyByteSpan)slice.FirstSpan : new ReadOnlyByteSpan(slice.ToArray());
+        }
+
+        /// <summary>
+        /// Forms a slice out of the current <see cref="ReadOnlySequence{T}"/>, beginning at <paramref name="start"/> and ending at <paramref name="end"/> (exclusive).
+        /// </summary>
+        /// <param name="start">The index at which to begin this slice.</param>
+        /// <param name="end">The ending (exclusive) <see cref="SequencePosition"/> of the slice.</param>
+        /// <returns>A slice that consists of items from the <paramref name="start" /> index to, but not including, the <paramref name="end" /> sequence position in the current read-only sequence.</returns>
+        //public ReadOnlySequence<T> Slice(int start, SequencePosition end) => Slice((long)start, end);
+
+        /// <summary>
+        /// Forms a slice out of the current <see cref="ReadOnlySequence{T}"/>, beginning at <paramref name="start"/>, with <paramref name="length"/> items.
+        /// </summary>
+        /// <param name="start">The starting (inclusive) <see cref="SequencePosition"/> at which to begin this slice.</param>
+        /// <param name="length">The length of the slice.</param>
+        /// <returns>A slice that consists of <paramref name="length" /> elements from the current instance starting at sequence position <paramref name="start" />.</returns>
+        //public ReadOnlySequence<T> Slice(SequencePosition start, int length) => Slice(start, (long)length);
+
+        /// <summary>
+        /// Forms a slice out of the given <see cref="ReadOnlySequence{T}"/>, beginning at <paramref name="start"/>, ending at <paramref name="end"/> (exclusive).
+        /// </summary>
+        /// <param name="start">The starting (inclusive) <see cref="SequencePosition"/> at which to begin this slice.</param>
+        /// <param name="end">The ending (exclusive) <see cref="SequencePosition"/> of the slice.</param>
+        /// <returns>A slice that consists of items from the <paramref name="start" /> sequence position to, but not including, the <paramref name="end" /> sequence position in the current read-only sequence.</returns>
+        ////[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        ////public ReadOnlySequence<T> Slice(SequencePosition start, SequencePosition end)
+        ////{
+        ////    BoundsCheck((uint)GetIndex(start), start.GetObject(), (uint)GetIndex(end), end.GetObject());
+        ////    return SliceImpl(start, end);
+        ////}
     }
 }

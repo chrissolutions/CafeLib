@@ -90,7 +90,7 @@ namespace CafeLib.Bitcoin.Scripting
             }
         }
 
-        public Script Slice(SequencePosition start, SequencePosition end) => new Script(_script.Sequence.Slice(start, end));
+        public Script Slice(SequencePosition start, SequencePosition end) => new Script(_script.Sequence.Slice(start, end).ToArray());
 
         public bool IsPushOnly()
         {

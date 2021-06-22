@@ -11,22 +11,6 @@ namespace CafeLib.Bitcoin.Encoding
     /// </summary>
     public class HexReverseEncoder : HexEncoder
     {
-        public override string Encode(ReadOnlyByteSequence bytes)
-        {
-            var s = new char[bytes.Length * 2];
-            var i = s.Length;
-            foreach (var m in bytes)
-            {
-                foreach (var b in m.Data.Span)
-                {
-                    var chs = ByteToChs[b];
-                    s[--i] = chs[1];
-                    s[--i] = chs[0];
-                }
-            }
-            return new string(s);
-        }
-
         public override string Encode(ReadOnlyByteSpan bytes)
         {
             var s = new char[bytes.Length * 2];
