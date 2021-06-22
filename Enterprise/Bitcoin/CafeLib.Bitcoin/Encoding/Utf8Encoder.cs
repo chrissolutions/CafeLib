@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using CafeLib.Core.Support;
 
 namespace CafeLib.Bitcoin.Encoding
 {
@@ -14,13 +13,14 @@ namespace CafeLib.Bitcoin.Encoding
     /// Character 0 corresponds to the high nibble of the first byte. 
     /// Character 1 corresponds to the low nibble of the first byte. 
     /// </summary>
-    public class Utf8Encoder : SingletonBase<Utf8Encoder>
+    public class Utf8Encoder : IEncoder
     {
         public string Encode(byte[] bytes) => System.Text.Encoding.UTF8.GetString(bytes);
 
+        public byte[] Decode(string source) => TryDecode(source, out var bytes) ? bytes : throw new FormatException(nameof(source));
+
         public bool TryDecode(string data, out byte[] bytes)
         {
-            bytes = Array.Empty<byte>();
             try
             {
                 bytes = System.Text.Encoding.UTF8.GetBytes(data);
@@ -28,7 +28,7 @@ namespace CafeLib.Bitcoin.Encoding
             }
             catch
             {
-                bytes = default;
+                bytes = Array.Empty<byte>();
                 return false;
             }
         }

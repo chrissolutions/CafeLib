@@ -3,23 +3,30 @@ using System.Linq;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Extensions;
 using CafeLib.Core.Extensions;
-using CafeLib.Core.Support;
 
 namespace CafeLib.Bitcoin.Encoding
 {
     /// <summary>
     /// Base58 encoder.
     /// </summary>
-    public class Base58Encoder : SingletonBase<Base58Encoder>
+    public class Base58Encoder : IEncoder
     {
         /** All alphanumeric characters except for "0", "I", "O", and "l" */
         private const string Base58Characters = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
         private static readonly char EncodedZero = Base58Characters[0];
         private static readonly int[] Indexes = new int[128];
-        private Base58Encoder()
+
+        public Base58Encoder()
         {
             Array.Fill(Indexes, -1);
             Base58Characters.ForEach((x, i) => Indexes[x] = i);
+        }
+
+        public byte[] Decode(string source)
+        {
+            return TryDecode(source, out var bytes)
+                ? bytes 
+                : throw new FormatException(nameof(source));
         }
 
         public bool TryDecode(string encoded, out byte[] bytes)
@@ -63,9 +70,8 @@ namespace CafeLib.Bitcoin.Encoding
             return true;
         }
 
-        public string Encode(ReadOnlyByteSpan bytes)
+        public string Encode(byte[] source)
         {
-            byte[] source = bytes;
             if (source.Length == 0) return "";
 
             // Count leading zeros.

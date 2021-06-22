@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 // ReSharper disable UnusedMember.Global
@@ -19,9 +18,9 @@ namespace CafeLib.Core.Extensions
         }
 
         /// <summary>
-        /// Concatenates two or more arrays into a single one.
+        /// Combines two or more arrays into a single one.
         /// </summary>
-        public static byte[] Concat(this byte[] b, params byte[][] args)
+        public static byte[] Combine(this byte[] b, params byte[][] args)
         {
             var arrays = new byte[args.Length + 1][];
             arrays[0] = b;

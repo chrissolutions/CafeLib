@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Buffers.Binary;
 using CafeLib.Bitcoin.Buffers;
-using CafeLib.Core.Support;
 
 namespace CafeLib.Bitcoin.Encoding
 {
-    public class EndianEncoder : SingletonBase<EndianEncoder>
+    public class EndianEncoder : IEncoder
     {
         public int LittleEndianInt32(ReadOnlyByteSpan data) => BinaryPrimitives.ReadInt32LittleEndian(data);
         public int BigEndianInt32(ReadOnlyByteSpan data) => BinaryPrimitives.ReadInt32BigEndian(data);
@@ -18,6 +17,13 @@ namespace CafeLib.Bitcoin.Encoding
             return BitConverter.IsLittleEndian
                 ? System.Text.Encoding.Unicode.GetString(bytes) 
                 : System.Text.Encoding.BigEndianUnicode.GetString(bytes);
+        }
+
+        public byte[] Decode(string source)
+        {
+            return TryDecode(source, out var bytes) 
+                ? bytes 
+                : throw new FormatException(nameof(source));
         }
 
         public bool TryDecode(string encoded, out byte[] bytes)

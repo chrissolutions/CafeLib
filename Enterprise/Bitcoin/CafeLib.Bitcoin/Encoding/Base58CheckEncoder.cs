@@ -6,11 +6,10 @@
 using System;
 using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Crypto;
-using CafeLib.Core.Support;
 
 namespace CafeLib.Bitcoin.Encoding
 {
-    public class Base58CheckEncoder : SingletonBase<Base58CheckEncoder>
+    public class Base58CheckEncoder : IEncoder
     {
         /// <summary>
         /// Appends first 4 bytes of double SHA256 hash to bytes before standard Base58 encoding.
@@ -25,6 +24,13 @@ namespace CafeLib.Bitcoin.Encoding
             span.CopyTo(buf);
             checksum.Span[..4].CopyTo(buf.AsSpan()[span.Length..]);
             return Encoders.Base58.Encode(buf);
+        }
+
+        public byte[] Decode(string source)
+        {
+            return TryDecode(source, out var bytes) 
+                ? bytes 
+                : throw new FormatException(nameof(source));
         }
 
         public bool TryDecode(string encoded, out byte[] bytes)
