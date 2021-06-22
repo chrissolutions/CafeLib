@@ -4,6 +4,7 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using CafeLib.Bitcoin.Extensions;
@@ -13,7 +14,7 @@ namespace CafeLib.Bitcoin.Wallet
 {
     public static class WordLists
     {
-        public static readonly IDictionary<Languages, string[]> Cultures = new Dictionary<Languages, string[]>();
+        public static readonly IDictionary<Languages, string[]> Cultures = new ConcurrentDictionary<Languages, string[]>();
 
         public static string[] GetWords(Languages language)
         {

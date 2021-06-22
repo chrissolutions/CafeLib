@@ -32,21 +32,21 @@ namespace CafeLib.Bitcoin.Encoding
             }
         }
 
-        public override string Encode(ReadOnlyByteSequence bytes)
-        {
-            var s = new char[bytes.Length * 2];
-            var i = 0;
-            foreach (var m in bytes)
-            {
-                foreach (var b in m.Data.Span)
-                {
-                    var chs = ByteToChs[b];
-                    s[i++] = chs[0];
-                    s[i++] = chs[1];
-                }
-            }
-            return new string(s);
-        }
+        //public override string Encode(ReadOnlyByteSequence bytes)
+        //{
+        //    var s = new char[bytes.Length * 2];
+        //    var i = 0;
+        //    foreach (var m in bytes)
+        //    {
+        //        foreach (var b in m.Data.Span)
+        //        {
+        //            var chs = ByteToChs[b];
+        //            s[i++] = chs[0];
+        //            s[i++] = chs[1];
+        //        }
+        //    }
+        //    return new string(s);
+        //}
 
         public override string Encode(ReadOnlyByteSpan bytes)
         {
