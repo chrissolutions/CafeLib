@@ -151,7 +151,7 @@ namespace CafeLib.Bitcoin.Scripting
             }
 
             if (Data.Length > 0)
-                w.Add(Data.Sequence);
+                w.Add((byte[])Data.Sequence);
 
             return w;
         }
