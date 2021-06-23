@@ -20,9 +20,7 @@ namespace CafeLib.Bitcoin.Buffers
 
         public ReadOnlyByteSpan(ReadOnlyByteSequence data)
         {
-            Data = data.Data.IsSingleSegment
-                ? new SequenceReader<byte>(data.Data).UnreadSpan
-                : data.Data.ToArray();
+            Data = data.ToSpan();
         }
 
         public bool IsEmpty => Data.IsEmpty;
