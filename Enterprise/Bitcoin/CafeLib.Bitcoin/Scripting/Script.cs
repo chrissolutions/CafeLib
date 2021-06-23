@@ -18,12 +18,10 @@ namespace CafeLib.Bitcoin.Scripting
     [JsonConverter(typeof(ScriptConverter))]
     public struct Script
     {
-        private VarType _script;
-
         private Script(VarType script)
             : this()
         {
-            _script = script;
+            Data = script;
         }
 
         public Script(byte[] script)
@@ -36,11 +34,11 @@ namespace CafeLib.Bitcoin.Scripting
         {
         }
 
-        internal VarType Data => _script;
+        internal VarType Data { get; private set; }
 
         public static Script None => new Script(Array.Empty<byte>());
 
-        public long Length => _script.Length;
+        public long Length => Data.Length;
 
         public IBitcoinWriter AddTo(IBitcoinWriter writer, bool withoutCodeSeparators = false)
         {
@@ -54,8 +52,8 @@ namespace CafeLib.Bitcoin.Scripting
             else 
             {
                 writer
-                    .Add(_script.Length.AsVarIntBytes())
-                    .Add(_script);
+                    .Add(Data.Length.AsVarIntBytes())
+                    .Add(Data);
 
             }
             return writer;
@@ -66,35 +64,35 @@ namespace CafeLib.Bitcoin.Scripting
             var count = s.ReadInt32();
             if (count == -1)
             {
-                _script = VarType.Empty;
+                Data = VarType.Empty;
             }
             else
             {
                 var bytes = new byte[count];
                 s.Read(bytes);
-                _script = new VarType(bytes);
+                Data = new VarType(bytes);
             }
         }
 
         public void Write(BinaryWriter s)
         {
-            if (_script.Sequence.IsEmpty)
+            if (Data.Sequence.IsEmpty)
             {
                 s.Write(-1);
             }
             else
             {
-                s.Write((int)_script.Length);
-                foreach (var m in _script.Sequence)
+                s.Write((int)Data.Length);
+                foreach (var m in Data.Sequence)
                     s.Write(m.Data.Span);
             }
         }
 
-        public Script Slice(SequencePosition start, SequencePosition end) => new Script(_script.Sequence.Slice(start, end).ToArray());
+        public Script Slice(SequencePosition start, SequencePosition end) => new Script(Data.Sequence.Slice(start, end).ToArray());
 
         public bool IsPushOnly()
         {
-            var ros = _script.Sequence;
+            var ros = Data.Sequence;
             var op = new Operand();
 
             while (ros.Length > 0)
@@ -107,7 +105,7 @@ namespace CafeLib.Bitcoin.Scripting
                 if (op.Code > Opcode.OP_16) return false;
             }
 
-            _script = (VarType)ros;
+            Data = (VarType)ros;
             return true;
         }
 
@@ -123,7 +121,7 @@ namespace CafeLib.Bitcoin.Scripting
         public int FindAndDelete(VarType vchSig)
         {
             int nFound = 0;
-            var s = _script.Sequence;
+            var s = Data.Sequence;
             var r = s;
             if (vchSig.Length == 0) return nFound;
 
@@ -146,7 +144,7 @@ namespace CafeLib.Bitcoin.Scripting
             }
             while (op.TryReadOperand(ref s, out consumed));
 
-            _script = (VarType)r;
+            Data = (VarType)r;
             return nFound;
 #if false
             CScript result;
@@ -176,7 +174,7 @@ namespace CafeLib.Bitcoin.Scripting
         /// <returns></returns>
         public IEnumerable<Operand> Decode()
         {
-            var ros = _script.Sequence;
+            var ros = Data.Sequence;
 
             while (ros.Length > 0)
             {
@@ -200,7 +198,7 @@ namespace CafeLib.Bitcoin.Scripting
 
             if (reader.Data.Remaining < length) goto fail;
 
-            _script = (VarType)(ReadOnlyByteSequence)reader.Data.Sequence.Slice(reader.Data.Position, length);
+            Data = (VarType)(ReadOnlyByteSequence)reader.Data.Sequence.Slice(reader.Data.Position, length);
             reader.Data.Advance(length);
 
             bp.ScriptParsed(this, reader.Data.Consumed);
@@ -218,7 +216,7 @@ namespace CafeLib.Bitcoin.Scripting
 
             if (r.Data.Remaining < length) goto fail;
 
-            _script = (VarType)(ReadOnlyByteSequence)r.Data.Sequence.Slice(r.Data.Position, length);
+            Data = (VarType)(ReadOnlyByteSequence)r.Data.Sequence.Slice(r.Data.Position, length);
             r.Data.Advance(length);
 
             return true;
@@ -228,7 +226,7 @@ namespace CafeLib.Bitcoin.Scripting
 
         public string ToHexString()
         {
-            return Encoders.Hex.Encode(_script);
+            return Encoders.Hex.Encode(Data);
         }
 
         public string ToTemplateString()
@@ -329,7 +327,7 @@ namespace CafeLib.Bitcoin.Scripting
 
         //public static Script ParseTestScript(string testScript) => KzBScript.ParseTestScript(testScript).ToScript();
 
-        public override int GetHashCode() => _script.GetHashCode();
+        public override int GetHashCode() => Data.GetHashCode();
         public override bool Equals(object obj) => obj is Script script && this == script;
         public bool Equals(Script o) => Length == o.Length; //&& _script.CompareTo(o._script) == 0;
         public static bool operator ==(Script x, Script y) => x.Equals(y);
@@ -485,7 +483,7 @@ namespace CafeLib.Bitcoin.Scripting
         /// With height, pre 620538 blocks also treat just a bare OP_RETURN to be unspendable.
         /// </summary>
         /// <returns></returns>
-        public bool IsOpReturn(int? height = null) => IsOpReturn(_script.Sequence.Data.FirstSpan, height);
+        public bool IsOpReturn(int? height = null) => IsOpReturn(Data.Sequence.Data.FirstSpan, height);
 
         public static (bool ok, SignatureHashEnum sh, byte[] r, byte[] s, PublicKey pk) IsCheckSigScript(byte[] scriptSigBytes) => IsCheckSigScript(new ReadOnlySequence<byte>(scriptSigBytes));
             
