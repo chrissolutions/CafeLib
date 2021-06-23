@@ -35,6 +35,11 @@ namespace CafeLib.Bitcoin.Transactions
         private string Address => _address;
 
         /// <summary>
+        /// Null Utxo
+        /// </summary>
+        public static Utxo Null => new Utxo { _txHash = UInt256.Zero, _index = -1, _amount = Amount.Null, _script = Script.None };
+
+        /// <summary>
         /// Creates a stored transaction output.
         /// </summary>
         /// <param name="txHash">   The hash of the containing transaction. </param>
@@ -69,8 +74,6 @@ namespace CafeLib.Bitcoin.Transactions
         {
             _address = address;
         }
-
-        public static Utxo Null => new Utxo { _txHash = UInt256.Zero, _index = -1, _amount = Amount.Null, _script = Script.None };
 
         //public bool TryParseTxOut(ref ByteSequenceReader r, IBlockParser bp)
         //{
