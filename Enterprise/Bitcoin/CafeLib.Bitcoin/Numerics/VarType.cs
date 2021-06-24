@@ -349,7 +349,7 @@ namespace CafeLib.Bitcoin.Numerics
             var s2 = vch2.ToSpan();
             var sr = r.AsSpan();
             s1.CopyTo(sr);
-            s2.CopyTo(sr.Slice(s1.Length));
+            s2.CopyTo(sr[s1.Length..]);
             return new VarType(r);
         }
 

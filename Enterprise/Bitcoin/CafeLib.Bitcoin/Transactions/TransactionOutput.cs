@@ -79,10 +79,10 @@ namespace CafeLib.Bitcoin.Transactions
         //    _script.Read(s);
         //}
 
-        //public override string ToString()
-        //{
-        //    return $"{new Amount(_amount)} {_script}";
-        //}
+        public override string ToString()
+        {
+            return $"{new Amount(_amount)} {_script}";
+        }
 
         //public IBitcoinWriter AddTo(IBitcoinWriter writer)
         //{
