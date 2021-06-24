@@ -215,7 +215,7 @@ namespace CafeLib.Bitcoin.Keys
 
         public string ToAddress() => Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress.ToArray().Combine(ToHash160()));
 
-    public string ToHex() => _bytes != null ? Encoders.Hex.Encode(_bytes) : "<invalid>";
+        public string ToHex() => _bytes != null ? Encoders.Hex.Encode(_bytes) : "<invalid>";
 
         public override string ToString() => ToAddress();
 

@@ -14,7 +14,7 @@ namespace CafeLib.Bitcoin.Keys
         {
             var prefix = RootService.Network.ExtPublicKey;
             var data = new byte[prefix.Length + ExtKey.Bip32KeySize];
-            prefix.CopyTo(data.Slice(0, prefix.Length));
+            prefix.CopyTo(data, 0);
             pubKey.Encode(data.Slice(prefix.Length));
             SetData(data, prefix.Length);
         }
