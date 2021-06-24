@@ -113,7 +113,7 @@ namespace CafeLib.Bitcoin.Chain
 
         private UInt256 ComputeMerkleRoot() => MerkleTree.ComputeMerkleRoot(Txs);
 
-        private bool VerifyMerkleRoot() => ComputeMerkleRoot() == HashMerkleRoot;
+        private bool VerifyMerkleRoot() => ComputeMerkleRoot() == MerkleRoot;
 
         public IEnumerable<(Transaction tx, TxOut o, int i)> GetOutputsSendingToAddresses(UInt160[] addresses)
         {

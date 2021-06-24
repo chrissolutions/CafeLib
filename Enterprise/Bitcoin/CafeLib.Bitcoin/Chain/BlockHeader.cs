@@ -7,6 +7,7 @@ using System;
 using System.Buffers;
 using System.Security.Cryptography;
 using CafeLib.Bitcoin.Buffers;
+using CafeLib.Bitcoin.Encoding;
 using CafeLib.Bitcoin.Numerics;
 
 namespace CafeLib.Bitcoin.Chain
@@ -24,18 +25,15 @@ namespace CafeLib.Bitcoin.Chain
     public class BlockHeader
     {
         public const int BlockHeaderSize = 80;
+        private const long MaxTimeOffset = 2 * 60 * 60;
 
         /// Essential fields of a Bitcoin SV block header.
         private int _version;
-        private UInt256 _hashPrevBlock;
-        private UInt256 _hashMerkleRoot;
+        private UInt256 _prevBlockHash;
+        private UInt256 _merkleRootHash;
         private uint _timestamp;
         private uint _bits;
         private uint _nonce;
-
-
-        /// The following fields are computed or external, not essential.
-        public DateTime TimeWhen => DateTime.UnixEpoch + TimeSpan.FromSeconds(_timestamp);
 
         private readonly UInt256 _hash = new UInt256();
         public UInt256 Hash => _hash;
@@ -44,8 +42,8 @@ namespace CafeLib.Bitcoin.Chain
 
         /// Public access to essential header fields.
         public int Version => _version;
-        public UInt256 HashPrevBlock => _hashPrevBlock;
-        public UInt256 HashMerkleRoot => _hashMerkleRoot;
+        public UInt256 PrevBlock => _prevBlockHash;
+        public UInt256 MerkleRoot => _merkleRootHash;
         public uint Timestamp => _timestamp;
         public uint Bits => _bits;
         public uint Nonce => _nonce;
@@ -54,36 +52,60 @@ namespace CafeLib.Bitcoin.Chain
         {
         }
 
-        public BlockHeader
-        (
-            int version,
-            UInt256 hashPrevBlock,
-            UInt256 hashMerkleRoot,
-            uint timestamp,
-            uint bits,
-            uint nonce
-        )
+        /// <summary>
+        /// Constructs a new block header
+        /// </summary>
+        /// <param name="version">block version number</param>
+        /// <param name="prevBlockHash">sha256 hash of the previous block header</param>
+        /// <param name="merkleRootHash">Sha256 hash at the root of the transaction merkle tree</param>
+        /// <param name="timestamp">current block timestamp as seconds since the unix epoch</param>
+        /// <param name="bits">the current difficulty target in compact format</param>
+        /// <param name="nonce">the nonce field that miners use to find a sha256 hash value that matches the difficulty target</param>
+        public BlockHeader(int version, UInt256 prevBlockHash, UInt256 merkleRootHash, uint timestamp, uint bits, uint nonce)
         {
             _version = version;
-            _hashPrevBlock = hashPrevBlock;
-            _hashMerkleRoot = hashMerkleRoot;
+            _prevBlockHash = prevBlockHash;
+            _merkleRootHash = merkleRootHash;
             _timestamp = timestamp;
             _bits = bits;
             _nonce = nonce;
         }
 
         /// <summary>
-        /// 
+        /// Create a block header from hexadecimal string.
         /// </summary>
-        /// <param name="ros"></param>
+        /// <param name="hex">Hexadecimal string containing the block header</param>
         /// <returns></returns>
-        public bool TryReadBlockHeader(ref ReadOnlyByteSequence ros)
+        public static BlockHeader FromHex(string hex)
         {
-            var r = new ByteSequenceReader(ros);
-            if (!TryReadBlockHeader(ref r)) return false;
-            ros = ros.Data.Slice(r.Data.Consumed);
-            return true;
+            var bytes = Encoders.Hex.Decode(hex);
+            return FromBuffer(bytes);
         }
+
+        /// <summary>
+        /// Create a block header from byte buffer.
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        public static BlockHeader FromBuffer(byte[] buffer)
+        {
+            var blockHeader = new BlockHeader();
+            var reader = new ByteSequenceReader(buffer);
+            return blockHeader.TryReadBlockHeader(ref reader) ? blockHeader : throw new FormatException(nameof(buffer));
+        }
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="ros"></param>
+        ///// <returns></returns>
+        //public bool TryReadBlockHeader(ref ReadOnlyByteSequence ros)
+        //{
+        //    var r = new ByteSequenceReader(ros);
+        //    if (!TryReadBlockHeader(ref r)) return false;
+        //    ros = ros.Data.Slice(r.Data.Consumed);
+        //    return true;
+        //}
 
         public bool TryReadBlockHeader(ref ByteSequenceReader r)
         {
@@ -93,8 +115,8 @@ namespace CafeLib.Bitcoin.Chain
             var start = r.Data.Position;
 
             if (!r.TryReadLittleEndian(out _version)) return false;
-            if (!r.TryReadUInt256(ref _hashPrevBlock)) return false;
-            if (!r.TryReadUInt256(ref _hashMerkleRoot)) return false;
+            if (!r.TryReadUInt256(ref _prevBlockHash)) return false;
+            if (!r.TryReadUInt256(ref _merkleRootHash)) return false;
             if (!r.TryReadLittleEndian(out _timestamp)) return false;
             if (!r.TryReadLittleEndian(out _bits)) return false;
             if (!r.TryReadLittleEndian(out _nonce)) return false;
@@ -107,6 +129,16 @@ namespace CafeLib.Bitcoin.Chain
             var hash2 = sha256.ComputeHash(hash1);
             hash2.CopyTo(_hash.Span);
             return true;
+        }
+
+        /// <summary>
+        /// Check for valid timestamp.
+        /// </summary>
+        /// <returns>Returns *true* if the timestamp is smaller than or equal to the [BlockHeader.MAX_TIME_OFFSET], *false* otherwise</returns>
+        public bool HasValidTimestamp()
+        {
+            var currentTime = (DateTime.Now - DateTime.UnixEpoch).Milliseconds / 1000;
+            return Timestamp <= currentTime + MaxTimeOffset;
         }
     }
 }

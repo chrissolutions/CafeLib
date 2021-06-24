@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using CafeLib.Bitcoin.Buffers;
 using CafeLib.Bitcoin.Encoding;
 using CafeLib.Bitcoin.Numerics;
 using CafeLib.Core.Extensions;
