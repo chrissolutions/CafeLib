@@ -18,9 +18,9 @@ namespace CafeLib.Core.Extensions
         }
 
         /// <summary>
-        /// Combines two or more arrays into a single one.
+        /// Combines two or more byte arrays into a single one.
         /// </summary>
-        public static byte[] Combine(this byte[] b, params byte[][] args)
+        public static byte[] Concat(this byte[] b, params byte[][] args)
         {
             var arrays = new byte[args.Length + 1][];
             arrays[0] = b;

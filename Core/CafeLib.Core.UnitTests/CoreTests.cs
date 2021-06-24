@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CafeLib.Core.Collections;
 using CafeLib.Core.Extensions;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using Xunit;
 
 namespace CafeLib.Core.UnitTests
@@ -71,7 +70,7 @@ namespace CafeLib.Core.UnitTests
             var array2 = new byte[] { 6, 7, 8, 9 };
             var array3 = new byte[] { 10, 11, 12, 13 };
 
-            var merged = array1.Combine(array2, array3);
+            var merged = array1.Concat(array2, array3);
             Assert.True(merged.SequenceEqual(new byte[] {2,3,4,5,6,7,8,9,10,11,12,13}));
         }
     }
