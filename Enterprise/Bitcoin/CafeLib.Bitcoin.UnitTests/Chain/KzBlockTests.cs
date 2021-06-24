@@ -67,5 +67,14 @@ namespace CafeLib.Bitcoin.UnitTests.Chain
 
             return kzb;
         }
+
+        //private static Block FetchBlock(int height)
+        //{
+        //    var fileName = GetBlockFilename(height);
+        //    var block = new Block {Height = height};
+        //    using var stream = File.OpenRead(fileName);
+        //    block.TryReadBlock(stream);
+        //    Assert.Equal(10, block.Txs.LongLength);
+        //}
     }
 }
