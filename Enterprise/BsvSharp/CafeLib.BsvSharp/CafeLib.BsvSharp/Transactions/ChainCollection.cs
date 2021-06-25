@@ -14,6 +14,7 @@ namespace CafeLib.BsvSharp.Transactions
         public void Add(T item) => _map.Add(item.Hash, item);
         public void Clear() => _map.Clear();
         public bool Contains(T item) => _map.ContainsKey(item.Hash);
+        public int Count => _map.Count;
         public void CopyTo(T[] array, int arrayIndex) => _map.Values.CopyTo(array, arrayIndex);
         public bool Remove(T item) => _map.Remove(item.Hash);
         public T this[UInt256 key] => _map[key];
