@@ -10,7 +10,7 @@ using CafeLib.BsvSharp.Units;
 
 namespace CafeLib.BsvSharp.Transactions
 {
-    public struct TransactionOutput
+    public struct TransactionOutput : IChainId
     {
         private UInt256 _txHash;
         private long _index;
@@ -23,6 +23,9 @@ namespace CafeLib.BsvSharp.Transactions
         private Amount Amount => _amount;
         private bool IsChangeOutput => _isChangeOutput;
         private Script Script => _script;
+
+        public UInt256 Hash => _txHash;
+
 
         /// <summary>
         /// Null transaction output
