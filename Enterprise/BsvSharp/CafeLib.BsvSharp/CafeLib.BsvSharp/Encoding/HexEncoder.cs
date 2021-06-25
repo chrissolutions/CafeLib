@@ -1,34 +1,54 @@
-﻿using System;
+﻿#region Copyright
+// Copyright (c) 2020 TonesNotes
+// Distributed under the Open BSV software license, see the accompanying file LICENSE.
+#endregion
+
+using System;
 using System.Linq;
 using CafeLib.BsvSharp.Buffers;
-using CafeLib.Core.Support;
 
 namespace CafeLib.BsvSharp.Encoding
 {
-    public class HexEncoder : SingletonBase<HexEncoder>, IEncoder
+    /// <summary>
+    /// The string begins with the first byte.
+    /// Encodes a sequence of bytes as hexadecimal digits where:
+    /// Character 0 corresponds to the high nibble of the first byte. 
+    /// Character 1 corresponds to the low nibble of the first byte. 
+    /// </summary>
+    public class HexEncoder : IEncoder
     {
-        internal readonly string[] ByteToChs = Enumerable.Range(0, 256).Select(v => v.ToString("x2")).ToArray();
-        internal static readonly int[] CharToNibbleArray = new int['f' + 1];
+        private const int NumericDigits = '9' - '0' + 1;
+        private const int AlphaDigits = 'f' - 'a' + 1;
+        protected static readonly string[] ByteToChs = Enumerable.Range(0, 256).Select(v => v.ToString("x2")).ToArray();
+        protected static readonly int[] CharToNibbleArray = new int['f' + 1];
 
-        private HexEncoder()
+        static HexEncoder()
         {
-            for (var i = 0; i < 'a'; i++) CharToNibbleArray[i] = -1;
-            for (var i = 0; i < 10; i++) CharToNibbleArray[i + '0'] = i;
-            for (var i = 0; i < 6; i++)
+            for (var i = 0; i < 'a'; ++i) CharToNibbleArray[i] = -1;
+            for (var i = 0; i < NumericDigits; ++i) CharToNibbleArray[i + '0'] = i;
+            for (var i = 0; i < AlphaDigits; ++i)
             {
-                CharToNibbleArray[i + 'a'] = i + 10;
-                CharToNibbleArray[i + 'A'] = i + 10;
+                CharToNibbleArray[i + 'a'] = i + NumericDigits;
+                CharToNibbleArray[i + 'A'] = i + NumericDigits;
             }
         }
 
-        public static string EncodeBytes(byte[] source) => Current.Encode(source);
-        public static byte[] DecodeString(string source) => Current.Decode(source);
+        public string Encode(byte[] source) => EncodeSpan(source);
 
-        public string Encode(byte[] source)
+        public byte[] Decode(string source) => TryDecode(source, out var bytes) ? bytes : throw new FormatException(nameof(source));
+
+        public bool TryDecode(string hex, out byte[] bytes)
         {
-            var s = new char[source.Length * sizeof(char)];
+            bytes = new byte[hex.Length / 2];
+            var span = bytes.AsSpan();
+            return TryDecodeSpan(hex, span);
+        }
+
+        internal virtual string EncodeSpan(ReadOnlyByteSpan bytes)
+        {
+            var s = new char[bytes.Length * sizeof(char)];
             var i = 0;
-            foreach (var b in source)
+            foreach (var b in bytes)
             {
                 var chs = ByteToChs[b];
                 s[i++] = chs[0];
@@ -37,28 +57,28 @@ namespace CafeLib.BsvSharp.Encoding
             return new string(s);
         }
 
-        public byte[] Decode(string source)
+        internal virtual bool TryDecodeSpan(string hex, ByteSpan bytes)
         {
-            var span = new ByteSpan(new byte[source.Length / 2]);
+            if (hex.Length % 2 == 1 || hex.Length / 2 > bytes.Length)
+                return false;
 
-            if (source.Length % 2 == 1 || source.Length / 2 > span.Length) throw new FormatException(nameof(source));
+            if (hex.Length / 2 < bytes.Length)
+                bytes[(hex.Length / 2)..].Data.Fill(0);
 
-            if (source.Length / 2 < span.Length)
+            for (int i = 0, j = 0; i < hex.Length;)
             {
-                span[(source.Length / 2)..].Data.Fill(0);
+                var a = CharToNibble(hex[i++]);
+                var b = CharToNibble(hex[i++]);
+                if (a == -1 || b == -1) return false;
+                bytes[j++] = (byte)((a << 4) | b);
             }
 
-            for (int i = 0, j = 0; i < source.Length;)
-            {
-                var a = CharToNibble(source[i++]);
-                var b = CharToNibble(source[i++]);
-                if (a == -1 || b == -1) throw new FormatException(nameof(source));
-                span[j++] = (byte)((a << 4) | b);
-            }
-
-            return span;
+            return true;
         }
 
-        internal int CharToNibble(char c) => c > CharToNibbleArray.Length ? -1 : CharToNibbleArray[c];
+        protected static int CharToNibble(char c)
+        {
+            return c > CharToNibbleArray.Length ? -1 : CharToNibbleArray[c];
+        }
     }
 }

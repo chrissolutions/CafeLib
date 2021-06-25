@@ -39,8 +39,8 @@ namespace CafeLib.BsvSharp.Keys
 
         protected bool SetString(string b58, int nVersionBytes)
         {
-            var bytes = Encoders.Base58Check.Decode(b58);
-            var (data, length, result) = bytes.Length >= nVersionBytes 
+            var (data, length, result) = 
+                Encoders.Base58Check.TryDecode(b58, out var bytes) && bytes.Length >= nVersionBytes 
                     ? (bytes, nVersionBytes, true) 
                     : (new byte[0], 0, false);
 

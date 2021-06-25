@@ -4,21 +4,20 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using CafeLib.BsvSharp.Extensions;
 using CafeLib.Core.Extensions;
 
 namespace CafeLib.BsvSharp.Wallet
 {
     public static class WordLists
     {
-        public static readonly IDictionary<Languages, string[]> Cultures = new Dictionary<Languages, string[]>();
+        public static readonly IDictionary<Languages, string[]> Cultures = new ConcurrentDictionary<Languages, string[]>();
 
         public static string[] GetWords(Languages language)
         {
-            //return Cultures.GetOrAdd(language, () => LoadWords(language));
-            return null;
+            return Cultures.GetOrAdd(language, () => LoadWords(language));
         }
 
         private static string[] LoadWords(Languages language)

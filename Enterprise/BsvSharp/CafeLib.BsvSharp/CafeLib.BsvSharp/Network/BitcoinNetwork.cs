@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Extensions;
@@ -33,19 +32,19 @@ namespace CafeLib.BsvSharp.Network
         {
         }
 
-        public ReadOnlyByteSpan PublicKeyAddress => new Lazy<byte[]>(() => CreateKey(Base58Type.PubkeyAddress)).Value;
+        public byte[] PublicKeyAddress => new Lazy<byte[]>(() => CreateKey(Base58Type.PubkeyAddress)).Value;
 
-        public ReadOnlyByteSpan ScriptAddress => new Lazy<byte[]>(() => CreateKey(Base58Type.ScriptAddress)).Value;
+        public byte[] ScriptAddress => new Lazy<byte[]>(() => CreateKey(Base58Type.ScriptAddress)).Value;
 
-        public ReadOnlyByteSpan SecretKey => new Lazy<byte[]>(() => CreateKey(Base58Type.SecretKey)).Value;
+        public byte[] SecretKey => new Lazy<byte[]>(() => CreateKey(Base58Type.SecretKey)).Value;
 
-        public ReadOnlyByteSpan ExtPublicKey => new Lazy<byte[]>(() => CreateKey(Base58Type.ExtPublicKey)).Value;
+        public byte[] ExtPublicKey => new Lazy<byte[]>(() => CreateKey(Base58Type.ExtPublicKey)).Value;
 
-        public ReadOnlyByteSpan ExtSecretKey => new Lazy<byte[]>(() => CreateKey(Base58Type.ExtSecretKey)).Value;
+        public byte[] ExtSecretKey => new Lazy<byte[]>(() => CreateKey(Base58Type.ExtSecretKey)).Value;
 
-        private ReadOnlyByteSpan Base58Prefix(Base58Type type) => Base58Prefixes[(int)type].AsSpan();
+        private byte[] Base58Prefix(Base58Type type) => Base58Prefixes[(int)type];
 
-        private ReadOnlyByteSpan CreateKey(Base58Type networkType)
+        private byte[] CreateKey(Base58Type networkType)
         {
             lock (Mutex)
             {

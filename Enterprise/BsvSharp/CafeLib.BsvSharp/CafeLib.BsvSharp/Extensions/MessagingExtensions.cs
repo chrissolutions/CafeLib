@@ -18,7 +18,7 @@ namespace CafeLib.BsvSharp.Extensions
 
         private static UInt256 GetMessageHash(ReadOnlyByteSpan message)
         {
-            var messageHash = message.Sha256().ToString();
+            var messageHash = message.Sha256().ToHex();
             return new HashWriter().Add(MessageMagic).Add(messageHash).GetHashFinal();
         }
 

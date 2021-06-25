@@ -1,6 +1,5 @@
 ﻿#region Copyright
 // Copyright (c) 2020 TonesNotes
-// Copyright (c) 2021 ChrisSolutions
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
@@ -11,6 +10,7 @@ using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics.Converters;
 using Newtonsoft.Json;
+
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.BsvSharp.Numerics
@@ -18,10 +18,6 @@ namespace CafeLib.BsvSharp.Numerics
     [JsonConverter(typeof(JsonConverterUInt512))]
     public struct UInt512
     {
-        private static readonly HexEncoder Hex = HexEncoder.Current;
-        private static readonly HexReverseEncoder HexReverse = HexReverseEncoder.Current;
-        private static readonly EndianEncoder Endian = EndianEncoder.Current;
-
         private ulong _n0;
         private ulong _n1;
         private ulong _n2;
@@ -31,24 +27,24 @@ namespace CafeLib.BsvSharp.Numerics
         private ulong _n6;
         private ulong _n7;
 
-        /// <summary>
-        /// Length of UInt512.
-        /// </summary>
+        private static readonly HexEncoder Hex = Encoders.Hex;
+        private static readonly HexReverseEncoder HexReverse = Encoders.HexReverse;
+
         public const int Length = 64;
 
-        public UInt512(byte[] bytes)
+        public UInt512(ReadOnlyByteSpan span, bool reverse = false)
             : this()
         {
-            if (bytes.Length < Length)
+            if (span.Length < Length)
                 throw new ArgumentException($"{Length} bytes are required.");
 
-            bytes[..Length].CopyTo(Span);
-            if (Endian.IsLittleEndian)
+            span.Slice(0, Length).CopyTo(Span);
+            if (reverse)
                 Span.Reverse();
         }
 
         public UInt512(ulong v0 = 0, ulong v1 = 0, ulong v2 = 0, ulong v3 = 0, ulong v4 = 0, ulong v5 = 0, ulong v6 = 0, ulong v7 = 0)
-        {
+		{
             _n0 = v0;
             _n1 = v1;
             _n2 = v2;
@@ -57,12 +53,12 @@ namespace CafeLib.BsvSharp.Numerics
             _n5 = v5;
             _n6 = v6;
             _n7 = v7;
-        }
+		}
 
-        public UInt512(string hex)
+        public UInt512(string hex, bool firstByteFirst = false)
             : this()
         {
-            Hex.Decode(hex).CopyTo(Span);
+            (firstByteFirst ? Hex : HexReverse).TryDecodeSpan(hex, Span);
         }
 
         public static UInt512 Zero { get; } = new UInt512(0);
@@ -77,8 +73,8 @@ namespace CafeLib.BsvSharp.Numerics
                     fixed (ulong* p = &_n0)
                     {
                         var pb = (byte*)p;
-                        var span = new Span<byte>(pb, Length);
-                        return span;
+                        var bytes = new Span<byte>(pb, Length);
+                        return bytes;
                     }
                 }
             }
@@ -95,12 +91,15 @@ namespace CafeLib.BsvSharp.Numerics
         /// The bytes appear in big-endian order, as a large hexadecimal encoded number.
         /// </summary>
         /// <returns></returns>
-		public override string ToString() => HexReverse.Encode((byte[])Span);
+		public override string ToString() => HexReverse.Encode(Span);
 
         /// <summary>
-        /// Get the Uint512 hash code.
+        /// The bytes appear in little-endian order, first byte in memory first.
+        /// But the high nibble, first hex digit, of the each byte still appears before the low nibble (big-endian by nibble order).
         /// </summary>
         /// <returns></returns>
+		public string ToHex() => Hex.Encode(Span);
+
         public override int GetHashCode() => _n0.GetHashCode() ^ _n1.GetHashCode() ^ _n2.GetHashCode() ^ _n3.GetHashCode();
 
         public override bool Equals(object obj) => obj is UInt512 int512 && this == int512;

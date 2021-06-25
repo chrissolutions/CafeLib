@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using System.Buffers;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics;
@@ -152,7 +151,7 @@ namespace CafeLib.BsvSharp.Scripting
             }
 
             if (Data.Length > 0)
-                w.Add(Data.Sequence);
+                w.Add((byte[])Data.Sequence);
 
             return w;
         }
@@ -432,7 +431,7 @@ namespace CafeLib.BsvSharp.Scripting
 
             var len = Data.Length;
             if (len > 0)
-                s += " " + Encoders.Hex.Encode(Data.Sequence);
+                s += " " + Encoders.Hex.EncodeSpan(Data.Sequence);
             return s;
         }
 
@@ -443,11 +442,11 @@ namespace CafeLib.BsvSharp.Scripting
             if (len == 0)
                 s = CodeName;
             else if (len < 100)
-                s = Encoders.Hex.Encode(Data.Sequence);
+                s = Encoders.Hex.EncodeSpan(Data.Sequence);
             else
             {
-                var start = Encoders.Hex.Encode(Data.Sequence.Data.Slice(0, 32).ToArray());
-                var end = Encoders.Hex.Encode(Data.Sequence.Data.Slice(len - 32).ToArray());
+                var start = Encoders.Hex.EncodeSpan(Data.Sequence.Slice(0, 32));
+                var end = Encoders.Hex.EncodeSpan(Data.Sequence.Slice(len - 32));
                 s = $"{start}...[{Data.Length} bytes]...{end}";
             }
             return s;

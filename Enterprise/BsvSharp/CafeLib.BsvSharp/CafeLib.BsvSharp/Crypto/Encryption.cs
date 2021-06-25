@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
+using CafeLib.Core.Support;
 
 namespace CafeLib.BsvSharp.Crypto
 {

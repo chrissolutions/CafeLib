@@ -5,6 +5,7 @@
 
 using System;
 using System.Diagnostics;
+using CafeLib.Bitcoin.Units;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;

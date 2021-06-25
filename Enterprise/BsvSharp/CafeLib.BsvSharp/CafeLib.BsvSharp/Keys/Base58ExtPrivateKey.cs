@@ -28,7 +28,7 @@ namespace CafeLib.BsvSharp.Keys
         {
             var prefix = RootService.Network.ExtSecretKey;
             var data = new byte[prefix.Length + ExtKey.Bip32KeySize];
-            prefix.CopyTo(data.Slice(0, prefix.Length));
+            prefix.CopyTo(data, 0);
             privateKey.Encode(data.Slice(prefix.Length));
             SetData(data, prefix.Length);
         }

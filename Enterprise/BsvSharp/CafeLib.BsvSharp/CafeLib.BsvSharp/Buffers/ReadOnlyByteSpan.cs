@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Runtime.CompilerServices;
 
 namespace CafeLib.BsvSharp.Buffers
@@ -20,9 +19,7 @@ namespace CafeLib.BsvSharp.Buffers
 
         public ReadOnlyByteSpan(ReadOnlyByteSequence data)
         {
-            Data = data.Data.IsSingleSegment
-                ? new SequenceReader<byte>(data.Data).UnreadSpan
-                : data.Data.ToArray();
+            Data = data.ToSpan();
         }
 
         public bool IsEmpty => Data.IsEmpty;
@@ -63,7 +60,7 @@ namespace CafeLib.BsvSharp.Buffers
             public byte Current => _enumerator.Current;
         }
 
-        public byte this[int index] => Data[index];
+        public byte this[Index index] => Data[index];
         public ReadOnlyByteSpan this[Range range] => Data[range];
 
         public static ReadOnlyByteSpan Empty => default;

@@ -6,6 +6,7 @@
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using CafeLib.Bitcoin.Units;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;

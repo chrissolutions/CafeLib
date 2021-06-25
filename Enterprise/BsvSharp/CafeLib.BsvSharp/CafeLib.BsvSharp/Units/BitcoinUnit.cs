@@ -3,7 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-namespace CafeLib.BsvSharp.Units
+namespace CafeLib.Bitcoin.Units
 {
     /// <summary>
     /// How many satoshis to each unit.
@@ -12,7 +12,6 @@ namespace CafeLib.BsvSharp.Units
     {
         Bitcoin = 100_000_000,
         MilliBitcoin = 100_000,
-        Duro = 500,
         Bit = 100,
         Satoshi = 1
     }

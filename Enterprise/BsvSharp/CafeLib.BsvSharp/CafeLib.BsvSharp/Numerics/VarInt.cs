@@ -102,12 +102,12 @@ namespace CafeLib.BsvSharp.Numerics
                 len = SizeofVarByte;
                 prefix = 0;
             }
-            else if (unsigned <= ushort.MaxValue)
+            else if (unsigned <= 0xffff)
             {
                 len = SizeofVarChar; 
                 prefix = 0xfd; 
             }
-            else if (unsigned <= uint.MaxValue)
+            else if (unsigned <= 0xffff_ffff)
             {
                 len = SizeofVarInt; 
                 prefix = 0xfe; 

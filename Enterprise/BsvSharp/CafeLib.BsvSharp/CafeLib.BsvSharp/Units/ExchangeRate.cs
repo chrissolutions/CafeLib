@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace CafeLib.BsvSharp.Units 
+namespace CafeLib.Bitcoin.Units 
 {
 
     /// <summary>

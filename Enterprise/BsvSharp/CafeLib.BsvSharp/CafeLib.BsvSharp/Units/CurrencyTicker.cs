@@ -1,4 +1,4 @@
-﻿namespace CafeLib.BsvSharp.Units 
+﻿namespace CafeLib.Bitcoin.Units 
 {
     public enum CurrencyTicker 
     {

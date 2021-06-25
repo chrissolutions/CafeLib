@@ -3,6 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using System.Text;
 using CafeLib.BsvSharp.Encoding;
 using Xunit;
 
@@ -16,11 +17,11 @@ namespace CafeLib.BsvSharp.UnitTests.Encode
             const string hex = "73696d706c792061206c6f6e6720737472696e67";
             const string base58 = "2cFupjhnEsSn59qHXstmK2ffpLv2";
 
-            var bytes = Base58Encoder.Current.Decode(base58);
-            var text = Base58Encoder.Current.Encode(bytes);
+            var bytes = Encoders.Base58.Decode(base58);
+            var text = Encoders.Base58.Encode(bytes);
 
             Assert.Equal(base58, text);
-            Assert.Equal(hex, HexEncoder.Current.Encode(bytes));
+            Assert.Equal(hex, Encoders.Hex.Encode(bytes));
         }
 
         [Fact]
@@ -33,7 +34,7 @@ namespace CafeLib.BsvSharp.UnitTests.Encode
             var text = Encoders.Base58.Encode(bytes);
 
             Assert.Equal(base58, text);
-            Assert.Equal(hex, HexEncoder.EncodeBytes(bytes));
+            Assert.Equal(hex, Encoders.Hex.Encode(bytes));
         }
 
         [Fact]
@@ -42,8 +43,8 @@ namespace CafeLib.BsvSharp.UnitTests.Encode
             const string hex = "73696d706c792061206c6f6e6720737472696e67";
             const string base58 = "2cFupjhnEsSn59qHXstmK2ffpLv2";
 
-            Assert.Equal(base58, Encoders.Base58.FromHex(hex));
-            Assert.Equal(hex, Encoders.Base58.ToHex(base58));
+            Assert.Equal(base58, Encoders.Base58.Encode(Encoders.Hex.Decode(hex)));
+            Assert.Equal(hex, Encoders.Hex.Encode(Encoders.Base58.Decode(base58)));
         }
 
 

@@ -1,4 +1,6 @@
-﻿namespace CafeLib.BsvSharp.Units
+﻿using CafeLib.BsvSharp.Units;
+
+namespace CafeLib.Bitcoin.Units
 {
     public interface IAmountExchangeRate 
     {

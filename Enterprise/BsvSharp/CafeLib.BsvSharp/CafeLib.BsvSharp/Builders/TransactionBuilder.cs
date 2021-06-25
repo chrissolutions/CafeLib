@@ -7,6 +7,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using CafeLib.Bitcoin.Units;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;

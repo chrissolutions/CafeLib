@@ -12,7 +12,6 @@ using System.Text;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Encoding;
-using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Extensions;
 
@@ -219,12 +218,12 @@ namespace CafeLib.BsvSharp.Wallet
 
 		private static (Languages language, string[] wordList) GetWordList(string words)
 		{
-			//foreach (var language in EnumExtensions.GetEnumValues<Languages>()) 
-			//{
-			//	if (language == Languages.Unknown) continue;
-			//	var wl = WordLists.GetWords(language);
-			//	if (BelongsToWordList(words, wl)) return (language, wl);
-			//}
+			foreach (var language in EnumExtensions.GetEnumValues<Languages>()) 
+			{
+				if (language == Languages.Unknown) continue;
+				var wl = WordLists.GetWords(language);
+				if (BelongsToWordList(words, wl)) return (language, wl);
+			}
 
 			return (Languages.Unknown, null);
 		}

@@ -11,6 +11,7 @@ using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Services;
+using CafeLib.Core.Extensions;
 using Secp256k1Net;
 
 namespace CafeLib.BsvSharp.Keys
@@ -78,7 +79,7 @@ namespace CafeLib.BsvSharp.Keys
             var firstByte = varType.FirstByte;
             var size = PredictLength(firstByte);
 
-            _bytes = new byte[size]; 
+            _bytes = new byte[size];
             varType.CopyTo(_bytes);
         }
 
@@ -88,7 +89,8 @@ namespace CafeLib.BsvSharp.Keys
             try
             {
                 var vch = hex.HexToBytes();
-                if ((vch.Length == CompressedLength || vch.Length == UncompressedLength) && vch.Length == PredictLength(vch[0]))
+                if ((vch.Length == CompressedLength || vch.Length == UncompressedLength) &&
+                    vch.Length == PredictLength(vch[0]))
                     _bytes = vch;
             }
             catch
@@ -162,7 +164,7 @@ namespace CafeLib.BsvSharp.Keys
         public static bool CheckLowS(ReadOnlyByteSequence vchSig)
         {
             var sig = new byte[64];
-            var input = (ReadOnlyByteSpan)vchSig;
+            var input = (ReadOnlyByteSpan) vchSig;
 
             using var library = new Secp256k1();
             if (!library.SignatureParseDerLax(sig, input)) return false;
@@ -211,7 +213,7 @@ namespace CafeLib.BsvSharp.Keys
         /// <returns>20 byte hash as a KzUInt160</returns>
         public UInt160 ToHash160() => Data.Hash160();
 
-        public string ToAddress() => Encoders.Base58Check.Encode( new [] {(byte[])RootService.Network.PublicKeyAddress, ToHash160()});
+        public string ToAddress() => Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress.ToArray().Concat(ToHash160()));
 
         public string ToHex() => _bytes != null ? Encoders.Hex.Encode(_bytes) : "<invalid>";
 

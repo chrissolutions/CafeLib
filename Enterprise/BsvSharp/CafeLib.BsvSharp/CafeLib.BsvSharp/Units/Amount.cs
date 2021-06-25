@@ -4,6 +4,7 @@
 #endregion
 
 using System;
+using CafeLib.Bitcoin.Units;
 
 namespace CafeLib.BsvSharp.Units
 {
@@ -97,7 +98,6 @@ namespace CafeLib.BsvSharp.Units
             {
                 BitcoinUnit.Bitcoin => $"{(m ? "-" : " ")}{i:#,0}.{f:000_000_00}",
                 BitcoinUnit.MilliBitcoin => $"{(m ? "-" : " ")}{i:#,0}.{f:000_00}",
-                BitcoinUnit.Duro => $"{(m ? "-" : " ")}{i:#,0}.{f:00}",
                 BitcoinUnit.Bit => $"{(m ? "-" : " ")}{i:#,0}.{f:00}",
                 BitcoinUnit.Satoshi => $"{(m ? "-" : " ")}{i:#,0}",
                 _ => string.Empty
@@ -122,9 +122,6 @@ namespace CafeLib.BsvSharp.Units
 
         public static implicit operator Amount(long value) => new Amount(value);
         public static implicit operator long(Amount value) => value.Satoshis;
-
-        public static implicit operator Amount(decimal value) => new Amount(value, BitcoinUnit.Satoshi);
-        public static implicit operator decimal(Amount value) => value.Satoshis;
 
         public static bool operator ==(Amount x, Amount y) => x.Equals(y);
         public static bool operator !=(Amount x, Amount y) => !(x == y);

@@ -16,8 +16,8 @@ namespace CafeLib.BsvSharp.Chain
     /// Closely mirrors the data and layout of a Bitcoin transaction input as stored in each block.
     /// Focus is on performance when processing large numbers of transactions, including blocks of transactions.
     /// Not used for making dynamic changes (building scripts).
-    /// See <see cref="TxInBuilder"/> when dynamically building a transaction input.
-    /// <seealso cref="Transaction"/>
+    /// See <see cref="Transaction"/> when dynamically building a transaction input.
+    /// <seealso cref="TxInBuilder"/>
     /// </summary>
     public struct TxIn
     {

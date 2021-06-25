@@ -4,48 +4,43 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Crypto;
-using CafeLib.Core.Extensions;
-using CafeLib.Core.Support;
 
 namespace CafeLib.BsvSharp.Encoding
 {
-    public class Base58CheckEncoder : SingletonBase<Base58CheckEncoder>, IEncoder
+    public class Base58CheckEncoder : IEncoder
     {
-        public string Encode(IEnumerable<byte[]> args)
-        {
-            var bytes = new List<byte>();
-            args.ForEach(x => bytes.AddRange(x));
-            return Encode(bytes.ToArray());
-        }
-
         /// <summary>
         /// Appends first 4 bytes of double SHA256 hash to bytes before standard Base58 encoding.
         /// </summary>
-        /// <param name="source"></param>
+        /// <param name="bytes"></param>
         /// <returns></returns>
-        public string Encode(byte[] source)
+        public string Encode(byte[] bytes)
         {
-            var span = new ReadOnlyByteSpan(source);
+            var span = new ReadOnlyByteSpan(bytes);
             var checksum = span.Hash256();
             var buf = new byte[span.Length + 4];
             span.CopyTo(buf);
-            checksum.Span.Slice(0, 4).CopyTo(buf.AsSpan().Slice(span.Length));
+            checksum.Span[..4].CopyTo(buf.AsSpan()[span.Length..]);
             return Encoders.Base58.Encode(buf);
         }
 
         public byte[] Decode(string source)
         {
-            var bytes = Encoders.Base58.Decode(source);
+            return TryDecode(source, out var bytes) 
+                ? bytes 
+                : throw new FormatException(nameof(source));
+        }
+
+        public bool TryDecode(string encoded, out byte[] bytes)
+        {
+            if (!Encoders.Base58.TryDecode(encoded, out bytes)) return false;
             var span = bytes.AsSpan();
-            var checksum = span.Slice(span.Length - 4);
-            bytes = span.Slice(0, span.Length - 4).ToArray();
+            var checksum = span[^4..];
+            bytes = span[..^4].ToArray();
             var hash = Hashes.Hash256(bytes);
-            return checksum.SequenceEqual(hash.Span.Slice(0, 4))
-                ? bytes
-                : throw new FormatException(source);
+            return checksum.SequenceEqual(hash.Span[..4]);
         }
     }
 }

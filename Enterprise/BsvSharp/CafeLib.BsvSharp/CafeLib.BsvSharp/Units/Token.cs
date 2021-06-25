@@ -4,8 +4,9 @@
 #endregion
 
 using System;
+using CafeLib.BsvSharp.Units;
 
-namespace CafeLib.BsvSharp.Units
+namespace CafeLib.Bitcoin.Units
 {
     /// <summary>
     /// In practice, the value of an amount is often required in terms of a non-Bitcoin fiat or foreign currency.
@@ -64,7 +65,7 @@ namespace CafeLib.BsvSharp.Units
         public Amount? Amount
         {
             get => HasAmount ? _amount : (Amount?) null;
-            set => _amount = value ?? Units.Amount.Zero;
+            set => _amount = value ?? BsvSharp.Units.Amount.Zero;
         }
 
         public long? Satoshis => HasAmount ? _amount.Satoshis : (long?)null;
@@ -86,7 +87,7 @@ namespace CafeLib.BsvSharp.Units
         public void ResetValue()
         {
             // Update to pull default from global preferences.
-            (ValueSetOrder, _amount, FiatTicker, _fiatValue, _rate) = (TokenValues.None, Units.Amount.Zero, CurrencyTicker.USD, decimal.Zero, null);
+            (ValueSetOrder, _amount, FiatTicker, _fiatValue, _rate) = (TokenValues.None, BsvSharp.Units.Amount.Zero, CurrencyTicker.USD, decimal.Zero, null);
         }
 
         /// <summary>
@@ -131,7 +132,7 @@ namespace CafeLib.BsvSharp.Units
                     break;
 
                 case TokenValues.ZF:
-                    _amount = Units.Amount.Zero;
+                    _amount = BsvSharp.Units.Amount.Zero;
                     break;
 
                 default: 
@@ -141,7 +142,7 @@ namespace CafeLib.BsvSharp.Units
 
         /// <summary>
         /// Set a specific bitcoin amount.
-        /// The amount must be in the range <see cref="Units.Amount.MinValue"/> to <see cref="Units.Amount.MaxValue"/>.
+        /// The amount must be in the range <see cref="BsvSharp.Units.Amount.MinValue"/> to <see cref="BsvSharp.Units.Amount.MaxValue"/>.
         /// If the amount is zero, it constrains the Fiat value to be zero as well, but leaves Rate as it was.
         /// </summary>
         /// <param name="amount"></param>
@@ -149,15 +150,15 @@ namespace CafeLib.BsvSharp.Units
         {
             if (amount.HasValue) 
             {
-                if (amount > Units.Amount.MaxValue)
+                if (amount > BsvSharp.Units.Amount.MaxValue)
                     throw new ArgumentException("Maximum value exceeded.");
 
-                if (amount < Units.Amount.MinValue)
+                if (amount < BsvSharp.Units.Amount.MinValue)
                     throw new ArgumentException("Minimum value exceeded.");
 
                 _amount = amount.Value;
                 // Update _SetOrder to reflect a new Satoshi value.
-                var isZero = _amount == Units.Amount.Zero;
+                var isZero = _amount == BsvSharp.Units.Amount.Zero;
 
                 switch (ValueSetOrder) 
                 {
@@ -188,7 +189,7 @@ namespace CafeLib.BsvSharp.Units
             } 
             else 
             {
-                _amount = Units.Amount.Zero;
+                _amount = BsvSharp.Units.Amount.Zero;
 
                 // Update _SetOrder to reflect the loss of Amount Satoshis.
                 switch (ValueSetOrder)
@@ -371,7 +372,7 @@ namespace CafeLib.BsvSharp.Units
 
                     case TokenValues.SR:
                     case TokenValues.RS:
-                        ValueSetOrder = _amount == Units.Amount.Zero ? TokenValues.ZS : TokenValues.S;
+                        ValueSetOrder = _amount == BsvSharp.Units.Amount.Zero ? TokenValues.ZS : TokenValues.S;
                         break;
 
                     case TokenValues.RF:

@@ -1,4 +1,6 @@
-﻿namespace CafeLib.BsvSharp.Units
+﻿using CafeLib.BsvSharp.Units;
+
+namespace CafeLib.Bitcoin.Units
 {
     /// <summary>
     /// Used to record how a transaction output value is constrained.

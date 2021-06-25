@@ -18,7 +18,7 @@ namespace CafeLib.BsvSharp.Buffers
             Data = data ?? Array.Empty<byte>();
         }
 
-        public byte this[int index]
+        public byte this[Index index]
         {
             get => Data[index];
             set => Data[index] = value;

@@ -43,9 +43,9 @@ namespace CafeLib.BsvSharp.Numerics
         public byte FirstByte => _sequence.Data.First.Span[0];
         public byte LastByte => _sequence.Data.Slice(_sequence.Length - 1).First.Span[0];
 
-        public VarType Slice(long start, int length) => new VarType(_sequence.Data.Slice(start, length));
+        public VarType Slice(long start, int length) => new VarType(_sequence.Slice(start, length));
 
-        public override string ToString() => Encoders.Hex.Encode(_sequence);
+        public override string ToString() => Encoders.Hex.EncodeSpan(_sequence);
 
         private byte[] ToArray()
         {
@@ -349,7 +349,7 @@ namespace CafeLib.BsvSharp.Numerics
             var s2 = vch2.ToSpan();
             var sr = r.AsSpan();
             s1.CopyTo(sr);
-            s2.CopyTo(sr.Slice(s1.Length));
+            s2.CopyTo(sr[s1.Length..]);
             return new VarType(r);
         }
 

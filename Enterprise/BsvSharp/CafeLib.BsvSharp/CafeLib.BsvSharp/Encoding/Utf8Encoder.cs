@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using CafeLib.BsvSharp.Buffers;
 
 namespace CafeLib.BsvSharp.Encoding
 {
@@ -14,43 +13,24 @@ namespace CafeLib.BsvSharp.Encoding
     /// Character 0 corresponds to the high nibble of the first byte. 
     /// Character 1 corresponds to the low nibble of the first byte. 
     /// </summary>
-    public class Utf8Encoder : Encoder
+    public class Utf8Encoder : IEncoder
     {
-        public override string Encode(ReadOnlyByteSequence data) => System.Text.Encoding.UTF8.GetString(data);
+        public string Encode(byte[] bytes) => System.Text.Encoding.UTF8.GetString(bytes);
 
-        public override string Encode(ReadOnlyByteSpan data) => System.Text.Encoding.UTF8.GetString(data);
+        public byte[] Decode(string source) => TryDecode(source, out var bytes) ? bytes : throw new FormatException(nameof(source));
 
-        public override bool TryDecode(string data, ByteSpan span)
+        public bool TryDecode(string data, out byte[] bytes)
         {
             try
             {
-                Decode(data).CopyTo(span);
+                bytes = System.Text.Encoding.UTF8.GetBytes(data);
                 return true;
             }
             catch
             {
+                bytes = Array.Empty<byte>();
                 return false;
             }
-        }
-
-        public override bool TryDecode(string data, out byte[] bytes)
-        {
-            bytes = default;
-            try
-            {
-                bytes = Decode(data);
-                return true;
-            }
-            catch
-            {
-                bytes = default;
-                return false;
-            }
-        }
-
-        public override byte[] Decode(string encoded)
-        {
-            return System.Text.Encoding.UTF8.GetBytes(encoded);
         }
     }
 }

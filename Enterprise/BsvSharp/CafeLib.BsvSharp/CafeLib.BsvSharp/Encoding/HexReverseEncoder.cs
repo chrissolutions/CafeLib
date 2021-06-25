@@ -1,5 +1,5 @@
 ﻿using System;
-using CafeLib.Core.Support;
+using CafeLib.BsvSharp.Buffers;
 
 namespace CafeLib.BsvSharp.Encoding
 {
@@ -9,38 +9,39 @@ namespace CafeLib.BsvSharp.Encoding
     /// Character 0 corresponds to the high nibble of the last byte. 
     /// Character 1 corresponds to the low nibble of the last byte. 
     /// </summary>
-    public class HexReverseEncoder : SingletonBase<HexReverseEncoder>, IEncoder
+    public class HexReverseEncoder : HexEncoder
     {
-        public string Encode(byte[] source)
+        internal override string EncodeSpan(ReadOnlyByteSpan bytes)
         {
-            var s = new char[source.Length * sizeof(char)];
+            var s = new char[bytes.Length * 2];
             var i = s.Length;
-            foreach (var b in source)
+            foreach (var b in bytes)
             {
-                var chs = HexEncoder.Current.ByteToChs[b];
+                var chs = ByteToChs[b];
                 s[--i] = chs[1];
                 s[--i] = chs[0];
             }
-
             return new string(s);
         }
 
-        public byte[] Decode(string source)
+        internal override bool TryDecodeSpan(string hex, ByteSpan bytes)
         {
-            if (source.Length % 2 == 1)
-                throw new ArgumentException("Invalid hex bytes string.", nameof(source));
+            if (hex.Length % 2 == 1)
+                throw new ArgumentException("Invalid hex bytes string.", nameof(hex));
 
-            var bytes = new byte[source.Length / sizeof(char)];
-            for (int i = 0, j = bytes.Length; i < source.Length;)
+            if (hex.Length != bytes.Length * 2)
+                throw new ArgumentException("Length mismatch.", nameof(bytes));
+
+            for (int i = 0, j = bytes.Length; i < hex.Length;)
             {
-                var a = HexEncoder.Current.CharToNibble(source[i++]);
-                var b = HexEncoder.Current.CharToNibble(source[i++]);
+                var a = CharToNibble(hex[i++]);
+                var b = CharToNibble(hex[i++]);
 
-                if (a == -1 || b == -1) throw new FormatException(nameof(source));
+                if (a == -1 || b == -1) return false;
                 bytes[--j] = (byte)((a << 4) | b);
             }
 
-            return bytes;
+            return true;
         }
     }
 }

@@ -25,11 +25,15 @@ namespace CafeLib.BsvSharp.Buffers
         public long Length => Data.Length;
 
         public byte[] ToArray() => Data.ToArray();
+
+        public ReadOnlyByteSpan ToSpan() => Data.IsSingleSegment ? Data.FirstSpan : Data.ToArray();
+
         public ReadOnlyByteSequence Slice(SequencePosition start, SequencePosition end) => Data.Slice(start, end);
         public ReadOnlyByteSequence Slice(SequencePosition start, int length) => Data.Slice(start, length);
         public ReadOnlyByteSequence Slice(SequencePosition start, long length) => Data.Slice(start, length);
         public ReadOnlyByteSequence Slice(int start, SequencePosition end) => Data.Slice(start, end);
         public ReadOnlyByteSequence Slice(int start , int length) => Data.Slice(start, length);
+        public ReadOnlyByteSequence Slice(long start, int length) => Data.Slice(start, length);
         public ReadOnlyByteSequence Slice(int start) => Data.Slice(start);
         public ReadOnlyByteSequence Slice(long start) => Data.Slice(start);
         public ByteSpan CopyTo(ByteSpan destination)
@@ -63,11 +67,11 @@ namespace CafeLib.BsvSharp.Buffers
         public static implicit operator ReadOnlySequence<byte>(ReadOnlyByteSequence rhs) => rhs.Data;
         public static implicit operator ReadOnlyByteSequence(ReadOnlySequence<byte> rhs) => new ReadOnlyByteSequence(rhs);
 
-        public static implicit operator byte[](ReadOnlyByteSequence rhs) => rhs.ToArray();
+        public static explicit operator byte[](ReadOnlyByteSequence rhs) => rhs.ToArray();
         public static implicit operator ReadOnlyByteSequence(byte[] rhs) => new ReadOnlyByteSequence(rhs);
 
-        public static implicit operator ReadOnlyByteSpan(ReadOnlyByteSequence rhs) => new ReadOnlyByteSpan(rhs);
-        public static explicit operator ReadOnlyByteSequence(ReadOnlyByteSpan  rhs) => new ReadOnlyByteSequence(rhs);
+        public static implicit operator ReadOnlyByteSpan(ReadOnlyByteSequence rhs) => rhs.ToSpan();
+        public static explicit operator ReadOnlyByteSequence(ReadOnlyByteSpan rhs) => new ReadOnlyByteSequence(rhs);
 
         public override int GetHashCode() => Data.GetHashCode();
 
@@ -106,10 +110,10 @@ namespace CafeLib.BsvSharp.Buffers
                 if (aSpan[ai++] != bSpan[bi++]) break;
             }
 
-            return aok 
-                ? 1 
-                : bok 
-                    ? -1 
+            return aok
+                ? 1
+                : bok
+                    ? -1
                     : 0;
         }
 
@@ -138,8 +142,10 @@ namespace CafeLib.BsvSharp.Buffers
             }
             return true;
         }
-        public ReadOnlyByteSequence RemoveSlice(long start, long end) 
+        public ReadOnlyByteSequence RemoveSlice(long start, long end)
             => RemoveSlice(Data.GetPosition(start), Data.GetPosition(end));
+
+
 
         /// <summary>
         /// Returns a new ReadOnlySequence with a slice removed.
@@ -191,7 +197,7 @@ namespace CafeLib.BsvSharp.Buffers
                     last = first.Append(after.First);
                     break;
 
-                default: 
+                default:
                     throw new NotImplementedException();
             }
 
