@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using CafeLib.BsvSharp.Buffers;
+using CafeLib.BsvSharp.Crypto;
+using CafeLib.BsvSharp.Numerics;
 
 namespace CafeLib.BsvSharp.Extensions
 {
@@ -29,6 +31,20 @@ namespace CafeLib.BsvSharp.Extensions
         public static void CopyTo(this byte[] source, ref byte[] destination)
         {
             ((ReadOnlyByteSpan)source).CopyTo(destination);
+        }
+
+        public static UInt160 Hash160(this byte[] data)
+        {
+            var hash = new UInt160();
+            new ReadOnlyByteSequence(data).Sha1(hash);
+            return hash;
+        }
+
+        public static UInt256 Hash256(this byte[] data)
+        {
+            var hash = new UInt256();
+            new ReadOnlyByteSequence(data).Sha256(hash);
+            return hash;
         }
     }
 }
