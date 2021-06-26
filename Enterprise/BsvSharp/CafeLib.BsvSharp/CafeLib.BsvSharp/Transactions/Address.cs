@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Network;
+using CafeLib.BsvSharp.Services;
 
 namespace CafeLib.BsvSharp.Transactions
 {
@@ -29,7 +30,7 @@ namespace CafeLib.BsvSharp.Transactions
     {
         private string _publicKeyHash;
         //private AddressType _addressType;
-        private NetworkType _networkType;
+        private IBitcoinNetwork _network;
         private int _version;
 
         /// Constructs a new Address object
@@ -48,6 +49,7 @@ namespace CafeLib.BsvSharp.Transactions
             var versionByte = versionAndDataBytes[0];
 
             _version = versionByte & 0xFF;
+            _network = RootService.Network;
             //_networkTypes = Networks.getNetworkTypes(_version);
             //_addressType = Networks.getAddressType(_version);
             //_networkType = Networks.getNetworkTypes(_version)[0];
