@@ -156,10 +156,8 @@ namespace CafeLib.BsvSharp.Transactions
 
         private void FromBase58CheckInternal(string source)
         {
-            var versionAndDataBytes = Base58Check.Decode(source);
-            Version = versionAndDataBytes[0];
-            //_publicKeyAddress = versionAndDataBytes[1..];
-            _publicKeyAddress = versionAndDataBytes;
+            _publicKeyAddress = Base58Check.Decode(source);
+            Version = _publicKeyAddress.First();
         }
 
         private void FromHexInternal(string hexPubKey)
