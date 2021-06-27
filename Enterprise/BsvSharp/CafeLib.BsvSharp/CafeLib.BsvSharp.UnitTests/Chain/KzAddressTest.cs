@@ -44,12 +44,5 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
         {
             Assert.Throws<FormatException>(() => new Address(base58));
         }
-
-        [Fact]
-        public void Address_FromPrivateKeyTest()
-        {
-            var privateKey = new PrivateKey();
-            var address =         
-        }
     }
 }
