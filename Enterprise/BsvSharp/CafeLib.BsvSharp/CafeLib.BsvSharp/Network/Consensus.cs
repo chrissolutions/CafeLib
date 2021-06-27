@@ -73,6 +73,11 @@ namespace CafeLib.BsvSharp.Network
         public const long InitialReward = 5_000_000_000L;
 
         /// <summary>
+        /// Value used for fee estimation (satoshis per kilobyte)
+        /// </summary>
+        public const long FeePerKilobyte = 1000L;
+
+        /// <summary>
         /// How many blocks between reductions in the block reward rate.
         /// </summary>
         public int RewardHalvingInterval => SubsidyHalvingInterval;
@@ -99,9 +104,9 @@ namespace CafeLib.BsvSharp.Network
         /// Threshold for nLockTime: below this value it is interpreted as block number,
         /// otherwise as UNIX timestamp. Thresold is Tue Nov 5 00:53:20 1985 UTC
         /// </summary>
-        public const UInt32 LocktimeThreshold = 500000000U;
+        public const uint LocktimeThreshold = 500000000U;
 
-        public UInt32 MaxScriptElementSize => ScriptMaxElementSize;
+        public uint MaxScriptElementSize => ScriptMaxElementSize;
         public int MaxOperationsPerScript => ScriptMaxOpsPer;
         public int MaxScriptSize => ScriptMaxSize;
         public int MaxPubkeysPerMultisig => ScriptMaxPubKeysPerMultiSig;
