@@ -78,6 +78,41 @@ namespace CafeLib.BsvSharp.Network
         public const long FeePerKilobyte = 1000L;
 
         /// <summary>
+        /// Minimum amount for an output for it not to be considered a dust output
+        /// </summary>
+        public const long DustLimit = 546L;
+
+        /// <summary>
+        /// Margin of error to allow fees in the vicinity of the expected value but doesn't allow a big difference
+        /// </summary>
+        public const long FeeSecurityMargin = 150L;
+
+        /// <summary>
+        /// nlocktime limit to be considered block height rather than a timestamp
+        /// </summary>
+        public const long LocktimeBlockheightLimit = 500_000_000_000L;
+
+        /// <summary>
+        /// Default sequence number.
+        /// </summary>
+        public const ulong DefaultSeqnumber = 0xFFFFFFFF;
+
+        /// <summary>
+        /// Default nLockTime sequence number.
+        /// </summary>
+        public const ulong DefaultLocktimeSeqnumber = DefaultSeqnumber - 1;
+
+        /// <summary>
+        /// Max value for an unsigned 32 bit value
+        /// </summary>
+        public const long LocktimeMaxValue = 4294967295;
+
+        /// Safe upper bound for change address script size in bytes
+        public const long ChangeOutputMaxSize = 20 + 4 + 34 + 4;
+        public const long MaximumExtraSize = 4 + 9 + 9 + 4;
+
+
+        /// <summary>
         /// How many blocks between reductions in the block reward rate.
         /// </summary>
         public int RewardHalvingInterval => SubsidyHalvingInterval;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Units;
 
@@ -7,9 +8,10 @@ namespace CafeLib.BsvSharp.Transactions
 {
     public class Transaction : IChainId
     {
+        public string Id => Encoders.HexReverse.Encode(Hash);
         public UInt256 Hash { get; private set; }
         public int Version { get; private set; } = 1;
-        public int LockTime { get; private set; } = 0;
+        public int LockTime { get; private set; }
         public Amount Fee { get; private set; }
 
         public TxInCollection  Inputs { get; private set; } //this transaction's inputs
