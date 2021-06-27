@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
-using CafeLib.Bitcoin.Units;
+using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Units;
 
-namespace CafeLib.BsvSharp.Builders
+namespace CafeLib.BsvSharp.Transactions
 {
     /// <summary>
     /// 
     /// </summary>
     public class TxBuilder
     {
-        private Transaction Tx { get; set; }
+        private Chain.Transaction Tx { get; set; }
         private List<TxIn> Vin { get; set; }
         private List<TxOut> Vout { get; set; }
         private TxOutMap TxOutMap { get; set; }
@@ -41,7 +41,7 @@ namespace CafeLib.BsvSharp.Builders
         /// <param name="txOutMap"></param>
         /// <param name="signOperations"></param>
         /// <returns></returns>
-        public TxBuilder ImportPartiallySignedTx(Transaction tx, TxOutMap txOutMap = null, SigOperations signOperations = null)
+        public TxBuilder ImportPartiallySignedTx(Chain.Transaction tx, TxOutMap txOutMap = null, SigOperations signOperations = null)
         {
             Tx = tx ?? Tx;
             TxOutMap = txOutMap ?? TxOutMap;
