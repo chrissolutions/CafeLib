@@ -6,10 +6,9 @@
 using System;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Network;
-using CafeLib.BsvSharp.Transactions;
 using Xunit;
 
-namespace CafeLib.BsvSharp.UnitTests.Chain
+namespace CafeLib.BsvSharp.UnitTests.Keys
 {
     public class KzAddressTests
     {

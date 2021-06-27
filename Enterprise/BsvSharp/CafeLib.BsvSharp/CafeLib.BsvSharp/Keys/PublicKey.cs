@@ -11,6 +11,7 @@ using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Services;
+using CafeLib.BsvSharp.Transactions;
 using CafeLib.Core.Extensions;
 using Secp256k1Net;
 
@@ -213,12 +214,30 @@ namespace CafeLib.BsvSharp.Keys
         /// <returns>20 byte hash as a KzUInt160</returns>
         public UInt160 ToHash160() => Data.Hash160();
 
-        public string ToAddress() => Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress.ToArray().Concat(ToHash160()));
+        /// <summary>
+        /// Obtain an address.
+        /// </summary>
+        /// <returns></returns>
+        public Address ToAddress() => new Address(Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress.ToArray().Concat(ToHash160())));
 
+        /// <summary>
+        /// Obtain the hex representation of the public key.
+        /// </summary>
+        /// <returns></returns>
         public string ToHex() => _bytes != null ? Encoders.Hex.Encode(_bytes) : "<invalid>";
 
-        public override string ToString() => ToAddress();
+        /// <summary>
+        /// Obtain a public key string.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() => ToAddress().ToString();
 
+        /// <summary>
+        /// Derive a child key.
+        /// </summary>
+        /// <param name="nChild"></param>
+        /// <param name="cc"></param>
+        /// <returns></returns>
         public (bool ok, PublicKey keyChild, UInt256 ccChild) Derive(uint nChild, UInt256 cc)
         {
             (bool ok, PublicKey keyChild, UInt256 ccChild) invalid = (false, null, UInt256.Zero);

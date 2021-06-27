@@ -5,8 +5,9 @@ using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Network;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Services;
+using CafeLib.BsvSharp.Transactions;
 
-namespace CafeLib.BsvSharp.Transactions
+namespace CafeLib.BsvSharp.Keys
 {
     /// <summary>
     /// This class abstracts away the internals of address encoding and provides
@@ -116,7 +117,7 @@ namespace CafeLib.BsvSharp.Transactions
                 return address;
             }
 
-            throw new FormatException("Address should be 25 bytes long. Only [${base58Address.length}] bytes long.");
+            throw new FormatException($"Address should be 25 bytes long. Only [{base58Address.Length}] bytes long.");
         }
 
         /// Constructs a new Address object from a public key.

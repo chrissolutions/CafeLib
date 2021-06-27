@@ -1,4 +1,4 @@
-﻿namespace CafeLib.BsvSharp.Transactions
+﻿namespace CafeLib.BsvSharp.Keys
 {
     public enum AddressType
     {
