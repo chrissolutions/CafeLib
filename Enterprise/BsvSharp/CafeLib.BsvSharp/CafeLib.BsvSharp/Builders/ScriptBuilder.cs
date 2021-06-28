@@ -31,12 +31,6 @@ namespace CafeLib.BsvSharp.Builders
         protected bool? _isPub;
 
         /// <summary>
-        /// If the script implements a known template, this will be the template type.
-        /// Otherwise it will be Unknown.
-        /// </summary>
-        protected TemplateId _TemplateId;
-
-        /// <summary>
         /// The sequence of operations where each operation is an opcode and optional data.
         /// To support testing and unimplemented features, an operation's IsRaw flag can be set in
         /// which case the opcode is ignored and the data is treated as unparsed script code.
@@ -51,11 +45,25 @@ namespace CafeLib.BsvSharp.Builders
         public bool IsFinal => _isFinal && _ops.All(op => op.IsFinal);
         public bool IsPub { get => _isPub == true; set => _isPub = value ? (bool?)true : null; }
         public bool IsSig { get => _isPub == false; set => _isPub = value ? (bool?)false : null; }
-        public TemplateId TemplateId => _TemplateId;
         public long Length => _ops.Sum(o => o.Length);
 
+        /// <summary>
+        /// If the script implements a known template, this will be the template type.
+        /// Otherwise it will be Unknown.
+        /// </summary>
+        public TemplateId TemplateId { get; protected set; }
+
+        /// <summary>
+        /// ScriptBuilder default constructor.
+        /// </summary>
         public ScriptBuilder()
         {
+        }
+
+        protected ScriptBuilder(bool isPub, TemplateId templateId)
+        {
+            _isPub = isPub;
+            TemplateId = templateId;
         }
 
         public ScriptBuilder(byte[] script)

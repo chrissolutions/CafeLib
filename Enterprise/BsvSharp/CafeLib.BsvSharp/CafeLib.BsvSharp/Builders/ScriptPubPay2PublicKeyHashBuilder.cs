@@ -7,9 +7,8 @@ namespace CafeLib.BsvSharp.Builders
     public class ScriptPubPay2PublicKeyHashBuilder : ScriptBuilder
     {
         public ScriptPubPay2PublicKeyHashBuilder(UInt160 pubKeyHash)
+            : base(true, TemplateId.Pay2PublicKeyHash)
         {
-            IsPub = true;
-            _TemplateId = TemplateId.Pay2PublicKeyHash;
             Add(Opcode.OP_DUP)
                 .Add(Opcode.OP_HASH160)
                 .Push(pubKeyHash.Span)

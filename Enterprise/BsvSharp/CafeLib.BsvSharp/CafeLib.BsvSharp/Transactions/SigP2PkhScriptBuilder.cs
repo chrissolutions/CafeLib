@@ -3,14 +3,15 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Scripting;
 
-namespace CafeLib.BsvSharp.Builders
+namespace CafeLib.BsvSharp.Transactions
 {
-    public class ScriptSigPay2PublicKeyHashBuilder : ScriptBuilder
+    public class SigP2PkhScriptBuilder : ScriptBuilder
     {
-        public ScriptSigPay2PublicKeyHashBuilder(PublicKey pubKey)
+        public SigP2PkhScriptBuilder(PublicKey pubKey)
             : base(false, TemplateId.Pay2PublicKeyHash)
         {
             Push(new byte[72]) // This will become the CHECKSIG signature
