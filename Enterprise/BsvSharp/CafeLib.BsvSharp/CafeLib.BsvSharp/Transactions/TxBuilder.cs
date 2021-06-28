@@ -14,8 +14,8 @@ namespace CafeLib.BsvSharp.Transactions
     public class TxBuilder
     {
         private Chain.Transaction Tx { get; set; }
-        private List<TxIn> Vin { get; set; }
-        private List<TxOut> Vout { get; set; }
+        private TxInCollection Vin { get; set; }
+        private TxOutCollection Vout { get; set; }
         private TxOutMap TxOutMap { get; set; }
         private SigOperations SigOps { get; set; }
         private Script ChangeScript { get; set; }

@@ -57,7 +57,7 @@ namespace CafeLib.BsvSharp.Transactions
         #endregion
     }
 
-    public class TxInCollection : ChainCollection<TransactionInput>
+    public class TxInCollection : ChainCollection<TxIn>
     {
     }
 
