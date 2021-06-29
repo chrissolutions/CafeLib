@@ -11,7 +11,6 @@ using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Services;
-using CafeLib.BsvSharp.Transactions;
 using CafeLib.Core.Extensions;
 using Secp256k1Net;
 

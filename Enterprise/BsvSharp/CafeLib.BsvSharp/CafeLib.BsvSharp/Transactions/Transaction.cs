@@ -15,6 +15,7 @@ namespace CafeLib.BsvSharp.Transactions
         public int Version { get; private set; } = 1;
         public int LockTime { get; private set; }
         public Amount Fee { get; private set; }
+        public Address ChangeAddress { get; private set; }
 
         public TxInCollection  Inputs { get; private set; } //this transaction's inputs
         public TxOutCollection Outputs { get; private set; } //this transaction's outputs
@@ -23,8 +24,6 @@ namespace CafeLib.BsvSharp.Transactions
         //if we have a Transaction with one input, and a prevTransactionId of zeroooos, it's a coinbase.
         public bool IsCoinbase => Inputs.Count == 1 && Inputs.First().Hash == UInt256.Zero;
 
-        //
-        // _changeAddress;
         //LockingScriptBuilder _changeScriptBuilder;
 
         //bool _changeScriptFlag = false;
@@ -54,20 +53,56 @@ namespace CafeLib.BsvSharp.Transactions
             Option = option;
         }
 
-//        Transaction SpendTo(Address recipient, Amount sats, Script? lockingScript = null)
-//        {
-//            if (sats <= Amount.Zero) throw  new ArgumentException("You can only spend a positive amount of satoshis");
+        public Transaction SpendTo(Address recipient, Amount sats, Script? lockingScript = null)
+        {
+            if (sats <= Amount.Zero) throw new ArgumentException("You can only spend a positive amount of satoshis");
 
-//            lockingScript ??= new P2PkhScriptBuilder(recipient);
+            lockingScript ??= new P2PkhScriptBuilder(recipient.PubKeyHash).ToScript();
 
-//            var txnOutput = TransactionOutput(scriptBuilder: scriptBuilder);
-////        txnOutput.recipient = recipient;
-//            txnOutput.satoshis = sats;
-////        txnOutput.script = scriptBuilder.getScriptPubkey();
+            var txOut = new TransactionOutput();
 
-//            return addOutput(txnOutput);
-//        }
-        
-        
+            //var txnOutput = TransactionOutput((scriptBuilder: scriptBuilder);
+            ////        txnOutput.recipient = recipient;
+            //            txnOutput.satoshis = sats;
+            ////        txnOutput.script = scriptBuilder.getScriptPubkey();
+
+            return AddOutput(txOut);
+        }
+
+        public Transaction AddOutput(TransactionOutput txOutput)
+        {
+            Outputs.Add(txOutput);
+            UpdateChangeOutput();
+            return this;
+        }
+
+        #region Helpers
+
+        private void UpdateChangeOutput()
+        {
+            if (ChangeAddress == null) return;
+
+            //if (_changeScriptBuilder == null) return;
+
+            //_removeChangeOutputs();
+
+            //if (_nonChangeRecipientTotals() == _inputTotals()) return;
+
+            //var txnOutput = getChangeOutput(_changeScriptBuilder);
+
+            //var changeAmount = _recalculateChange();
+
+            ////can't spend negative amount of change :/
+            //if (changeAmount > BigInt.zero)
+            //{
+            //    txnOutput.satoshis = changeAmount;
+            //    txnOutput.script = _changeScriptBuilder.getScriptPubkey();
+            //    txnOutput.isChangeOutput = true;
+            //    _txnOutputs.add(txnOutput);
+            //}
+        }
+
+        #endregion
+
     }
 }
