@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using CafeLib.BsvSharp.Encoding;
+using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
+using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Units;
 
 namespace CafeLib.BsvSharp.Transactions
@@ -34,13 +36,15 @@ namespace CafeLib.BsvSharp.Transactions
         {
         }
 
-        public Transaction(
+        public Transaction
+        (
             int version, 
             TxInCollection vin, 
             TxOutCollection vout, 
             int lockTime,
             long fee = 0L,
-            TransactionOption option = TransactionOption.DisableAll)
+            TransactionOption option = TransactionOption.DisableAll
+        )
         {
             Version = version;
             Inputs = vin;
@@ -50,5 +54,20 @@ namespace CafeLib.BsvSharp.Transactions
             Option = option;
         }
 
+//        Transaction SpendTo(Address recipient, Amount sats, Script? lockingScript = null)
+//        {
+//            if (sats <= Amount.Zero) throw  new ArgumentException("You can only spend a positive amount of satoshis");
+
+//            lockingScript ??= new P2PkhScriptBuilder(recipient);
+
+//            var txnOutput = TransactionOutput(scriptBuilder: scriptBuilder);
+////        txnOutput.recipient = recipient;
+//            txnOutput.satoshis = sats;
+////        txnOutput.script = scriptBuilder.getScriptPubkey();
+
+//            return addOutput(txnOutput);
+//        }
+        
+        
     }
 }

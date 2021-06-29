@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Linq;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Network;
+using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Services;
-using CafeLib.BsvSharp.Transactions;
+using CafeLib.Core.Extensions;
 
 namespace CafeLib.BsvSharp.Keys
 {
@@ -39,6 +39,11 @@ namespace CafeLib.BsvSharp.Keys
         /// Version property.
         /// </summary>
         public int Version { get; private set; }
+        
+        /// <summary>
+        /// Public Key Hash.
+        /// </summary>
+        public UInt160 PubKeyHash => new UInt160(_publicKeyAddress[1..]);
 
         public AddressType AddressType
         {
@@ -158,19 +163,19 @@ namespace CafeLib.BsvSharp.Keys
         private void FromBase58CheckInternal(string source)
         {
             _publicKeyAddress = Base58Check.Decode(source);
-            Version = _publicKeyAddress.First();
+            Version = _publicKeyAddress[0];
         }
 
         private void FromHexInternal(string hexPubKey)
         {
-            Version = RootService.Network.PublicKeyAddress.First();
-            _publicKeyAddress = Hex.Decode(hexPubKey).Hash160();
+            Version = RootService.Network.PublicKeyAddress[0];
+            _publicKeyAddress = new[]{(byte)Version}.Concat(Hex.Decode(hexPubKey).Hash160().ToArray());
         }
 
         private void FromScriptInternal(Script script)
         {
-            Version = RootService.Network.PublicKeyAddress.First();
-            _publicKeyAddress = Hex.Decode(script.ToHexString()).Hash160();
+            Version = RootService.Network.PublicKeyAddress[0];
+            _publicKeyAddress = new[]{(byte)Version}.Concat(Hex.Decode(script.ToHexString()).Hash160().ToArray());
         }
 
         #endregion

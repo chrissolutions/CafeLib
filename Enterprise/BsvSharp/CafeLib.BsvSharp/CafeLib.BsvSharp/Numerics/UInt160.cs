@@ -82,6 +82,8 @@ namespace CafeLib.BsvSharp.Numerics
         public BigInteger ToBigInteger() => new BigInteger(Span, isUnsigned:true, isBigEndian:true);
 
 
+        public byte[] ToArray() => Span.ToArray();
+        
         public void ToArray(ByteSpan destination, bool reverse = false)
         {
             if (destination.Length < Length)
