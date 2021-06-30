@@ -3,6 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using System;
 using System.Linq;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Numerics;
@@ -11,15 +12,15 @@ using CafeLib.BsvSharp.Units;
 
 namespace CafeLib.BsvSharp.Transactions
 {
-    public struct TxOut : IChainId
+    public struct TxOut : IChainId, IEquatable<TxOut>
     {
-        private ScriptBuilder _scriptBuilder;
+        private readonly ScriptBuilder _scriptBuilder;
 
-        public UInt256 TxHash { get; private set; }
-        public long Index { get; private set; }
+        public UInt256 TxHash { get; }
+        public long Index { get; }
 
         public Amount Amount { get; set; }
-        public bool IsChangeOutput { get; set; }
+        public bool IsChangeOutput { get; }
 
         private Script Script => _scriptBuilder;
 
@@ -37,7 +38,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <summary>
         /// Null transaction output
         /// </summary>
-        public static TxOut Null => new TxOut { TxHash = UInt256.Zero, Index = -1, Amount = Amount.Null, _scriptBuilder = null};
+        public static TxOut Null => new TxOut(UInt256.Zero, -1, Amount.Null, null);
 
         /// <summary>
         /// 
@@ -120,6 +121,21 @@ namespace CafeLib.BsvSharp.Transactions
         //    return writer;
         //}
 
+        public override int GetHashCode() => HashCode.Combine(_scriptBuilder, TxHash, Index, IsChangeOutput);
+
+        public bool Equals(TxOut other)
+        {
+            return Equals(_scriptBuilder, other._scriptBuilder) && TxHash.Equals(other.TxHash) && Index == other.Index && Amount.Equals(other.Amount) && IsChangeOutput == other.IsChangeOutput;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is TxOut other && Equals(other);
+        }
+
+        public static bool operator ==(TxOut x, TxOut y) => x.Equals(y);
+        public static bool operator !=(TxOut x, TxOut y) => !(x == y);
+
         #region Helpers
 
         /// <summary>
@@ -130,6 +146,5 @@ namespace CafeLib.BsvSharp.Transactions
         private bool InvalidSatoshis() => Amount.Satoshis < Amount.Zero || Amount.Satoshis > Amount.MaxValue;
 
         #endregion
-
     }
 }

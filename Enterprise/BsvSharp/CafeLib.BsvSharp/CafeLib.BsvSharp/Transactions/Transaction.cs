@@ -114,9 +114,9 @@ namespace CafeLib.BsvSharp.Transactions
         {
             var txOut = Outputs.SingleOrDefault( x => x.IsChangeOutput);
 
-            if (txOut.TxHash == TxOut.Null.TxHash)
+            if (txOut == TxOut.Null)
             {
-                txOut = new TxOut(Hash, Outputs.Count, changeBuilder) {IsChangeOutput = true};
+                txOut = new TxOut(Hash, Outputs.Count, changeBuilder, true);
                 Outputs.Add(txOut);
             }
 
