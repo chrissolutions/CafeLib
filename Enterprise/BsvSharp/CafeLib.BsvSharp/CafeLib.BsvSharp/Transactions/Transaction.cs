@@ -64,25 +64,25 @@ namespace CafeLib.BsvSharp.Transactions
 
         /// <summary>
         /// Add a "change" output to this transaction
-        ///
+        /// 
         /// When a new transaction is created to spend coins from an input transaction,
         /// the entire *UTXO* needs to be consumed. I.e you cannot *partially* spend coins.
         /// What needs to happen is :
         ///   1) You consumer the entire UTXO in the new transaction input
         ///   2) You subtract a *change* amount from the UTXO and the remainder will be sent to the receiving party
-        ///
+        /// 
         /// The change amount is automatically calculated based on the fee rate that you set with [withFee()] or [withFeePerKb()]
-        ///
+        /// 
         /// [changeAddress] - A bitcoin address where a standard P2PKH (Pay-To-Public-Key-Hash) output will be "sent"
-        ///
+        /// 
         /// [scriptBuilder] - A [LockingScriptBuilder] that will be used to create the locking script (scriptPubKey) for the [TransactionOutput].
         ///                   A null value results in a [P2PKHLockBuilder] being used by default, which will create a Pay-to-Public-Key-Hash output script.
-        ///
+        /// 
         /// Returns an instance of the current Transaction as part of the builder pattern.
         /// 
         /// </summary>
         /// <param name="changeAddress"></param>
-        /// <param name=""></param>
+        /// <param name="scriptBuilder"></param>
         /// <returns></returns>
         public Transaction SendChangeTo(Address changeAddress, ScriptBuilder scriptBuilder = null)
         {
@@ -136,16 +136,13 @@ namespace CafeLib.BsvSharp.Transactions
             if (NonChangeRecipientTotals() == InputTotals()) return;
 
             var txOut = GetChangeOutput(_changeScriptBuilder);
-
             var changeAmount = RecalculateChange();
 
             ////can't spend negative amount of change :/
             if (changeAmount > Amount.Zero)
             {
-                //txOut.Amount = changeAmount;
-                //tnOut.script = _changeScriptBuilder.getScriptPubkey();
-                //tnOut.isChangeOutput = true;
-                //_txnOutputs.add(txnOutput);
+                var txUpdateOut = new TxOut(txOut.TxHash, txOut.Index, changeAmount, _changeScriptBuilder, true);
+                Outputs[(int)txOut.Index] = txUpdateOut;
             }
         }
 
@@ -170,7 +167,6 @@ namespace CafeLib.BsvSharp.Transactions
 
             return Amount.Zero;
         }
-
 
         #endregion
     }
