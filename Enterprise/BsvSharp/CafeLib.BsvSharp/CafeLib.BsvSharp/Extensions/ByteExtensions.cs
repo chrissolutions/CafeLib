@@ -33,6 +33,11 @@ namespace CafeLib.BsvSharp.Extensions
             ((ReadOnlyByteSpan)source).CopyTo(destination);
         }
 
+        public static int GetHashCodeOfValues(this IEnumerable<byte> a)
+        {
+            return a?.Aggregate(17, (current, b) => current * 31 + b) ?? 0;
+        }
+
         public static UInt160 Hash160(this byte[] data)
         {
             var hash = new UInt160();

@@ -32,8 +32,6 @@ namespace CafeLib.BsvSharp.Keys
         /// </summary>
         private byte[] _bytes;
 
-        private readonly Guid _hashCode;
-
         /// <summary>
         /// 
         /// </summary>
@@ -53,7 +51,6 @@ namespace CafeLib.BsvSharp.Keys
 
         public PublicKey()
         {
-            _hashCode = new Guid();
             Invalidate();
         }
 
@@ -261,7 +258,7 @@ namespace CafeLib.BsvSharp.Keys
             return (true, keyChild, ccChild);
         }
 
-        public override int GetHashCode() => _hashCode.GetHashCode();
+        public override int GetHashCode() => _bytes.GetHashCodeOfValues();
 
         public bool Equals(PublicKey o) => !(o is null) && _bytes.SequenceEqual(o._bytes);
         public override bool Equals(object obj) => obj is PublicKey key && this == key;
