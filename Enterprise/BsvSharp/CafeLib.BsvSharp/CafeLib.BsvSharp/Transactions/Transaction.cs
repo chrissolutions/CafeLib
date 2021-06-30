@@ -123,7 +123,6 @@ namespace CafeLib.BsvSharp.Transactions
             return txOut;
         }
 
-
         #region Helpers
 
         private void UpdateChangeOutput()
@@ -174,6 +173,5 @@ namespace CafeLib.BsvSharp.Transactions
 
 
         #endregion
-
     }
 }
