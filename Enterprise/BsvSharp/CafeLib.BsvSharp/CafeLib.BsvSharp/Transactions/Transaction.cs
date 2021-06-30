@@ -57,7 +57,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             if (sats <= Amount.Zero) throw new ArgumentException("You can only spend a positive amount of satoshis");
 
-            lockingScript ??= new P2PkhScriptBuilder(recipient.PubKeyHash).ToScript();
+            lockingScript ??= new P2PkhScriptBuilder(recipient).ToScript();
 
             var txOut = new TransactionOutput();
 
