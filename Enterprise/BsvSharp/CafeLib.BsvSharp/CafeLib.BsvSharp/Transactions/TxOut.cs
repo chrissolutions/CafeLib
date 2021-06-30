@@ -3,6 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using System.Linq;
 using System.Reflection.Emit;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Numerics;
@@ -50,19 +51,9 @@ namespace CafeLib.BsvSharp.Transactions
         /// <returns></returns>
         public bool IsDataOut()
         {
-            //if (_scriptBuilder.Ops[0].Operand.Code == Opcode.OP_FALSE)
-            //var scriptChunks = _scriptBuilder.Ops.getScriptPubkey().chunks;
-            //if (scriptChunks.isNotEmpty && scriptChunks[0].opcodenum == OpCodes.OP_FALSE){
-            //    //safe data out
-            //    return scriptChunks.length >= 2 && scriptChunks[1].opcodenum == OpCodes.OP_RETURN;
-            //}else if (scriptChunks[0].opcodenum == OpCodes.OP_RETURN){
-            //    //older unsafe data output
-            //    return true;
-            //}
-
-            return false;
+            return _scriptBuilder.Ops.Any() && _scriptBuilder.Ops[0].Operand.Code == Opcode.OP_FALSE 
+                   || _scriptBuilder.Ops.Count >= 2 && _scriptBuilder.Ops[0].Operand.Code == Opcode.OP_RETURN;
         }
-
 
         //public bool TryParseTxOut(ref ByteSequenceReader r, IBlockParser bp)
         //{
