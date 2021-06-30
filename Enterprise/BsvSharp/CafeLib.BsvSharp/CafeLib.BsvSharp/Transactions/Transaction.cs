@@ -116,8 +116,7 @@ namespace CafeLib.BsvSharp.Transactions
 
             if (txOut.TxHash == TxOut.Null.TxHash)
             {
-                txOut = new TxOut();      //new TxOut(changeBuilder);
-                txOut.IsChangeOutput = true;
+                txOut = new TxOut(Hash, Outputs.Count, changeBuilder) {IsChangeOutput = true};
                 Outputs.Add(txOut);
             }
 

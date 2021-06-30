@@ -47,6 +47,19 @@ namespace CafeLib.BsvSharp.Transactions
         /// <param name="amount"></param>
         /// <param name="script"></param>
         /// <param name="isChangeOutput"></param>
+        public TxOut(UInt256 txHash, long index, ScriptBuilder script, bool isChangeOutput = false)
+            : this (txHash, index, Amount.Zero, script, isChangeOutput)
+        {
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="txHash"></param>
+        /// <param name="index"></param>
+        /// <param name="amount"></param>
+        /// <param name="script"></param>
+        /// <param name="isChangeOutput"></param>
         public TxOut(UInt256 txHash, long index, Amount amount, ScriptBuilder script, bool isChangeOutput = false)
         {
             TxHash = txHash;
