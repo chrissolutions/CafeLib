@@ -51,7 +51,7 @@ namespace CafeLib.BsvSharp.Transactions
 
         public TxBuilder InputFromScript(UInt256 txHashBuf, int txOutIndex, TxOut txOut, Script script, uint sequence)
         {
-            Vin.Add(new TxIn(txHashBuf, txOutIndex, script, sequence));
+            Vin.Add(new TxIn(new OutPoint(txHashBuf, txOutIndex), Amount.Zero, script, sequence));
             TxOutMap.Set(txHashBuf, txOutIndex, txOut);
             return this;
         }

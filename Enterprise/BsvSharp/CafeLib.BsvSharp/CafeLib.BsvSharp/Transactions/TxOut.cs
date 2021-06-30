@@ -4,7 +4,6 @@
 #endregion
 
 using System.Linq;
-using System.Reflection.Emit;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
@@ -14,34 +13,17 @@ namespace CafeLib.BsvSharp.Transactions
 {
     public struct TxOut : IChainId
     {
-        private UInt256 _txHash;
-        private long _index;
-        private Amount _amount;
         private ScriptBuilder _scriptBuilder;
-        private bool _isChangeOutput;
 
-        public UInt256 TxHash => _txHash;
-        public long Index => _index;
-        private Amount Amount => _amount;
-        private bool IsChangeOutput => _isChangeOutput;
+        public UInt256 TxHash { get; private set; }
+        public long Index { get; private set; }
+
+        public Amount Amount { get; set; }
+        public bool IsChangeOutput { get; set; }
+
         private Script Script => _scriptBuilder;
 
-        public UInt256 Hash => _txHash;
-
-
-        /// <summary>
-        /// Null transaction output
-        /// </summary>
-        public static TxOut Null => new TxOut { _txHash = UInt256.Zero, _index = -1, _amount = Amount.Null, _scriptBuilder = null};
-
-        public TxOut(UInt256 txHash, long index, Amount amount, ScriptBuilder script, bool isChangeOutput = false)
-        {
-            _txHash = txHash;
-            _index = index;
-            _amount = amount;
-            _scriptBuilder = script;
-            _isChangeOutput = isChangeOutput;
-        }
+        public UInt256 Hash => TxHash;
 
         /// <summary>
         /// Convenience property to check if this output has been made unspendable
@@ -49,10 +31,29 @@ namespace CafeLib.BsvSharp.Transactions
         /// the script.
         /// </summary>
         /// <returns></returns>
-        public bool IsDataOut()
-        {
-            return _scriptBuilder.Ops.Any() && _scriptBuilder.Ops[0].Operand.Code == Opcode.OP_FALSE 
+        public bool IsDataOut => _scriptBuilder.Ops.Any() && _scriptBuilder.Ops[0].Operand.Code == Opcode.OP_FALSE
                    || _scriptBuilder.Ops.Count >= 2 && _scriptBuilder.Ops[0].Operand.Code == Opcode.OP_RETURN;
+
+        /// <summary>
+        /// Null transaction output
+        /// </summary>
+        public static TxOut Null => new TxOut { TxHash = UInt256.Zero, Index = -1, Amount = Amount.Null, _scriptBuilder = null};
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="txHash"></param>
+        /// <param name="index"></param>
+        /// <param name="amount"></param>
+        /// <param name="script"></param>
+        /// <param name="isChangeOutput"></param>
+        public TxOut(UInt256 txHash, long index, Amount amount, ScriptBuilder script, bool isChangeOutput = false)
+        {
+            TxHash = txHash;
+            Index = index;
+            Amount = amount;
+            _scriptBuilder = script;
+            IsChangeOutput = isChangeOutput;
         }
 
         //public bool TryParseTxOut(ref ByteSequenceReader r, IBlockParser bp)
@@ -94,7 +95,7 @@ namespace CafeLib.BsvSharp.Transactions
 
         public override string ToString()
         {
-            return $"{new Amount(_amount)} {_scriptBuilder.ToScript()}";
+            return $"{new Amount(Amount)} {_scriptBuilder.ToScript()}";
         }
 
         //public IBitcoinWriter AddTo(IBitcoinWriter writer)
@@ -113,7 +114,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// See [Transaction.MAX_MONEY]
         /// </summary>
         /// <returns></returns>
-        private bool InvalidSatoshis() => _amount.Satoshis < Amount.Zero || _amount.Satoshis > Amount.MaxValue;
+        private bool InvalidSatoshis() => Amount.Satoshis < Amount.Zero || Amount.Satoshis > Amount.MaxValue;
 
         #endregion
 

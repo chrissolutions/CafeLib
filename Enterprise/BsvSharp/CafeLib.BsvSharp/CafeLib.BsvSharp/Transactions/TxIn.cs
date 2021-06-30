@@ -10,6 +10,7 @@ using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Units;
 
 namespace CafeLib.BsvSharp.Transactions
 {
@@ -25,6 +26,7 @@ namespace CafeLib.BsvSharp.Transactions
         private OutPoint _prevOutPoint;
         private Script _scriptSig;
         private uint _sequence;
+        private Amount _spendingAmount;
 
         /// <summary>
         /// Setting nSequence to this value for every input in a transaction disables nLockTime.
@@ -64,16 +66,18 @@ namespace CafeLib.BsvSharp.Transactions
         public OutPoint PrevOut => _prevOutPoint;
         public Script ScriptSig => _scriptSig;
         public uint Sequence => _sequence;
+        public Amount Amount => _spendingAmount;
 
-        public TxIn(OutPoint prevOutPoint, Script scriptSig, uint sequence)
+        public TxIn(OutPoint prevOutPoint, Amount amount, Script scriptSig, uint sequence)
         {
             _prevOutPoint = prevOutPoint;
+            _spendingAmount = amount;
             _scriptSig = scriptSig;
             _sequence = sequence;
         }
 
-        public TxIn(UInt256 prevTxId, int outIndex, Script scriptSigIn = new Script(), uint nSequenceIn = SequenceFinal)
-            : this(new OutPoint(prevTxId, outIndex), scriptSigIn, nSequenceIn)
+        public TxIn(UInt256 prevTxId, int outIndex, Amount amount, Script scriptSigIn = new Script(), uint nSequenceIn = SequenceFinal)
+            : this(new OutPoint(prevTxId, outIndex), amount, scriptSigIn, nSequenceIn)
         {
         }
 
