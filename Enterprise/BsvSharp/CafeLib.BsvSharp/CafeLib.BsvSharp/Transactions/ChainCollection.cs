@@ -13,7 +13,7 @@ namespace CafeLib.BsvSharp.Transactions
     {
     }
 
-    public class TxOutCollection : ChainCollection<TransactionOutput>
+    public class TxOutCollection : ChainCollection<TxOut>
     {
     }
 

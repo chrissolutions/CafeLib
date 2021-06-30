@@ -3,26 +3,26 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using CafeLib.Bitcoin.Units;
+using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Units;
 
 namespace CafeLib.BsvSharp.Transactions
 {
-    public struct TransactionOutput : IChainId
+    public struct TxOut : IChainId
     {
         private UInt256 _txHash;
         private long _index;
         private Amount _amount;
-        private Script _script;
+        private ScriptBuilder _scriptBuilder;
         private bool _isChangeOutput;
 
         public UInt256 TxHash => _txHash;
         public long Index => _index;
         private Amount Amount => _amount;
         private bool IsChangeOutput => _isChangeOutput;
-        private Script Script => _script;
+        private Script Script => _scriptBuilder;
 
         public UInt256 Hash => _txHash;
 
@@ -30,16 +30,18 @@ namespace CafeLib.BsvSharp.Transactions
         /// <summary>
         /// Null transaction output
         /// </summary>
-        public static TransactionOutput Null => new TransactionOutput { _txHash = UInt256.Zero, _index = -1, _amount = Amount.Null, _script = Script.None};
+        public static TxOut Null => new TxOut { _txHash = UInt256.Zero, _index = -1, _amount = Amount.Null, _scriptBuilder = null};
 
-        public TransactionOutput(UInt256 txHash, long index, Amount amount, Script script, bool isChangeOutput = false)
+        public TxOut(UInt256 txHash, long index, Amount amount, ScriptBuilder script, bool isChangeOutput = false)
         {
             _txHash = txHash;
             _index = index;
             _amount = amount;
-            _script = script;
+            _scriptBuilder = script;
             _isChangeOutput = isChangeOutput;
         }
+
+
 
         //public bool TryParseTxOut(ref ByteSequenceReader r, IBlockParser bp)
         //{
@@ -80,7 +82,7 @@ namespace CafeLib.BsvSharp.Transactions
 
         public override string ToString()
         {
-            return $"{new Amount(_amount)} {_script}";
+            return $"{new Amount(_amount)} {_scriptBuilder.ToScript()}";
         }
 
         //public IBitcoinWriter AddTo(IBitcoinWriter writer)
@@ -91,5 +93,17 @@ namespace CafeLib.BsvSharp.Transactions
         //        ;
         //    return writer;
         //}
+
+        #region Helpers
+
+        /// <summary>
+        ///Returns true is satoshi amount if outside of valid range
+        /// See [Transaction.MAX_MONEY]
+        /// </summary>
+        /// <returns></returns>
+        private bool InvalidSatoshis() => _amount.Satoshis < Amount.Zero || _amount.Satoshis > Amount.MaxValue;
+
+        #endregion
+
     }
 }
