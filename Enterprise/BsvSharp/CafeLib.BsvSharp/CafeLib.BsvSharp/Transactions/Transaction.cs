@@ -14,12 +14,12 @@ namespace CafeLib.BsvSharp.Transactions
     {
         private ScriptBuilder _changeScriptBuilder;
         private bool _hasChangeScript = false;
+        private Amount _fee = Amount.Null;
 
         public string Id => Encoders.HexReverse.Encode(Hash);
         public UInt256 Hash { get; private set; }
         public int Version { get; private set; } = 1;
         public int LockTime { get; private set; }
-        public Amount Fee { get; private set; }
         public Address ChangeAddress { get; private set; }
 
         public TxInCollection  Inputs { get; private set; } //this transaction's inputs
@@ -49,33 +49,17 @@ namespace CafeLib.BsvSharp.Transactions
             Inputs = vin;
             Outputs = vout;
             LockTime = lockTime;
-            Fee = new Amount(fee);
+            _fee = new Amount(fee);
             Option = option;
         }
 
-        public Amount GetFee()
-        {
-            if (IsCoinbase)
-            {
-                return Amount.Zero;
-            }
-
-            //if (_fee != null)
-            //{
-            //    return _fee;
-            //}
-
-            //// if no change output is set, fees should equal all the unspent amount
-            if (!_hasChangeScript)
-            {
-                //    return _getUnspentValue();
-            }
-            
-            //return _estimateFee();
-
-                return Amount.Zero;
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="recipient"></param>
+        /// <param name="sats"></param>
+        /// <param name="scriptBuilder"></param>
+        /// <returns></returns>
         public Transaction SpendTo(Address recipient, Amount sats, ScriptBuilder scriptBuilder = null)
         {
             if (sats <= Amount.Zero) throw new ArgumentException("You can only spend a positive amount of satoshis");
@@ -145,9 +129,41 @@ namespace CafeLib.BsvSharp.Transactions
 
             return txOut;
         }
+        
+        ///  Calculates the fee of the transaction.
+        ///
+        ///  If there's a fixed fee set, return that.
+        ///
+        ///  If there is no change output set, the fee is the
+        ///  total value of the outputs minus inputs. Note that
+        ///  a serialized transaction only specifies the value
+        ///  of its outputs. (The value of inputs are recorded
+        ///  in the previous transaction outputs being spent.)
+        ///  This method therefore raises a 'MissingPreviousOutput'
+        ///  error when called on a serialized transaction.
+        ///
+        ///  If there's no fee set and no change address,
+        ///  estimate the fee based on size.
+        ///
+        ///  *NOTE* : This fee calculation strategy is taken from the MoneyButton/BSV library.
+        public Amount GetFee()
+        {
+            if (IsCoinbase)
+            {
+                return Amount.Zero;
+            }
 
+            if (_fee != Amount.Null) 
+            {
+                return _fee;
+            }
+
+            // if no change output is set, fees should equal all the unspent amount
+            return !_hasChangeScript ? GetUnspentValue() : EstimateFee();
+        }
+        
         #region Helpers
-
+        
         private void UpdateChangeOutput()
         {
             if (ChangeAddress == null) return;
@@ -187,6 +203,87 @@ namespace CafeLib.BsvSharp.Transactions
             var unspent = inputAmount - outputAmount;
             return unspent - GetFee();
         }
+
+        /// Estimates fee from serialized transaction size in bytes.
+
+        
+        /// <summary>
+        /// Get the transaction unspent value.  
+        /// </summary>
+        /// <returns></returns>
+        private Amount GetUnspentValue() => InputTotals() - RecipientTotals();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private Amount EstimateFee()
+        {
+            var estimatedSize = EstimateSize();
+            var available = GetUnspentValue();
+
+            // var fee = BigInt.from((estimatedSize / 1000 * _feePerKb).ceil());
+            // if (available > fee)
+            // {
+            //     estimatedSize += CHANGE_OUTPUT_MAX_SIZE;
+            // }
+            // fee = BigInt.from((estimatedSize / 1000 * _feePerKb).ceil());
+            //
+            // return fee;
+            
+            return Amount.Zero;
+        }
+
+        private int EstimateSize()
+        {
+            // var result = MAXIMUM_EXTRA_SIZE;
+            // _txnInputs.forEach((input) {
+            //     result += SCRIPT_MAX_SIZE; //TODO: we're only spending P2PKH atm.
+            // });
+            //
+            // _txnOutputs.forEach((output) {
+            //     result += HEX
+            //         .decode(output.script.toHex())
+            //         .length + 9; // <---- HOW DO WE CALCULATE SCRIPT FROM JUST AN ADDRESS !? AND LENGTH ???
+            // });
+            //
+            // return result;
+
+            return 0;
+        }
+
+        // void _sortInputs(List<TransactionInput> txns)
+        // {
+        //     txns.sort((lhs, rhs) {
+        //         var txnIdComparison = lhs.prevTxnId.compareTo(rhs.prevTxnId);
+        //
+        //         if (txnIdComparison != 0)
+        //         {
+        //             //we use the prevTxnId to sort
+        //             return txnIdComparison;
+        //         }
+        //         else
+        //         {
+        //             //txnIds can't be used (probably 'cause there's only one)
+        //             return lhs.prevTxnOutputIndex - rhs.prevTxnOutputIndex;
+        //         }
+        //     });
+        // }
+        //
+        // void _sortOutputs(List<TransactionOutput> txns)
+        // {
+        //     txns.sort((lhs, rhs) {
+        //         var satoshiComparison = lhs.satoshis - rhs.satoshis;
+        //         if (satoshiComparison != BigInt.zero)
+        //         {
+        //             return satoshiComparison > BigInt.zero ? 1 : -1;
+        //         }
+        //         else
+        //         {
+        //             return lhs.scriptHex.compareTo(rhs.scriptHex);
+        //         }
+        //     });
+        // }
 
         #endregion
     }
