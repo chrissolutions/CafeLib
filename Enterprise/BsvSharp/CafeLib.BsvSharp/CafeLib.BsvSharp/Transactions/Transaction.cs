@@ -53,6 +53,29 @@ namespace CafeLib.BsvSharp.Transactions
             Option = option;
         }
 
+        public Amount GetFee()
+        {
+            if (IsCoinbase)
+            {
+                return Amount.Zero;
+            }
+
+            //if (_fee != null)
+            //{
+            //    return _fee;
+            //}
+
+            //// if no change output is set, fees should equal all the unspent amount
+            //if (!_hasChangeScript())
+            //{
+            //    return _getUnspentValue();
+            //}
+            ////
+            //return _estimateFee();
+
+            return Amount.Zero;
+        }
+
         public Transaction SpendTo(Address recipient, Amount sats, ScriptBuilder scriptBuilder = null)
         {
             if (sats <= Amount.Zero) throw new ArgumentException("You can only spend a positive amount of satoshis");
@@ -159,13 +182,10 @@ namespace CafeLib.BsvSharp.Transactions
 
         private Amount RecalculateChange()
         {
-            //var inputAmount = _inputTotals();
-            //var outputAmount = _nonChangeRecipientTotals();
-            //var unspent = inputAmount - outputAmount;
-
-            //return unspent - getFee();
-
-            return Amount.Zero;
+            var inputAmount = InputTotals();
+            var outputAmount = NonChangeRecipientTotals();
+            var unspent = inputAmount - outputAmount;
+            return unspent - GetFee();
         }
 
         #endregion
