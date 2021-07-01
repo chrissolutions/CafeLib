@@ -4,6 +4,7 @@ using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
+using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Services;
 using CafeLib.BsvSharp.Units;
 using CafeLib.Core.Extensions;
@@ -366,6 +367,36 @@ namespace CafeLib.BsvSharp.Transactions
         private void SortOutputs(TxOutCollection outputs)
         {
             Outputs = new TxOutCollection(outputs.OrderBy(x => x.Amount).ToArray());
+        }
+
+        /// Returns the raw transaction as a hexadecimal string, skipping all checks.
+        private byte[] UncheckedSerialize()
+        {
+            var writer = new ByteDataWriter();
+
+            // set the transaction version
+            writer.Write(Version);
+
+            // set the number of inputs
+            //writer.write(varintBufNum(inputs.length));
+
+            // write the inputs
+            Inputs.ForEach(x => writer.Write(x.Serialize()));
+
+            //set the number of outputs to come
+            //writer.write(varintBufNum(outputs.length));
+
+            // write the outputs
+            //outputs.forEach((output) {
+            //    writer.write(output.serialize());
+            //});
+
+            // write the locktime
+            writer.Write(LockTime);
+
+            return writer.Span;
+
+            //return HEX.encode(writer.toBytes().toList());
         }
 
         #endregion
