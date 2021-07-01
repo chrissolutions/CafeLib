@@ -14,7 +14,7 @@ using CafeLib.Core.Extensions;
 
 namespace CafeLib.BsvSharp.Scripting
 {
-    public struct Operand
+    public struct Operand :  IDataSerializer
     {
         public Opcode Code { get; private set; }
 
@@ -154,6 +154,34 @@ namespace CafeLib.BsvSharp.Scripting
                 w.Add((byte[])Data.Sequence);
 
             return w;
+        }
+
+        /// <summary>
+        /// Serialize Operand to data writer
+        /// </summary>
+        /// <param name="writer">data writer</param>
+        /// <param name="parameters">parameters</param>
+        /// <returns>data writer</returns>
+        public IDataWriter WriteTo(IDataWriter writer, object parameters) => WriteTo(writer);
+        
+        /// <summary>
+        /// Serialize Operand to data writer
+        /// </summary>
+        /// <param name="writer">data writer</param>
+        /// <returns>data writer</returns>
+        public IDataWriter WriteTo(IDataWriter writer)
+        {
+            writer.Write((byte)Code);
+            if (Code >= Opcode.OP_PUSHDATA1 && Code <= Opcode.OP_PUSHDATA4)
+            {
+                ByteSpan lengthBytes = BitConverter.GetBytes((uint)Data.Length).AsSpan(0, LengthBytesCount);
+                writer.Write(lengthBytes);
+            }
+
+            if (Data.Length > 0)
+                writer.Write((byte[])Data.Sequence);
+
+            return writer;
         }
 
         public byte[] GetDataBytes() => Data.Sequence.ToArray();
@@ -457,6 +485,5 @@ namespace CafeLib.BsvSharp.Scripting
         public bool Equals(Operand op) => Code == op.Code && Data == op.Data;
         public static bool operator ==(Operand x, Operand y) => x.Equals(y);
         public static bool operator !=(Operand x, Operand y) => !(x == y);
-
     }
 }

@@ -11,12 +11,13 @@ using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
+using CafeLib.Core.Extensions;
 using Newtonsoft.Json;
 
 namespace CafeLib.BsvSharp.Scripting
 {
     [JsonConverter(typeof(ScriptConverter))]
-    public struct Script
+    public struct Script : IDataSerializer
     {
         private Script(VarType script)
             : this()
@@ -58,6 +59,40 @@ namespace CafeLib.BsvSharp.Scripting
             }
             return writer;
         }
+
+        /// <summary>
+        /// Serialize Script to data writer
+        /// </summary>
+        /// <param name="writer">data writer</param>
+        /// <returns>data writer</returns>
+        public IDataWriter WriteTo(IDataWriter writer) => WriteTo(writer, new {withoutCodeSeparators = false});
+        
+        /// <summary>
+        /// Serialize Script to data writer
+        /// </summary>
+        /// <param name="writer">data writer</param>
+        /// <param name="parameters">parameters</param>
+        /// <returns>data writer</returns>
+        public IDataWriter WriteTo(IDataWriter writer, object parameters)
+        {
+            dynamic args = parameters;
+            if (args.withoutCodeSeparators) 
+            {
+                var ops = Decode().Where(o => o.Code != Opcode.OP_CODESEPARATOR).ToArray();
+                writer.Write(ops.Length.AsVarIntBytes());
+                foreach (var op in ops)
+                    writer.Write(op);
+            }
+            else 
+            {
+                writer
+                    .Write(Data.Length.AsVarIntBytes())
+                    .Write(Data);
+
+            }
+            return writer;
+        }
+        
 
         public void Read(BinaryReader s)
         {
@@ -515,6 +550,5 @@ namespace CafeLib.BsvSharp.Scripting
             fail:
             return (false, SignatureHashEnum.Unsupported, null, null, null);
         }
-
     }
 }

@@ -6,13 +6,15 @@
 using System;
 using System.Linq;
 using CafeLib.BsvSharp.Builders;
+using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
+using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Units;
 
 namespace CafeLib.BsvSharp.Transactions
 {
-    public struct TxOut : IChainId, IEquatable<TxOut>
+    public struct TxOut : IChainId, IDataSerializer, IEquatable<TxOut>
     {
         private readonly ScriptBuilder _scriptBuilder;
 
@@ -109,6 +111,28 @@ namespace CafeLib.BsvSharp.Transactions
         public override string ToString()
         {
             return $"{new Amount(Amount)} {_scriptBuilder.ToScript()}";
+        }
+
+        /// <summary>
+        /// Write TxOut to data writer
+        /// </summary>
+        /// <param name="writer">data writer</param>
+        /// <param name="parameters">parameters</param>
+        /// <returns>data writer</returns>
+        public IDataWriter WriteTo(IDataWriter writer, object parameters) => WriteTo(writer);
+        
+        /// <summary>
+        /// Write TxOut to data writer
+        /// </summary>
+        /// <param name="writer">data writer</param>
+        /// <returns>data writer</returns>
+        public IDataWriter WriteTo(IDataWriter writer)
+        {
+            writer
+                .Write(Amount)
+                .Write(_scriptBuilder.ToScript())
+                ;
+            return writer;
         }
 
         //public IBitcoinWriter AddTo(IBitcoinWriter writer)

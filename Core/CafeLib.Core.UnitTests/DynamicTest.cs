@@ -338,5 +338,14 @@ namespace CafeLib.Core.UnitTests
             Assert.Equal(dict["Company"], entity.Company);
             Assert.Equal(dict["Accesses"], entity.Accesses);
         }
+
+        [Fact]
+        public void ExpandoFromAnonymousObject()
+        {
+            var obj = new {Name = "Rick", Company = "West Wind", Access = 2};
+
+            dynamic dyn = obj;
+            Assert.Equal(dyn.Name, obj.Name);
+        }
     }
 }
