@@ -381,15 +381,13 @@ namespace CafeLib.BsvSharp.Transactions
             writer.Write(new VarInt(Inputs.Count));
 
             // write the inputs
-            Inputs.ForEach(x => x.Serialize(writer));
+            Inputs.ForEach(x => x.WriteTo(writer));
 
             //set the number of outputs to come
             writer.Write(new VarInt(Outputs.Count));
 
             // write the outputs
-            //outputs.forEach((output) {
-            //    writer.write(output.serialize());
-            //});
+            Outputs.ForEach(x => x.WriteTo(writer));
 
             // write the locktime
             writer.Write(LockTime);

@@ -22,7 +22,7 @@ namespace CafeLib.BsvSharp.Transactions
     /// See <see cref="Chain.Transaction"/> when dynamically building a transaction input.
     /// <seealso cref="TxInBuilder"/>
     /// </summary>
-    public struct TxIn : IChainId
+    public struct TxIn : IChainId, IDataSerializer
     {
         private OutPoint _prevOutPoint;
         private Script _scriptSig;
@@ -118,18 +118,24 @@ namespace CafeLib.BsvSharp.Transactions
         {
         }
 
-        public void Serialize(IDataWriter writer)
+        public IDataWriter WriteTo(IDataWriter writer, object parameters) => WriteTo(writer);
+        public IDataWriter WriteTo(IDataWriter writer)
         {
             writer.Write(Encoders.HexReverse.Decode(TxId));
             writer.Write(Index);
-
-            var scriptHex = _scriptBuilder.ToScript().ToHexString();
-            //writer.write(varIntWriter(scriptHex.length).toList(), copy: true);
-            //writer.Write(scriptHex);
-
+            writer.Write(_scriptBuilder.ToScript());
             writer.Write(_sequenceNumber);
+            return writer;
         }
 
+        // public IBitcoinWriter AddTo(IBitcoinWriter writer)
+        // {
+        //     writer
+        //         .Add(_prevOutPoint)
+        //         .Add(_scriptSig)
+        //         .Add(_sequenceNumber);
+        //     return writer;
+        // }
 
         public bool TryParseTxIn(ref ByteSequenceReader r, IBlockParser bp)
         {
@@ -156,15 +162,6 @@ namespace CafeLib.BsvSharp.Transactions
             return true;
             fail:
             return false;
-        }
-
-        public IBitcoinWriter AddTo(IBitcoinWriter writer)
-        {
-            writer
-                .Add(_prevOutPoint)
-                .Add(_scriptSig)
-                .Add(_sequenceNumber);
-            return writer;
         }
     }
 }

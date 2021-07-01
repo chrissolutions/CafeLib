@@ -21,7 +21,7 @@ namespace CafeLib.BsvSharp.Transactions
         public UInt256 TxHash { get; }
         public long Index { get; }
 
-        public Amount Amount { get; set; }
+        public Amount Amount { get; private set; }
         public bool IsChangeOutput { get; }
 
         public Script Script => _scriptBuilder;
