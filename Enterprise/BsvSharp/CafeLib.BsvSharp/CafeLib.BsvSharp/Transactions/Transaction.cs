@@ -13,7 +13,7 @@ namespace CafeLib.BsvSharp.Transactions
     public class Transaction : IChainId
     {
         private ScriptBuilder _changeScriptBuilder;
-        private bool _changeScriptFlag = false;
+        private bool _hasChangeScript = false;
 
         public string Id => Encoders.HexReverse.Encode(Hash);
         public UInt256 Hash { get; private set; }
@@ -66,14 +66,14 @@ namespace CafeLib.BsvSharp.Transactions
             //}
 
             //// if no change output is set, fees should equal all the unspent amount
-            //if (!_hasChangeScript())
-            //{
-            //    return _getUnspentValue();
-            //}
-            ////
+            if (!_hasChangeScript)
+            {
+                //    return _getUnspentValue();
+            }
+            
             //return _estimateFee();
 
-            return Amount.Zero;
+                return Amount.Zero;
         }
 
         public Transaction SpendTo(Address recipient, Amount sats, ScriptBuilder scriptBuilder = null)
@@ -111,7 +111,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             scriptBuilder ??= new P2PkhScriptBuilder(changeAddress);
 
-            _changeScriptFlag = true;
+            _hasChangeScript = true;
             //get fee, and if there is not enough change to cover fee, remove change outputs
 
             //delete previous change transaction if exists
