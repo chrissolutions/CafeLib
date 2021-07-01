@@ -16,12 +16,6 @@ namespace CafeLib.BsvSharp.Transactions
         private bool _hasChangeScript = false;
         private Amount _fee = Amount.Null;
 
-        /// Safe upper bound for change address script size in bytes
-        private const int ChangeOutputMaxSize = 20 + 4 + 34 + 4;
-        private const int MaximumExtraSize = 4 + 9 + 9 + 4;
-        private const int ScriptMaxSize = 149;
-
-
         public string TxId => Encoders.HexReverse.Encode(Hash);
         public UInt256 Hash { get; private set; }
         public int Version { get; private set; } = 1;
@@ -48,7 +42,7 @@ namespace CafeLib.BsvSharp.Transactions
             TxOutCollection vout, 
             int lockTime,
             long fee = 0L,
-            TransactionOption option = TransactionOption.DisableAll
+            TransactionOption option = 0
         )
         {
             Version = version;
@@ -225,12 +219,29 @@ namespace CafeLib.BsvSharp.Transactions
 
         #region Helpers
 
-        //private bool IsFullySigned()
-        //{
-        //    return _txnInputs.fold(true, (prev, elem) => prev && elem.isFullySigned());
-        //}
+        /// <summary>
+        ///  Check for missing signature.
+        /// </summary>
+        /// <exception cref="TransactionException"></exception>
+        private void CheckForMissingSignatures() 
+        {
+            if ((Option & TransactionOption.DisableFullySigned) != 0) return;
 
+            if (!IsFullySigned) 
+            {
+                throw new TransactionException("Missing Signatures");
+            }
+        }
 
+        /// <summary>
+        ///  Is the collection of inputs fully signed.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsFullySigned => Inputs.All(x => x.IsFullySigned);
+        
+        /// <summary>
+        /// Update the transaction change output.
+        /// </summary>
         private void UpdateChangeOutput()
         {
             if (ChangeAddress == null) return;
@@ -270,7 +281,6 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         /// Estimates fee from serialized transaction size in bytes.
-
         
         /// <summary>
         /// Get the transaction unspent value.  
@@ -314,11 +324,19 @@ namespace CafeLib.BsvSharp.Transactions
             return result;
         }
 
+        /// <summary>
+        /// Sort inputs in accordance to BIP69.
+        /// </summary>
+        /// <param name="inputs"></param>
         private void SortInputs(TxInCollection inputs)
         {
             Inputs = new TxInCollection(inputs.OrderBy(x => x.TxId).ThenBy(x => x.Index).ToArray());
         }
 
+        /// <summary>
+        /// Sort outputs in accordance to BIP69.
+        /// </summary>
+        /// <param name="outputs"></param>
         private void SortOutputs(TxOutCollection outputs)
         {
             Outputs = new TxOutCollection(outputs.OrderBy(x => x.Amount).ThenBy(x => x.Script.ToHexString()).ToArray());
