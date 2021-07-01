@@ -118,19 +118,16 @@ namespace CafeLib.BsvSharp.Transactions
         {
         }
 
-        public byte[] Serialize()
+        public void Serialize(IDataWriter writer)
         {
-            var writer = new ByteDataWriter();
-
             writer.Write(Encoders.HexReverse.Decode(TxId));
             writer.Write(Index);
 
-            //var scriptHex = HEX.decode(_scriptBuilder.getScriptSig().toHex());
+            var scriptHex = _scriptBuilder.ToScript().ToHexString();
             //writer.write(varIntWriter(scriptHex.length).toList(), copy: true);
-            //writer.write(scriptHex, copy: true);
+            //writer.Write(scriptHex);
 
             writer.Write(_sequenceNumber);
-            return writer.ToArray();
         }
 
 

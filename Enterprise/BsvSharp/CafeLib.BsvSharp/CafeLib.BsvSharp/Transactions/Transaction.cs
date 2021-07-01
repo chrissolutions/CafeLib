@@ -381,7 +381,7 @@ namespace CafeLib.BsvSharp.Transactions
             writer.Write(new VarInt(Inputs.Count));
 
             // write the inputs
-            Inputs.ForEach(x => writer.Write(x.Serialize()));
+            Inputs.ForEach(x => x.Serialize(writer));
 
             //set the number of outputs to come
             writer.Write(new VarInt(Outputs.Count));
