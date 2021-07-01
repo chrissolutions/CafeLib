@@ -62,6 +62,18 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         /// <summary>
+        /// Add transaction output/
+        /// </summary>
+        /// <param name="txOutput"></param>
+        /// <returns></returns>
+        public Transaction AddOutput(TxOut txOutput)
+        {
+            Outputs.Add(txOutput);
+            UpdateChangeOutput();
+            return this;
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="recipient"></param>
@@ -77,57 +89,9 @@ namespace CafeLib.BsvSharp.Transactions
             return AddOutput(txOut);
         }
 
-        /// <summary>
-        /// Add a "change" output to this transaction
-        /// 
-        /// When a new transaction is created to spend coins from an input transaction,
-        /// the entire *UTXO* needs to be consumed. I.e you cannot *partially* spend coins.
-        /// What needs to happen is :
-        ///   1) You consumer the entire UTXO in the new transaction input
-        ///   2) You subtract a *change* amount from the UTXO and the remainder will be sent to the receiving party
-        /// 
-        /// The change amount is automatically calculated based on the fee rate that you set with [withFee()] or [withFeePerKb()]
-        /// 
-        /// [changeAddress] - A bitcoin address where a standard P2PKH (Pay-To-Public-Key-Hash) output will be "sent"
-        /// 
-        /// [scriptBuilder] - A [LockingScriptBuilder] that will be used to create the locking script (scriptPubKey) for the [TransactionOutput].
-        ///                   A null value results in a [P2PKHLockBuilder] being used by default, which will create a Pay-to-Public-Key-Hash output script.
-        /// 
-        /// Returns an instance of the current Transaction as part of the builder pattern.
-        /// 
-        /// </summary>
-        /// <param name="changeAddress"></param>
-        /// <param name="scriptBuilder"></param>
-        /// <returns></returns>
-        public Transaction SendChangeTo(Address changeAddress, ScriptBuilder scriptBuilder = null)
-        {
-            scriptBuilder ??= new P2PkhScriptBuilder(changeAddress);
-
-            _hasChangeScript = true;
-            //get fee, and if there is not enough change to cover fee, remove change outputs
-
-            //delete previous change transaction if exists
-            ChangeAddress = changeAddress;
-            _changeScriptBuilder = scriptBuilder;
-            UpdateChangeOutput();
-            return this;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="txOutput"></param>
-        /// <returns></returns>
-        public Transaction AddOutput(TxOut txOutput)
-        {
-            Outputs.Add(txOutput);
-            UpdateChangeOutput();
-            return this;
-        }
-
         public TxOut GetChangeOutput(ScriptBuilder changeBuilder)
         {
-            var txOut = Outputs.SingleOrDefault( x => x.IsChangeOutput);
+            var txOut = Outputs.SingleOrDefault(x => x.IsChangeOutput);
 
             if (txOut == TxOut.Null)
             {
@@ -164,13 +128,49 @@ namespace CafeLib.BsvSharp.Transactions
                 return Amount.Zero;
             }
 
-            if (_fee != Amount.Null) 
+            if (_fee != Amount.Null)
             {
                 return _fee;
             }
 
             // if no change output is set, fees should equal all the unspent amount
             return !_hasChangeScript ? GetUnspentValue() : EstimateFee();
+        }
+
+        /// <summary>
+        /// Add a "change" output to this transaction
+        /// 
+        /// When a new transaction is created to spend coins from an input transaction,
+        /// the entire *UTXO* needs to be consumed. I.e you cannot *partially* spend coins.
+        /// What needs to happen is :
+        ///   1) You consumer the entire UTXO in the new transaction input
+        ///   2) You subtract a *change* amount from the UTXO and the remainder will be sent to the receiving party
+        /// 
+        /// The change amount is automatically calculated based on the fee rate that you set with [withFee()] or [withFeePerKb()]
+        /// 
+        /// [changeAddress] - A bitcoin address where a standard P2PKH (Pay-To-Public-Key-Hash) output will be "sent"
+        /// 
+        /// [scriptBuilder] - A [LockingScriptBuilder] that will be used to create the locking script (scriptPubKey) for the [TransactionOutput].
+        ///                   A null value results in a [P2PKHLockBuilder] being used by default, which will create a Pay-to-Public-Key-Hash output script.
+        /// 
+        /// Returns an instance of the current Transaction as part of the builder pattern.
+        /// 
+        /// </summary>
+        /// <param name="changeAddress"></param>
+        /// <param name="scriptBuilder"></param>
+        /// <returns></returns>
+        public Transaction SendChangeTo(Address changeAddress, ScriptBuilder scriptBuilder = null)
+        {
+            scriptBuilder ??= new P2PkhScriptBuilder(changeAddress);
+
+            _hasChangeScript = true;
+            //get fee, and if there is not enough change to cover fee, remove change outputs
+
+            //delete previous change transaction if exists
+            ChangeAddress = changeAddress;
+            _changeScriptBuilder = scriptBuilder;
+            UpdateChangeOutput();
+            return this;
         }
 
         /// <summary>
