@@ -11,7 +11,6 @@ using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
-using CafeLib.Core.Extensions;
 using Newtonsoft.Json;
 
 namespace CafeLib.BsvSharp.Scripting
