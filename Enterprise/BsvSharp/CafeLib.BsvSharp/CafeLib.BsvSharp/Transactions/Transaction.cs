@@ -25,7 +25,6 @@ namespace CafeLib.BsvSharp.Transactions
 
         public TxInCollection  Inputs { get; private set; } //this transaction's inputs
         public TxOutCollection Outputs { get; private set; } //this transaction's outputs
-        public TxOutCollection Utxo { get; private set; }  //the UTXOs from spent Transaction
 
         //if we have a Transaction with one input, and a prevTransactionId of zero, it's a coinbase.
         public bool IsCoinbase => Inputs.Count == 1 && Inputs[0].Hash == UInt256.Zero;
@@ -79,7 +78,33 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         /// <summary>
+        /// Add a DataLockBuilder that creates an unspendable, zero-satoshi output
+        /// with associated data attached.
         /// 
+        /// This method can be called more than once to add multiple data outputs.
+        /// 
+        /// [data] - The data to add to the output transaction
+        /// 
+        /// [scriptBuilder] - An instance (or subclass) of [DataLockBuilder] that
+        /// will provide the scriptPubKey. The base [DataLockBuilder] will be used
+        /// by default, and that results in a very simple data output that has the form
+        ///    `OP_FALSE OP_RETURN <data>`
+        /// 
+        /// Returns an instance of the current Transaction as part of the builder pattern.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="scriptBuilder"></param>
+        /// <returns></returns>
+        public Transaction AddData(byte[] data, ScriptBuilder scriptBuilder = null)
+        {
+            scriptBuilder ??= new ScriptBuilder(data);
+            var dataOut = new TxOut(Hash, Outputs.Count, scriptBuilder);
+            Outputs.Add(dataOut);
+            return this;
+        }
+
+        /// <summary>
+        /// Get change output
         /// </summary>
         /// <param name="changeBuilder"></param>
         /// <returns></returns>
