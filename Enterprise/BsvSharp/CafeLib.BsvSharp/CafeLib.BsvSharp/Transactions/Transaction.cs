@@ -15,6 +15,7 @@ namespace CafeLib.BsvSharp.Transactions
         private ScriptBuilder _changeScriptBuilder;
         private bool _hasChangeScript = false;
         private Amount _fee = Amount.Null;
+        private long _feePerKb = RootService.Network.Consensus.FeePerKilobyte;
 
         public string TxId => Encoders.HexReverse.Encode(Hash);
         public UInt256 Hash { get; private set; }
@@ -181,7 +182,6 @@ namespace CafeLib.BsvSharp.Transactions
             return AddOutput(txOut);
         }
 
-
         /// <summary>
         /// Sort inputs and outputs according to Bip69
         /// </summary>
@@ -208,11 +208,11 @@ namespace CafeLib.BsvSharp.Transactions
         /// <summary>
         /// With fee per kilobyte.
         /// </summary>
-        /// <param name="Fee"></param>
+        /// <param name="fee"></param>
         /// <returns></returns>
-        public Transaction WithFeePerKilobyte(int Fee)
+        public Transaction WithFeePerKilobyte(int fee)
         {
-            //_feePerKb = Fee;
+            _feePerKb = fee;
             UpdateChangeOutput();
             return this;
         }
@@ -297,13 +297,13 @@ namespace CafeLib.BsvSharp.Transactions
             var estimatedSize = EstimateSize();
             var available = GetUnspentValue();
 
-            var fee = new Amount((long)Math.Ceiling((double)estimatedSize / 1000 * RootService.Network.Consensus.FeePerKilobyte));
+            var fee = new Amount((long)Math.Ceiling((double)estimatedSize / 1000 * _feePerKb));
             if (available > fee)
             {
                 estimatedSize += RootService.Network.Consensus.ChangeOutputMaxSize;
             }
 
-            fee = new Amount((long)Math.Ceiling((double)estimatedSize / 1000 * RootService.Network.Consensus.FeePerKilobyte));
+            fee = new Amount((long)Math.Ceiling((double)estimatedSize / 1000 * _feePerKb));
             return fee;
         }
 
