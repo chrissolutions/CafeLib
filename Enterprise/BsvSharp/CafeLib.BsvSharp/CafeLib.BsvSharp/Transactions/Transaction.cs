@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
-using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Services;
 using CafeLib.BsvSharp.Units;
 using CafeLib.Core.Extensions;
@@ -62,13 +60,25 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         /// <summary>
+        /// Add transaction input
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public Transaction AddInput(TxIn input)
+        {
+            Inputs.Add(input);
+            UpdateChangeOutput();
+            return this;
+        }
+
+        /// <summary>
         /// Add transaction output/
         /// </summary>
-        /// <param name="txOutput"></param>
+        /// <param name="output"></param>
         /// <returns></returns>
-        public Transaction AddOutput(TxOut txOutput)
+        public Transaction AddOutput(TxOut output)
         {
-            Outputs.Add(txOutput);
+            Outputs.Add(output);
             UpdateChangeOutput();
             return this;
         }
@@ -76,19 +86,8 @@ namespace CafeLib.BsvSharp.Transactions
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="recipient"></param>
-        /// <param name="sats"></param>
-        /// <param name="scriptBuilder"></param>
+        /// <param name="changeBuilder"></param>
         /// <returns></returns>
-        public Transaction SpendTo(Address recipient, Amount sats, ScriptBuilder scriptBuilder = null)
-        {
-            if (sats <= Amount.Zero) throw new ArgumentException("You can only spend a positive amount of satoshis");
-
-            scriptBuilder ??= new P2PkhScriptBuilder(recipient);
-            var txOut = new TxOut(Hash, Outputs.Count, sats, scriptBuilder);
-            return AddOutput(txOut);
-        }
-
         public TxOut GetChangeOutput(ScriptBuilder changeBuilder)
         {
             var txOut = Outputs.SingleOrDefault(x => x.IsChangeOutput);
@@ -172,6 +171,22 @@ namespace CafeLib.BsvSharp.Transactions
             UpdateChangeOutput();
             return this;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="recipient"></param>
+        /// <param name="sats"></param>
+        /// <param name="scriptBuilder"></param>
+        /// <returns></returns>
+        public Transaction SpendTo(Address recipient, Amount sats, ScriptBuilder scriptBuilder = null)
+        {
+            if (sats <= Amount.Zero) throw new ArgumentException("You can only spend a positive amount of satoshis");
+
+            scriptBuilder ??= new P2PkhScriptBuilder(recipient);
+            var txOut = new TxOut(Hash, Outputs.Count, sats, scriptBuilder);
+            return AddOutput(txOut);
+        }
+
 
         /// <summary>
         /// Sort inputs and outputs according to Bip69
@@ -196,7 +211,25 @@ namespace CafeLib.BsvSharp.Transactions
             return this;
         }
 
+        /// <summary>
+        /// With fee per kilobyte.
+        /// </summary>
+        /// <param name="Fee"></param>
+        /// <returns></returns>
+        public Transaction WithFeePerKilobyte(int Fee)
+        {
+            //_feePerKb = Fee;
+            UpdateChangeOutput();
+            return this;
+        }
+
         #region Helpers
+
+        //private bool IsFullySigned()
+        //{
+        //    return _txnInputs.fold(true, (prev, elem) => prev && elem.isFullySigned());
+        //}
+
 
         private void UpdateChangeOutput()
         {

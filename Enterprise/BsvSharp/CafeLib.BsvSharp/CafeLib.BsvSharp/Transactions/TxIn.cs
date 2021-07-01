@@ -26,8 +26,13 @@ namespace CafeLib.BsvSharp.Transactions
     {
         private OutPoint _prevOutPoint;
         private Script _scriptSig;
-        private uint _sequence;
+        private uint _sequenceNumber;
         private Amount _spendingAmount;
+        private bool _isSignedInput;
+        private ScriptBuilder _scriptBuilder;
+
+        //private Script _utxoScript;
+
 
         /// <summary>
         /// Setting nSequence to this value for every input in a transaction disables nLockTime.
@@ -67,19 +72,49 @@ namespace CafeLib.BsvSharp.Transactions
 
         public OutPoint PrevOut => _prevOutPoint;
         public Script ScriptSig => _scriptSig;
-        public uint Sequence => _sequence;
+        public uint Sequence => _sequenceNumber;
         public Amount Amount => _spendingAmount;
 
-        public TxIn(OutPoint prevOutPoint, Amount amount, Script scriptSig, uint sequence)
+        /// <summary>
+        /// This is used by the Transaction during serialization checks.
+        /// It is only used in the context of P2PKH transaction types and
+        /// will likely be deprecated in future.
+        /// 
+        /// FIXME: Perform stronger check than this. We should be able to
+        /// validate the _scriptBuilder Signatures. At the moment this is more
+        /// of a check on where a signature is required.
+        /// </summary>
+        public bool IsFullySigned => _isSignedInput;
+
+        /// <summary>
+        /// Transaction input constructor.
+        /// </summary>
+        /// <param name="prevOutPoint"></param>
+        /// <param name="amount"></param>
+        /// <param name="scriptSig"></param>
+        /// <param name="sequence"></param>
+        /// <param name="scriptBuilder"></param>
+        public TxIn(OutPoint prevOutPoint, Amount amount, Script scriptSig, uint sequence, ScriptBuilder scriptBuilder = null)
         {
             _prevOutPoint = prevOutPoint;
             _spendingAmount = amount;
             _scriptSig = scriptSig;
-            _sequence = sequence;
+            _sequenceNumber = sequence;
+            _isSignedInput = false;
+            _scriptBuilder = scriptBuilder;
         }
 
-        public TxIn(UInt256 prevTxId, int outIndex, Amount amount, Script scriptSigIn = new Script(), uint nSequenceIn = SequenceFinal)
-            : this(new OutPoint(prevTxId, outIndex), amount, scriptSigIn, nSequenceIn)
+        /// <summary>
+        /// Transaction input constructor.
+        /// </summary>
+        /// <param name="prevTxId"></param>
+        /// <param name="outIndex"></param>
+        /// <param name="amount"></param>
+        /// <param name="scriptSigIn"></param>
+        /// <param name="nSequenceIn"></param>
+        /// <param name="scriptBuilder"></param>
+        public TxIn(UInt256 prevTxId, int outIndex, Amount amount, Script scriptSigIn = new Script(), uint nSequenceIn = SequenceFinal, ScriptBuilder scriptBuilder = null)
+            : this(new OutPoint(prevTxId, outIndex), amount, scriptSigIn, nSequenceIn, scriptBuilder)
         {
         }
 
@@ -90,7 +125,7 @@ namespace CafeLib.BsvSharp.Transactions
             //bp.TxInStart(this, r.Data.Consumed);
 
             if (!_scriptSig.TryParseScript(ref r, bp)) goto fail;
-            if (!r.TryReadLittleEndian(out _sequence)) goto fail;
+            if (!r.TryReadLittleEndian(out _sequenceNumber)) goto fail;
 
             //bp.TxInParsed(this, r.Data.Consumed);
 
@@ -103,7 +138,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             if (!_prevOutPoint.TryReadOutPoint(ref r)) goto fail;
             if (!_scriptSig.TryReadScript(ref r)) goto fail;
-            if (!r.TryReadLittleEndian(out _sequence)) goto fail;
+            if (!r.TryReadLittleEndian(out _sequenceNumber)) goto fail;
 
             return true;
             fail:
@@ -115,7 +150,7 @@ namespace CafeLib.BsvSharp.Transactions
             writer
                 .Add(_prevOutPoint)
                 .Add(_scriptSig)
-                .Add(_sequence);
+                .Add(_sequenceNumber);
             return writer;
         }
     }
