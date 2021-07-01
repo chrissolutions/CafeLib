@@ -330,7 +330,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <param name="inputs"></param>
         private void SortInputs(TxInCollection inputs)
         {
-            Inputs = new TxInCollection(inputs.OrderBy(x => x.TxId).ThenBy(x => x.Index).ToArray());
+            Inputs = new TxInCollection(inputs.OrderBy(x => x.TxId).ToArray());
         }
 
         /// <summary>
@@ -339,7 +339,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <param name="outputs"></param>
         private void SortOutputs(TxOutCollection outputs)
         {
-            Outputs = new TxOutCollection(outputs.OrderBy(x => x.Amount).ThenBy(x => x.Script.ToHexString()).ToArray());
+            Outputs = new TxOutCollection(outputs.OrderBy(x => x.Amount).ToArray());
         }
 
         #endregion
