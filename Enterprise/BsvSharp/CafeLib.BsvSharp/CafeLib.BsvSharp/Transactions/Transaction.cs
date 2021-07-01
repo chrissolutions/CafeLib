@@ -97,7 +97,8 @@ namespace CafeLib.BsvSharp.Transactions
         /// <returns></returns>
         public Transaction AddData(byte[] data, ScriptBuilder scriptBuilder = null)
         {
-            scriptBuilder ??= new ScriptBuilder(data);
+            scriptBuilder ??= new ScriptBuilder();
+            scriptBuilder.Add(data);
             var dataOut = new TxOut(Hash, Outputs.Count, scriptBuilder);
             Outputs.Add(dataOut);
             return this;
