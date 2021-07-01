@@ -6,6 +6,7 @@
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Chain;
+using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
@@ -61,7 +62,8 @@ namespace CafeLib.BsvSharp.Transactions
 
         public UInt256 Hash => PrevOut.TxId;
 
-        public UInt256 TxId => PrevOut.TxId;
+        public string TxId => Encoders.HexReverse.Encode(Hash);
+        public int Index => PrevOut.Index;
 
         public OutPoint PrevOut => _prevOutPoint;
         public Script ScriptSig => _scriptSig;

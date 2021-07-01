@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Services;
 using CafeLib.BsvSharp.Units;
 using CafeLib.Core.Extensions;
 
@@ -16,7 +18,13 @@ namespace CafeLib.BsvSharp.Transactions
         private bool _hasChangeScript = false;
         private Amount _fee = Amount.Null;
 
-        public string Id => Encoders.HexReverse.Encode(Hash);
+        /// Safe upper bound for change address script size in bytes
+        private const int ChangeOutputMaxSize = 20 + 4 + 34 + 4;
+        private const int MaximumExtraSize = 4 + 9 + 9 + 4;
+        private const int ScriptMaxSize = 149;
+
+
+        public string TxId => Encoders.HexReverse.Encode(Hash);
         public UInt256 Hash { get; private set; }
         public int Version { get; private set; } = 1;
         public int LockTime { get; private set; }
@@ -129,7 +137,8 @@ namespace CafeLib.BsvSharp.Transactions
 
             return txOut;
         }
-        
+
+        /// <summary>
         ///  Calculates the fee of the transaction.
         ///
         ///  If there's a fixed fee set, return that.
@@ -146,6 +155,8 @@ namespace CafeLib.BsvSharp.Transactions
         ///  estimate the fee based on size.
         ///
         ///  *NOTE* : This fee calculation strategy is taken from the MoneyButton/BSV library.
+        /// </summary>
+        /// <returns></returns>
         public Amount GetFee()
         {
             if (IsCoinbase)
@@ -161,9 +172,32 @@ namespace CafeLib.BsvSharp.Transactions
             // if no change output is set, fees should equal all the unspent amount
             return !_hasChangeScript ? GetUnspentValue() : EstimateFee();
         }
-        
+
+        /// <summary>
+        /// Sort inputs and outputs according to Bip69
+        /// </summary>
+        /// <returns>transaction</returns>
+        public Transaction Sort()
+        {
+            SortInputs(Inputs);
+            SortOutputs(Outputs);
+            return this;
+        }
+
+        /// <summary>
+        /// Add fee to transaction.
+        /// </summary>
+        /// <param name="fee"></param>
+        /// <returns>transaction</returns>
+        public Transaction WithFee(Amount fee)
+        {
+            _fee = fee;
+            UpdateChangeOutput();
+            return this;
+        }
+
         #region Helpers
-        
+
         private void UpdateChangeOutput()
         {
             if (ChangeAddress == null) return;
@@ -178,11 +212,9 @@ namespace CafeLib.BsvSharp.Transactions
             var changeAmount = RecalculateChange();
 
             ////can't spend negative amount of change :/
-            if (changeAmount > Amount.Zero)
-            {
-                var txUpdateOut = new TxOut(txOut.TxHash, txOut.Index, changeAmount, _changeScriptBuilder, true);
-                Outputs[(int)txOut.Index] = txUpdateOut;
-            }
+            if (changeAmount <= Amount.Zero) return;
+            var txUpdateOut = new TxOut(txOut.TxHash, txOut.Index, changeAmount, _changeScriptBuilder, true);
+            Outputs[(int)txOut.Index] = txUpdateOut;
         }
 
         private void RemoveChangeOutputs() => Outputs.Where(x => x.IsChangeOutput).ForEach(x => Outputs.Remove(x));
@@ -214,76 +246,50 @@ namespace CafeLib.BsvSharp.Transactions
         private Amount GetUnspentValue() => InputTotals() - RecipientTotals();
 
         /// <summary>
-        /// 
+        /// Calculate fee estimate.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>fee estimate</returns>
         private Amount EstimateFee()
         {
             var estimatedSize = EstimateSize();
             var available = GetUnspentValue();
 
-            // var fee = BigInt.from((estimatedSize / 1000 * _feePerKb).ceil());
-            // if (available > fee)
-            // {
-            //     estimatedSize += CHANGE_OUTPUT_MAX_SIZE;
-            // }
-            // fee = BigInt.from((estimatedSize / 1000 * _feePerKb).ceil());
-            //
-            // return fee;
-            
-            return Amount.Zero;
+            var fee = new Amount((long)Math.Ceiling((double)estimatedSize / 1000 * RootService.Network.Consensus.FeePerKilobyte));
+            if (available > fee)
+            {
+                estimatedSize += RootService.Network.Consensus.ChangeOutputMaxSize;
+            }
+
+            fee = new Amount((long)Math.Ceiling((double)estimatedSize / 1000 * RootService.Network.Consensus.FeePerKilobyte));
+            return fee;
         }
 
+        /// <summary>
+        /// Determine size estimate.
+        /// </summary>
+        /// <returns></returns>
         private int EstimateSize()
         {
-            // var result = MAXIMUM_EXTRA_SIZE;
-            // _txnInputs.forEach((input) {
-            //     result += SCRIPT_MAX_SIZE; //TODO: we're only spending P2PKH atm.
-            // });
-            //
-            // _txnOutputs.forEach((output) {
-            //     result += HEX
-            //         .decode(output.script.toHex())
-            //         .length + 9; // <---- HOW DO WE CALCULATE SCRIPT FROM JUST AN ADDRESS !? AND LENGTH ???
-            // });
-            //
-            // return result;
+            var result = RootService.Network.Consensus.MaximumExtraSize;
+            //_txnInputs.forEach((input) {
+            //    result += SCRIPT_MAX_SIZE; //we're only spending P2PKH atm.
+            //});
+            result += RootService.Network.Consensus.MaximumExtraSize * Inputs.Count;
 
-            return 0;
+            // <---- HOW DO WE CALCULATE SCRIPT FROM JUST AN ADDRESS !? AND LENGTH ???
+            Outputs.ForEach(x => result += Encoders.Hex.Decode(x.Script.ToHexString()).Length + 9);
+            return result;
         }
 
-        // void _sortInputs(List<TransactionInput> txns)
-        // {
-        //     txns.sort((lhs, rhs) {
-        //         var txnIdComparison = lhs.prevTxnId.compareTo(rhs.prevTxnId);
-        //
-        //         if (txnIdComparison != 0)
-        //         {
-        //             //we use the prevTxnId to sort
-        //             return txnIdComparison;
-        //         }
-        //         else
-        //         {
-        //             //txnIds can't be used (probably 'cause there's only one)
-        //             return lhs.prevTxnOutputIndex - rhs.prevTxnOutputIndex;
-        //         }
-        //     });
-        // }
-        //
-        // void _sortOutputs(List<TransactionOutput> txns)
-        // {
-        //     txns.sort((lhs, rhs) {
-        //         var satoshiComparison = lhs.satoshis - rhs.satoshis;
-        //         if (satoshiComparison != BigInt.zero)
-        //         {
-        //             return satoshiComparison > BigInt.zero ? 1 : -1;
-        //         }
-        //         else
-        //         {
-        //             return lhs.scriptHex.compareTo(rhs.scriptHex);
-        //         }
-        //     });
-        // }
+        private void SortInputs(TxInCollection inputs)
+        {
+            Inputs = new TxInCollection(inputs.OrderBy(x => x.TxId).ThenBy(x => x.Index).ToArray());
+        }
+
+        private void SortOutputs(TxOutCollection outputs)
+        {
+            Outputs = new TxOutCollection(outputs.OrderBy(x => x.Amount).ThenBy(x => x.Script.ToHexString()).ToArray());
+        }
 
         #endregion
     }

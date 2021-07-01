@@ -65,81 +65,80 @@ namespace CafeLib.BsvSharp.Network
         /// <summary>
         /// satoshis per coin. Main is 100 million satoshis per coin.
         /// </summary>
-        public const long SatoshisPerCoin = 100_000_000L;
+        public long SatoshisPerCoin => 100_000_000L;
 
         /// <summary>
         /// Initial block reward. Main is 50 coins, 5 billion satoshis.
         /// </summary>
-        public const long InitialReward = 5_000_000_000L;
+        public long InitialReward => 5_000_000_000L;
 
         /// <summary>
         /// Value used for fee estimation (satoshis per kilobyte)
         /// </summary>
-        public const long FeePerKilobyte = 1000L;
+        public long FeePerKilobyte => 1000L;
 
         /// <summary>
         /// Minimum amount for an output for it not to be considered a dust output
         /// </summary>
-        public const long DustLimit = 546L;
+        public long DustLimit => 546L;
 
         /// <summary>
         /// Margin of error to allow fees in the vicinity of the expected value but doesn't allow a big difference
         /// </summary>
-        public const long FeeSecurityMargin = 150L;
+        public long FeeSecurityMargin => 150L;
 
         /// <summary>
         /// nlocktime limit to be considered block height rather than a timestamp
         /// </summary>
-        public const long LocktimeBlockheightLimit = 500_000_000_000L;
+        public long LocktimeBlockheightLimit => 500_000_000_000L;
 
         /// <summary>
         /// Default sequence number.
         /// </summary>
-        public const ulong DefaultSeqnumber = 0xFFFFFFFF;
+        public ulong DefaultSeqnumber => 0xFFFFFFFF;
 
         /// <summary>
         /// Default nLockTime sequence number.
         /// </summary>
-        public const ulong DefaultLocktimeSeqnumber = DefaultSeqnumber - 1;
+        public ulong DefaultLocktimeSeqnumber => DefaultSeqnumber - 1;
 
         /// <summary>
         /// Max value for an unsigned 32 bit value
         /// </summary>
-        public const long LocktimeMaxValue = 4294967295;
+        public long LocktimeMaxValue => 4294967295;
 
         /// Safe upper bound for change address script size in bytes
-        public const long ChangeOutputMaxSize = 20 + 4 + 34 + 4;
-        public const long MaximumExtraSize = 4 + 9 + 9 + 4;
-
+        public int ChangeOutputMaxSize => 20 + 4 + 34 + 4;
+        public int MaximumExtraSize => 4 + 9 + 9 + 4;
 
         /// <summary>
         /// How many blocks between reductions in the block reward rate.
         /// </summary>
         public int RewardHalvingInterval => SubsidyHalvingInterval;
 
-        public const string GenesisBlockHash = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f";
+        public string GenesisBlockHash => "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f";
 
         /// <summary>
         /// Maximum number of bytes pushable to the stack
         /// </summary>
-        public const UInt32 ScriptMaxElementSize = 520;
+        public uint ScriptMaxElementSize => 520;
         /// <summary>
         /// Maximum number of non-push operations per script
         /// </summary>
-        public const int ScriptMaxOpsPer = 500;
+        public int ScriptMaxOpsPer => 500;
         /// <summary>
         /// Maximum number of public keys per multisig
         /// </summary>
-        public const int ScriptMaxPubKeysPerMultiSig = 20;
+        public int ScriptMaxPubKeysPerMultiSig => 20;
         /// <summary>
         /// Maximum script length in bytes. 
         /// </summary>
-        public const int ScriptMaxSize = 10000;
+        public int ScriptMaxSize => 10000;
         /// <summary>
         /// Threshold for nLockTime: below this value it is interpreted as block number,
         /// otherwise as UNIX timestamp. Thresold is Tue Nov 5 00:53:20 1985 UTC
         /// </summary>
-        public const uint LocktimeThreshold = 500000000U;
+        public uint LocktimeThreshold => 500000000U;
 
         public uint MaxScriptElementSize => ScriptMaxElementSize;
         public int MaxOperationsPerScript => ScriptMaxOpsPer;
@@ -197,19 +196,19 @@ namespace CafeLib.BsvSharp.Network
         (
             string pszTimestamp,
             Script genesisOutputScript,
-            UInt32 nTime, 
-            UInt32 nNonce,
-            UInt32 nBits, 
-            Int32 nVersion,
-            Int64 genesisReward)
+            uint nTime, 
+            uint nNonce,
+            uint nBits, 
+            int nVersion,
+            long genesisReward)
         {
             var txs = new Transaction[] 
             {
                 new Transaction
                 (
                     version: 1,
-                    vin: new TxIn[] { new TxIn(new OutPoint(UInt256.Zero, -1), new Script(""), 0 ) },
-                    vout: new TxOut[] { new TxOut( value: 0, script: new Script("")) },
+                    vin: new[] { new TxIn(new OutPoint(UInt256.Zero, -1), new Script(""), 0 ) },
+                    vout: new[] { new TxOut( value: 0, script: new Script("")) },
                     lockTime: 0
                 )
             };
