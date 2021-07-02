@@ -148,7 +148,7 @@ namespace CafeLib.BsvSharp.Transactions
             }
 
             // if no change output is set, fees should equal all the unspent amount
-            return !_hasChangeScript ? GetUnspentValue() : EstimateFee();
+            return !_hasChangeScript ? GetUnspentAmount() : EstimateFee();
         }
 
         /// <summary>
@@ -292,6 +292,38 @@ namespace CafeLib.BsvSharp.Transactions
             if (_fee == unspent) return;
             throw new TransactionException($"Unspent amount is {unspent} but the specified fee is {_fee}.");
         }
+        
+        // void _checkForFeeErrors(BigInt unspent) {
+        //     if ((_fee != null) && (_fee != unspent)) {
+        //         var errorMessage = 'Unspent value is ' +
+        //                            unspent.toRadixString(10) +
+        //                            ' but specified fee is ' +
+        //                            _fee.toRadixString(10);
+        //         throw TransactionFeeException(errorMessage);
+        //     }
+        //
+        //     if (!transactionOptions.contains(TransactionOption.DISABLE_LARGE_FEES)) {
+        //         var maximumFee = (Transaction.FEE_SECURITY_MARGIN * _estimateFee());
+        //         if (unspent > maximumFee) {
+        //             if (!_hasChangeScript()) {
+        //                 throw TransactionFeeException(
+        //                     'Fee is too large and no change address was provided');
+        //             }
+        //
+        //             throw TransactionFeeException('expected less than ' +
+        //                                           maximumFee.toString() +
+        //                                           ' but got ' +
+        //                                           unspent.toString());
+        //         }
+        //     }
+        // }
+        
+        // bool _inputExists(String transactionId, int outputIndex) => _txnInputs
+        //     .where((input) =>
+        //         input.prevTxnId == transactionId &&
+        //         input.prevTxnOutputIndex == outputIndex)
+        //     .isNotEmpty;
+        
 
         /// <summary>
         ///  Is the collection of inputs fully signed.
@@ -343,10 +375,10 @@ namespace CafeLib.BsvSharp.Transactions
         /// Estimates fee from serialized transaction size in bytes.
         
         /// <summary>
-        /// Get the transaction unspent value.  
+        /// Get the transaction unspent amount.  
         /// </summary>
         /// <returns></returns>
-        private Amount GetUnspentValue() => InputTotals() - RecipientTotals();
+        private Amount GetUnspentAmount() => InputTotals() - RecipientTotals();
 
         /// <summary>
         /// Calculate fee estimate.
@@ -355,7 +387,7 @@ namespace CafeLib.BsvSharp.Transactions
         private Amount EstimateFee()
         {
             var estimatedSize = EstimateSize();
-            var available = GetUnspentValue();
+            var available = GetUnspentAmount();
 
             var fee = new Amount((long)Math.Ceiling((double)estimatedSize / 1000 * _feePerKb));
             if (available > fee)
@@ -409,7 +441,7 @@ namespace CafeLib.BsvSharp.Transactions
                 throw new TransactionException("Invalid amount of satoshis");
             }
 
-            var unspent = GetUnspentValue();
+            var unspent = GetUnspentAmount();
 
             if (unspent < Amount.Zero)
             {
