@@ -419,8 +419,18 @@ namespace CafeLib.BsvSharp.Transactions
             //    _checkForFeeErrors(unspent);
             //}
 
-            //_checkForDustErrors();
+            CheckForDustErrors();
             //_checkForMissingSignatures();
+        }
+
+        private void CheckForDustErrors()
+        {
+            if ((Option & TransactionOption.DisableDustOutputs) != 0) return;
+
+            if (Outputs.Any(x => x.Amount < RootService.Network.Consensus.DustLimit && !x.IsDataOut))
+            {
+                throw new TransactionException("You have outputs with spending values below the dust limit");
+            }
         }
 
         /// Returns the raw transaction as a hexadecimal string, skipping all checks.
