@@ -2,6 +2,7 @@
 using System.Linq;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
+using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
@@ -11,7 +12,7 @@ using CafeLib.Core.Extensions;
 
 namespace CafeLib.BsvSharp.Transactions
 {
-    public class Transaction : IChainId
+    public class Transaction : IChainId, IDataSerializer
     {
         private ScriptBuilder _changeScriptBuilder;
         private bool _hasChangeScript = false;
@@ -89,7 +90,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// [scriptBuilder] - An instance (or subclass) of [DataLockBuilder] that
         /// will provide the scriptPubKey. The base [DataLockBuilder] will be used
         /// by default, and that results in a very simple data output that has the form
-        ///    `OP_FALSE OP_RETURN <data>`
+        ///    `OP_FALSE OP_RETURN &lt;data&gt;`
         /// 
         /// Returns an instance of the current Transaction as part of the builder pattern.
         /// </summary>
@@ -244,6 +245,34 @@ namespace CafeLib.BsvSharp.Transactions
             return this;
         }
 
+        public IDataWriter WriteTo(IDataWriter writer, object parameters)
+        {
+            dynamic args = parameters;
+            if (args.performChecks)
+            {
+                DoSerializationChecks();
+            }
+
+            return UncheckedSerialize(writer);
+        }
+
+        public IDataWriter WriteTo(IDataWriter writer)
+        {
+            writer
+                .Write(Version)
+                .Write(Inputs.Count.AsVarIntBytes());
+
+            Inputs.ForEach(x => x.WriteTo(writer));
+
+            writer.Write(Outputs.Count.AsVarIntBytes());
+
+            Outputs.ForEach(x => x.WriteTo(writer));
+
+            writer.Write(LockTime);
+
+            return writer;
+        }
+
         #region Helpers
 
         /// <summary>
@@ -369,11 +398,34 @@ namespace CafeLib.BsvSharp.Transactions
             Outputs = new TxOutCollection(outputs.OrderBy(x => x.Amount).ToArray());
         }
 
-        /// Returns the raw transaction as a hexadecimal string, skipping all checks.
-        private byte[] UncheckedSerialize()
+        private void DoSerializationChecks()
         {
-            var writer = new ByteDataWriter();
+            //if (_invalidSatoshis())
+            //{
+            //    throw TransactionAmountException('Invalid quantity of satoshis');
+            //}
 
+            //BigInt unspent = _getUnspentValue();
+            //if (unspent < BigInt.zero)
+            //{
+            //    if (!transactionOptions
+            //        .contains(TransactionOption.DISABLE_MORE_OUTPUT_THAN_INPUT))
+            //    {
+            //        throw TransactionAmountException('Invalid output sum of satoshis');
+            //    }
+            //}
+            //else
+            //{
+            //    _checkForFeeErrors(unspent);
+            //}
+
+            //_checkForDustErrors();
+            //_checkForMissingSignatures();
+        }
+
+        /// Returns the raw transaction as a hexadecimal string, skipping all checks.
+        private IDataWriter UncheckedSerialize(IDataWriter writer)
+        {
             // set the transaction version
             writer.Write(Version);
 
@@ -392,7 +444,7 @@ namespace CafeLib.BsvSharp.Transactions
             // write the locktime
             writer.Write(LockTime);
 
-            return writer.Span;
+            return writer;
 
             //return HEX.encode(writer.toBytes().toList());
         }
