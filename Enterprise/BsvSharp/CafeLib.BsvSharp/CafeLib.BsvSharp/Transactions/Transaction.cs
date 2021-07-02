@@ -22,7 +22,7 @@ namespace CafeLib.BsvSharp.Transactions
         public string TxId => Encoders.HexReverse.Encode(Hash);
         public UInt256 Hash { get; private set; }
         public int Version { get; private set; } = 1;
-        public int LockTime { get; private set; }
+        public long LockTime { get; private set; }
         public Address ChangeAddress { get; private set; }
 
         public TxInCollection  Inputs { get; private set; } //this transaction's inputs
@@ -106,13 +106,10 @@ namespace CafeLib.BsvSharp.Transactions
         public TxOut GetChangeOutput(ScriptBuilder changeBuilder)
         {
             var txOut = Outputs.SingleOrDefault(x => x.IsChangeOutput);
-
-            if (txOut == TxOut.Null)
-            {
-                txOut = new TxOut(Hash, Outputs.Count, changeBuilder, true);
-                Outputs.Add(txOut);
-            }
-
+            if (txOut != TxOut.Null) return txOut;
+            
+            txOut = new TxOut(Hash, Outputs.Count, changeBuilder, true);
+            Outputs.Add(txOut);
             return txOut;
         }
 
@@ -266,6 +263,35 @@ namespace CafeLib.BsvSharp.Transactions
             return writer;
         }
 
+        /// <summary>
+        /// Set the locktime flag on the transaction to prevent it becoming
+        /// spendable before specified date
+        ///
+        /// [future] - The date in future before which transaction will not be spendable.
+        /// </summary>
+        /// <param name="future"></param>
+        /// <returns></returns>
+        public Transaction LockUntilDate(DateTime future)
+        {
+            if (future.ToUnixTime() < RootService.Network.Consensus.LocktimeBlockheightLimit)
+            {
+                throw new TransactionException("Block time is set too early");
+            }
+
+            Inputs.ForEach(x =>
+            {
+                if (x.SequenceNumber == RootService.Network.Consensus.DefaultSeqnumber)
+                {
+                    x.SequenceNumber = (uint) RootService.Network.Consensus.DefaultLocktimeSeqnumber;
+                }
+            });
+
+            LockTime = future.ToUnixTime();
+            return this;
+        }
+
+
+
         #region Helpers
 
         /// <summary>
@@ -289,42 +315,27 @@ namespace CafeLib.BsvSharp.Transactions
         /// <exception cref="TransactionException"></exception>
         private void CheckForFeeErrors(Amount unspent)
         {
-            if (_fee == unspent) return;
-            throw new TransactionException($"Unspent amount is {unspent} but the specified fee is {_fee}.");
+            if (_fee != unspent)
+            {
+                throw new TransactionException($"Unspent amount is {unspent} but the specified fee is {_fee}.");
+            }
+            
+            if ((Option & TransactionOption.DisableLargeFees) != 0) return;
+            
+            var maximumFee = RootService.Network.Consensus.FeeSecurityMargin * EstimateFee();
+            if (unspent <= maximumFee) return;
+            
+            if (!_hasChangeScript) 
+            {
+                throw new TransactionException("Fee is too large and no change address was provided");
+            }
+            
+            throw new TransactionException($"Expected less than {maximumFee} but got {unspent}");
         }
-        
-        // void _checkForFeeErrors(BigInt unspent) {
-        //     if ((_fee != null) && (_fee != unspent)) {
-        //         var errorMessage = 'Unspent value is ' +
-        //                            unspent.toRadixString(10) +
-        //                            ' but specified fee is ' +
-        //                            _fee.toRadixString(10);
-        //         throw TransactionFeeException(errorMessage);
-        //     }
-        //
-        //     if (!transactionOptions.contains(TransactionOption.DISABLE_LARGE_FEES)) {
-        //         var maximumFee = (Transaction.FEE_SECURITY_MARGIN * _estimateFee());
-        //         if (unspent > maximumFee) {
-        //             if (!_hasChangeScript()) {
-        //                 throw TransactionFeeException(
-        //                     'Fee is too large and no change address was provided');
-        //             }
-        //
-        //             throw TransactionFeeException('expected less than ' +
-        //                                           maximumFee.toString() +
-        //                                           ' but got ' +
-        //                                           unspent.toString());
-        //         }
-        //     }
-        // }
-        
-        // bool _inputExists(String transactionId, int outputIndex) => _txnInputs
-        //     .where((input) =>
-        //         input.prevTxnId == transactionId &&
-        //         input.prevTxnOutputIndex == outputIndex)
-        //     .isNotEmpty;
-        
 
+        private bool InputExists(UInt256 txHash, int outputIndex) =>
+            Inputs.Any(x => x.PrevOut.TxId == txHash && x.PrevOut.Index == outputIndex);
+        
         /// <summary>
         ///  Is the collection of inputs fully signed.
         /// </summary>

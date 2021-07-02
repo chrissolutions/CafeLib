@@ -26,7 +26,6 @@ namespace CafeLib.BsvSharp.Transactions
     {
         private OutPoint _prevOutPoint;
         private Script _scriptSig;
-        private uint _sequenceNumber;
         private Amount _spendingAmount;
         private bool _isSignedInput;
         private ScriptBuilder _scriptBuilder;
@@ -72,7 +71,8 @@ namespace CafeLib.BsvSharp.Transactions
 
         public OutPoint PrevOut => _prevOutPoint;
         public Script ScriptSig => _scriptSig;
-        public uint Sequence => _sequenceNumber;
+        public uint SequenceNumber { get; set; }
+
         public Amount Amount => _spendingAmount;
 
         /// <summary>
@@ -99,9 +99,9 @@ namespace CafeLib.BsvSharp.Transactions
             _prevOutPoint = prevOutPoint;
             _spendingAmount = amount;
             _scriptSig = scriptSig;
-            _sequenceNumber = sequence;
             _isSignedInput = false;
             _scriptBuilder = scriptBuilder;
+            SequenceNumber = sequence;
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace CafeLib.BsvSharp.Transactions
             writer.Write(Encoders.HexReverse.Decode(TxId));
             writer.Write(Index);
             writer.Write(_scriptBuilder.ToScript());
-            writer.Write(_sequenceNumber);
+            writer.Write(SequenceNumber);
             return writer;
         }
 
@@ -144,7 +144,8 @@ namespace CafeLib.BsvSharp.Transactions
             //bp.TxInStart(this, r.Data.Consumed);
 
             if (!_scriptSig.TryParseScript(ref r, bp)) goto fail;
-            if (!r.TryReadLittleEndian(out _sequenceNumber)) goto fail;
+            if (!r.TryReadLittleEndian(out uint sequenceNumber)) goto fail;
+            SequenceNumber = sequenceNumber;
 
             //bp.TxInParsed(this, r.Data.Consumed);
 
@@ -157,7 +158,8 @@ namespace CafeLib.BsvSharp.Transactions
         {
             if (!_prevOutPoint.TryReadOutPoint(ref r)) goto fail;
             if (!_scriptSig.TryReadScript(ref r)) goto fail;
-            if (!r.TryReadLittleEndian(out _sequenceNumber)) goto fail;
+            if (!r.TryReadLittleEndian(out uint sequenceNumber)) goto fail;
+            SequenceNumber = sequenceNumber;
 
             return true;
             fail:

@@ -16,7 +16,7 @@ namespace CafeLib.BsvSharp.Chain
     public struct OutPoint
     {
         public UInt256 TxId { get; private set; }
-
+        public UInt256 TxHash => TxId;
         public int Index { get; private set; }
 
         public OutPoint(UInt256 txId, int index)
