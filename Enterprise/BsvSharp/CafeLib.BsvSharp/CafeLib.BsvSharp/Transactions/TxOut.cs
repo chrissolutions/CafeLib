@@ -108,10 +108,16 @@ namespace CafeLib.BsvSharp.Transactions
         //    _script.Read(s);
         //}
 
-        public override string ToString()
-        {
-            return $"{new Amount(Amount)} {_scriptBuilder.ToScript()}";
-        }
+        /// <summary>
+        /// Returns true is satoshi amount is within valid range
+        /// </summary>
+        public bool ValidAmount => Amount >= Amount.Zero && Amount <= Amount.MaxValue;
+
+        /// <summary>
+        /// Returns string representation of TxOut.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() => $"{new Amount(Amount)} {_scriptBuilder.ToScript()}";
 
         /// <summary>
         /// Write TxOut to data writer

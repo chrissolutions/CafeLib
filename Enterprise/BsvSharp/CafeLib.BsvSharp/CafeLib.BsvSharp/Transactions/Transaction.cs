@@ -37,15 +37,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
         }
 
-        public Transaction
-        (
-            int version, 
-            TxInCollection vin, 
-            TxOutCollection vout, 
-            int lockTime,
-            long fee = 0L,
-            TransactionOption option = 0
-        )
+        public Transaction(int version, TxInCollection vin, TxOutCollection vout, int lockTime, long fee = 0L, TransactionOption option = 0)
         {
             Version = version;
             Inputs = vin;
@@ -194,6 +186,7 @@ namespace CafeLib.BsvSharp.Transactions
             UpdateChangeOutput();
             return this;
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -287,6 +280,17 @@ namespace CafeLib.BsvSharp.Transactions
             {
                 throw new TransactionException("Missing Signatures");
             }
+        }
+        
+        /// <summary>
+        /// Check for fee errors
+        /// </summary>
+        /// <param name="unspent">unspent amount</param>
+        /// <exception cref="TransactionException"></exception>
+        private void CheckForFeeErrors(Amount unspent)
+        {
+            if (_fee == unspent) return;
+            throw new TransactionException($"Unspent amount is {unspent} but the specified fee is {_fee}.");
         }
 
         /// <summary>
@@ -400,27 +404,27 @@ namespace CafeLib.BsvSharp.Transactions
 
         private void DoSerializationChecks()
         {
-            //if (_invalidSatoshis())
-            //{
-            //    throw TransactionAmountException('Invalid quantity of satoshis');
-            //}
+            if (Outputs.Any(x => !x.ValidAmount))
+            {
+                throw new TransactionException("Invalid amount of satoshis");
+            }
 
-            //BigInt unspent = _getUnspentValue();
-            //if (unspent < BigInt.zero)
-            //{
-            //    if (!transactionOptions
-            //        .contains(TransactionOption.DISABLE_MORE_OUTPUT_THAN_INPUT))
-            //    {
-            //        throw TransactionAmountException('Invalid output sum of satoshis');
-            //    }
-            //}
-            //else
-            //{
-            //    _checkForFeeErrors(unspent);
-            //}
+            var unspent = GetUnspentValue();
+
+            if (unspent < Amount.Zero)
+            {
+                if ((Option & TransactionOption.DisableMoreOutputThanInput) == 0)
+                {
+                    throw new TransactionException("Invalid output sum of satoshis");
+                }
+            }
+            else
+            {
+                CheckForFeeErrors(unspent);
+            }
 
             CheckForDustErrors();
-            //_checkForMissingSignatures();
+            CheckForMissingSignatures();
         }
 
         private void CheckForDustErrors()
