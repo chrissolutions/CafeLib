@@ -6,6 +6,7 @@ using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
+using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Services;
 using CafeLib.BsvSharp.Units;
 using CafeLib.Core.Extensions;
@@ -298,19 +299,22 @@ namespace CafeLib.BsvSharp.Transactions
             return this;
         }
 
-        //public bool VerifySignature(SVSignature sig, SVPublicKey pubKey, int inputNumber, SVScript subscript, BigInt satoshis, int flags)
-        //{
-        //    var sigHash = Sighash();
-        //    var hash = sigHash.hash(this, sig.nhashtype, inputNumber, subscript, satoshis, flags: flags);
+        /// <summary>
+        /// Verify signature.
+        /// </summary>
+        /// <param name="scriptSig"></param>
+        /// <param name="publicKey"></param>
+        /// <param name="txIn"></param>
+        /// <param name="script"></param>
+        /// <param name="amount"></param>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        public bool VerifySignature(VarType scriptSig, PublicKey publicKey, int txIn, Script script, Amount amount, ScriptFlags flags)
+        {
+            var checker = new TransactionSignatureChecker(this, txIn, amount);
+            return checker.CheckSignature(scriptSig, publicKey.ToArray(), script, flags);
+        }
 
-        //    var publicKey = ECPublicKey(pubKey.point, _domainParams);
-
-        //    _dsaSigner.init(false, PublicKeyParameter(publicKey));
-
-        //    var decodedMessage = Uint8List.fromList(HEX.decode(hash).reversed.toList()); //FIXME: More reversi !
-        //    return _dsaSigner.verifySignature(decodedMessage, ECSignature(sig.r, sig.s));
-        //}
-        
         // public void signInput( int index, SVPrivateKey privateKey, {sighashType = 0}){
         //     if (index +1 > _txnInputs.length){
         //         throw TransactionException("Input index out of range. Max index is ${_txnInputs.length + 1}");
@@ -320,7 +324,7 @@ namespace CafeLib.BsvSharp.Transactions
         //
         //     _sign(_txnInputs[index],  privateKey, sighashType: sighashType);
         // }
-        
+
         #region Helpers
 
         /// <summary>
