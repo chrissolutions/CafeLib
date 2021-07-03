@@ -451,8 +451,10 @@ namespace CafeLib.BsvSharp.Transactions
         {
             var result = RootService.Network.Consensus.MaximumExtraSize;
             //_txnInputs.forEach((input) {
-            //    result += SCRIPT_MAX_SIZE; //we're only spending P2PKH atm.
+            //    result += SCRIPT_MAX_SIZE; 
             //});
+
+            //Note: we're only spending P2PKH atm.
             result += RootService.Network.Consensus.MaximumExtraSize * Inputs.Count;
 
             // <---- HOW DO WE CALCULATE SCRIPT FROM JUST AN ADDRESS !? AND LENGTH ???

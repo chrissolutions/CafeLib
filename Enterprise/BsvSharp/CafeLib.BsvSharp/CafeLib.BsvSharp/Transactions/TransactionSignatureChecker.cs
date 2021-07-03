@@ -131,20 +131,6 @@ namespace CafeLib.BsvSharp.Transactions
             return nSequenceMasked <= txToSequenceMasked;
         }
 
-        private bool VerifyTransaction
-        (
-            PublicKey publicKey,
-            VarType signature,
-            Script subScript,
-            Amount amount,
-            ScriptFlags flags = ScriptFlags.ENABLE_SIGHASH_FORKID
-        )
-        {
-            var hashType = new SignatureHashType(signature.LastByte);
-            var sigHash = ComputeSignatureHash(subScript, _tx, _txIn, hashType, amount, flags);
-            return publicKey.Verify(sigHash, signature);
-        }
-
         public static UInt256 ComputeSignatureHash
         (
             Script scriptCode,
@@ -280,6 +266,22 @@ namespace CafeLib.BsvSharp.Transactions
             }
         }
 
+        #region Helpers
+
+        private bool VerifyTransaction
+        (
+            PublicKey publicKey,
+            VarType signature,
+            Script subScript,
+            Amount amount,
+            ScriptFlags flags = ScriptFlags.ENABLE_SIGHASH_FORKID
+        )
+        {
+            var hashType = new SignatureHashType(signature.LastByte);
+            var sigHash = ComputeSignatureHash(subScript, _tx, _txIn, hashType, amount, flags);
+            return publicKey.Verify(sigHash, signature);
+        }
+
         private static UInt256 GetPrevOutHash(Transaction txTo)
         {
             using var hw = new HashWriter();
@@ -312,5 +314,7 @@ namespace CafeLib.BsvSharp.Transactions
 
             return hw.GetHashFinal();
         }
+
+        #endregion
     }
 }
