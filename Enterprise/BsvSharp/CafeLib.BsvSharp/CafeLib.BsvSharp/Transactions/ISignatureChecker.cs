@@ -12,8 +12,8 @@ namespace CafeLib.BsvSharp.Transactions
     {
         bool CheckSignature(VarType scriptSig, VarType vchPubKey, Script script, ScriptFlags flags);
 
-        bool CheckLockTime(ScriptNum nLockTime);
+        bool CheckLockTime(uint lockTime);
 
-        bool CheckSequence(ScriptNum nSequence);
+        bool CheckSequence(uint sequenceNumber);
     }
 }

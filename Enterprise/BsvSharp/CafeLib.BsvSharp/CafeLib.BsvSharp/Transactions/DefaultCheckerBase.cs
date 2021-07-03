@@ -8,12 +8,12 @@ using CafeLib.BsvSharp.Scripting;
 
 namespace CafeLib.BsvSharp.Transactions
 {
-    public class SignatureCheckerBase
+    public class DefaultCheckerBase : ISignatureChecker
     {
         public virtual bool CheckSignature(VarType scriptSig, VarType vchPubKey, Script script, ScriptFlags flags) => false;
 
-        public virtual bool CheckLockTime(ScriptNum nLockTime) => false;
+        public bool CheckLockTime(uint lockTime) => false;
 
-        public virtual bool CheckSequence(ScriptNum nSequence) => false;
+        public bool CheckSequence(uint sequenceNumber) => false;
     }
 }

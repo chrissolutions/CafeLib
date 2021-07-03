@@ -12,22 +12,22 @@ using CafeLib.BsvSharp.Units;
 
 namespace CafeLib.BsvSharp.Transactions
 {
-    public class TransactionSignatureChecker : Scripting.SignatureCheckerBase
+    public class TransactionSignatureChecker : ISignatureChecker
     {
         private readonly Transaction _tx;
-        private readonly int _index;
+        private readonly int _txIn;
         private readonly Amount _amount;
 
         private const int LocktimeThreshold = 500000000; // Tue Nov  5 00:53:20 1985 UTC
 
-        public TransactionSignatureChecker(Transaction tx, int index, Amount amount)
+        public TransactionSignatureChecker(Transaction tx, int txIn, Amount amount)
         {
             _tx = tx;
-            _index = index;
+            _txIn = txIn;
             _amount = amount;
         }
 
-        public override bool CheckSignature(VarType scriptSig, VarType vchPubKey, Script script, ScriptFlags flags)
+        public bool CheckSignature(VarType scriptSig, VarType vchPubKey, Script script, ScriptFlags flags)
         {
             if (scriptSig?.IsEmpty ?? false) return false;
             if (vchPubKey?.IsEmpty ?? false) return false;
@@ -35,7 +35,7 @@ namespace CafeLib.BsvSharp.Transactions
             return publicKey.IsValid && VerifyTransaction(publicKey, scriptSig, script, _amount);
         }
 
-        public bool CheckLockTime(int nLockTime)
+        public bool CheckLockTime(uint lockTime)
         {
             // There are two kinds of nLockTime: lock-by-blockheight
             // and lock-by-blocktime, distinguished by whether
@@ -46,8 +46,8 @@ namespace CafeLib.BsvSharp.Transactions
             // the nLockTime in the transaction.
             if (
                 !(
-                    _tx.LockTime < LocktimeThreshold && nLockTime < LocktimeThreshold ||
-                    _tx.LockTime >= LocktimeThreshold && nLockTime >= LocktimeThreshold
+                    _tx.LockTime < LocktimeThreshold && lockTime < LocktimeThreshold ||
+                    _tx.LockTime >= LocktimeThreshold && lockTime >= LocktimeThreshold
                 )
             )
             {
@@ -56,7 +56,7 @@ namespace CafeLib.BsvSharp.Transactions
 
             // Now that we know we're comparing apples-to-apples, the
             // comparison is a simple numeric one.
-            if (nLockTime > _tx.LockTime)
+            if (lockTime > _tx.LockTime)
             {
                 return false;
             }
@@ -71,19 +71,19 @@ namespace CafeLib.BsvSharp.Transactions
             // prevent this condition. Alternatively we could test all
             // inputs, but testing just this input minimizes the data
             // required to prove correct CHECKLOCKTIMEVERIFY execution.
-            return Chain.TxIn.SequenceFinal != _tx.Inputs[_index].SequenceNumber;
+            return TxIn.SequenceFinal != _tx.Inputs[_txIn].SequenceNumber;
         }
 
         /// <summary>
         /// Translated from bitcoin core's CheckSequence.
         /// </summary>
-        /// <param name="nSequence"></param>
+        /// <param name="sequenceNumber"></param>
         /// <returns></returns>
-        public override bool CheckSequence(ScriptNum nSequence)
+        public bool CheckSequence(uint sequenceNumber)
         {
             // Relative lock times are supported by comparing the passed
             // in operand to the sequence number of the input.
-            var txToSequence = _tx.Inputs[_index].SequenceNumber;
+            var txToSequence = _tx.Inputs[_txIn].SequenceNumber;
 
             // Fail if the transaction's version number is not set high
             // enough to trigger Bip 68 rules.
@@ -96,16 +96,16 @@ namespace CafeLib.BsvSharp.Transactions
             // consensus constrained. Testing that the transaction's sequence
             // number do not have this bit set prevents using this property
             // to get around a CHECKSEQUENCEVERIFY check.
-            if ((txToSequence & Chain.TxIn.SequenceLocktimeDisableFlag) != 0)
+            if ((txToSequence & TxIn.SequenceLocktimeDisableFlag) != 0)
             {
                 return false;
             }
 
             // Mask off any bits that do not have consensus-enforced meaning
             // before doing the integer comparisons
-            const uint nLockTimeMask = Chain.TxIn.SequenceLocktimeTypeFlag | Chain.TxIn.SequenceLocktimeMask;
+            const uint nLockTimeMask = TxIn.SequenceLocktimeTypeFlag | TxIn.SequenceLocktimeMask;
             var txToSequenceMasked = txToSequence & nLockTimeMask;
-            var nSequenceMasked = nSequence.GetInt() & nLockTimeMask;
+            var nSequenceMasked = sequenceNumber & nLockTimeMask;
 
             // There are two kinds of nSequence: lock-by-blockheight
             // and lock-by-blocktime, distinguished by whether
@@ -141,7 +141,7 @@ namespace CafeLib.BsvSharp.Transactions
         )
         {
             var hashType = new SignatureHashType(signature.LastByte);
-            var sigHash = ComputeSignatureHash(subScript, _tx, _index, hashType, amount, flags);
+            var sigHash = ComputeSignatureHash(subScript, _tx, _txIn, hashType, amount, flags);
             return publicKey.Verify(sigHash, signature);
         }
 

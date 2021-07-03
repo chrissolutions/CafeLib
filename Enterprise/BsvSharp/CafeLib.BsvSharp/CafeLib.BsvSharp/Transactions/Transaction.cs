@@ -22,7 +22,7 @@ namespace CafeLib.BsvSharp.Transactions
         public string TxId => Encoders.HexReverse.Encode(Hash);
         public UInt256 Hash { get; private set; }
         public int Version { get; private set; } = 1;
-        public long LockTime { get; private set; }
+        public uint LockTime { get; private set; }
         public Address ChangeAddress { get; private set; }
 
         public TxInCollection  Inputs { get; private set; } //this transaction's inputs
@@ -37,7 +37,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
         }
 
-        public Transaction(int version, TxInCollection vin, TxOutCollection vout, long lockTime, long fee = 0L, TransactionOption option = 0)
+        public Transaction(int version, TxInCollection vin, TxOutCollection vout, uint lockTime, long fee = 0L, TransactionOption option = 0)
         {
             Version = version;
             Inputs = vin;
@@ -294,7 +294,7 @@ namespace CafeLib.BsvSharp.Transactions
                 }
             });
 
-            LockTime = future.ToUnixTime();
+            LockTime = (uint) TimeSpan.FromMilliseconds(future.ToUnixTime()).TotalSeconds;
             return this;
         }
 
