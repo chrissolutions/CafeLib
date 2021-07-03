@@ -37,7 +37,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
         }
 
-        public Transaction(int version, TxInCollection vin, TxOutCollection vout, int lockTime, long fee = 0L, TransactionOption option = 0)
+        public Transaction(int version, TxInCollection vin, TxOutCollection vout, long lockTime, long fee = 0L, TransactionOption option = 0)
         {
             Version = version;
             Inputs = vin;
@@ -249,16 +249,24 @@ namespace CafeLib.BsvSharp.Transactions
         public IDataWriter WriteTo(IDataWriter writer)
         {
             writer
+
+                // set the transaction version
                 .Write(Version)
+
+                // write the number of inputs
                 .Write(Inputs.Count.AsVarIntBytes());
 
+            // write the inputs
             Inputs.ForEach(x => x.WriteTo(writer));
 
+            // write the number of outputs
             writer.Write(Outputs.Count.AsVarIntBytes());
 
+            // write the outputs
             Outputs.ForEach(x => x.WriteTo(writer));
 
-            writer.Write(LockTime);
+            // write the locktime
+            writer.Write((uint)LockTime);
 
             return writer;
         }
