@@ -8,6 +8,7 @@ using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
+using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
@@ -126,6 +127,11 @@ namespace CafeLib.BsvSharp.Transactions
             writer.Write(_scriptBuilder.ToScript());
             writer.Write(SequenceNumber);
             return writer;
+        }
+
+        public bool Sign(PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
+        {
+            return true;
         }
 
         // public IBitcoinWriter AddTo(IBitcoinWriter writer)

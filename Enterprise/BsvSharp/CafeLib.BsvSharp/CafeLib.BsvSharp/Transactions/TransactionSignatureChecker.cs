@@ -131,6 +131,16 @@ namespace CafeLib.BsvSharp.Transactions
             return nSequenceMasked <= txToSequenceMasked;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="scriptCode"></param>
+        /// <param name="txTo"></param>
+        /// <param name="nIn"></param>
+        /// <param name="sigHashType"></param>
+        /// <param name="amount"></param>
+        /// <param name="flags"></param>
+        /// <returns></returns>
         public static UInt256 ComputeSignatureHash
         (
             Script scriptCode,
