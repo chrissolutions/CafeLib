@@ -131,6 +131,8 @@ namespace CafeLib.BsvSharp.Transactions
 
         public bool Sign(PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
         {
+
+
             return true;
         }
 

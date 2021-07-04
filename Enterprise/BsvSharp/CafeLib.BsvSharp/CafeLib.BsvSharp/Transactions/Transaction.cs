@@ -267,7 +267,7 @@ namespace CafeLib.BsvSharp.Transactions
             Outputs.ForEach(x => x.WriteTo(writer));
 
             // write the locktime
-            writer.Write((uint)LockTime);
+            writer.Write(LockTime);
 
             return writer;
         }
@@ -315,15 +315,26 @@ namespace CafeLib.BsvSharp.Transactions
             return checker.CheckSignature(scriptSig, publicKey.ToArray(), script, flags);
         }
 
-        // public void signInput( int index, SVPrivateKey privateKey, {sighashType = 0}){
-        //     if (index +1 > _txnInputs.length){
-        //         throw TransactionException("Input index out of range. Max index is ${_txnInputs.length + 1}");
-        //     }else if (_txnInputs.length == 0) {
-        //         throw TransactionException( "No Inputs defined. Please add some Transaction Inputs");
-        //     }
-        //
-        //     _sign(_txnInputs[index],  privateKey, sighashType: sighashType);
-        // }
+        /// <summary>
+        /// Sign input.
+        /// </summary>
+        /// <param name="txIn"></param>
+        /// <param name="privateKey"></param>
+        /// <param name="sighashType"></param>
+        public void SignInput(int txIn, PrivateKey privateKey,  SignatureHashEnum sighashType = SignatureHashEnum.Unsupported)
+        {
+            if (txIn >= Inputs.Count)
+            {
+                throw new TransactionException($"Input index out of range. Max index is {Inputs.Count - 1}");
+            }
+
+            if (!Inputs.Any())
+            {
+                throw new TransactionException("No Inputs defined. Please add some Transaction Inputs");
+            }
+
+            Inputs[txIn].Sign(privateKey, sighashType);
+        }
 
         #region Helpers
 
