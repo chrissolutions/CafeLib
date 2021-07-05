@@ -86,7 +86,7 @@ namespace CafeLib.BsvSharp.Builders
         {
             var pubKeyHash = new ScriptSigPay2PublicKeyHashBuilder(pubKey);
             var signatureHash = new ScriptSigPay2PublicKeyHashBuilder(pubKey);
-            var script = new Script(pubKeyHash.ToBytes());
+            var script = pubKeyHash.ToScript();
             Debug.Assert(script == scriptPub);
 
             var r = new TxInBuilder {
