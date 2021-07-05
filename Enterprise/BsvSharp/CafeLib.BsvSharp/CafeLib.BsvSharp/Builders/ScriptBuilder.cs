@@ -365,10 +365,6 @@ namespace CafeLib.BsvSharp.Builders
         }
 
         public static implicit operator Script(ScriptBuilder sb) => sb.ToScript();
-
-        public static implicit operator ScriptBuilder(Script v)
-        {
-            throw new NotImplementedException();
-        }
+        public static implicit operator ScriptBuilder(Script v) => new ScriptBuilder(v);
     }
 }

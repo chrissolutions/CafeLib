@@ -304,26 +304,31 @@ namespace CafeLib.BsvSharp.Transactions
         /// </summary>
         /// <param name="scriptSig"></param>
         /// <param name="publicKey"></param>
-        /// <param name="txIn"></param>
+        /// <param name="nTxIn"></param>
         /// <param name="script"></param>
         /// <param name="amount"></param>
         /// <param name="flags"></param>
         /// <returns></returns>
-        public bool VerifySignature(VarType scriptSig, PublicKey publicKey, int txIn, Script script, Amount amount, ScriptFlags flags)
+        public bool VerifySignature(VarType scriptSig, PublicKey publicKey, int nTxIn, Script script, Amount amount, ScriptFlags flags)
         {
-            var checker = new TransactionSignatureChecker(this, txIn, amount);
+            var checker = new TransactionSignatureChecker(this, nTxIn, amount);
             return checker.CheckSignature(scriptSig, publicKey.ToArray(), script, flags);
         }
 
-        // public void signInput( int index, SVPrivateKey privateKey, {sighashType = 0}){
-        //     if (index +1 > _txnInputs.length){
-        //         throw TransactionException("Input index out of range. Max index is ${_txnInputs.length + 1}");
-        //     }else if (_txnInputs.length == 0) {
-        //         throw TransactionException( "No Inputs defined. Please add some Transaction Inputs");
-        //     }
-        //
-        //     _sign(_txnInputs[index],  privateKey, sighashType: sighashType);
-        // }
+        public void SignInput(int nTxIn, PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.Unsupported)
+        {
+            if (nTxIn + 1 > Inputs.Count)
+            {
+                throw new TransactionException($"Input index out of range. Max index is {Inputs.Count + 1}");
+            }
+
+            if (!Inputs.Any())
+            {
+                throw new TransactionException("No Inputs defined. Please add some Transaction Inputs");
+            }
+
+            Inputs[nTxIn].Sign(this, privateKey, sighashType);
+        }
 
         #region Helpers
 

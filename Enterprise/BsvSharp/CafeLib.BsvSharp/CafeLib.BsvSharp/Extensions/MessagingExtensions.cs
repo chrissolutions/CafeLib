@@ -29,9 +29,9 @@ namespace CafeLib.BsvSharp.Extensions
             return key.CreateSignature(message);
         }
 
-        public static byte[] SignMessageCompact(this PrivateKey key, UInt256 message)
+        public static byte[] SignMessageCompact(this PrivateKey key, UInt256 hash)
         {
-            return key.CreateCompactSignature(message);
+            return key.CreateCompactSignature(hash);
         }
 
         public static string SignMessageToBase64(this PrivateKey key, ReadOnlyByteSpan message)

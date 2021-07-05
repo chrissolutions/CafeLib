@@ -15,15 +15,21 @@ namespace CafeLib.BsvSharp.Transactions
     public class TransactionSignatureChecker : ISignatureChecker
     {
         private readonly Transaction _tx;
-        private readonly int _txIn;
+        private readonly int _txInIndex;
         private readonly Amount _amount;
 
         private const int LocktimeThreshold = 500000000; // Tue Nov  5 00:53:20 1985 UTC
 
-        public TransactionSignatureChecker(Transaction tx, int txIn, Amount amount)
+        /// <summary>
+        /// Transaction signature checker constructor.
+        /// </summary>
+        /// <param name="tx"></param>
+        /// <param name="txInIndex"></param>
+        /// <param name="amount"></param>
+        public TransactionSignatureChecker(Transaction tx, int txInIndex, Amount amount)
         {
             _tx = tx;
-            _txIn = txIn;
+            _txInIndex = txInIndex;
             _amount = amount;
         }
 
@@ -71,7 +77,7 @@ namespace CafeLib.BsvSharp.Transactions
             // prevent this condition. Alternatively we could test all
             // inputs, but testing just this input minimizes the data
             // required to prove correct CHECKLOCKTIMEVERIFY execution.
-            return TxIn.SequenceFinal != _tx.Inputs[_txIn].SequenceNumber;
+            return TxIn.SequenceFinal != _tx.Inputs[_txInIndex].SequenceNumber;
         }
 
         /// <summary>
@@ -83,7 +89,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             // Relative lock times are supported by comparing the passed
             // in operand to the sequence number of the input.
-            var txToSequence = _tx.Inputs[_txIn].SequenceNumber;
+            var txToSequence = _tx.Inputs[_txInIndex].SequenceNumber;
 
             // Fail if the transaction's version number is not set high
             // enough to trigger Bip 68 rules.
@@ -288,7 +294,7 @@ namespace CafeLib.BsvSharp.Transactions
         )
         {
             var hashType = new SignatureHashType(signature.LastByte);
-            var sigHash = ComputeSignatureHash(subScript, _tx, _txIn, hashType, amount, flags);
+            var sigHash = ComputeSignatureHash(subScript, _tx, _txInIndex, hashType, amount, flags);
             return publicKey.Verify(sigHash, signature);
         }
 

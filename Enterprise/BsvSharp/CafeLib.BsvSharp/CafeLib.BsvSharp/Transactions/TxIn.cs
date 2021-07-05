@@ -3,6 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using System;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Chain;
@@ -26,13 +27,15 @@ namespace CafeLib.BsvSharp.Transactions
     public struct TxIn : IChainId, IDataSerializer
     {
         private OutPoint _prevOutPoint;
-        private Script _scriptSig;
+        private ScriptBuilder _scriptSig;
         private Amount _spendingAmount;
         private bool _isSignedInput;
+
+        /// <summary>
+        /// This is the ScriptPub of the referenced Prevout.
+        /// Used to sign and verify this input.
+        /// </summary>
         private ScriptBuilder _scriptBuilder;
-
-        //private Script _utxoScript;
-
 
         /// <summary>
         /// Setting nSequence to this value for every input in a transaction disables nLockTime.
@@ -92,17 +95,17 @@ namespace CafeLib.BsvSharp.Transactions
         /// </summary>
         /// <param name="prevOutPoint"></param>
         /// <param name="amount"></param>
-        /// <param name="scriptSig"></param>
-        /// <param name="sequence"></param>
+        /// <param name="utxoScript"></param>
+        /// <param name="sequenceNumber"></param>
         /// <param name="scriptBuilder"></param>
-        public TxIn(OutPoint prevOutPoint, Amount amount, Script scriptSig, uint sequence, ScriptBuilder scriptBuilder = null)
+        public TxIn(OutPoint prevOutPoint, Amount amount, Script utxoScript, uint sequenceNumber, ScriptBuilder scriptBuilder = null)
         {
             _prevOutPoint = prevOutPoint;
             _spendingAmount = amount;
-            _scriptSig = scriptSig;
+            _scriptSig = utxoScript;
             _isSignedInput = false;
             _scriptBuilder = scriptBuilder;
-            SequenceNumber = sequence;
+            SequenceNumber = sequenceNumber;
         }
 
         /// <summary>
@@ -129,9 +132,41 @@ namespace CafeLib.BsvSharp.Transactions
             return writer;
         }
 
-        public bool Sign(PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
+        public bool Sign(Transaction tx, PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
+            => Sign(tx, privateKey, false, sighashType);
+
+        public bool Sign(Transaction tx, PrivateKey privateKey, bool confirmExistingSignatures, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
         {
-            return true;
+            var signedOk = true;
+            var sigHash = new SignatureHashType(SignatureHashEnum.All | SignatureHashEnum.ForkId);
+
+            if (_scriptSig.Ops.Count == 2)
+            {
+                var publicKey = new PublicKey();;
+                publicKey.Set(_scriptSig.Ops[1].Operand.Data);
+                if (privateKey == null || !publicKey.IsValid) return false;
+
+                var amount = Amount >= Amount.Zero 
+                    ? Amount 
+                    : tx.Outputs[PrevOut.Index].Amount >= Amount.Zero 
+                        ? tx.Outputs[PrevOut.Index].Amount
+                        : Amount.Zero;
+
+                var signatureHash = TransactionSignatureChecker.ComputeSignatureHash(_scriptBuilder, tx, Index, sigHash, Amount);
+                var signature = privateKey.CreateSignature(signatureHash);
+                if (signature == null) return false;
+
+                var sigWithType = new byte[signature.Length + 1];
+                signature.CopyTo(sigWithType.AsSpan());
+                sigWithType[^1] = (byte)sigHash.RawSigHashType;
+                var op = Operand.Push(sigWithType.AsSpan());
+                if (confirmExistingSignatures)
+                    signedOk &= op == _scriptSig.Ops[0].Operand;
+                else
+                    _scriptSig.Ops[0] = op;
+            }
+
+            return signedOk;
         }
 
         // public IBitcoinWriter AddTo(IBitcoinWriter writer)
@@ -143,33 +178,33 @@ namespace CafeLib.BsvSharp.Transactions
         //     return writer;
         // }
 
-        public bool TryParseTxIn(ref ByteSequenceReader r, IBlockParser bp)
-        {
-            if (!_prevOutPoint.TryReadOutPoint(ref r)) goto fail;
+        //public bool TryParseTxIn(ref ByteSequenceReader r, IBlockParser bp)
+        //{
+        //    if (!_prevOutPoint.TryReadOutPoint(ref r)) goto fail;
 
-            //bp.TxInStart(this, r.Data.Consumed);
+        //    bp.TxInStart(this, r.Data.Consumed);
 
-            if (!_scriptSig.TryParseScript(ref r, bp)) goto fail;
-            if (!r.TryReadLittleEndian(out uint sequenceNumber)) goto fail;
-            SequenceNumber = sequenceNumber;
+        //    if (!_scriptSig.TryParseScript(ref r, bp)) goto fail;
+        //    if (!r.TryReadLittleEndian(out uint sequenceNumber)) goto fail;
+        //    SequenceNumber = sequenceNumber;
 
-            //bp.TxInParsed(this, r.Data.Consumed);
+        //    bp.TxInParsed(this, r.Data.Consumed);
 
-            return true;
-            fail:
-            return false;
-        }
+        //    return true;
+        //    fail:
+        //    return false;
+        //}
 
-        public bool TryReadTxIn(ref ByteSequenceReader r)
-        {
-            if (!_prevOutPoint.TryReadOutPoint(ref r)) goto fail;
-            if (!_scriptSig.TryReadScript(ref r)) goto fail;
-            if (!r.TryReadLittleEndian(out uint sequenceNumber)) goto fail;
-            SequenceNumber = sequenceNumber;
+        //public bool TryReadTxIn(ref ByteSequenceReader r)
+        //{
+        //    if (!_prevOutPoint.TryReadOutPoint(ref r)) goto fail;
+        //    if (!_scriptSig.TryReadScript(ref r)) goto fail;
+        //    if (!r.TryReadLittleEndian(out uint sequenceNumber)) goto fail;
+        //    SequenceNumber = sequenceNumber;
 
-            return true;
-            fail:
-            return false;
-        }
+        //    return true;
+        //    fail:
+        //    return false;
+        //}
     }
 }
