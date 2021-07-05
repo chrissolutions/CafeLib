@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Encoding;
@@ -26,16 +25,13 @@ namespace CafeLib.BsvSharp.Transactions
     /// </summary>
     public struct TxIn : IChainId, IDataSerializer
     {
-        private OutPoint _prevOutPoint;
         private ScriptBuilder _scriptSig;
-        private Amount _spendingAmount;
-        private bool _isSignedInput;
 
         /// <summary>
         /// This is the ScriptPub of the referenced Prevout.
         /// Used to sign and verify this input.
         /// </summary>
-        private ScriptBuilder _scriptBuilder;
+        private readonly ScriptBuilder _scriptBuilder;
 
         /// <summary>
         /// Setting nSequence to this value for every input in a transaction disables nLockTime.
@@ -73,11 +69,13 @@ namespace CafeLib.BsvSharp.Transactions
         public string TxId => Encoders.HexReverse.Encode(Hash);
         public int Index => PrevOut.Index;
 
-        public OutPoint PrevOut => _prevOutPoint;
+        public OutPoint PrevOut { get; }
+
         public Script ScriptSig => _scriptSig;
+
         public uint SequenceNumber { get; set; }
 
-        public Amount Amount => _spendingAmount;
+        public Amount Amount { get; private set; }
 
         /// <summary>
         /// This is used by the Transaction during serialization checks.
@@ -88,7 +86,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// validate the _scriptBuilder Signatures. At the moment this is more
         /// of a check on where a signature is required.
         /// </summary>
-        public bool IsFullySigned => _isSignedInput;
+        public bool IsFullySigned { get; }
 
         /// <summary>
         /// Transaction input constructor.
@@ -100,10 +98,10 @@ namespace CafeLib.BsvSharp.Transactions
         /// <param name="scriptBuilder"></param>
         public TxIn(OutPoint prevOutPoint, Amount amount, Script utxoScript, uint sequenceNumber, ScriptBuilder scriptBuilder = null)
         {
-            _prevOutPoint = prevOutPoint;
-            _spendingAmount = amount;
+            PrevOut = prevOutPoint;
+            Amount = amount;
             _scriptSig = utxoScript;
-            _isSignedInput = false;
+            IsFullySigned = false;
             _scriptBuilder = scriptBuilder;
             SequenceNumber = sequenceNumber;
         }
@@ -142,11 +140,11 @@ namespace CafeLib.BsvSharp.Transactions
 
             if (_scriptSig.Ops.Count == 2)
             {
-                var publicKey = new PublicKey();;
+                var publicKey = new PublicKey();
                 publicKey.Set(_scriptSig.Ops[1].Operand.Data);
                 if (privateKey == null || !publicKey.IsValid) return false;
 
-                var amount = Amount >= Amount.Zero 
+                Amount = Amount >= Amount.Zero 
                     ? Amount 
                     : tx.Outputs[PrevOut.Index].Amount >= Amount.Zero 
                         ? tx.Outputs[PrevOut.Index].Amount
