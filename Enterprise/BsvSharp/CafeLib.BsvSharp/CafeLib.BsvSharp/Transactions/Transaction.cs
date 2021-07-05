@@ -267,7 +267,7 @@ namespace CafeLib.BsvSharp.Transactions
             Outputs.ForEach(x => x.WriteTo(writer));
 
             // write the locktime
-            writer.Write((uint)LockTime);
+            writer.Write(LockTime);
 
             return writer;
         }
