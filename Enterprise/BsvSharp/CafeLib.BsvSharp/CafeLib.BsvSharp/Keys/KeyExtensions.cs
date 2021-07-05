@@ -46,20 +46,11 @@ namespace CafeLib.BsvSharp.Keys
         }
 
         /// <summary>
-        /// 
+        /// Create a signature from private key
         /// </summary>
-        /// <param name="privateKey"></param>
-        /// <param name="hash"></param>
-        /// <returns></returns>
-        public static byte[] CreateSignature(this PrivateKey privateKey, UInt256 hash) =>
-            CreateSignature(privateKey, hash.Span);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="privateKey"></param>
-        /// <param name="hash"></param>
-        /// <returns></returns>
+        /// <param name="privateKey">private key</param>
+        /// <param name="message">message to sign</param>
+        /// <returns>signature bytes</returns>
         public static byte[] CreateSignature(this PrivateKey privateKey, ReadOnlyByteSpan message)
         {
             if (!privateKey.IsValid) return default;
