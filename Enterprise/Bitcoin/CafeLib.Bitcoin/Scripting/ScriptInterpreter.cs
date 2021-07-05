@@ -240,6 +240,7 @@ namespace CafeLib.Bitcoin.Scripting
         /// <returns></returns>
         public static bool VerifyScript(Script scriptSig, Script scriptPub, ScriptFlags flags, SignatureCheckerBase checker, out ScriptError error)
         {
+            checker ??= DefaultSignatureChecker;
             SetError(out error, ScriptError.UNKNOWN_ERROR);
 
             if ((flags & ScriptFlags.ENABLE_SIGHASH_FORKID) != 0)
