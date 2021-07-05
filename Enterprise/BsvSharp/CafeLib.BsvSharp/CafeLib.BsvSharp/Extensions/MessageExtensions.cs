@@ -12,7 +12,7 @@ using CafeLib.BsvSharp.Persistence;
 
 namespace CafeLib.BsvSharp.Extensions
 {
-    public static class MessagingExtensions
+    public static class MessageExtensions
     {
         private const string MessageMagic = "Bitcoin Signed Message:\n";
 
