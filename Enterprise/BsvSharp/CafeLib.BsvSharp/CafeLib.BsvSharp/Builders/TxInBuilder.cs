@@ -5,7 +5,6 @@
 
 using System;
 using System.Diagnostics;
-using CafeLib.Bitcoin.Units;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
@@ -87,7 +86,7 @@ namespace CafeLib.BsvSharp.Builders
         {
             var pubKeyHash = new ScriptSigPay2PublicKeyHashBuilder(pubKey);
             var signatureHash = new ScriptSigPay2PublicKeyHashBuilder(pubKey);
-            var script = new Script(pubKeyHash.ToBytes());
+            var script = pubKeyHash.ToScript();
             Debug.Assert(script == scriptPub);
 
             var r = new TxInBuilder {
