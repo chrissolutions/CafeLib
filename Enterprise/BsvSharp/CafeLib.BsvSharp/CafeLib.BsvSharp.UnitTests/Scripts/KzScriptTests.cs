@@ -65,20 +65,6 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             public string Decode;
         }
 
-        public readonly TestValue1[] _testValues1 = 
-        {
-            new TestValue1 
-            {
-                Hex = "04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73",
-                Decode = "OP_PUSH4 ffff001d OP_PUSH1 04 OP_PUSH69 5468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73"
-            },
-            new TestValue1
-            {
-                Hex = "4104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac",
-                Decode = "OP_PUSH65 04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f OP_CHECKSIG"
-            }
-        };
-
         public KzScriptTests(ITestOutputHelper testOutputHelper)
         {
             _testOutputHelper = testOutputHelper;
@@ -89,12 +75,12 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             "4 0xffff001d 1 0x04 69 0x5468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73")]
         [InlineData("4104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac",
             "65 0x04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f OP_CHECKSIG")]
-        public void ScriptEncodingTest(string hex, string decode)
+        public void ScriptEncodingTest(string hex, string decoded)
         {
             var s = new Script(hex);
             var ops = s.Decode().ToArray();
             var d = s.ToVerboseString();
-            Assert.Equal(decode, d);
+            Assert.Equal(decoded, d);
         }
 
         /// <summary>
