@@ -11,7 +11,6 @@ using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
-using CafeLib.Core.Extensions;
 
 namespace CafeLib.BsvSharp.Builders
 {
