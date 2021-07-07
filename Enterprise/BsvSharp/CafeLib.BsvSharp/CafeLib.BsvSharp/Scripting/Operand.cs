@@ -9,7 +9,6 @@ using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
-using CafeLib.Core.Extensions;
 
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
