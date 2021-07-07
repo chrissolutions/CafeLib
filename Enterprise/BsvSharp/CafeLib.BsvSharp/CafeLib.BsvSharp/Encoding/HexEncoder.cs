@@ -39,6 +39,7 @@ namespace CafeLib.BsvSharp.Encoding
 
         public bool TryDecode(string hex, out byte[] bytes)
         {
+            hex = hex[hex.StartsWith("0x") ? 2.. : ..];
             bytes = new byte[hex.Length / 2];
             var span = bytes.AsSpan();
             return TryDecodeSpan(hex, span);

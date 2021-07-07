@@ -11,6 +11,7 @@ using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.Core.Extensions;
 
 namespace CafeLib.BsvSharp.Builders
 {
@@ -363,6 +364,94 @@ namespace CafeLib.BsvSharp.Builders
             }
             return sb;
         }
+
+        /// <summary>
+        /// Parse script soruce code.
+        /// </summary>
+        /// <param name="script">script source code</param>
+        /// <returns>script builder</returns>
+        public static ScriptBuilder ParseScript(string script)
+        {
+            var builder = new ScriptBuilder();
+            var tokens = script.Split(' ', StringSplitOptions.RemoveEmptyEntries).AsSpan();
+            for (var i = 0; i < tokens.Length; ++i)
+            {
+                if (Enum.TryParse<Opcode>(tokens[i], out var op))
+                {
+                    switch (op)
+                    {
+                        case Opcode.OP_0:
+                        case Opcode.OP_1NEGATE:
+                            builder.Add(op);
+                            break;
+
+                        case var _ when op < Opcode.OP_PUSHDATA1:
+                        {
+                            var data = Encoders.Hex.Decode(tokens[++i]);
+                            if (data.Length >= (int)Opcode.OP_PUSHDATA1) throw new InvalidOperationException();
+                            builder.Add(op, data);
+                            break;
+                        }
+
+                        case var _ when op <= Opcode.OP_PUSHDATA4:
+                        {
+                            if (!BitConverter.IsLittleEndian) throw new NotSupportedException();
+                            var data = Encoders.Hex.Decode(tokens[++i]);
+                            var len = 0u;
+                            
+                            switch (op)
+                            {
+                                case Opcode.OP_PUSHDATA1:
+                                    // add next one byte value as length of following data value to op.
+                                    if (data.Length != 1) throw new InvalidOperationException();
+                                    len = data[0];
+                                    break;
+                                    
+                                case Opcode.OP_PUSHDATA2:
+                                    // add next two byte value as length of following data value to op.
+                                    if (data.Length != 2) throw new InvalidOperationException();
+                                    len = BitConverter.ToUInt16(data);
+                                    break;
+                                    
+                                case Opcode.OP_PUSHDATA4:
+                                    // add next four byte value as length of following data value to op.
+                                    if (data.Length != 4) throw new InvalidOperationException();
+                                    len = BitConverter.ToUInt32(data);
+                                    break;
+                            }
+                                    
+                            // add next one, two, or four byte value as length of following data value to op.
+                            if (len > 0)
+                            {
+                                data = Encoders.Hex.Decode(tokens[++i]);
+                            }
+                            
+                            if (data == null)
+                                builder.Add(op);
+                            else
+                                builder.Add(op, new VarType(data));
+                            
+                            break;
+                        }
+                            
+                        default:
+                            builder.Add(op);
+                            break;
+                    }
+                }
+                else
+                {
+                    var bytes = Encoders.Hex.Decode(tokens[i]);
+                    if (bytes != null)
+                    {
+                        builder.Push(bytes);
+                    }
+                }
+            }
+
+            return builder;
+        }
+
 
         public static implicit operator Script(ScriptBuilder sb) => sb.ToScript();
         public static implicit operator ScriptBuilder(Script v) => new ScriptBuilder(v);

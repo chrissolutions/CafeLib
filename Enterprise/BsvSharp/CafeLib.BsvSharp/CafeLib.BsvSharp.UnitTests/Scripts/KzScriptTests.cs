@@ -223,5 +223,13 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             }
         }
 
+        [Theory]
+        [InlineData("OP_DUP OP_HASH160 20 0x1451baa3aad777144a0759998a03538018dd7b4b OP_EQUALVERIFY OP_CHECKSIG")]
+        public void ScriptParseTest(string script)
+        {
+            var builder = ScriptBuilder.ParseScript(script);
+            Assert.NotNull(builder);
+            Assert.Equal(script, builder.ToScript().ToString());
+        }
     }
 }

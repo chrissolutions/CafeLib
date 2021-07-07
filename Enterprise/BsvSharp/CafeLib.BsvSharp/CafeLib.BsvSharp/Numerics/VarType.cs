@@ -4,6 +4,7 @@
 #endregion
 
 using System;
+using System.Data;
 using System.Diagnostics;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
@@ -14,15 +15,18 @@ namespace CafeLib.BsvSharp.Numerics
     public sealed class VarType
     {
         private readonly ReadOnlyByteSequence _sequence;
+        private readonly ByteArrayBuffer _buffer;
 
         private VarType()
         {
             _sequence = new ReadOnlyByteSequence(Array.Empty<byte>());
+            _buffer = new ByteArrayBuffer();
         }
 
         public VarType(ReadOnlyByteSequence data)
         {
             _sequence = data;
+            _buffer = new ByteArrayBuffer(ToSpan());
         }
 
         public VarType(byte[] bytes)
@@ -31,6 +35,7 @@ namespace CafeLib.BsvSharp.Numerics
         }
 
         public ReadOnlyByteSequence Sequence => _sequence;
+        public ByteArrayBuffer Buffer => _buffer;
 
         public static readonly VarType Empty = new VarType();
         public static readonly VarType Zero = new VarType(new byte[0]);
@@ -42,6 +47,8 @@ namespace CafeLib.BsvSharp.Numerics
 
         public byte FirstByte => _sequence.Data.First.Span[0];
         public byte LastByte => _sequence.Data.Slice(_sequence.Length - 1).First.Span[0];
+        public byte FirstBufferByte => _buffer[0];
+        public byte LastBufferByte => _buffer[_buffer.Length-1];
 
         public VarType Slice(long start, int length) => new VarType(_sequence.Slice(start, length));
 
@@ -66,6 +73,8 @@ namespace CafeLib.BsvSharp.Numerics
         {
             return new ByteSequenceReader(Sequence);
         }
+
+        internal ReadOnlyByteSpan ToBufferSpan() => _buffer.Span;
 
         internal ReadOnlyByteSpan ToSpan()
         {
@@ -119,6 +128,25 @@ namespace CafeLib.BsvSharp.Numerics
                 return false;
             }
 #endif
+        }
+
+        public bool ToBufferBool()
+        {
+            var index = 0;
+            while (index < _buffer.Span.Length)
+            {
+                if (_buffer.Span[index] == 0)
+                {
+                    ++index;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            // False is zero or negative zero
+            return _buffer.Span[index] != 0 && (_buffer.Span[index] != 0x80 || index < _buffer.Span.Length);
         }
 
         public ScriptNum ToScriptNum(bool fRequireMinimal = false)
