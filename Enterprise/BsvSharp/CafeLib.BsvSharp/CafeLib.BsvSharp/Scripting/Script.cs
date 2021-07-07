@@ -25,7 +25,7 @@ namespace CafeLib.BsvSharp.Scripting
         }
 
         public Script(byte[] script)
-            : this(new VarType(new ReadOnlyByteSequence(script)))
+            : this(new VarType(script))
         {
         }
 
