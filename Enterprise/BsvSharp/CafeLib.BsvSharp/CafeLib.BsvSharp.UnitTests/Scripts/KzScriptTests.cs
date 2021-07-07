@@ -70,25 +70,31 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             _testOutputHelper = testOutputHelper;
         }
 
-        [Theory]
-        [InlineData("04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73",
-            "4 0xffff001d 1 0x04 69 0x5468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73")]
-        [InlineData("4104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac",
-            "65 0x04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f OP_CHECKSIG")]
-        public void ScriptEncodingTest(string hex, string decoded)
-        {
-            var s = new Script(hex);
-            var sb = ScriptBuilder.ParseEncodedScript(hex);
-            var ops = s.Decode().ToArray();
-            var d = s.ToVerboseString();
-            Assert.Equal(decoded, d);
-            Assert.Equal(decoded, sb.ToScript().ToString());
-        }
+        //[Theory]
+        //[InlineData("04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73",
+        //    "4 0xffff001d 1 0x04 69 0x5468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73")]
+        //[InlineData("4104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac",
+        //    "65 0x04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f OP_CHECKSIG")]
+        //public void ScriptEncodingTest(string hex, string decoded)
+        //{
+        //    var s = new Script(hex);
+        //    var sb = ScriptBuilder.ParseEncodedScript(hex);
+        //    var ops = s.Decode().ToArray();
+        //    var d = s.ToVerboseString();
+        //    Assert.Equal(decoded, d);
+        //    Assert.Equal(decoded, sb.ToScript().ToString());
+        //}
 
         [Theory]
         [InlineData("OP_DUP OP_HASH160 20 0x1451baa3aad777144a0759998a03538018dd7b4b OP_EQUALVERIFY OP_CHECKSIG")]
+        [InlineData("OP_SHA256 32 0x8cc17e2a2b10e1da145488458a6edec4a1fdb1921c2d5ccbc96aa0ed31b4d5f8 OP_EQUALVERIFY OP_DUP OP_HASH160 20 0x1451baa3aad777144a0759998a03538018dd7b4b OP_EQUALVERIFY OP_CHECKSIGVERIFY OP_EQUALVERIFY OP_DUP OP_HASH160 20 0x1451baa3aad777144a0759998a03538018dd7b4b OP_EQUALVERIFY OP_CHECKSIG")]
+        [InlineData("OP_0 OP_RETURN 34 0x31346b7871597633656d48477766386d36596753594c516b4743766e395172677239 66 0x303236336661663734633031356630376532633834343538623566333035653262323762366566303838393238383133326435343264633139633436663064663532 OP_PUSHDATA1 150 0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")]
         [InlineData("OP_0 OP_PUSHDATA4 3 0x010203 OP_0")]
-        public void ScriptParseTest(string script)
+        [InlineData("OP_0 OP_PUSHDATA2 3 0x010203 OP_0")]
+        [InlineData("OP_0 OP_PUSHDATA1 3 0x010203 OP_0")]
+        [InlineData("OP_0 3 0x010203 OP_0")]
+        [InlineData("")]
+        public void ParseScriptTest(string script)
         {
             var builder = ScriptBuilder.ParseScript(script);
             Assert.NotNull(builder);
