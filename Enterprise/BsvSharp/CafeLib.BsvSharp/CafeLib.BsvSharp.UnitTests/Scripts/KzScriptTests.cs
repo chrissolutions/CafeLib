@@ -78,9 +78,21 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
         public void ScriptEncodingTest(string hex, string decoded)
         {
             var s = new Script(hex);
+            var sb = ScriptBuilder.ParseEncodedScript(hex);
             var ops = s.Decode().ToArray();
             var d = s.ToVerboseString();
             Assert.Equal(decoded, d);
+            Assert.Equal(decoded, sb.ToScript().ToString());
+        }
+
+        [Theory]
+        [InlineData("OP_DUP OP_HASH160 20 0x1451baa3aad777144a0759998a03538018dd7b4b OP_EQUALVERIFY OP_CHECKSIG")]
+        [InlineData("OP_0 OP_PUSHDATA4 3 0x010203 OP_0")]
+        public void ScriptParseTest(string script)
+        {
+            var builder = ScriptBuilder.ParseScript(script);
+            Assert.NotNull(builder);
+            Assert.Equal(script, builder.ToScript().ToString());
         }
 
         /// <summary>
@@ -208,15 +220,6 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
                         Assert.True(correct);
                 }
             }
-        }
-
-        [Theory]
-        [InlineData("OP_DUP OP_HASH160 20 0x1451baa3aad777144a0759998a03538018dd7b4b OP_EQUALVERIFY OP_CHECKSIG")]
-        public void ScriptParseTest(string script)
-        {
-            var builder = ScriptBuilder.ParseScript(script);
-            Assert.NotNull(builder);
-            Assert.Equal(script, builder.ToScript().ToString());
         }
     }
 }

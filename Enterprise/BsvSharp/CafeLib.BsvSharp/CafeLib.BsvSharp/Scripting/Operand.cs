@@ -315,7 +315,7 @@ namespace CafeLib.BsvSharp.Scripting
             return opcode switch
             {
                 // push value
-                Opcode.OP_0 => "0",
+                Opcode.OP_0 => "OP_0",
                 Opcode.OP_PUSH1 => "1",
                 Opcode.OP_PUSH2 => "2",
                 Opcode.OP_PUSH3 => "3",
@@ -530,7 +530,16 @@ namespace CafeLib.BsvSharp.Scripting
 
         public string ToVerboseString()
         {
-            return $"{CodeName}{(Data.Length > 0 ? " 0x" + Encoders.Hex.EncodeSpan(Data.Sequence) : "")}";
+            switch (Code)
+            {
+                case Opcode.OP_PUSHDATA1:
+                case Opcode.OP_PUSHDATA2:
+                case Opcode.OP_PUSHDATA4:
+                    return $"{CodeName} {Data.Length} 0x{Encoders.Hex.EncodeSpan(Data.Sequence)}";
+
+                default:
+                    return $"{CodeName}{(Data.Length > 0 ? " 0x" + Encoders.Hex.EncodeSpan(Data.Sequence) : "")}";
+            }
         }
 
         public override string ToString()
@@ -540,7 +549,7 @@ namespace CafeLib.BsvSharp.Scripting
             if (len == 0)
                 s = CodeName;
             else if (len < 100)
-                s = Encoders.Hex.EncodeSpan(Data.Sequence);
+                s = ToVerboseString();
             else
             {
                 var start = Encoders.Hex.EncodeSpan(Data.Sequence.Slice(0, 32));

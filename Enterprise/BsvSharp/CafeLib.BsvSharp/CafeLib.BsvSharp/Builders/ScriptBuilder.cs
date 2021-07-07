@@ -366,11 +366,11 @@ namespace CafeLib.BsvSharp.Builders
         }
 
         /// <summary>
-        /// Parse script soruce code.
+        /// Parse encoded script.
         /// </summary>
         /// <param name="script">script source code</param>
         /// <returns>script builder</returns>
-        public static ScriptBuilder ParseScript(string script)
+        public static ScriptBuilder ParseEncodedScript(string script)
         {
             var builder = new ScriptBuilder();
             var tokens = script.Split(' ', StringSplitOptions.RemoveEmptyEntries).AsSpan();
@@ -451,8 +451,52 @@ namespace CafeLib.BsvSharp.Builders
 
             return builder;
         }
+        
+        /// <summary>
+        /// Parse encoded script.
+        /// </summary>
+        /// <param name="script">encoded script</param>
+        /// <returns>script builder</returns>
+        public static ScriptBuilder ParseScript(string script)
+        {
+            var builder = new ScriptBuilder();
+            var tokens = script.Split(' ', StringSplitOptions.RemoveEmptyEntries).AsSpan();
+            for (var i = 0; i < tokens.Length; ++i)
+            {
+                if (!Enum.TryParse<Opcode>(tokens[i], out var op)) throw new InvalidOperationException();
+                switch (op)
+                {
+                    case Opcode.OP_0:
+                    case Opcode.OP_1NEGATE:
+                        builder.Add(op);
+                        break;
 
+                    case var _ when op < Opcode.OP_PUSHDATA1:
+                    {
+                        var data = Encoders.Hex.Decode(tokens[++i]);
+                        if (data.Length >= (int)Opcode.OP_PUSHDATA1) throw new InvalidOperationException();
+                        builder.Add(op, data);
+                        break;
+                    }
 
+                    case Opcode.OP_PUSHDATA1:
+                    case Opcode.OP_PUSHDATA2:
+                    case Opcode.OP_PUSHDATA4:
+                    {
+                        var data = Encoders.Hex.Decode(tokens[i+=2]);
+                        builder.Add(op, new VarType(data));
+                        break;
+                    }
+
+                    default:
+                        builder.Add(op);
+                        break;
+                }
+            }
+
+            return builder;
+        }
+        
         public static implicit operator Script(ScriptBuilder sb) => sb.ToScript();
         public static implicit operator ScriptBuilder(Script v) => new ScriptBuilder(v);
     }
