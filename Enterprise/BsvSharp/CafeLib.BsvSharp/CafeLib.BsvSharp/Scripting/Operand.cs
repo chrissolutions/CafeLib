@@ -4,6 +4,7 @@
 #endregion
 
 using System;
+using System.Buffers;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
@@ -135,7 +136,7 @@ namespace CafeLib.BsvSharp.Scripting
             }
             if (length > 0) 
             {
-                Data.GetReader().TryCopyTo(span.Slice(0, (int)Data.Length));
+                Data.Span.CopyTo(span.Slice(0, (int)Data.Length));
                 span = span.Slice((int)length);
             }
             return true;
@@ -151,7 +152,7 @@ namespace CafeLib.BsvSharp.Scripting
             }
 
             if (Data.Length > 0)
-                w.Add((byte[])Data.Sequence);
+                w.Add(Data);
 
             return w;
         }
@@ -179,19 +180,19 @@ namespace CafeLib.BsvSharp.Scripting
             }
 
             if (Data.Length > 0)
-                writer.Write((byte[])Data.Sequence);
+                writer.Write(Data);
 
             return writer;
         }
 
-        public byte[] GetDataBytes() => Data.Sequence.ToArray();
+        public byte[] GetDataBytes() => Data;
 
         public byte[] GetBytes()
         {
             var bytes = new byte[Length];
             bytes[0] = (byte)Code;
             if (bytes.Length > 1)
-                Data.GetReader().TryCopyTo(bytes.AsSpan().Slice(1));
+                Data.CopyTo(bytes[1..]);
             return bytes;
         }
 
@@ -298,7 +299,7 @@ namespace CafeLib.BsvSharp.Scripting
                 if (nSize >= 0)
                 {
                     if (r.Data.Remaining < nSize) goto fail;
-                    Data = new VarType(r.Data.Sequence.Slice(r.Data.Position, (Int32)nSize));
+                    Data = new VarType(r.Data.Sequence.Slice(r.Data.Position, (Int32)nSize).ToArray());
                     r.Data.Advance(nSize);
                 }
             }
@@ -320,10 +321,10 @@ namespace CafeLib.BsvSharp.Scripting
                 case Opcode.OP_PUSHDATA1:
                 case Opcode.OP_PUSHDATA2:
                 case Opcode.OP_PUSHDATA4:
-                    return $"{CodeName} {Data.Length} 0x{Encoders.Hex.EncodeSpan(Data.Sequence)}";
+                    return $"{CodeName} {Data.Length} 0x{Encoders.Hex.EncodeSpan(Data)}";
 
                 default:
-                    return $"{CodeName}{(Data.Length > 0 ? " 0x" + Encoders.Hex.EncodeSpan(Data.Sequence) : "")}";
+                    return $"{CodeName}{(Data.Length > 0 ? " 0x" + Encoders.Hex.EncodeSpan(Data) : "")}";
             }
         }
 
@@ -336,15 +337,15 @@ namespace CafeLib.BsvSharp.Scripting
                     return CodeName;
 
                 case var _ when Code < Opcode.OP_PUSHDATA1:
-                    return $"{(Data.Length > 0 ? Encoders.Hex.EncodeSpan(Data.Sequence) : "")}";
+                    return $"{(Data.Length > 0 ? Encoders.Hex.EncodeSpan(Data) : "")}";
 
                 case Opcode.OP_PUSHDATA1:
                 case Opcode.OP_PUSHDATA2:
                 case Opcode.OP_PUSHDATA4:
-                    return $"{CodeName} {Data.Length} {Encoders.Hex.EncodeSpan(Data.Sequence)}";
+                    return $"{CodeName} {Data.Length} {Encoders.Hex.EncodeSpan(Data)}";
 
                 default:
-                    return $"{CodeName}{(Data.Length > 0 ? " " + Encoders.Hex.EncodeSpan(Data.Sequence) : "")}";
+                    return $"{CodeName}{(Data.Length > 0 ? " " + Encoders.Hex.EncodeSpan(Data) : "")}";
             }
         }
 
@@ -358,8 +359,8 @@ namespace CafeLib.BsvSharp.Scripting
                 s = ToVerboseString();
             else
             {
-                var start = Encoders.Hex.EncodeSpan(Data.Sequence.Slice(0, 32));
-                var end = Encoders.Hex.EncodeSpan(Data.Sequence.Slice(len - 32));
+                var start = Encoders.Hex.EncodeSpan(Data[..32]);
+                var end = Encoders.Hex.EncodeSpan(Data[(len - 32)..]);
                 s = $"{start}...[{Data.Length} bytes]...{end}";
             }
             return s;

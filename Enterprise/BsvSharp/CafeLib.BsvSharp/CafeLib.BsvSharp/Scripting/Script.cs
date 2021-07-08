@@ -18,6 +18,12 @@ namespace CafeLib.BsvSharp.Scripting
     [JsonConverter(typeof(ScriptConverter))]
     public struct Script : IDataSerializer
     {
+        internal VarType Data { get; private set; }
+
+        public static Script None { get; } = new Script(Array.Empty<byte>());
+
+        public long Length => Data.Length;
+
         private Script(VarType script)
             : this()
         {
@@ -33,12 +39,6 @@ namespace CafeLib.BsvSharp.Scripting
             : this(Encoders.Hex.Decode(hex))
         {
         }
-
-        internal VarType Data { get; private set; }
-
-        public static Script None => new Script(Array.Empty<byte>());
-
-        public long Length => Data.Length;
 
         public IBitcoinWriter AddTo(IBitcoinWriter writer, bool withoutCodeSeparators = false)
         {
@@ -110,23 +110,22 @@ namespace CafeLib.BsvSharp.Scripting
 
         public void Write(BinaryWriter s)
         {
-            if (Data.Sequence.IsEmpty)
+            if (Data.IsEmpty)
             {
                 s.Write(-1);
             }
             else
             {
-                s.Write((int)Data.Length);
-                foreach (var m in Data.Sequence)
-                    s.Write(m.Data.Span);
+                s.Write(Data.Length);
+                s.Write(Data);
             }
         }
 
-        public Script Slice(SequencePosition start, SequencePosition end) => new Script(Data.Sequence.Slice(start, end).ToArray());
+        public Script Slice(SequencePosition start, SequencePosition end) => new Script(Data.Span.Slice(start.GetInteger(), end.GetInteger()));
 
         public bool IsPushOnly()
         {
-            var ros = Data.Sequence;
+            var ros = new ReadOnlyByteSequence(Data);
             var op = new Operand();
 
             while (ros.Length > 0)
@@ -139,7 +138,7 @@ namespace CafeLib.BsvSharp.Scripting
                 if (op.Code > Opcode.OP_16) return false;
             }
 
-            Data = (VarType)ros;
+            Data = new VarType(ros);
             return true;
         }
 
@@ -154,8 +153,8 @@ namespace CafeLib.BsvSharp.Scripting
 
         public int FindAndDelete(VarType vchSig)
         {
-            int nFound = 0;
-            var s = Data.Sequence;
+            var nFound = 0;
+            var s = new ReadOnlyByteSequence(Data);
             var r = s;
             if (vchSig.Length == 0) return nFound;
 
@@ -163,7 +162,7 @@ namespace CafeLib.BsvSharp.Scripting
             var consumed = 0L;
             var offset = 0L;
 
-            var o = vchSig.Sequence;
+            var o = new ReadOnlyByteSequence(vchSig);
             var oLen = o.Length;
 
             do 
@@ -171,14 +170,14 @@ namespace CafeLib.BsvSharp.Scripting
                 offset += consumed;
                 while (s.StartsWith(o))
                 {
-                    r = (VarType)r.RemoveSlice(offset, oLen);
+                    r = r.RemoveSlice(offset, oLen);
                     s = s.Slice(oLen);
                     ++nFound;
                 }
             }
             while (op.TryReadOperand(ref s, out consumed));
 
-            Data = (VarType)r;
+            Data = new VarType(r);
             return nFound;
 #if false
             CScript result;
@@ -208,7 +207,7 @@ namespace CafeLib.BsvSharp.Scripting
         /// <returns></returns>
         public IEnumerable<Operand> Decode()
         {
-            var ros = Data.Sequence;
+            var ros = new ReadOnlyByteSequence(Data);
 
             while (ros.Length > 0)
             {
@@ -232,7 +231,7 @@ namespace CafeLib.BsvSharp.Scripting
 
             if (reader.Data.Remaining < length) goto fail;
 
-            Data = (VarType)(ReadOnlyByteSequence)reader.Data.Sequence.Slice(reader.Data.Position, length);
+            Data = new VarType((ReadOnlyByteSequence)reader.Data.Sequence.Slice(reader.Data.Position, length));
             reader.Data.Advance(length);
 
             bp.ScriptParsed(this, reader.Data.Consumed);
@@ -250,7 +249,7 @@ namespace CafeLib.BsvSharp.Scripting
 
             if (r.Data.Remaining < length) goto fail;
 
-            Data = (VarType)(ReadOnlyByteSequence)r.Data.Sequence.Slice(r.Data.Position, length);
+            Data = new VarType((ReadOnlyByteSequence)r.Data.Sequence.Slice(r.Data.Position, length));
             r.Data.Advance(length);
 
             return true;
@@ -522,7 +521,7 @@ namespace CafeLib.BsvSharp.Scripting
         /// With height, pre 620538 blocks also treat just a bare OP_RETURN to be unspendable.
         /// </summary>
         /// <returns></returns>
-        public bool IsOpReturn(int? height = null) => IsOpReturn(Data.Sequence.Data.FirstSpan, height);
+        public bool IsOpReturn(int? height = null) => IsOpReturn(Data, height);
 
         public static (bool ok, SignatureHashEnum sh, byte[] r, byte[] s, PublicKey pk) IsCheckSigScript(byte[] scriptSigBytes) => IsCheckSigScript(new ReadOnlySequence<byte>(scriptSigBytes));
             

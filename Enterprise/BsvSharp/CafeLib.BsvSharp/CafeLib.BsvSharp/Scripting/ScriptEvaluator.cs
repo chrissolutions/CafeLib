@@ -37,7 +37,7 @@ namespace CafeLib.BsvSharp.Scripting
         /// <returns></returns>
         public bool EvalScript(Script script, ScriptFlags flags, SignatureCheckerBase checker, out ScriptError error)
         {
-            var ros = script.Data.Sequence;
+            var ros = new ReadOnlyByteSequence(script.Data);
             // ReSharper disable once UnusedVariable
             var pc = ros.Data.Start;
             var pend = ros.Data.End;
@@ -167,7 +167,7 @@ namespace CafeLib.BsvSharp.Scripting
                                         var vch = _stack.Pop();
                                         if ((flags & ScriptFlags.VERIFY_MINIMALIF) != 0)
                                         {
-                                            if (vch.Length > 1 || vch.Length == 1 && vch.GetReader().Data.CurrentSpan[0] != 1)
+                                            if (vch.Length > 1 || vch.Length == 1 && vch.FirstByte != 1)
                                             {
                                                 _stack.Push(vch);
                                                 return SetError(out error, ScriptError.MINIMALIF);
@@ -656,27 +656,27 @@ namespace CafeLib.BsvSharp.Scripting
                                     {
                                         case Opcode.OP_SHA1:
                                             data = new byte[20];
-                                            vch.Sequence.Sha1(data);
+                                            vch.Span.Sha1(data);
                                             break;
 
                                         case Opcode.OP_RIPEMD160:
                                             data = new byte[20];
-                                            vch.Sequence.Ripemd160(data);
+                                            vch.Span.Ripemd160(data);
                                             break;
 
                                         case Opcode.OP_HASH160:
                                             data = new byte[20];
-                                            vch.Sequence.Hash160(data);
+                                            vch.Span.Hash160(data);
                                             break;
 
                                         case Opcode.OP_SHA256:
                                             data = new byte[32];
-                                            vch.Sequence.Sha256(data);
+                                            vch.Span.Sha256(data);
                                             break;
 
                                         case Opcode.OP_HASH256:
                                             data = new byte[32];
-                                            vch.Sequence.Hash256(data);
+                                            vch.Span.Hash256(data);
                                             break;
 
                                         default:
@@ -1070,7 +1070,7 @@ namespace CafeLib.BsvSharp.Scripting
                 return opcode == Opcode.OP_0;
             }
 
-            var b0 = op.Data.Sequence.Data.First.Span[0];
+            var b0 = op.Data.FirstByte;
             if (dataSize == 1 && b0 >= 1 && b0 <= 16)
             {
                 // Could have used OP_1 .. OP_16.

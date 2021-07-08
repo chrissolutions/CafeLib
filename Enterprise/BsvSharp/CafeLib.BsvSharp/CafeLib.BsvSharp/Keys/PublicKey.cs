@@ -158,14 +158,13 @@ namespace CafeLib.BsvSharp.Keys
         /// </summary>
         /// <param name="vchSig"></param>
         /// <returns></returns>
-        public static bool CheckLowS(ReadOnlyByteSequence vchSig)
+        public static bool CheckLowS(ReadOnlyByteSpan vchSig)
         {
             var sig = new byte[64];
-            var input = (ReadOnlyByteSpan) vchSig;
 
             using var library = new Secp256k1();
-            if (!library.SignatureParseDerLax(sig, input)) return false;
-            return !library.SignatureNormalize(Span<byte>.Empty, input);
+            if (!library.SignatureParseDerLax(sig, vchSig)) return false;
+            return !library.SignatureNormalize(Span<byte>.Empty, vchSig);
         }
 
         /// <summary>
@@ -195,7 +194,7 @@ namespace CafeLib.BsvSharp.Keys
         public bool Verify(UInt256 hash, VarType sig)
         {
             if (!IsValid || sig.Length == 0) return false;
-            return Secp256K1.PublicKeyVerify(hash.Span, sig.ToSpan(), Data);
+            return Secp256K1.PublicKeyVerify(hash.Span, sig.Span, Data);
         }
 
         /// <summary>

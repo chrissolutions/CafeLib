@@ -125,7 +125,7 @@ namespace CafeLib.BsvSharp.Builders
                 if (ops.Count > 2
                     && ops[0].Operand.Code == Opcode.OP_RETURN
                     && ops[1].Operand.Code == Opcode.OP_PUSH20
-                    && ops[1].Operand.Data.Sequence.CompareTo(val) == 0)
+                    && ops[1].Operand.Data.Span.SequenceCompareTo(val) == 0)
                     yield return (o, ops.Skip(2).ToArray());
             }
         }

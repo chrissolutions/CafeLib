@@ -66,7 +66,7 @@ namespace CafeLib.BsvSharp.Builders
             {
                 var len = (int)Length;
                 if (len > span.Length) goto fail;
-                Operand.Data.Sequence.CopyTo(span.Slice(0, len));
+                Operand.Data.Span.CopyTo(span.Slice(0, len));
                 span = span.Slice(len);
             }
             else
@@ -80,7 +80,7 @@ namespace CafeLib.BsvSharp.Builders
             return false;
         }
 
-        public string ToVerboseString() => IsRaw ? Encoders.Hex.EncodeSpan(Operand.Data.Sequence) : Operand.ToVerboseString();
+        public string ToVerboseString() => IsRaw ? Encoders.Hex.EncodeSpan(Operand.Data) : Operand.ToVerboseString();
 
         public override string ToString()
         {

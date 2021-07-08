@@ -4,7 +4,7 @@
 #endregion
 
 using System;
-using System.Data;
+using System.Buffers.Binary;
 using System.Diagnostics;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
@@ -12,125 +12,48 @@ using CafeLib.BsvSharp.Scripting;
 
 namespace CafeLib.BsvSharp.Numerics
 {
-    public sealed class VarType
+    public sealed class VarType : IEquatable<VarType>
     {
-        private readonly ReadOnlyByteSequence _sequence;
         private readonly ByteArrayBuffer _buffer;
 
         private VarType()
         {
-            _sequence = new ReadOnlyByteSequence(Array.Empty<byte>());
             _buffer = new ByteArrayBuffer();
         }
 
-        public VarType(ReadOnlyByteSequence data)
+        public VarType(ReadOnlyByteSpan bytes)
         {
-            _sequence = data;
-            _buffer = new ByteArrayBuffer(ToSpan());
+            _buffer = new ByteArrayBuffer(bytes);
         }
-
-        public VarType(byte[] bytes)
-            : this(new ReadOnlyByteSequence(bytes))
-        {
-        }
-
-        public ReadOnlyByteSequence Sequence => _sequence;
-        public ByteArrayBuffer Buffer => _buffer;
 
         public static readonly VarType Empty = new VarType();
-        public static readonly VarType Zero = new VarType(new byte[0]);
-        public static readonly VarType False = new VarType(new byte[0]);
+        public static readonly VarType Zero = Empty;
+        public static readonly VarType False = Empty;
         public static readonly VarType True = new VarType(new byte[] { 1 });
 
         public bool IsEmpty => Length == 0;
-        public long Length => Sequence.Length;
+        public int Length => _buffer.Length;
+        public byte FirstByte => _buffer[0];
+        public byte LastByte => _buffer[Length-1];
 
-        public byte FirstByte => _sequence.Data.First.Span[0];
-        public byte LastByte => _sequence.Data.Slice(_sequence.Length - 1).First.Span[0];
-        public byte FirstBufferByte => _buffer[0];
-        public byte LastBufferByte => _buffer[_buffer.Length-1];
 
-        public VarType Slice(long start, int length) => new VarType(_sequence.Slice(start, length));
+        public VarType Slice(int start, int length) => new VarType(_buffer.Span.Slice(start, length));
 
-        public override string ToString() => Encoders.Hex.EncodeSpan(_sequence);
+        public override string ToString() => Encoders.Hex.EncodeSpan(_buffer.Span);
 
-        private byte[] ToArray()
-        {
-            var bytes = new byte[_sequence.Length];
-            if (!GetReader().TryCopyTo(bytes))
-                throw new InvalidOperationException();
-            return bytes;
-        }
+        private byte[] ToArray() => _buffer.Span.ToArray();
 
-        public void CopyTo(byte[] bytes)
-        {
-            var r = GetReader();
-            if (!r.TryCopyTo(bytes))
-                throw new InvalidOperationException();
-        }
+        public void CopyTo(byte[] bytes) => _buffer.Span.CopyTo(bytes);
 
-        public ByteSequenceReader GetReader()
-        {
-            return new ByteSequenceReader(Sequence);
-        }
-
-        internal ReadOnlyByteSpan ToBufferSpan() => _buffer.Span;
-
-        internal ReadOnlyByteSpan ToSpan()
-        {
-            var r = GetReader();
-
-            if (r.UnreadSpan.Length == _sequence.Length)
-                return r.UnreadSpan;
-
-            var bytes = new byte[_sequence.Length];
-            if (!r.TryCopyTo(bytes))
-                throw new InvalidOperationException();
-            return bytes;
-        }
+        internal ReadOnlyByteSpan Span => _buffer.Span;
 
         /// <summary>
         /// Return first four bytes as a big endian integer.
         /// </summary>
         /// <returns></returns>
-        public uint AsUInt32BigEndian()
-        {
-            var r = GetReader();
-            if (r.TryReadBigEndian(out int v) == false)
-                throw new InvalidOperationException();
-            return (uint)v;
-        }
+        public uint AsUInt32BigEndian() => BinaryPrimitives.TryReadUInt32BigEndian(_buffer.Span, out var v) ? v : throw new InvalidOperationException();
 
         public bool ToBool()
-        {
-            var r = GetReader();
-            byte v;
-            while (r.TryRead(out v)) 
-            {
-                if (v != 0)
-                    break;
-            }
-
-            // False is zero or negative zero
-            return v != 0 && (v != 0x80 || r.Remaining != 0); 
-
-#if false
-            bool CastToBool(const valtype &vch) {
-                for (size_t i = 0; i<vch.size(); i++) {
-                    if (vch[i] != 0) {
-                        // Can be negative zero
-                        if (i == vch.size() - 1 && vch[i] == 0x80) {
-                            return false;
-                        }
-                        return true;
-                    }
-                }
-                return false;
-            }
-#endif
-        }
-
-        public bool ToBufferBool()
         {
             var index = 0;
             while (index < _buffer.Span.Length)
@@ -151,16 +74,16 @@ namespace CafeLib.BsvSharp.Numerics
 
         public ScriptNum ToScriptNum(bool fRequireMinimal = false)
         {
-            return new ScriptNum(ToSpan(), fRequireMinimal);
+            return new ScriptNum(Span, fRequireMinimal);
         }
 
-        public int ToInt32() => new ScriptNum(ToSpan()).GetInt();
+        public int ToInt32() => new ScriptNum(Span).GetInt();
 
         public VarType BitAnd(VarType b)
         {
             if (Length != b.Length) throw new InvalidOperationException();
-            var sa = ToSpan();
-            var sb = b.ToSpan();
+            var sa = Span;
+            var sb = b.Span;
             var r = new byte[sa.Length];
             for (var i = 0; i < sa.Length; i++) {
                 r[i] = (byte)(sa[i] & sb[i]);
@@ -171,8 +94,8 @@ namespace CafeLib.BsvSharp.Numerics
         public VarType BitOr(VarType b)
         {
             if (Length != b.Length) throw new InvalidOperationException();
-            var sa = ToSpan();
-            var sb = b.ToSpan();
+            var sa = Span;
+            var sb = b.Span;
             var r = new byte[sa.Length];
             for (var i = 0; i < sa.Length; i++) {
                 r[i] = (byte)(sa[i] | sb[i]);
@@ -183,8 +106,8 @@ namespace CafeLib.BsvSharp.Numerics
         public VarType BitXor(VarType b)
         {
             if (Length != b.Length) throw new InvalidOperationException();
-            var sa = ToSpan();
-            var sb = b.ToSpan();
+            var sa = Span;
+            var sb = b.Span;
             var r = new byte[sa.Length];
             for (var i = 0; i < sa.Length; i++) {
                 r[i] = (byte)(sa[i] ^ sb[i]);
@@ -194,7 +117,7 @@ namespace CafeLib.BsvSharp.Numerics
 
         public VarType BitInvert()
         {
-            var sa = ToSpan();
+            var sa = Span;
             var r = new byte[sa.Length];
             for (var i = 0; i < sa.Length; i++) {
                 r[i] = (byte)(~sa[i]);
@@ -213,7 +136,7 @@ namespace CafeLib.BsvSharp.Numerics
             var mask = MaskLShift[bitShift];
             var overflowMask = (byte)~mask;
 
-            var x = ToSpan();
+            var x = Span;
             var r = new byte[Length];
             for (int i = r.Length - 1; i >= 0; i--) {
                 int k = i - byteShift;
@@ -240,7 +163,7 @@ namespace CafeLib.BsvSharp.Numerics
             var mask = MaskRShift[bitShift];
             var overflowMask = (byte)~mask;
 
-            var x = ToSpan();
+            var x = Span;
             var r = new byte[Length];
             for (int i = 0; i < r.Length; i++) {
                 var k = i + byteShift;
@@ -262,8 +185,8 @@ namespace CafeLib.BsvSharp.Numerics
         public bool BitEquals(VarType x2)
         {
             if (Length != x2.Length) return false;
-            var s1 = ToSpan();
-            var s2 = x2.ToSpan();
+            var s1 = Span;
+            var s2 = x2.Span;
             for (var i = 0; i < s1.Length; i++)
                 if (s1[i] != s2[i])
                     return false;
@@ -286,7 +209,7 @@ namespace CafeLib.BsvSharp.Numerics
         /// </returns>
         public (VarType bin, bool ok) NumResize(uint? size = null)
         {
-            var data = ToSpan();
+            var data = Span;
             var (tooLong, isNeg, extraBytes) = ScriptNum.EvaluateAsNum(data);
 
             if (size == null && tooLong) goto fail;
@@ -362,7 +285,7 @@ namespace CafeLib.BsvSharp.Numerics
         {
             Trace.Assert(size >= Length);
             var r = new byte[size];
-            var s = ToSpan();
+            var s = Span;
             s.CopyTo(r);
             var isNeg = (s[^1] & 0x80) != 0;
             r[s.Length - 1] &= 0x7f;
@@ -373,8 +296,8 @@ namespace CafeLib.BsvSharp.Numerics
         public VarType Cat(VarType vch2)
         {
             var r = new byte[Length + vch2.Length];
-            var s1 = ToSpan();
-            var s2 = vch2.ToSpan();
+            var s1 = Span;
+            var s2 = vch2.Span;
             var sr = r.AsSpan();
             s1.CopyTo(sr);
             s2.CopyTo(sr[s1.Length..]);
@@ -383,26 +306,22 @@ namespace CafeLib.BsvSharp.Numerics
 
         public (VarType x1, VarType x2) Split(int position)
         {
-            var s = ToSpan();
+            var s = Span;
             var x1 = new VarType(s.Slice(0, position).ToArray());
             var x2 = new VarType(s.Slice(position).ToArray());
             return (x1, x2);
         }
 
-        public override int GetHashCode() => _sequence.GetHashCode();
+        public override int GetHashCode() => _buffer.GetHashCode();
 
         public override bool Equals(object obj) => obj is VarType type && this == type;
-        public bool Equals(VarType rhs) => !(rhs is null) && ((ReadOnlyByteSpan)_sequence).Data.SequenceEqual((ReadOnlyByteSpan)rhs._sequence);
+        public bool Equals(VarType rhs) => !(rhs is null) && _buffer.Span.Data.SequenceEqual(rhs._buffer.Span);
 
         public static implicit operator VarType(byte[] rhs) => new VarType(rhs);
         public static implicit operator byte[](VarType rhs) => rhs.ToArray();
 
-        public static implicit operator bool(VarType rhs) => rhs.ToBool();
-
         public static implicit operator ReadOnlyByteMemory(VarType rhs) => rhs.ToArray();
-        public static implicit operator ReadOnlyByteSpan(VarType rhs) => rhs.ToSpan();
-        public static implicit operator ReadOnlyByteSequence(VarType rhs) => rhs.ToArray();
-        public static explicit operator VarType(ReadOnlyByteSequence rhs) => new VarType(rhs);
+        public static implicit operator ReadOnlyByteSpan(VarType rhs) => rhs.Span;
 
         public static bool operator ==(VarType x, VarType y) => x?.Equals(y) ?? y is null;
         public static bool operator !=(VarType x, VarType y) => !(x == y);
