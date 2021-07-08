@@ -6,6 +6,7 @@
 using System;
 using System.Buffers.Binary;
 using System.Diagnostics;
+using System.Linq;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Scripting;
@@ -69,7 +70,7 @@ namespace CafeLib.BsvSharp.Numerics
             }
 
             // False is zero or negative zero
-            return _buffer.Span[index] != 0 && (_buffer.Span[index] != 0x80 || index < _buffer.Span.Length);
+            return _buffer.Any() && _buffer.Span[index] != 0 && (_buffer.Span[index] != 0x80 || index < _buffer.Span.Length);
         }
 
         public ScriptNum ToScriptNum(bool fRequireMinimal = false)
@@ -319,6 +320,9 @@ namespace CafeLib.BsvSharp.Numerics
 
         public static implicit operator VarType(byte[] rhs) => new VarType(rhs);
         public static implicit operator byte[](VarType rhs) => rhs.ToArray();
+
+        public static implicit operator bool(VarType rhs) => rhs.ToBool();
+
 
         public static implicit operator ReadOnlyByteMemory(VarType rhs) => rhs.ToArray();
         public static implicit operator ReadOnlyByteSpan(VarType rhs) => rhs.Span;

@@ -229,9 +229,9 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
                 {
                     i++;
                     var tv2 = new TV2(tv.sig, tv.pub, tv.flags, tv.error);
-                    _testOutputHelper.WriteLine($"{opcode} {i}");
-                    _testOutputHelper.WriteLine($"Sig: {tv.scriptSig.ToHexString()} => {tv.scriptSig}");
-                    _testOutputHelper.WriteLine($"Pub: {tv.scriptPub.ToHexString()} => {tv.scriptPub}");
+                    //_testOutputHelper.WriteLine($"{opcode} {i}");
+                    //_testOutputHelper.WriteLine($"Sig: {tv.scriptSig.ToHexString()} => {tv.scriptSig}");
+                    //_testOutputHelper.WriteLine($"Pub: {tv.scriptPub.ToHexString()} => {tv.scriptPub}");
 
                     var checker = new TransactionSignatureChecker(new Transaction(), 0, Amount.Zero);
                     var ok = ScriptInterpreter.VerifyScript(tv.scriptSig, tv.scriptPub, tv.scriptFlags, checker, out var error);
@@ -240,7 +240,15 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
 
                     // All test cases do not pass yet. This condition is here to make sure things don't get worse :-)
                     if (i < 900)
+                    {
+                        if (correct == false)
+                        {
+                            _testOutputHelper.WriteLine($"{opcode} {i}");
+                            _testOutputHelper.WriteLine($"Sig: {tv.scriptSig.ToHexString()} => {tv.scriptSig}");
+                            _testOutputHelper.WriteLine($"Pub: {tv.scriptPub.ToHexString()} => {tv.scriptPub}");
+                        }
                         Assert.True(correct);
+                    }
                 }
             }
         }

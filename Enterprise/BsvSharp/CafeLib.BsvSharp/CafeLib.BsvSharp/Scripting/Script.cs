@@ -117,7 +117,7 @@ namespace CafeLib.BsvSharp.Scripting
             else
             {
                 s.Write(Data.Length);
-                s.Write(Data);
+                s.Write(Data.Span);
             }
         }
 

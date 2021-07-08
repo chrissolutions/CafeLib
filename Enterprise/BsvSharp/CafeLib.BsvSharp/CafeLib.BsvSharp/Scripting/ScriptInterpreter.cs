@@ -123,7 +123,7 @@ namespace CafeLib.BsvSharp.Scripting
                 _ when !evaluator.EvalScript(scriptSig, flags, checker, out error) => false,
                 _ when !evaluator.EvalScript(scriptPub, flags, checker, out error) => false,
                 _ when evaluator.Count == 0 => SetError(out error, ScriptError.EVAL_FALSE),
-                _ when evaluator.Peek() == null => SetError(out error, ScriptError.EVAL_FALSE),
+                _ when !evaluator.Peek() => SetError(out error, ScriptError.EVAL_FALSE),
                 _ => SetSuccess(out error)
             };
         }
