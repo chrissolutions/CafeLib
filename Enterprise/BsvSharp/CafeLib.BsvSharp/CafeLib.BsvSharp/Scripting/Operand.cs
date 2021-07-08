@@ -327,6 +327,27 @@ namespace CafeLib.BsvSharp.Scripting
             }
         }
 
+        public string ToAssemblyString()
+        {
+            switch (Code)
+            {
+                case Opcode.OP_0:
+                case Opcode.OP_1NEGATE:
+                    return CodeName;
+
+                case var _ when Code < Opcode.OP_PUSHDATA1:
+                    return $"{(Data.Length > 0 ? Encoders.Hex.EncodeSpan(Data.Sequence) : "")}";
+
+                case Opcode.OP_PUSHDATA1:
+                case Opcode.OP_PUSHDATA2:
+                case Opcode.OP_PUSHDATA4:
+                    return $"{CodeName} {Data.Length} {Encoders.Hex.EncodeSpan(Data.Sequence)}";
+
+                default:
+                    return $"{CodeName}{(Data.Length > 0 ? " " + Encoders.Hex.EncodeSpan(Data.Sequence) : "")}";
+            }
+        }
+
         public override string ToString()
         {
             var len = Data.Length;

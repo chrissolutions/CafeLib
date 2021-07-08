@@ -35,6 +35,11 @@ namespace CafeLib.BsvSharp.Builders
         /// </summary>
         public Operand Operand;
 
+        /// <summary>
+        /// Operand opcode.
+        /// </summary>
+        public Opcode Opcode => Operand.Code;
+
         public OperandBuilder(Operand op)
             : this()
         {

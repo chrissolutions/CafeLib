@@ -352,6 +352,11 @@ namespace CafeLib.BsvSharp.Scripting
             return string.Join(' ', Decode().Select(op => op.ToVerboseString()));
         }
 
+        public string ToAssemblyString()
+        {
+            return string.Join(' ', Decode().Select(op => op.ToAssemblyString()));
+        }
+
         public override string ToString()
         {
             return string.Join(' ', Decode().Select(op => op.ToVerboseString()));

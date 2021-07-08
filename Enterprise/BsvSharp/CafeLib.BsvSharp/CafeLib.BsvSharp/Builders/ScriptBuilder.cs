@@ -367,12 +367,12 @@ namespace CafeLib.BsvSharp.Builders
         /// <summary>
         /// Parse encoded script.
         /// </summary>
-        /// <param name="script">script source code</param>
+        /// <param name="assembly">script assembly code</param>
         /// <returns>script builder</returns>
-        public static ScriptBuilder ParseEncodedScript(string script)
+        public static ScriptBuilder ParseAssembly(string assembly)
         {
             var builder = new ScriptBuilder();
-            var tokens = script.Split(' ', StringSplitOptions.RemoveEmptyEntries).AsSpan();
+            var tokens = assembly.Split(' ', StringSplitOptions.RemoveEmptyEntries).AsSpan();
             for (var i = 0; i < tokens.Length; ++i)
             {
                 if (Enum.TryParse<Opcode>(tokens[i], out var op))

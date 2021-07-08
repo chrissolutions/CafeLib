@@ -101,6 +101,23 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             Assert.Equal(script, builder.ToScript().ToString());
         }
 
+
+        [Fact]
+        public void ParseKnownAssemblyTest()
+        {
+            const string asm = "OP_DUP OP_HASH160 f4c03610e60ad15100929cc23da2f3a799af1725 OP_EQUALVERIFY OP_CHECKSIG";
+
+            var builder = ScriptBuilder.ParseAssembly(asm);
+            Assert.NotNull(builder);
+            Assert.Equal(Opcode.OP_DUP,  builder.Ops[0].Opcode);
+            Assert.Equal(Opcode.OP_HASH160, builder.Ops[1].Opcode);
+            Assert.Equal((Opcode)20, builder.Ops[2].Opcode);
+            Assert.Equal("f4c03610e60ad15100929cc23da2f3a799af1725", builder.Ops[2].Operand.GetDataBytes().ToHexString().ToLowerInvariant());
+            Assert.Equal(Opcode.OP_EQUALVERIFY, builder.Ops[3].Opcode);
+            Assert.Equal(Opcode.OP_CHECKSIG, builder.Ops[4].Opcode);
+            Assert.Equal(asm, builder.ToScript().ToAssemblyString());
+        }
+
         /// <summary>
         /// Test Vector
         /// </summary>
