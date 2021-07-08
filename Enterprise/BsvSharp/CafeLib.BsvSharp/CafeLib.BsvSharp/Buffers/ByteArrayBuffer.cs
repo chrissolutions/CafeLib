@@ -31,7 +31,7 @@ namespace CafeLib.BsvSharp.Buffers
         /// ByteDataWriter constructor.
         /// </summary>
         /// <param name="bytes"></param>
-        public ByteArrayBuffer(byte[] bytes)
+        public ByteArrayBuffer(ReadOnlyByteSpan bytes)
             : this()
         {
             _data.Write(bytes);
@@ -73,13 +73,7 @@ namespace CafeLib.BsvSharp.Buffers
         /// Add bytes to buffer
         /// </summary>
         /// <param name="bytes"></param>
-        public void Add(byte[] bytes) => _data.Write(bytes);
-
-        /// <summary>
-        /// Add bytes via span to buffer.
-        /// </summary>
-        /// <param name="span"></param>
-        public void Add(ReadOnlyByteSpan span) => _data.Write(span);
+        public void Add(ReadOnlyByteSpan bytes) => _data.Write(bytes);
 
         public byte this[Index index] => Span[index];
 
