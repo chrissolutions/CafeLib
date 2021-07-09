@@ -294,7 +294,7 @@ namespace CafeLib.BsvSharp.Builders
                     else
                         sb.Add(opcode, new VarType(data));
                 }
-                ps = ps.Slice(Math.Min(arg + 1, ps.Length));
+                ps = ps[Math.Min(arg + 1, ps.Length)..];
             }
             return sb;
         }
