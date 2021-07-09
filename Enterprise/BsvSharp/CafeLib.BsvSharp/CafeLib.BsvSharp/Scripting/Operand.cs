@@ -97,22 +97,22 @@ namespace CafeLib.BsvSharp.Scripting
                 if (v <= 0xff) 
                 {
                     code = Opcode.OP_PUSH1;
-                    val = new VarType(bytes.Slice(0, 1).ToArray());
+                    val = new VarType(bytes[..1].ToArray());
                 }
                 else if (v <= 0xffff) 
                 {
                     code = Opcode.OP_PUSH2;
-                    val = new VarType(bytes.Slice(0, 2).ToArray());
+                    val = new VarType(bytes[..2].ToArray());
                 }
                 else if (v <= 0xffffff) 
                 {
                     code = Opcode.OP_PUSH3;
-                    val = new VarType(bytes.Slice(0, 3).ToArray());
+                    val = new VarType(bytes[..3].ToArray());
                 }
                 else 
                 {
                     code = Opcode.OP_PUSH4;
-                    val = new VarType(bytes.Slice(0, 4).ToArray());
+                    val = new VarType(bytes[..4].ToArray());
                 }
             }
             var op = new Operand(code, val);
