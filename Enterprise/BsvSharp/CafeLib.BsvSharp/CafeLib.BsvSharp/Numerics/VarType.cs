@@ -70,7 +70,7 @@ namespace CafeLib.BsvSharp.Numerics
             }
 
             // False is zero or negative zero
-            return _buffer.Any() && _buffer.Span[index] != 0 && (_buffer.Span[index] != 0x80 || index < _buffer.Span.Length);
+            return index < _buffer.Span.Length &&  _buffer.Span[index] != 0x80;
         }
 
         public ScriptNum ToScriptNum(bool fRequireMinimal = false)
