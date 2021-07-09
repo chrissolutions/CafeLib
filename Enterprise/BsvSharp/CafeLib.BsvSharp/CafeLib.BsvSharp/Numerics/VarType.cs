@@ -6,6 +6,7 @@
 using System;
 using System.Buffers.Binary;
 using System.Diagnostics;
+using System.Linq;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Scripting;
@@ -53,24 +54,7 @@ namespace CafeLib.BsvSharp.Numerics
         /// <returns></returns>
         public uint AsUInt32BigEndian() => BinaryPrimitives.TryReadUInt32BigEndian(_buffer.Span, out var v) ? v : throw new InvalidOperationException();
 
-        public bool ToBool()
-        {
-            var index = 0;
-            while (index < _buffer.Span.Length)
-            {
-                if (_buffer.Span[index] == 0)
-                {
-                    ++index;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            // False is zero or negative zero
-            return index < _buffer.Span.Length &&  _buffer.Span[index] != 0x80;
-        }
+        public bool ToBool() => _buffer.Any(x => x != 0 && x != 0x80);
 
         public ScriptNum ToScriptNum(bool fRequireMinimal = false)
         {
