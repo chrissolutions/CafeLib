@@ -211,11 +211,11 @@ namespace CafeLib.BsvSharp.Builders
             else if (s.StartsWith("0x"))
             {
                 isHex = true;
-                bytes = Encoders.Hex.Decode(s.Substring(2));
+                bytes = Encoders.Hex.Decode(s[2..]);
             } 
             else if (long.TryParse(s, out var v))
             {
-                bytes = ScriptNum.Serialize(v);
+                bytes = new ScriptNum(v).ToArray();
             }
 
             if (len.HasValue && bytes != null && len.Value != bytes.Length)

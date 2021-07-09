@@ -6,7 +6,6 @@
 using System;
 using System.Buffers.Binary;
 using System.Diagnostics;
-using System.Linq;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Scripting;
@@ -322,7 +321,6 @@ namespace CafeLib.BsvSharp.Numerics
         public static implicit operator byte[](VarType rhs) => rhs.ToArray();
 
         public static implicit operator bool(VarType rhs) => rhs.ToBool();
-
 
         public static implicit operator ReadOnlyByteMemory(VarType rhs) => rhs.ToArray();
         public static implicit operator ReadOnlyByteSpan(VarType rhs) => rhs.Span;
