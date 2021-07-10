@@ -8,7 +8,7 @@ using Xunit;
 
 namespace CafeLib.BsvSharp.UnitTests.Keys
 {
-    public class KzPubKeyTests
+    public class KzPublicKeyTests
     {
         [Fact]
         public void FromPrivateKey()
