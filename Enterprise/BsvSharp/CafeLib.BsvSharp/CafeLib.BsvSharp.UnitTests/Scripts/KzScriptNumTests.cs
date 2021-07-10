@@ -4,6 +4,7 @@
 #endregion
 
 using System;
+using System.Runtime.InteropServices;
 using CafeLib.BsvSharp.Scripting;
 using Xunit;
 
@@ -85,6 +86,116 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             //new Sntv(-549755813889L, -2147483648, "808000000001"),
             //new Sntv(-1099511627777L, -2147483648, "810000000001"),
         };
+        
+        [Theory]
+        [InlineData(0L, 0, "")]
+        [InlineData(2L, 2, "02")]
+        [InlineData(4L, 4, "04")]
+        [InlineData(16L, 16, "10")]
+        [InlineData(128L, 128, "0080")]
+        [InlineData(256L, 256, "0100")]
+        [InlineData(32768L, 32768, "008000")]
+        [InlineData(65536L, 65536, "010000")]
+        [InlineData(8388608L, 8388608, "00800000")]
+        [InlineData(16777216L, 16777216, "01000000")]
+        public void Test_Power_Of_Two_Encoding(long v64, int v32, string hex)
+        {
+            var sn = new ScriptNum(v64);
+            Assert.Equal(v64, sn.GetValue());
+            Assert.Equal(v32, sn.GetInt());
+            Assert.Equal(hex, sn.GetHex());
+            sn = new ScriptNum(hex);
+            Assert.Equal(v64, sn.GetValue());
+            Assert.Equal(v32, sn.GetInt());
+            Assert.Equal(hex, sn.GetHex());
+        }
+        
+        [Theory]
+        [InlineData(0L, 0, "")]
+        [InlineData(-2L, -2, "82")]
+        [InlineData(-128L, -128, "8080")]
+        [InlineData(-256L, -256, "8100")]
+        [InlineData(-32768L, -32768, "808000")]
+        [InlineData(-65536L, -65536, "810000")]
+        [InlineData(-8388608L, -8388608, "80800000")]
+        [InlineData(-16777216L, -16777216, "81000000")]
+        [InlineData(16777216L, 16777216, "01000000")]
+        public void Test_Negative_Power_Of_Two_Encoding(long v64, int v32, string hex)
+        {
+            var sn = new ScriptNum(v64);
+            Assert.Equal(v64, sn.GetValue());
+            Assert.Equal(v32, sn.GetInt());
+            Assert.Equal(hex, sn.GetHex());
+            sn = new ScriptNum(hex);
+            Assert.Equal(v64, sn.GetValue());
+            Assert.Equal(v32, sn.GetInt());
+            Assert.Equal(hex, sn.GetHex());
+        }
+        
+        
+
+        [Theory]
+        [InlineData(-1L, -1, "81")]
+        [InlineData(-127L, -127, "ff")]
+        [InlineData(-255L, -255, "80ff")]
+        [InlineData(-32767L, -32767, "ffff")]
+        [InlineData(-65535L, -65535, "80ffff")]
+        [InlineData(-8388607L, -8388607, "ffffff")]
+        [InlineData(-16777215L, -16777215, "80ffffff")]
+        [InlineData(-2147483647L, -2147483647, "ffffffff")]
+        public void Test_High_Bit_Encoding(long v64, int v32, string hex)
+        {
+            var sn = new ScriptNum(v64);
+            Assert.Equal(v64, sn.GetValue());
+            Assert.Equal(v32, sn.GetInt());
+            Assert.Equal(hex, sn.GetHex());
+            sn = new ScriptNum(hex);
+            Assert.Equal(v64, sn.GetValue());
+            Assert.Equal(v32, sn.GetInt());
+            Assert.Equal(hex, sn.GetHex());
+        }
+        
+        [Theory]
+        [InlineData(-1L, -1, "81")]
+        [InlineData(-127L, -127, "ff")]
+        [InlineData(-255L, -255, "80ff")]
+        [InlineData(-32767L, -32767, "ffff")]
+        [InlineData(-65535L, -65535, "80ffff")]
+        [InlineData(-8388607L, -8388607, "ffffff")]
+        [InlineData(-16777215L, -16777215, "80ffffff")]
+        [InlineData(-2147483647L, -2147483647, "ffffffff")]
+        public void Test_Low_Bit_Encoding(long v64, int v32, string hex)
+        {
+            var sn = new ScriptNum(v64);
+            Assert.Equal(v64, sn.GetValue());
+            Assert.Equal(v32, sn.GetInt());
+            Assert.Equal(hex, sn.GetHex());
+            sn = new ScriptNum(hex);
+            Assert.Equal(v64, sn.GetValue());
+            Assert.Equal(v32, sn.GetInt());
+            Assert.Equal(hex, sn.GetHex());
+        }
+        
+        
+        [Theory]
+        [InlineData(-3L, -3, "83")]
+        [InlineData(-129L, -129, "8081")]
+        [InlineData(-257L, -257, "8101")]
+        [InlineData(-32769L, -32769, "808001")]
+        [InlineData(-65537L, -65537, "810001")]
+        [InlineData(-8388609L, -8388609, "80800001")]
+        [InlineData(-16777217L, -16777217, "81000001")]
+        public void Test_Negative_Encoding(long v64, int v32, string hex)
+        {
+            var sn = new ScriptNum(v64);
+            Assert.Equal(v64, sn.GetValue());
+            Assert.Equal(v32, sn.GetInt());
+            Assert.Equal(hex, sn.GetHex());
+            sn = new ScriptNum(hex);
+            Assert.Equal(v64, sn.GetValue());
+            Assert.Equal(v32, sn.GetInt());
+            Assert.Equal(hex, sn.GetHex());
+        }
 
         [Fact]
         public void TestValueEncoding()

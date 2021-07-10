@@ -7,7 +7,6 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
-using CafeLib.Bitcoin.Units;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
@@ -16,7 +15,6 @@ using CafeLib.BsvSharp.Units;
 
 namespace CafeLib.BsvSharp.Builders
 {
-
     /// <summary>
     /// Support dynamic construction of new Bitcoin transactions.
     /// See <see cref="Transaction"/> for serializing and sending.
