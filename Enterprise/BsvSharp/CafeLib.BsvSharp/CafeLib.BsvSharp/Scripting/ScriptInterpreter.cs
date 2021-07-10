@@ -10,14 +10,11 @@ using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
-using CafeLib.BsvSharp.Units;
 
 namespace CafeLib.BsvSharp.Scripting
 {
     public static class ScriptInterpreter
     {
-        private static readonly SignatureCheckerBase DefaultSignatureChecker = new SignatureCheckerBase();
-
         public static ScriptFlags ParseFlags(string flags)
         {
 #if false
