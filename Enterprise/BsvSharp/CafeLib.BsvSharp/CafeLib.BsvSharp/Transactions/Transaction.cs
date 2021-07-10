@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Buffers;
 using System.Linq;
+using System.Security.Cryptography;
+using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
@@ -328,6 +331,43 @@ namespace CafeLib.BsvSharp.Transactions
             }
 
             Inputs[nTxIn].Sign(this, privateKey, sighashType);
+        }
+        
+        public bool TryReadTransaction(ref ByteSequenceReader r)
+        {
+            var start = r.Data.Position;
+
+            if (!r.TryReadLittleEndian(out int version)) return false;
+            Version = version;
+            
+            if (!r.TryReadVariant(out var countIn)) return false;
+            Inputs = new TxInCollection();
+            for (var i = 0L; i < countIn; i++)
+            {
+                Inputs.Add(new TxIn());
+                //if (!txIn.TryReadTxIn(ref r)) goto fail;
+            }
+            
+            if (!r.TryReadVariant(out long countOut)) return false;
+            Outputs = new TxOutCollection();
+            for (var i = 0L; i < countOut; i++)
+            {
+                Outputs.Add(new TxOut());
+                // if (!txOut.TryReadTxOut(ref r)) goto fail;
+            }
+  
+            if (!r.TryReadLittleEndian(out uint lockTime)) return false;
+            LockTime = lockTime;
+
+            var end = r.Data.Position;
+
+            // Compute the transaction hash.
+            var txBytes = r.Data.Sequence.Slice(start, end).ToArray();
+            using var sha256 = SHA256.Create();
+            var hash1 = sha256.ComputeHash(txBytes);
+            var hash2 = sha256.ComputeHash(hash1);
+            Hash = new UInt256(hash2);
+            return true;
         }
 
         #region Helpers
