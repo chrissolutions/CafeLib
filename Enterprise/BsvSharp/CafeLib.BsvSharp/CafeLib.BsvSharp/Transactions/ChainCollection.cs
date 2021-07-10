@@ -8,6 +8,10 @@ namespace CafeLib.BsvSharp.Transactions
     /// </summary>
     public class ChainCollection<T> : List<T> where T : IChainId
     {
+        public ChainCollection()
+        {
+        }
+
         public ChainCollection(IEnumerable<T> collection)
             : base(collection)
         {
@@ -16,6 +20,10 @@ namespace CafeLib.BsvSharp.Transactions
 
     public class TxInCollection : ChainCollection<TxIn>
     {
+        public TxInCollection()
+        {
+        }
+
         public TxInCollection(IEnumerable<TxIn> collection)
             : base(collection)
         {
@@ -24,6 +32,10 @@ namespace CafeLib.BsvSharp.Transactions
 
     public class TxOutCollection : ChainCollection<TxOut>
     {
+        public TxOutCollection()
+        {
+        }
+
         public TxOutCollection(IEnumerable<TxOut> collection)
             : base(collection)
         {
@@ -32,6 +44,10 @@ namespace CafeLib.BsvSharp.Transactions
 
     public class TxCollection : ChainCollection<Transaction>
     {
+        public TxCollection()
+        {
+        }
+
         public TxCollection(IEnumerable<Transaction> collection)
             : base(collection)
         {
