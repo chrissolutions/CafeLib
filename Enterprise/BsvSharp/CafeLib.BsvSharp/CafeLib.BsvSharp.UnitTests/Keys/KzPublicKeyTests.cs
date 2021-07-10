@@ -56,6 +56,10 @@ namespace CafeLib.BsvSharp.UnitTests.Keys
             var publicKey = new PublicKey(publicKeyHex);
             var result = publicKey.ToHex();
             Assert.Equal(publicKeyHex, result);
+
+            
+
+
             var r = publicKey.ToAddress();
         }
     }

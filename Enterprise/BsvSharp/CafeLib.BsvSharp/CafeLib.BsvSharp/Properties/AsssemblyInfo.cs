@@ -29,4 +29,4 @@
 //
 // [assembly: AssemblyVersion("1.0.0.0")]
 // [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: InternalsVisibleTo("CafeLib.Bitcoin.UnitTests")]
+[assembly: InternalsVisibleTo("CafeLib.BsvSharp.UnitTests")]

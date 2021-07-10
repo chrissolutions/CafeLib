@@ -26,12 +26,23 @@ namespace CafeLib.BsvSharp.UnitTests.Encrypt
         public void BsvPrivateKeyTests()
         {
             var hex = "96c132224121b509b7d0a16245e957d9192609c5637c6228311287b1be21627a";
-            //var hex2 = "8080808080808080808080808080808080808080808080808080808080808080";
             var wifLivenet = "L2Gkw3kKJ6N24QcDuH4XDqt9cTqsKTVNDGz1CRZhk9cq4auDUbJy";
 
             var privKey = new PrivateKey(hex);
             var privKey2 = PrivateKey.FromWif(wifLivenet);
             Assert.Equal(privKey, privKey2);
+        }
+
+        [Fact]
+        public void WifToPrivateKey_Test()
+        {
+            const string wifKeySource = "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ";
+            const string privateKeyHex = "0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D";
+
+            var privkey = PrivateKey.FromWif(wifKeySource);
+            var decodedPrivKey = privkey.ToHex().ToUpper();
+            var outPrivKey = privkey.ToString();
+            Assert.Equal(privateKeyHex, decodedPrivKey);
         }
 
         [Fact]
