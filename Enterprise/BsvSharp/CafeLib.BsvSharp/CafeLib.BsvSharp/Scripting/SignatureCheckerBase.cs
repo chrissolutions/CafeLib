@@ -7,7 +7,7 @@ using CafeLib.BsvSharp.Numerics;
 
 namespace CafeLib.BsvSharp.Scripting
 {
-    public class SignatureCheckerBase
+    public class SignatureCheckerBase : ISignatureChecker
     {
         public virtual bool CheckSignature(VarType scriptSig, VarType vchPubKey, Script script, ScriptFlags flags) => false;
 

@@ -103,7 +103,7 @@ namespace CafeLib.BsvSharp.Scripting
         /// <param name="checker"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public static bool VerifyScript(Script scriptSig, Script scriptPub, ScriptFlags flags, SignatureCheckerBase checker, out ScriptError error)
+        public static bool VerifyScript(Script scriptSig, Script scriptPub, ScriptFlags flags, ISignatureChecker checker, out ScriptError error)
         {
             SetError(out error, ScriptError.UNKNOWN_ERROR);
 

@@ -30,12 +30,12 @@ namespace CafeLib.BsvSharp.Scripting
         /// <summary>
         /// Modeled on Bitcoin-SV interpreter.cpp 0.1.1 lines 384-1520
         /// </summary>
-        /// <param name="script"></param>
-        /// <param name="flags"></param>
-        /// <param name="checker"></param>
+        /// <param name="script">script instance</param>
+        /// <param name="flags">script flags</param>
+        /// <param name="checker">signature checker</param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public bool EvalScript(Script script, ScriptFlags flags, SignatureCheckerBase checker, out ScriptError error)
+        public bool EvalScript(Script script, ScriptFlags flags, ISignatureChecker checker, out ScriptError error)
         {
             var ros = new ReadOnlyByteSequence(script.Data);
             // ReSharper disable once UnusedVariable
@@ -937,16 +937,14 @@ namespace CafeLib.BsvSharp.Scripting
         {
             if (!IsValidSignatureEncoding(vchSig)) return SetError(out error, ScriptError.SIG_DER);
 
-            var sigInput = vchSig.Slice(0, (int)vchSig.Length - 1);
+            var sigInput = vchSig[..^1];
 
-            if (!PublicKey.CheckLowS(sigInput)) return SetError(out error, ScriptError.SIG_HIGH_S);
-
-            return true;
+            return PublicKey.CheckLowS(sigInput) || SetError(out error, ScriptError.SIG_HIGH_S);
         }
 
         /**
-         * A canonical signature exists of: <30> <total len> <02> <len R> <R> <02> <len
-         * S> <S> <hashtype>, where R and S are not negative (their first byte has its
+         * A canonical signature exists of: &lt;30&gt; &lt;total len&gt; &lt;02&gt; &lt;len R&gt; &lt;R&gt; &lt;02&gt;
+         * &lt;len S&gt; &lt;S&gt; &lt;hashtype&gt;, where R and S are not negative (their first byte has its
          * highest bit not set), and not excessively padded (do not start with a 0 byte,
          * unless an otherwise negative number follows, in which case a single 0 byte is
          * necessary and even required).
