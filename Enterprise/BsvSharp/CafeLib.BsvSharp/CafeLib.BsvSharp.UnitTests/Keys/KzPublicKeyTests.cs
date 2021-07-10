@@ -48,5 +48,15 @@ namespace CafeLib.BsvSharp.UnitTests.Keys
             Assert.True(privkey.VerifyPubKey(pubkey));
             Assert.Equal(publicKey, address.ToString());
         }
+
+        [Fact]
+        public void TestPublicKey_Hexadecimal()
+        {
+            const string publicKeyHex = "041ff0fe0f7b15ffaa85ff9f4744d539139c252a49710fb053bb9f2b933173ff9a7baad41d04514751e6851f5304fd243751703bed21b914f6be218c0fa354a341";
+            var publicKey = new PublicKey(publicKeyHex);
+            var result = publicKey.ToHex();
+            Assert.Equal(publicKeyHex, result);
+            var r = publicKey.ToAddress();
+        }
     }
 }
