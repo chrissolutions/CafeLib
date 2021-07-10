@@ -4,7 +4,6 @@
 #endregion
 
 using System.IO;
-using CafeLib.Bitcoin.Units;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Persistence;
