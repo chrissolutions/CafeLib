@@ -21,35 +21,39 @@ namespace CafeLib.BsvSharp.Transactions
     /// remain in whatever buffers were originally used. No script parsing data is maintained. 
     /// Not intended for making dynamic changes to a block (mining).
     /// </summary>
-    public class Block : Chain.BlockHeader
+    public class Block : BlockHeader
     {
-        public Chain.Transaction[] Txs { get; private set; }
+        public TxCollection Txs { get; private set; }
 
         public Block()
         {
         }
-
-        public Block
-        (
-            Chain.Transaction[] txs,
-            Int32 version,
+        
+        public Block(
+            int version,
             UInt256 hashPrevBlock,
             UInt256 hashMerkleRoot,
             UInt32 time,
             UInt32 bits,
             UInt32 nonce
+        ) : base(version, hashPrevBlock, hashMerkleRoot, time, bits, nonce)
+        {
+            Txs = new TxCollection();
+        }
+        
+        public Block
+        (
+            IEnumerable<Transaction> txs,
+            int version,
+            UInt256 hashPrevBlock,
+            UInt256 hashMerkleRoot,
+            uint time,
+            uint bits,
+            uint nonce
         )
             : base(version, hashPrevBlock, hashMerkleRoot, time, bits, nonce)
         {
-            Txs = txs;
-        }
-
-        public bool TryParseBlock(ref ReadOnlyByteSequence ros, int height, IBlockParser bp)
-        {
-            var r = new ByteSequenceReader(ros);
-            if (!TryParseBlock(ref r, height, bp)) return false;
-            ros = ros.Data.Slice(r.Data.Consumed);
-            return true;
+            Txs = new TxCollection(txs);
         }
 
         public bool TryReadBlock(ref ReadOnlyByteSequence ros)
@@ -59,57 +63,23 @@ namespace CafeLib.BsvSharp.Transactions
             ros = ros.Data.Slice(r.Data.Consumed);
             return true;
         }
-
-        public bool TryParseBlock(ref ByteSequenceReader r, int height, IBlockParser bp)
-        {
-            var offset = r.Data.Consumed;
-
-            if (!TryReadBlockHeader(ref r)) goto fail;
-
-            Height = height;
-
-            bp.BlockStart(this, offset);
-
-            if (!r.TryReadVariant(out var count)) goto fail;
-
-            Txs = new Chain.Transaction[count];
-
-            for (var i = 0L; i < count; i++)
-            {
-                var t = new Chain.Transaction();
-                Txs[i] = t;
-                if (!t.TryParseTransaction(ref r, bp)) goto fail;
-            }
-
-            if (!VerifyMerkleRoot()) goto fail;
-
-            bp.BlockParsed(this, r.Data.Consumed);
-
-            return true;
-        fail:
-            return false;
-        }
-
+        
         public bool TryReadBlock(ref ByteSequenceReader r)
         {
-            if (!TryReadBlockHeader(ref r)) goto fail;
+            if (!TryReadBlockHeader(ref r)) return false;
 
-            if (!r.TryReadVariant(out var count)) goto fail;
+            if (!r.TryReadVariant(out var count)) return false;
 
-            Txs = new Chain.Transaction[count];
-
-            for (var i = 0L; i < count; i++)
+            var transactions = new Transaction[count];
+            for (var i = 0; i < count; i++)
             {
-                var t = new Chain.Transaction();
-                Txs[i] = t;
-                if (!t.TryReadTransaction(ref r)) goto fail;
+                var t = new Transaction();
+                transactions[i] = t;
+                if (!t.TryReadTransaction(ref r)) return false;
             }
+            Txs = new TxCollection(transactions);
 
-            if (!VerifyMerkleRoot()) goto fail;
-
-            return true;
-        fail:
-            return false;
+            return VerifyMerkleRoot();
         }
 
         private UInt256 ComputeMerkleRoot() => MerkleTree.ComputeMerkleRoot(Txs);
