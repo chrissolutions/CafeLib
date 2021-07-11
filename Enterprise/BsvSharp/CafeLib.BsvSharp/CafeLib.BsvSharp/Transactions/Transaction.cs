@@ -19,7 +19,7 @@ namespace CafeLib.BsvSharp.Transactions
     public class Transaction : IChainId, IDataSerializer
     {
         private ScriptBuilder _changeScriptBuilder;
-        private bool _hasChangeScript = false;
+        private bool _hasChangeScript;
         private Amount _fee = Amount.Null;
         private long _feePerKb = RootService.Network.Consensus.FeePerKilobyte;
 
