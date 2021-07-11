@@ -4,6 +4,7 @@
 #endregion
 
 using System;
+using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Encoding;
@@ -193,16 +194,13 @@ namespace CafeLib.BsvSharp.Transactions
         //    return false;
         //}
 
-        //public bool TryReadTxIn(ref ByteSequenceReader r)
-        //{
-        //    if (!_prevOutPoint.TryReadOutPoint(ref r)) goto fail;
-        //    if (!_scriptSig.TryReadScript(ref r)) goto fail;
-        //    if (!r.TryReadLittleEndian(out uint sequenceNumber)) goto fail;
-        //    SequenceNumber = sequenceNumber;
-
-        //    return true;
-        //    fail:
-        //    return false;
-        //}
+        public bool TryReadTxIn(ref ByteSequenceReader r)
+        {
+            if (!PrevOut.TryReadOutPoint(ref r)) return false;
+            if (!ScriptSig.TryReadScript(ref r)) return false;
+            if (!r.TryReadLittleEndian(out uint sequenceNumber)) return false;
+            SequenceNumber = sequenceNumber;
+            return true;
+        }
     }
 }

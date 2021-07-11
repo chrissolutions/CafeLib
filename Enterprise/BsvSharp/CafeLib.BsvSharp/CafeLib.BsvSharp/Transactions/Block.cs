@@ -90,7 +90,7 @@ namespace CafeLib.BsvSharp.Transactions
         //    return false;
         //}
 
-        public bool TryReadBlock(ref ByteSequenceReader r)
+        private bool TryReadBlock(ref ByteSequenceReader r)
         {
             if (!TryReadBlockHeader(ref r)) goto fail;
 

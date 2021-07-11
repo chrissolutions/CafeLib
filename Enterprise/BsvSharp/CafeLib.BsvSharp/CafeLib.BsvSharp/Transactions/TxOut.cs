@@ -5,6 +5,7 @@
 
 using System;
 using System.Linq;
+using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
@@ -16,7 +17,7 @@ namespace CafeLib.BsvSharp.Transactions
 {
     public struct TxOut : IChainId, IDataSerializer, IEquatable<TxOut>
     {
-        private readonly ScriptBuilder _scriptBuilder;
+        private ScriptBuilder _scriptBuilder;
 
         public UInt256 TxHash { get; }
         public long Index { get; }
@@ -86,15 +87,16 @@ namespace CafeLib.BsvSharp.Transactions
         //    return false;
         //}
 
-        //public bool TryReadTxOut(ref ByteSequenceReader reader)
-        //{
-        //    if (!reader.TryReadLittleEndian(out _amount)) goto fail;
-        //    if (!_script.TryReadScript(ref reader)) goto fail;
+        public bool TryReadTxOut(ref ByteSequenceReader reader)
+        {
+            if (!reader.TryReadLittleEndian(out long amount)) return false;
+            Amount = amount;
 
-        //    return true;
-        //fail:
-        //    return false;
-        //}
+            var script = new Script();
+            if (!script.TryReadScript(ref reader)) return false;
+            _scriptBuilder = new ScriptBuilder(script);
+            return true;
+        }
 
         //public void Write(BinaryWriter s)
         //{

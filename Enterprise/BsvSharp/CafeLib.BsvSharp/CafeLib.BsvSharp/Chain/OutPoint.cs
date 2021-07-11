@@ -41,5 +41,13 @@ namespace CafeLib.BsvSharp.Chain
             writer.Add(TxId).Add(Index);
             return writer;
         }
+        
+        public IDataWriter WriteTo(IDataWriter writer)
+        {
+            writer
+                .Write(TxId)
+                .Write(Index);
+            return writer;
+        }
     }
 }

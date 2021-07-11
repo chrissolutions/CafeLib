@@ -355,16 +355,18 @@ namespace CafeLib.BsvSharp.Transactions
             Inputs = new TxInCollection();
             for (var i = 0L; i < countIn; i++)
             {
+                var txIn = new TxIn();
+                if (!txIn.TryReadTxIn(ref r)) return false;
                 Inputs.Add(new TxIn());
-                //if (!txIn.TryReadTxIn(ref r)) goto fail;
             }
             
             if (!r.TryReadVariant(out long countOut)) return false;
             Outputs = new TxOutCollection();
             for (var i = 0L; i < countOut; i++)
             {
-                Outputs.Add(new TxOut());
-                // if (!txOut.TryReadTxOut(ref r)) goto fail;
+                var txOut = new TxOut();
+                if (!txOut.TryReadTxOut(ref r)) return false;
+                Outputs.Add(txOut);
             }
   
             if (!r.TryReadLittleEndian(out uint lockTime)) return false;
@@ -422,6 +424,12 @@ namespace CafeLib.BsvSharp.Transactions
             throw new TransactionException($"Expected less than {maximumFee} but got {unspent}");
         }
 
+        /// <summary>
+        /// Determines whether an input transaction exist. 
+        /// </summary>
+        /// <param name="txHash"></param>
+        /// <param name="outputIndex"></param>
+        /// <returns></returns>
         private bool InputExists(UInt256 txHash, int outputIndex) =>
             Inputs.Any(x => x.PrevOut.TxId == txHash && x.PrevOut.Index == outputIndex);
         
