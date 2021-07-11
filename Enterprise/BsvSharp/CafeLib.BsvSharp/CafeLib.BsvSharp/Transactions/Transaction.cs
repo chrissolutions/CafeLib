@@ -318,6 +318,12 @@ namespace CafeLib.BsvSharp.Transactions
             return checker.CheckSignature(scriptSig, publicKey.ToArray(), script, flags);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="nTxIn"></param>
+        /// <param name="privateKey"></param>
+        /// <param name="sighashType"></param>
         public void SignInput(int nTxIn, PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.Unsupported)
         {
             if (nTxIn + 1 > Inputs.Count)
@@ -333,6 +339,11 @@ namespace CafeLib.BsvSharp.Transactions
             Inputs[nTxIn].Sign(this, privateKey, sighashType);
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
         public bool TryReadTransaction(ref ByteSequenceReader r)
         {
             var start = r.Data.Position;
