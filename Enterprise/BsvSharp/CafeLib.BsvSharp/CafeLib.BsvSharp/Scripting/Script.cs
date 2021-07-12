@@ -205,7 +205,7 @@ namespace CafeLib.BsvSharp.Scripting
         /// Decode script opcodes and push data.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Operand> Decode()
+        public readonly IEnumerable<Operand> Decode()
         {
             var ros = new ReadOnlyByteSequence(Data);
 
@@ -257,7 +257,7 @@ namespace CafeLib.BsvSharp.Scripting
             return false;
         }
 
-        public string ToHexString()
+        public readonly string ToHexString()
         {
             return Encoders.Hex.Encode(Data);
         }
