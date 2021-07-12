@@ -80,6 +80,7 @@ namespace CafeLib.BsvSharp.Chain
             bp.TxInStart(this, r.Data.Consumed);
 
             if (!_scriptSig.TryParseScript(ref r, bp)) goto fail;
+
             if (!r.TryReadLittleEndian(out _sequence)) goto fail;
 
             bp.TxInParsed(this, r.Data.Consumed);

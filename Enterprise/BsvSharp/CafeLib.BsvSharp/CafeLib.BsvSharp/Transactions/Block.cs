@@ -12,7 +12,6 @@ using CafeLib.BsvSharp.Scripting;
 
 namespace CafeLib.BsvSharp.Transactions
 {
-
     /// <summary>
     /// Closely mirrors the data and layout of a serialized Bitcoin block.
     /// Focus is on efficiency when processing large blocks.

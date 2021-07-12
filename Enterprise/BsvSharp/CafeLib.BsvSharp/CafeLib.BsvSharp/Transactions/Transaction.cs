@@ -357,7 +357,7 @@ namespace CafeLib.BsvSharp.Transactions
             {
                 var txIn = new TxIn();
                 if (!txIn.TryReadTxIn(ref r)) return false;
-                Inputs.Add(new TxIn());
+                Inputs.Add(txIn);
             }
             
             if (!r.TryReadVariant(out long countOut)) return false;

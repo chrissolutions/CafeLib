@@ -26,8 +26,6 @@ namespace CafeLib.BsvSharp.Transactions
     /// </summary>
     public struct TxIn : IChainId, IDataSerializer
     {
-        private ScriptBuilder _scriptSig;
-
         /// <summary>
         /// This is the ScriptPub of the referenced Prevout.
         /// Used to sign and verify this input.
@@ -70,9 +68,9 @@ namespace CafeLib.BsvSharp.Transactions
         public string TxId => Encoders.HexReverse.Encode(Hash);
         public int Index => PrevOut.Index;
 
-        public OutPoint PrevOut { get; }
+        public OutPoint PrevOut { get; private set; }
 
-        public Script ScriptSig => _scriptSig;
+        public Script ScriptSig { get; private set; }
 
         public uint SequenceNumber { get; set; }
 
@@ -101,7 +99,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             PrevOut = prevOutPoint;
             Amount = amount;
-            _scriptSig = utxoScript;
+            ScriptSig = utxoScript;
             IsFullySigned = false;
             _scriptBuilder = scriptBuilder;
             SequenceNumber = sequenceNumber;
@@ -138,11 +136,12 @@ namespace CafeLib.BsvSharp.Transactions
         {
             var signedOk = true;
             var sigHash = new SignatureHashType(SignatureHashEnum.All | SignatureHashEnum.ForkId);
+            var scriptSig = new ScriptBuilder(ScriptSig);
 
-            if (_scriptSig.Ops.Count == 2)
+            if (scriptSig.Ops.Count == 2)
             {
                 var publicKey = new PublicKey();
-                publicKey.Set(_scriptSig.Ops[1].Operand.Data);
+                publicKey.Set(scriptSig.Ops[1].Operand.Data);
                 if (privateKey == null || !publicKey.IsValid) return false;
 
                 Amount = Amount >= Amount.Zero 
@@ -160,9 +159,9 @@ namespace CafeLib.BsvSharp.Transactions
                 sigWithType[^1] = (byte)sigHash.RawSigHashType;
                 var op = Operand.Push(sigWithType.AsSpan());
                 if (confirmExistingSignatures)
-                    signedOk &= op == _scriptSig.Ops[0].Operand;
+                    signedOk &= op == scriptSig.Ops[0].Operand;
                 else
-                    _scriptSig.Ops[0] = op;
+                    scriptSig.Ops[0] = op;
             }
 
             return signedOk;
@@ -196,8 +195,14 @@ namespace CafeLib.BsvSharp.Transactions
 
         public bool TryReadTxIn(ref ByteSequenceReader r)
         {
-            if (!PrevOut.TryReadOutPoint(ref r)) return false;
-            if (!ScriptSig.TryReadScript(ref r)) return false;
+            var prevOut = new OutPoint();
+            if (!prevOut.TryReadOutPoint(ref r)) return false;
+            PrevOut = prevOut;
+
+            var script = new Script();
+            if (!script.TryReadScript(ref r)) return false;
+            ScriptSig = script;
+
             if (!r.TryReadLittleEndian(out uint sequenceNumber)) return false;
             SequenceNumber = sequenceNumber;
             return true;
