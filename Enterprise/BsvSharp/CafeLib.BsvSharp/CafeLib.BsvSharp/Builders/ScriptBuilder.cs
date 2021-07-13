@@ -47,7 +47,6 @@ namespace CafeLib.BsvSharp.Builders
         public bool IsFinal => _isFinal && _ops.All(op => op.IsFinal);
         public bool IsPub { get => _isPub == true; set => _isPub = value ? (bool?)true : null; }
         public bool IsSig { get => _isPub == false; set => _isPub = value ? (bool?)false : null; }
-        public long Length => _ops.Sum(o => o.Length);
 
         /// <summary>
         /// If the script implements a known template, this will be the template type.
