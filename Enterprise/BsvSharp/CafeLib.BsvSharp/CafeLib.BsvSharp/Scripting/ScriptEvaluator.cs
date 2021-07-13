@@ -340,18 +340,18 @@ namespace CafeLib.BsvSharp.Scripting
 
                             case Opcode.OP_PICK:
                             case Opcode.OP_ROLL:
-                                {
-                                    // (xn ... x2 x1 x0 n - xn ... x2 x1 x0 xn)
-                                    // (xn ... x2 x1 x0 n - ... x2 x1 x0 xn)
-                                    if (_stack.Count < 2) return SetError(out error, ScriptError.INVALID_STACK_OPERATION);
-                                    var n = _stack.Pop().ToScriptNum(fRequireMinimal).GetInt();
-                                    if (n < 0 || n >= _stack.Count) return SetError(out error, ScriptError.INVALID_STACK_OPERATION);
-                                    if (op.Code == Opcode.OP_ROLL)
-                                        _stack.Roll(n);
-                                    else
-                                        _stack.Pick(n);
-                                }
-                                break;
+                            {
+                                // (xn ... x2 x1 x0 n - xn ... x2 x1 x0 xn)
+                                // (xn ... x2 x1 x0 n - ... x2 x1 x0 xn)
+                                if (_stack.Count < 2) return SetError(out error, ScriptError.INVALID_STACK_OPERATION);
+                                var n = _stack.Pop().ToScriptNum(fRequireMinimal).GetInt();
+                                if (n < 0 || n >= _stack.Count) return SetError(out error, ScriptError.INVALID_STACK_OPERATION);
+                                if (op.Code == Opcode.OP_ROLL)
+                                    _stack.Roll(n);
+                                else
+                                    _stack.Pick(n);
+                            }
+                            break;
 
                             case Opcode.OP_ROT:
                             {
@@ -707,7 +707,7 @@ namespace CafeLib.BsvSharp.Scripting
                                     return false;
                                 }
 
-                                // Subset of script starting at the most recent codeseparator
+                                // Subset of script starting at the most recent code separator.
                                 var subScript = script.Slice(pBeginCodeHash, pend);
 
                                 // Remove signature for pre-fork scripts
