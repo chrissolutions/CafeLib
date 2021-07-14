@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Scripting;
@@ -25,18 +26,27 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
 
             foreach (var json in jarray)
             {
-                values.Add(FindValueInArray(json));
+                var jtoken = FindValueInArray(json);
+                if (jtoken.Type == JTokenType.String && jtoken.Parent.Count >= 3)
+                {
+                    var prevTxHash = jtoken.Parent[0].Value<string>();
+                    var prevTxIndex = jtoken.Parent[1].Value<string>();
+                    var prevScript = jtoken.Parent[2].Value<string>();
+                    var serializedTx = jtoken.Parent.Parent.Parent[1].Value<string>();
+                    var verifyFlag = jtoken.Parent.Parent.Parent[2].Value<string>();
+                    values.Add(string.Join('|', prevTxHash, prevTxIndex, prevScript, serializedTx, verifyFlag));
+                }
             }
 
             return values;
 
-            static string FindValueInArray(JToken token)
+            static JToken FindValueInArray(JToken token)
             {
                 if (!(token is JArray items)) return string.Empty;
 
                 foreach (var json in items)
                 {
-                    return json.Type == JTokenType.Array ? FindValueInArray((JArray)json) : json.Value<string>();
+                    return json.Type == JTokenType.Array ? FindValueInArray((JArray)json) : json;
                 }
 
                 return string.Empty;
@@ -74,6 +84,7 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
         public void Basic()
         {
             var lines = GetValidTransaction();
+            var t = lines.Where(x => !x.Contains("P2SH"));
             Console.WriteLine(lines);
         }
     }
