@@ -19,9 +19,26 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
     public class TransactionTests
     {
         private const string DataFolder = @"..\..\..\data";
-        private static IEnumerable<string> GetValidTransaction()
+
+        /// <summary>
+        /// Test Vector
+        /// </summary>
+        class TxInfo
         {
-            var values = new List<string>();
+            /// <summary>
+            /// ScriptSig as hex string.
+            /// </summary>
+            public List<string> Transactions;
+            public string Serialized;
+            public string VerifyFlag;
+        }
+
+
+
+
+        private static IEnumerable<TxInfo> GetValidTransaction()
+        {
+            var values = new List<TxInfo>();
             var jarray = JArray.Parse(File.ReadAllText(Path.Combine(DataFolder, "tx_valid.json")));
 
             foreach (var json in jarray)
@@ -29,12 +46,8 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
                 var jtoken = FindValueInArray(json);
                 if (jtoken.Type == JTokenType.String && jtoken.Parent.Count >= 3)
                 {
-                    var prevTxHash = jtoken.Parent[0].Value<string>();
-                    var prevTxIndex = jtoken.Parent[1].Value<string>();
-                    var prevScript = jtoken.Parent[2].Value<string>();
-                    var serializedTx = jtoken.Parent.Parent.Parent[1].Value<string>();
-                    var verifyFlag = jtoken.Parent.Parent.Parent[2].Value<string>();
-                    values.Add(string.Join('|', prevTxHash, prevTxIndex, prevScript, serializedTx, verifyFlag));
+                    var txInfo = GetTransactionInfo(json);
+                    values.Add(txInfo);
                 }
             }
 
@@ -50,6 +63,30 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
                 }
 
                 return string.Empty;
+            }
+
+            static TxInfo GetTransactionInfo(JToken token)
+            {
+                var transactions = new List<string>();
+                var parent = token.Parent;
+                
+                while (token != null)
+                {
+                    token = FindValueInArray(token);
+                    parent = token.Parent;
+                    var prevTxHash = parent?[0]?.Value<string>();
+                    var prevTxIndex = parent?[1]?.Value<string>();
+                    var prevScript = parent?[2]?.Value<string>();
+                    transactions.Add(string.Join('|', prevTxHash, prevTxIndex, prevScript));
+                    token = parent?.Next;
+                }
+
+                return new TxInfo
+                {
+                    Transactions = transactions,
+                    Serialized = parent?.Parent?.Parent?[1]?.Value<string>(),
+                    VerifyFlag = parent?.Parent?.Parent?[2]?.Value<string>()
+                };
             }
         }
 
@@ -84,8 +121,8 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
         public void Basic()
         {
             var lines = GetValidTransaction();
-            var t = lines.Where(x => !x.Contains("P2SH"));
-            Console.WriteLine(lines);
+            var t = lines.Where(x => !x.VerifyFlag.Contains("P2SH"));
+            Console.WriteLine("kilroy");
         }
     }
 }
