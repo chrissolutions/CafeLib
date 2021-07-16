@@ -130,7 +130,7 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
         {
             return new TxInfo
             {
-                Hash = new UInt256(Encoders.Hex.Decode(hash)),
+                Hash = new UInt256(Encoders.HexReverse.Decode(hash)),
                 Index = int.Parse(index),
                 ScriptPubKey = scriptPubKey
             };
@@ -146,8 +146,13 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
                     var decode = Encoders.Hex.Decode(x.Serialized);
                     var hash = Hashes.Hash256(decode);
 
+
                     var transaction = new Transactions.Transaction(Encoders.Hex.Decode(x.Serialized));
                     var count = transaction.Inputs.Count;
+                    
+                    var h = x.Transactions.First().Hash;
+                    var j = transaction.Inputs.First().Hash;
+
                 });
 
             Console.WriteLine("kilroy");
