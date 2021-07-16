@@ -11,6 +11,7 @@ using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Encoding;
+using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.Core.Extensions;
 using Microsoft.VisualBasic.CompilerServices;
@@ -31,13 +32,13 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
             /// <summary>
             /// ScriptSig as hex string.
             /// </summary>
-            public List<string> Transactions;
-            public string Serialized;
-            public string VerifyFlag;
+            public List<string> Transactions { get; set; }
+            public string Serialized { get; set; }
+            public string VerifyFlag { get; set; }
         }
 
 
-        private static IEnumerable<TxInfo> GetValidTransaction()
+        private static IEnumerable<TxInfo> GetValidTransactions()
         {
             var values = new List<TxInfo>();
             var jarray = JArray.Parse(File.ReadAllText(Path.Combine(DataFolder, "tx_valid.json")));
@@ -118,16 +119,20 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
             return tx;
         }
 
+        //(UInt256 hash, int index, uint scriptFlags) ParseTransactionInfo(TxInfo txInfo)
+        //{
+        //}
+
         [Fact]
         public void Basic()
         {
-            GetValidTransaction()
+            GetValidTransactions()
                 .Where(x => !x.VerifyFlag.Contains("P2SH"))
                 .ForEach(x =>
                 {
                     var decode = Encoders.Hex.Decode(x.Serialized);
                     var hash = Hashes.Hash256(decode);
-
+                    
                     var transaction = new Transactions.Transaction(Encoders.Hex.Decode(x.Serialized));
                     var count = transaction.Inputs.Count;
                 });
