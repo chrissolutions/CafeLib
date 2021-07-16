@@ -9,7 +9,10 @@ using System.IO;
 using System.Linq;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Chain;
+using CafeLib.BsvSharp.Crypto;
+using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.Core.Extensions;
 using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -32,8 +35,6 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
             public string Serialized;
             public string VerifyFlag;
         }
-
-
 
 
         private static IEnumerable<TxInfo> GetValidTransaction()
@@ -120,8 +121,17 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
         [Fact]
         public void Basic()
         {
-            var lines = GetValidTransaction();
-            var t = lines.Where(x => !x.VerifyFlag.Contains("P2SH"));
+            GetValidTransaction()
+                .Where(x => !x.VerifyFlag.Contains("P2SH"))
+                .ForEach(x =>
+                {
+                    var decode = Encoders.Hex.Decode(x.Serialized);
+                    var hash = Hashes.Hash256(decode);
+
+                    var transaction = new Transactions.Transaction(Encoders.Hex.Decode(x.Serialized));
+                    var count = transaction.Inputs.Count;
+                });
+
             Console.WriteLine("kilroy");
         }
     }

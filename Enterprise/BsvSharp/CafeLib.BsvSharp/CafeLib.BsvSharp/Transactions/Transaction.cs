@@ -41,6 +41,12 @@ namespace CafeLib.BsvSharp.Transactions
         {
         }
 
+        public Transaction(byte[] bytes)
+        {
+            var reader = new ByteSequenceReader(bytes);
+            TryReadTransaction(ref reader);
+        }
+
         public Transaction(int version, TxInCollection vin, TxOutCollection vout, uint lockTime, long fee = 0L, TransactionOption option = 0)
         {
             Version = version;
@@ -338,7 +344,7 @@ namespace CafeLib.BsvSharp.Transactions
 
             Inputs[nTxIn].Sign(this, privateKey, sighashType);
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
