@@ -24,32 +24,35 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
     {
         private const string DataFolder = @"..\..\..\data";
 
-        /// <summary>
-        /// Test Vector
-        /// </summary>
         class TxInfo
+        {
+            public UInt256 Hash { get; set; }
+            public int Index { get; set; }
+            public string ScriptPubKey { get; set; }
+        }
+        
+        class TxInput
         {
             /// <summary>
             /// ScriptSig as hex string.
             /// </summary>
-            public List<string> Transactions { get; set; }
+            public List<TxInfo> Transactions { get; set; }
             public string Serialized { get; set; }
-            public string VerifyFlag { get; set; }
+            public ScriptFlags VerifyFlags { get; set; }
         }
-
-
-        private static IEnumerable<TxInfo> GetValidTransactions()
+        
+        private static IEnumerable<TxInput> GetValidTransactions()
         {
-            var values = new List<TxInfo>();
+            var values = new List<TxInput>();
             var jarray = JArray.Parse(File.ReadAllText(Path.Combine(DataFolder, "tx_valid.json")));
 
             foreach (var json in jarray)
             {
                 var jtoken = FindValueInArray(json);
-                if (jtoken.Type == JTokenType.String && jtoken.Parent.Count >= 3)
+                if (jtoken.Type == JTokenType.String && jtoken.Parent?.Count >= 3)
                 {
-                    var txInfo = GetTransactionInfo(json);
-                    values.Add(txInfo);
+                    var txInput = GetTransactionInput(json);
+                    values.Add(txInput);
                 }
             }
 
@@ -67,10 +70,11 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
                 return string.Empty;
             }
 
-            static TxInfo GetTransactionInfo(JToken token)
+            static TxInput GetTransactionInput(JToken token)
             {
-                var transactions = new List<string>();
+                var transactions = new List<TxInfo>();
                 var parent = token.Parent;
+                ScriptFlags verify = 0U;
                 
                 while (token != null)
                 {
@@ -79,15 +83,18 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
                     var prevTxHash = parent?[0]?.Value<string>();
                     var prevTxIndex = parent?[1]?.Value<string>();
                     var prevScript = parent?[2]?.Value<string>();
-                    transactions.Add(string.Join('|', prevTxHash, prevTxIndex, prevScript));
+                    transactions.Add(BuildTransactionInfo(prevTxHash, prevTxIndex, prevScript));
                     token = parent?.Next;
                 }
 
-                return new TxInfo
+                var flags = parent?.Parent?.Parent?[2]?.Value<string>() ?? "NONE";
+                flags.Split(',').ForEach(x => verify |= Enum.Parse<ScriptFlags>($"VERIFY_{x}"));
+
+                return new TxInput
                 {
                     Transactions = transactions,
                     Serialized = parent?.Parent?.Parent?[1]?.Value<string>(),
-                    VerifyFlag = parent?.Parent?.Parent?[2]?.Value<string>()
+                    VerifyFlags = verify
                 };
             }
         }
@@ -119,20 +126,26 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
             return tx;
         }
 
-        //(UInt256 hash, int index, uint scriptFlags) ParseTransactionInfo(TxInfo txInfo)
-        //{
-        //}
+        private static TxInfo BuildTransactionInfo(string hash, string index, string scriptPubKey)
+        {
+            return new TxInfo
+            {
+                Hash = new UInt256(Encoders.Hex.Decode(hash)),
+                Index = int.Parse(index),
+                ScriptPubKey = scriptPubKey
+            };
+        }
 
         [Fact]
         public void Basic()
         {
             GetValidTransactions()
-                .Where(x => !x.VerifyFlag.Contains("P2SH"))
+                .Where(x => (x.VerifyFlags & ScriptFlags.VERIFY_P2SH) == 0)
                 .ForEach(x =>
                 {
                     var decode = Encoders.Hex.Decode(x.Serialized);
                     var hash = Hashes.Hash256(decode);
-                    
+
                     var transaction = new Transactions.Transaction(Encoders.Hex.Decode(x.Serialized));
                     var count = transaction.Inputs.Count;
                 });
