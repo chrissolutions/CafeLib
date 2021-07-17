@@ -143,19 +143,11 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
                 .Where(x => (x.VerifyFlags & ScriptFlags.VERIFY_P2SH) == 0)
                 .ForEach(x =>
                 {
-                    var decode = Encoders.Hex.Decode(x.Serialized);
-                    var hash = Hashes.Hash256(decode);
-
-
+                    var expectedHash = x.Transactions.First().Hash;
                     var transaction = new Transactions.Transaction(Encoders.Hex.Decode(x.Serialized));
-                    var count = transaction.Inputs.Count;
-                    
-                    var h = x.Transactions.First().Hash;
-                    var j = transaction.Inputs.First().Hash;
-
+                    var previousHash = transaction.Inputs.First().Hash;
+                    Assert.Equal(expectedHash, previousHash);
                 });
-
-            Console.WriteLine("kilroy");
         }
     }
 }
