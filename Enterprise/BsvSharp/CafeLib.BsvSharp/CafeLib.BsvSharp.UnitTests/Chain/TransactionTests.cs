@@ -137,7 +137,7 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
         }
 
         [Fact]
-        public void Basic()
+        public void Deserialize_Transaction()
         {
             GetValidTransactions()
                 .Where(x => (x.VerifyFlags & ScriptFlags.VERIFY_P2SH) == 0)
