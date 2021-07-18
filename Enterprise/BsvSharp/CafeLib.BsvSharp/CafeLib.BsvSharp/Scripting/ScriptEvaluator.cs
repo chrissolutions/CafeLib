@@ -6,6 +6,7 @@
 using System.Runtime.CompilerServices;
 using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Crypto;
+using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Services;
