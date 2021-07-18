@@ -220,9 +220,9 @@ namespace CafeLib.BsvSharp.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryReadUInt256(ref UInt256 destination)
         {
-            var bytes = destination.Span;
-            if (!TryCopyTo(bytes)) return false;
-            Advance(bytes.Length);
+            var span= destination.Span;
+            if (!TryCopyTo(span)) return false;
+            Advance(span.Length);
             return true;
         }
     }
