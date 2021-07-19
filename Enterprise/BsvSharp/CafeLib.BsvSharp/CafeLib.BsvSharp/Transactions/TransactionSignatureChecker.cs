@@ -138,7 +138,7 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         /// <summary>
-        /// 
+        /// Compute signature hash.
         /// </summary>
         /// <param name="scriptCode"></param>
         /// <param name="txTo"></param>

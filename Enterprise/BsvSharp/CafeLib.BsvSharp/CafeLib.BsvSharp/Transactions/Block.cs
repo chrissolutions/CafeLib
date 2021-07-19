@@ -91,24 +91,18 @@ namespace CafeLib.BsvSharp.Transactions
 
         private bool TryReadBlock(ref ByteSequenceReader r)
         {
-            if (!TryReadBlockHeader(ref r)) goto fail;
+            if (!TryReadBlockHeader(ref r)) return false;
+            if (!r.TryReadVariant(out var count)) return false;
 
-            if (!r.TryReadVariant(out var count)) goto fail;
-
-            Txs = new TxCollection(new Transaction[count]);
-
+            Txs = new TxCollection();
             for (var i = 0; i < count; i++)
             {
                 var t = new Transaction();
-                Txs[i] = t;
-                if (!t.TryReadTransaction(ref r)) goto fail;
+                if (!t.TryReadTransaction(ref r)) return false;
+                Txs.Add(t);
             }
 
-            if (!VerifyMerkleRoot()) goto fail;
-
-            return true;
-        fail:
-            return false;
+            return VerifyMerkleRoot();
         }
 
         private UInt256 ComputeMerkleRoot() => Txs.ComputeMerkleRoot();

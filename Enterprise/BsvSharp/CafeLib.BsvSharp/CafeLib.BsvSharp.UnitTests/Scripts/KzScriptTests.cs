@@ -91,7 +91,7 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
         {
             var builder = ScriptBuilder.ParseScript(script);
             Assert.NotNull(builder);
-            Assert.Equal(script, builder.ToScript().ToString());
+            Assert.Equal(!string.IsNullOrWhiteSpace(script) ? script : "OP_0 OP_RETURN", builder.ToScript().ToString());
         }
 
 

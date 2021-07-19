@@ -16,6 +16,8 @@ namespace CafeLib.BsvSharp.Builders
 {
     public class ScriptBuilder
     {
+        private static readonly Script DefaultScript = new Script(new[] {(byte) Opcode.OP_FALSE, (byte) Opcode.OP_RETURN});
+
         /// <summary>
         /// true if no more additions or removals from the operations will occur,
         /// but note that individual operations may still NOT be final.
@@ -111,7 +113,10 @@ namespace CafeLib.BsvSharp.Builders
 
         public ScriptBuilder Add(string hex)
         {
-            return Add(new Script(hex));
+            var script = !string.IsNullOrWhiteSpace(hex)
+                ? new Script(hex)
+                : new Script(new[] {(byte) Opcode.OP_FALSE, (byte) Opcode.OP_RETURN});
+            return Add(script);
         }
 
         public ScriptBuilder Add(byte[] raw)
@@ -148,6 +153,7 @@ namespace CafeLib.BsvSharp.Builders
             {
                 op.TryCopyTo(ref span);
             }
+
             return bytes;
         }
 
@@ -155,7 +161,7 @@ namespace CafeLib.BsvSharp.Builders
 
         public override string ToString()
         {
-            return string.Join(' ', Ops.Select(o => o.ToVerboseString()));
+            return string.Join(' ', _ops.Select(o => o.ToVerboseString()));
         }
 
         public string ToTemplateString()
