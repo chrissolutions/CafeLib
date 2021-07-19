@@ -47,6 +47,11 @@ namespace CafeLib.BsvSharp.Transactions
             TryReadTransaction(ref reader);
         }
 
+        public Transaction(string hex)
+            : this(Encoders.Hex.Decode(hex))
+        {
+        }
+
         public Transaction(int version, TxInCollection vin, TxOutCollection vout, uint lockTime, long fee = 0L, TransactionOption option = 0)
         {
             Version = version;

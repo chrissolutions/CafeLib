@@ -9,12 +9,10 @@ using System.IO;
 using System.Linq;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Chain;
-using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.Core.Extensions;
-using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -144,10 +142,21 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
                 .ForEach(x =>
                 {
                     var expectedHash = x.Transactions.First().Hash;
+                    var expectedIndex = x.Transactions.First().Index;
                     var transaction = new Transactions.Transaction(Encoders.Hex.Decode(x.Serialized));
-                    var previousHash = transaction.Inputs.First().Hash;
+                    var previousHash = transaction.Inputs.First().PrevOut.TxHash;
+                    var previousIndex = transaction.Inputs.First().PrevOut.Index;
                     Assert.Equal(expectedHash, previousHash);
+                    Assert.Equal(expectedIndex, previousIndex);
                 });
+        }
+
+        [Fact]
+        public void Parse_Transaction_Version_As_Signed_Integer()
+        {
+            var transaction = new Transactions.Transaction("ffffffff0000ffffffff");
+            Assert.Equal(-1, transaction.Version);
+            Assert.Equal(0xffffffff, transaction.LockTime);
         }
     }
 }
