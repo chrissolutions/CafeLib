@@ -41,11 +41,7 @@ namespace CafeLib.Core.Extensions
         /// <returns>value</returns>
         public static TV GetOrAdd<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, TV value)
         {
-            if (!dictionary.ContainsKey(key))
-            {
-                dictionary.Add(key, value);
-            }
-
+            dictionary.TryAdd(key, value);
             return dictionary[key];
         }
 
@@ -60,11 +56,7 @@ namespace CafeLib.Core.Extensions
         /// <returns>value</returns>
         public static TV GetOrAdd<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, Func<TV> addFunc)
         {
-            if (!dictionary.ContainsKey(key))
-            {
-                dictionary.Add(key, addFunc());
-            }
-
+            dictionary.TryAdd(key, addFunc());
             return dictionary[key];
         }
 

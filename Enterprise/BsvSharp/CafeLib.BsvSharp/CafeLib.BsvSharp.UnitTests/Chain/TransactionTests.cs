@@ -28,7 +28,7 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
             public int Index { get; set; }
             public string ScriptPubKey { get; set; }
         }
-        
+
         class TxInput
         {
             /// <summary>
@@ -38,7 +38,7 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
             public string Serialized { get; set; }
             public ScriptFlags VerifyFlags { get; set; }
         }
-        
+
         private static IEnumerable<TxInput> GetValidTransactions()
         {
             var values = new List<TxInput>();
@@ -73,7 +73,7 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
                 var transactions = new List<TxInfo>();
                 var parent = token.Parent;
                 ScriptFlags verify = 0U;
-                
+
                 while (token != null)
                 {
                     token = FindValueInArray(token);

@@ -29,7 +29,7 @@ namespace CafeLib.BsvSharp.Transactions
         public uint LockTime { get; private set; }
         public Address ChangeAddress { get; private set; }
 
-        public TxInCollection  Inputs { get; private set; } //this transaction's inputs
+        public TxInCollection Inputs { get; private set; } //this transaction's inputs
         public TxOutCollection Outputs { get; private set; } //this transaction's outputs
 
         //if we have a Transaction with one input, and a prevTransactionId of zero, it's a coinbase.
@@ -48,7 +48,7 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         public Transaction(string hex)
-            : this (Encoders.Hex.Decode(hex))
+            : this(Encoders.Hex.Decode(hex))
         {
         }
 
@@ -122,7 +122,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             var txOut = Outputs.SingleOrDefault(x => x.IsChangeOutput);
             if (txOut != TxOut.Null) return txOut;
-            
+
             txOut = new TxOut(Hash, Outputs.Count, changeBuilder, true);
             Outputs.Add(txOut);
             return txOut;
@@ -305,11 +305,11 @@ namespace CafeLib.BsvSharp.Transactions
             {
                 if (x.SequenceNumber == RootService.Network.Consensus.DefaultSeqnumber)
                 {
-                    x.SequenceNumber = (uint) RootService.Network.Consensus.DefaultLocktimeSeqnumber;
+                    x.SequenceNumber = (uint)RootService.Network.Consensus.DefaultLocktimeSeqnumber;
                 }
             });
 
-            LockTime = (uint) TimeSpan.FromMilliseconds(future.ToUnixTime()).TotalSeconds;
+            LockTime = (uint)TimeSpan.FromMilliseconds(future.ToUnixTime()).TotalSeconds;
             return this;
         }
 
@@ -361,7 +361,7 @@ namespace CafeLib.BsvSharp.Transactions
 
             if (!r.TryReadLittleEndian(out int version)) return false;
             Version = version;
-            
+
             if (!r.TryReadVariant(out var countIn)) return false;
             Inputs = new TxInCollection();
             for (var i = 0L; i < countIn; i++)
@@ -370,7 +370,7 @@ namespace CafeLib.BsvSharp.Transactions
                 if (!txIn.TryReadTxIn(ref r)) return false;
                 Inputs.Add(txIn);
             }
-            
+
             if (!r.TryReadVariant(out long countOut)) return false;
             Outputs = new TxOutCollection();
             for (var i = 0L; i < countOut; i++)
@@ -379,7 +379,7 @@ namespace CafeLib.BsvSharp.Transactions
                 if (!txOut.TryReadTxOut(ref r)) return false;
                 Outputs.Add(txOut);
             }
-  
+
             if (!r.TryReadLittleEndian(out uint lockTime)) return false;
             LockTime = lockTime;
 
@@ -400,16 +400,16 @@ namespace CafeLib.BsvSharp.Transactions
         ///  Check for missing signature.
         /// </summary>
         /// <exception cref="TransactionException"></exception>
-        private void CheckForMissingSignatures() 
+        private void CheckForMissingSignatures()
         {
             if ((Option & TransactionOption.DisableFullySigned) != 0) return;
 
-            if (!IsFullySigned) 
+            if (!IsFullySigned)
             {
                 throw new TransactionException("Missing Signatures");
             }
         }
-        
+
         /// <summary>
         /// Check for fee errors
         /// </summary>
@@ -421,17 +421,17 @@ namespace CafeLib.BsvSharp.Transactions
             {
                 throw new TransactionException($"Unspent amount is {unspent} but the specified fee is {_fee}.");
             }
-            
+
             if ((Option & TransactionOption.DisableLargeFees) != 0) return;
-            
+
             var maximumFee = RootService.Network.Consensus.FeeSecurityMargin * EstimateFee();
             if (unspent <= maximumFee) return;
-            
-            if (!_hasChangeScript) 
+
+            if (!_hasChangeScript)
             {
                 throw new TransactionException("Fee is too large and no change address was provided");
             }
-            
+
             throw new TransactionException($"Expected less than {maximumFee} but got {unspent}");
         }
 
@@ -443,13 +443,13 @@ namespace CafeLib.BsvSharp.Transactions
         /// <returns></returns>
         private bool InputExists(UInt256 txHash, int outputIndex) =>
             Inputs.Any(x => x.PrevOut.TxId == txHash && x.PrevOut.Index == outputIndex);
-        
+
         /// <summary>
         ///  Is the collection of inputs fully signed.
         /// </summary>
         /// <returns></returns>
         private bool IsFullySigned => Inputs.All(x => x.IsFullySigned);
-        
+
         /// <summary>
         /// Update the transaction change output.
         /// </summary>
@@ -473,8 +473,8 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         private void RemoveChangeOutputs() => Outputs.Where(x => x.IsChangeOutput).ForEach(x => Outputs.Remove(x));
-        
-        private Amount NonChangeRecipientTotals() => 
+
+        private Amount NonChangeRecipientTotals() =>
             Outputs
                 .Where(txOut => !txOut.IsChangeOutput)
                 .Aggregate(Amount.Zero, (prev, x) => prev + x.Amount);
@@ -492,7 +492,7 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         /// Estimates fee from serialized transaction size in bytes.
-        
+
         /// <summary>
         /// Get the transaction unspent amount.  
         /// </summary>
@@ -615,7 +615,7 @@ namespace CafeLib.BsvSharp.Transactions
         //    sig.sign(reversedHash);
 
         //    if (input.scriptBuilder is SignedUnlockBuilder) {
-        
+
         //        //culminate in injecting the derived signature into the ScriptBuilder instance
         //        (input.scriptBuilder as SignedUnlockBuilder).signatures.add(sig);
         //    }else{

@@ -212,12 +212,15 @@ namespace CafeLib.BsvSharp.Scripting
             while (ros.Length > 0)
             {
                 var op = new Operand();
-                if (!op.TryReadOperand(ref ros)) goto fail;
-                yield return op;
+                if (op.TryReadOperand(ref ros))
+                {
+                    yield return op;
+                }
+                else
+                {
+                    break;
+                }
             }
-
-            fail:
-            ;
         }
 
         public bool TryParseScript(ref ByteSequenceReader reader, IBlockParser bp, bool withoutLength = false)
