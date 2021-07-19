@@ -17,7 +17,7 @@ namespace CafeLib.BsvSharp.Keys
     /// <summary>
     /// 
     /// </summary>
-    public class PrivateKey
+    public class PrivateKey : IEquatable<PrivateKey>
     {
         private readonly UInt256 _keyData;
 
