@@ -24,7 +24,7 @@ namespace CafeLib.Core.Buffers.Arrays
         ///  return buffer as array. 
         /// </summary>
         /// <returns></returns>
-        public T[] ToArray();
+        T[] ToArray();
 
         /// <summary>
         /// Return buffer slice.
@@ -32,30 +32,30 @@ namespace CafeLib.Core.Buffers.Arrays
         /// <param name="start">start index</param>
         /// <param name="length">slice length</param>
         /// <returns></returns>
-        public ReadOnlySpan<T> Slice(int start, int length);
+        ReadOnlySpan<T> Slice(int start, int length);
 
         /// <summary>
         /// Add item to buffer
         /// </summary>
         /// <param name="item"></param>
-        public void Add(T item);
+        void Add(T item);
         
         /// <summary>
         /// Add bytes to buffer
         /// </summary>
         /// <param name="items"></param>
-        public void Add(ReadOnlySpan<T> items);
+        void Add(ReadOnlySpan<T> items);
 
         /// <summary>
         /// Indexer.
         /// </summary>
         /// <param name="index"></param>
-        public T this[Index index] { get; }
+        T this[Index index] { get; }
 
         /// <summary>
         /// Range indexer. 
         /// </summary>
         /// <param name="range">range slice</param>
-        public ReadOnlySpan<T> this[Range range] { get; }
+        ReadOnlySpan<T> this[Range range] { get; }
     }
 }
