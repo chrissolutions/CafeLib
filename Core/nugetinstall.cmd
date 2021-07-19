@@ -31,6 +31,7 @@ if '%version%' == '' goto usage
 if '%configuration%' == '' goto usage
 
 set libs=%solution%
+set libs=%libs% %solution%.Buffers
 set libs=%libs% %solution%.Caching 
 set libs=%libs% %solution%.Collections
 set libs=%libs% %solution%.Collections.DirectedGraph
