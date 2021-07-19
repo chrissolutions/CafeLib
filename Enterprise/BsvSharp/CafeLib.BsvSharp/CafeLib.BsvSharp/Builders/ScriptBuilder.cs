@@ -35,17 +35,14 @@ namespace CafeLib.BsvSharp.Builders
         /// To support testing and unimplemented features, an operation's IsRaw flag can be set in
         /// which case the opcode is ignored and the data is treated as unparsed script code.
         /// </summary>
-        protected List<OperandBuilder> _ops = new List<OperandBuilder>();
-
-        public List<OperandBuilder> Ops => _ops;
-
+        public List<OperandBuilder> Ops { get; protected set; } = new List<OperandBuilder>();
+        
         /// <summary>
         /// true when no more additions, deletions or changes to existing operations will occur.
         /// </summary>
-        public bool IsFinal => _isFinal && _ops.All(op => op.IsFinal);
+        public bool IsFinal => _isFinal && Ops.All(op => op.IsFinal);
         public bool IsPub { get => _isPub == true; set => _isPub = value ? (bool?)true : null; }
         public bool IsSig { get => _isPub == false; set => _isPub = value ? (bool?)false : null; }
-        public long Length => _ops.Sum(o => o.Length);
 
         /// <summary>
         /// If the script implements a known template, this will be the template type.
@@ -78,37 +75,37 @@ namespace CafeLib.BsvSharp.Builders
 
         public ScriptBuilder Clear()
         {
-            _ops.Clear(); 
+            Ops.Clear(); 
             return this;
         }
 
         public ScriptBuilder Set(Script script)
         {
-            _ops.Clear(); 
+            Ops.Clear(); 
             return Add(script);
         }
 
         public ScriptBuilder Add(Opcode opc)
         {
-            _ops.Add(new Operand(opc));
+            Ops.Add(new Operand(opc));
             return this;
         }
 
         public ScriptBuilder Add(Opcode opc, VarType v)
         {
-            _ops.Add(new Operand(opc, v)); 
+            Ops.Add(new Operand(opc, v)); 
             return this;
         }
 
         public ScriptBuilder Add(OperandBuilder opBuilder)
         {
-            _ops.Add(opBuilder); 
+            Ops.Add(opBuilder); 
             return this;
         }
 
         public ScriptBuilder Add(Script script)
         {
-            _ops.AddRange(script.Decode().Select(o => new OperandBuilder(o)));
+            Ops.AddRange(script.Decode().Select(o => new OperandBuilder(o)));
             return this;
         }
 
@@ -119,7 +116,7 @@ namespace CafeLib.BsvSharp.Builders
 
         public ScriptBuilder Add(byte[] raw)
         {
-            _ops.Add(new OperandBuilder(new VarType(raw)));
+            Ops.Add(new OperandBuilder(new VarType(raw)));
             return this;
         }
 
@@ -131,13 +128,13 @@ namespace CafeLib.BsvSharp.Builders
 
         public ScriptBuilder Push(ReadOnlyByteSpan data)
         {
-            _ops.Add(Operand.Push(data)); 
+            Ops.Add(Operand.Push(data)); 
             return this;
         }
 
         public ScriptBuilder Push(long v)
         {
-            _ops.Add(Operand.Push(v));
+            Ops.Add(Operand.Push(v));
             return this;
         }
 
@@ -145,9 +142,9 @@ namespace CafeLib.BsvSharp.Builders
 
         public byte[] ToBytes()
         {
-            var bytes = new byte[Length];
+            var bytes = new byte[Ops.Sum(o => o.Length)];
             var span = (ByteSpan)bytes;
-            foreach (var op in _ops) 
+            foreach (var op in Ops) 
             {
                 op.TryCopyTo(ref span);
             }
@@ -158,13 +155,13 @@ namespace CafeLib.BsvSharp.Builders
 
         public override string ToString()
         {
-            return string.Join(' ', _ops.Select(o => o.ToVerboseString()));
+            return string.Join(' ', Ops.Select(o => o.ToVerboseString()));
         }
 
         public string ToTemplateString()
         {
             var sb = new StringBuilder();
-            foreach (var bop in _ops) 
+            foreach (var bop in Ops) 
             {
                 var op = bop.Operand;
                 var len = op.Data.Length;
@@ -250,7 +247,7 @@ namespace CafeLib.BsvSharp.Builders
                         sb.Push(bytes);
                 } else {
                     var data = (byte[])null;
-                    if (!Enum.TryParse<Opcode>("OP_" + ps[arg], out Opcode opcode))
+                    if (!Enum.TryParse("OP_" + ps[arg], out Opcode opcode))
                         throw new InvalidOperationException();
                     if (opcode > Opcode.OP_0 && opcode < Opcode.OP_PUSHDATA1) {
                         // add next single byte value to op.
@@ -316,7 +313,7 @@ namespace CafeLib.BsvSharp.Builders
                 if (bytes != null) {
                     sb.Push(bytes);
                     ps = ps.Slice(1);
-                } else if (Enum.TryParse<Opcode>("OP_" + s, out Opcode op)) {
+                } else if (Enum.TryParse("OP_" + s, out Opcode op)) {
                     var args = 1;
                     var data = (byte[])null;
                     if (op > Opcode.OP_0 && op < Opcode.OP_PUSHDATA1) {
