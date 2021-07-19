@@ -35,7 +35,7 @@ namespace CafeLib.BsvSharp.Numerics
         public bool IsEmpty => Length == 0;
         public int Length => _buffer.Length;
         public byte FirstByte => _buffer[0];
-        public byte LastByte => _buffer[Length-1];
+        public byte LastByte => _buffer[Length - 1];
 
 
         public VarType Slice(int start, int length) => new VarType(_buffer.Span.Slice(start, length));
@@ -56,11 +56,6 @@ namespace CafeLib.BsvSharp.Numerics
 
         public bool ToBool() => _buffer.Any(x => x != 0 && x != 0x80);
 
-        public ScriptNum ToScriptNum(bool fRequireMinimal = false)
-        {
-            return new ScriptNum(Span, fRequireMinimal);
-        }
-
         public int ToInt32() => new ScriptNum(Span).GetInt();
 
         public VarType BitAnd(VarType b)
@@ -69,7 +64,8 @@ namespace CafeLib.BsvSharp.Numerics
             var sa = Span;
             var sb = b.Span;
             var r = new byte[sa.Length];
-            for (var i = 0; i < sa.Length; i++) {
+            for (var i = 0; i < sa.Length; i++)
+            {
                 r[i] = (byte)(sa[i] & sb[i]);
             }
             return new VarType(r);
@@ -81,7 +77,8 @@ namespace CafeLib.BsvSharp.Numerics
             var sa = Span;
             var sb = b.Span;
             var r = new byte[sa.Length];
-            for (var i = 0; i < sa.Length; i++) {
+            for (var i = 0; i < sa.Length; i++)
+            {
                 r[i] = (byte)(sa[i] | sb[i]);
             }
             return new VarType(r);
@@ -93,7 +90,8 @@ namespace CafeLib.BsvSharp.Numerics
             var sa = Span;
             var sb = b.Span;
             var r = new byte[sa.Length];
-            for (var i = 0; i < sa.Length; i++) {
+            for (var i = 0; i < sa.Length; i++)
+            {
                 r[i] = (byte)(sa[i] ^ sb[i]);
             }
             return new VarType(r);
@@ -103,7 +101,8 @@ namespace CafeLib.BsvSharp.Numerics
         {
             var sa = Span;
             var r = new byte[sa.Length];
-            for (var i = 0; i < sa.Length; i++) {
+            for (var i = 0; i < sa.Length; i++)
+            {
                 r[i] = (byte)(~sa[i]);
             }
             return new VarType(r);
@@ -122,15 +121,18 @@ namespace CafeLib.BsvSharp.Numerics
 
             var x = Span;
             var r = new byte[Length];
-            for (int i = r.Length - 1; i >= 0; i--) {
+            for (int i = r.Length - 1; i >= 0; i--)
+            {
                 int k = i - byteShift;
-                if (k >= 0) {
+                if (k >= 0)
+                {
                     var val = (byte)(x[i] & mask);
                     val <<= bitShift;
                     r[k] |= val;
                 }
 
-                if (k - 1 >= 0) {
+                if (k - 1 >= 0)
+                {
                     var carryVal = (byte)(x[i] & overflowMask);
                     carryVal >>= 8 - bitShift;
                     r[k - 1] |= carryVal;
@@ -149,15 +151,18 @@ namespace CafeLib.BsvSharp.Numerics
 
             var x = Span;
             var r = new byte[Length];
-            for (int i = 0; i < r.Length; i++) {
+            for (int i = 0; i < r.Length; i++)
+            {
                 var k = i + byteShift;
-                if (k < r.Length) {
+                if (k < r.Length)
+                {
                     var val = (byte)(x[i] & mask);
                     val >>= bitShift;
                     r[k] |= val;
                 }
 
-                if (k + 1 < r.Length) {
+                if (k + 1 < r.Length)
+                {
                     var carryVal = (byte)(x[i] & overflowMask);
                     carryVal <<= 8 - bitShift;
                     r[k + 1] |= carryVal;
@@ -213,7 +218,8 @@ namespace CafeLib.BsvSharp.Numerics
 
                 // Remove the sign bit, add padding 0x00 bytes, restore the sign bit.
                 // If number is positive, they start cleared, nothing to do.
-                if (isNeg) {
+                if (isNeg)
+                {
                     // Move the set sign bit.
                     // Only clear the old bit in new array if we copied the byte.
                     if (extraBytes == 0) bytes[length - 1] &= 0x7f;
