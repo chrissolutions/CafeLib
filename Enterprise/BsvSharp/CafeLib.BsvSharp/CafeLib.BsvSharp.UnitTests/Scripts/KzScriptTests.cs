@@ -43,7 +43,7 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
         /// <summary>
         /// Test Vector
         /// </summary>
-        public class TestValue1 
+        public class TestValue1
         {
             /// <summary>
             /// Script as hex string.
@@ -65,12 +65,12 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             "4 0xffff001d 1 0x04 69 0x5468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73")]
         [InlineData("4104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac",
             "65 0x04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f OP_CHECKSIG")]
-        [InlineData("76a914c2eaba3b9c29575322c6e24fdc1b49bdfe405bad88ac", 
+        [InlineData("76a914c2eaba3b9c29575322c6e24fdc1b49bdfe405bad88ac",
             "OP_DUP OP_HASH160 20 0xc2eaba3b9c29575322c6e24fdc1b49bdfe405bad OP_EQUALVERIFY OP_CHECKSIG")]
         [InlineData("4730440220327588eb1c9e502358142b67b3cd799cb6163fde4f1a92490affda78734bc63c0220639a29e63d78c971177a1792cec1b0a7e65c973edbf03eba3b3380d97b829f80412103ea03d07638e40b53d8098b62e964112f562af5ba1bffaa146ffd9e7f7d1a5c67",
             "71 0x30440220327588eb1c9e502358142b67b3cd799cb6163fde4f1a92490affda78734bc63c0220639a29e63d78c971177a1792cec1b0a7e65c973edbf03eba3b3380d97b829f8041 33 0x03ea03d07638e40b53d8098b62e964112f562af5ba1bffaa146ffd9e7f7d1a5c67")]
         [InlineData("6a22314c74794d45366235416e4d6f70517242504c6b3446474e3855427568784b71726e0101337b2274223a32302e36322c2268223a35392c2270223a313031322c2263223a312c227773223a362e322c227764223a3236307d22314a6d64484e4456336f6434796e614c7635696b4d6234616f763737507a665169580a31353537303838383133",
-            "OP_RETURN 34 0x314c74794d45366235416e4d6f70517242504c6b3446474e3855427568784b71726e 1 0x01 51 0x7b2274223a32302e36322c2268223a35392c2270223a313031322c2263223a312c227773223a362e322c227764223a3236307d 34 0x314a6d64484e4456336f6434796e614c7635696b4d6234616f763737507a66516958 10 0x31353537303838383133")]        
+            "OP_RETURN 34 0x314c74794d45366235416e4d6f70517242504c6b3446474e3855427568784b71726e 1 0x01 51 0x7b2274223a32302e36322c2268223a35392c2270223a313031322c2263223a312c227773223a362e322c227764223a3236307d 34 0x314a6d64484e4456336f6434796e614c7635696b4d6234616f763737507a66516958 10 0x31353537303838383133")]
         public void ScriptEncodingTest(string hex, string decoded)
         {
             var s = new Script(hex);
@@ -91,7 +91,7 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
         {
             var builder = ScriptBuilder.ParseScript(script);
             Assert.NotNull(builder);
-            Assert.Equal(!string.IsNullOrWhiteSpace(script) ? script : "OP_0 OP_RETURN", builder.ToScript().ToString());
+            Assert.Equal(script, builder.ToScript().ToString());
         }
 
 
@@ -102,7 +102,7 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
 
             var builder = ScriptBuilder.ParseAssembly(asm);
             Assert.NotNull(builder);
-            Assert.Equal(Opcode.OP_DUP,  builder.Ops[0].Opcode);
+            Assert.Equal(Opcode.OP_DUP, builder.Ops[0].Opcode);
             Assert.Equal(Opcode.OP_HASH160, builder.Ops[1].Opcode);
             Assert.Equal((Opcode)20, builder.Ops[2].Opcode);
             Assert.Equal("f4c03610e60ad15100929cc23da2f3a799af1725", builder.Ops[2].Operand.GetDataBytes().ToHexString().ToLowerInvariant());
@@ -114,7 +114,7 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
         /// <summary>
         /// Test Vector
         /// </summary>
-        class TV2 
+        class TV2
         {
             /// <summary>
             /// ScriptSig as hex string.
@@ -167,7 +167,7 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
         {
             if (!Enum.TryParse(error, out ScriptError result))
             {
-                result = error switch 
+                result = error switch
                 {
                     "SPLIT_RANGE" => ScriptError.INVALID_SPLIT_RANGE,
                     "OPERAND_SIZE" => ScriptError.INVALID_OPERAND_SIZE,
@@ -202,7 +202,7 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
 
             var noOpcode = new List<TV2>();
             var byOpcode = new Dictionary<Opcode, List<TV2>>();
-            foreach (var tv in tv2sSorted) 
+            foreach (var tv in tv2sSorted)
             {
                 var o = tv.keyopcode;
                 var list = o.HasValue ? null : noOpcode;
@@ -215,10 +215,10 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             }
 
             var i = 0;
-            foreach (var opcode in opcodes) 
+            foreach (var opcode in opcodes)
             {
                 var list = opcode.HasValue ? byOpcode[opcode.Value] : noOpcode;
-                foreach (var tv in list) 
+                foreach (var tv in list)
                 {
                     i++;
                     var tv2 = new TV2(tv.sig, tv.pub, tv.flags, tv.error);

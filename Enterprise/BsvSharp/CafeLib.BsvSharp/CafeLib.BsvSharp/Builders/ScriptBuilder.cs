@@ -161,7 +161,7 @@ namespace CafeLib.BsvSharp.Builders
 
         public override string ToString()
         {
-            return string.Join(' ', _ops.Select(o => o.ToVerboseString()));
+            return string.Join(' ', Ops.Select(o => o.ToVerboseString()));
         }
 
         public string ToTemplateString()
