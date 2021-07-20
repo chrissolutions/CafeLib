@@ -6,9 +6,9 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
+using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Crypto
 {

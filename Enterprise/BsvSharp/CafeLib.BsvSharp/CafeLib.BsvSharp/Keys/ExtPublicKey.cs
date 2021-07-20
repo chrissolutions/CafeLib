@@ -5,8 +5,8 @@
 
 using System;
 using System.Diagnostics;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Extensions;
+using CafeLib.Core.Buffers;
 
 // ReSharper disable NonReadonlyMemberInGetHashCode
 

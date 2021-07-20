@@ -6,10 +6,10 @@
 using System;
 using System.Buffers;
 using System.Security.Cryptography;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
+using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Persistence
 {

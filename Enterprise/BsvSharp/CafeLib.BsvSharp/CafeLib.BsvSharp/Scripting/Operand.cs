@@ -5,11 +5,11 @@
 
 using System;
 using System.Buffers;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
+using CafeLib.Core.Buffers;
 
 // ReSharper disable NonReadonlyMemberInGetHashCode
 

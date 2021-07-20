@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Encoding;
@@ -14,6 +13,7 @@ using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Units;
+using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Transactions
 {

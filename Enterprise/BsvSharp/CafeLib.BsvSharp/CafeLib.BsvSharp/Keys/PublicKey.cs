@@ -5,12 +5,12 @@
 
 using System;
 using System.Linq;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Services;
+using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
 using Secp256k1Net;
 

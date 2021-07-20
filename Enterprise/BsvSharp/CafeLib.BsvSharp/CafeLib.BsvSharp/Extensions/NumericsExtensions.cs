@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Numerics;
+using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Extensions
 {
@@ -204,6 +204,21 @@ namespace CafeLib.BsvSharp.Extensions
         public static void CopyTo(this byte[] source, ref UInt512 destination)
         {
             ((ReadOnlyByteSpan)source).CopyTo(destination.Span);
+        }
+
+        /// <summary>
+        /// Reads an <see cref="UInt256"/> as in bitcoin VarInt format.
+        /// </summary>
+        /// <param name="reader">byte sequence reader</param>
+        /// <param name="destination"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryReadUInt256(this ref ByteSequenceReader reader, ref UInt256 destination)
+        {
+            var span = destination.Span;
+            if (!reader.TryCopyTo(span)) return false;
+            reader.Advance(span.Length);
+            return true;
         }
     }
 }

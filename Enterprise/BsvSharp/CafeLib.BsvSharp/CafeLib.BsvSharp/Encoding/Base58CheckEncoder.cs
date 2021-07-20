@@ -4,8 +4,8 @@
 #endregion
 
 using System;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Crypto;
+using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Encoding
 {

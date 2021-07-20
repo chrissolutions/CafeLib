@@ -2,7 +2,6 @@
 using System.Buffers;
 using System.Linq;
 using System.Security.Cryptography;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
@@ -12,6 +11,7 @@ using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Services;
 using CafeLib.BsvSharp.Units;
+using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
 
 namespace CafeLib.BsvSharp.Transactions

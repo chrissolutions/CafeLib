@@ -5,8 +5,8 @@
 
 using System;
 using System.Linq;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
+using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Keys
 {

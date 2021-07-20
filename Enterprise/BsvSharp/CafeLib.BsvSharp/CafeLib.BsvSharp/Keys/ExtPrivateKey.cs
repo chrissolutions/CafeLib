@@ -7,11 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Wallet;
+using CafeLib.Core.Buffers;
 
 // ReSharper disable NonReadonlyMemberInGetHashCode
 

@@ -9,10 +9,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics;
+using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
 
 namespace CafeLib.BsvSharp.Wallet

@@ -7,7 +7,7 @@ using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
-using CafeLib.BsvSharp.Buffers;
+using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Persistence
 {

@@ -6,9 +6,9 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Transactions
 {

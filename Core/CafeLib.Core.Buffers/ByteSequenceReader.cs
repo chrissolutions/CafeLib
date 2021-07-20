@@ -5,7 +5,7 @@ namespace CafeLib.Core.Buffers
 {
     public ref struct ByteSequenceReader
     {
-        internal SequenceReader<byte> Data;
+        public SequenceReader<byte> Data;
 
         public ByteSequenceReader(byte[] bytes)
         {

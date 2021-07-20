@@ -6,9 +6,9 @@
 using System;
 using System.IO;
 using System.Numerics;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics.Converters;
+using CafeLib.Core.Buffers;
 using Newtonsoft.Json;
 
 // ReSharper disable NonReadonlyMemberInGetHashCode

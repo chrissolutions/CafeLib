@@ -4,11 +4,11 @@
 #endregion
 
 using System.IO;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Units;
+using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Chain
 {

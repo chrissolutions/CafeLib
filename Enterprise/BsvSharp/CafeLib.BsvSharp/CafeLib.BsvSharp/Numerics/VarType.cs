@@ -7,9 +7,10 @@ using System;
 using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Linq;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.Core.Buffers;
+using CafeLib.Core.Buffers.Arrays;
 
 namespace CafeLib.BsvSharp.Numerics
 {
@@ -305,7 +306,7 @@ namespace CafeLib.BsvSharp.Numerics
         public override int GetHashCode() => _buffer.GetHashCode();
 
         public override bool Equals(object obj) => obj is VarType type && this == type;
-        public bool Equals(VarType rhs) => !(rhs is null) && _buffer.Span.Data.SequenceEqual(rhs._buffer.Span);
+        public bool Equals(VarType rhs) => !(rhs is null) && _buffer.Span.SequenceEqual(rhs._buffer.Span);
 
         public static implicit operator VarType(byte[] rhs) => new VarType(rhs);
         public static implicit operator byte[](VarType rhs) => rhs.ToArray();

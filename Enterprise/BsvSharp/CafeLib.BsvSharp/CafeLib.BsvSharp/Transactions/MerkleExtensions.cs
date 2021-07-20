@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using CafeLib.BsvSharp.Numerics;
-using CafeLib.Core.Extensions;
 
 namespace CafeLib.BsvSharp.Transactions
 {

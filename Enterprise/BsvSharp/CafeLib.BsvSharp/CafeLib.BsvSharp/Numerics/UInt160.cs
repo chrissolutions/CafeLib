@@ -6,10 +6,10 @@
 using System;
 using System.IO;
 using System.Numerics;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics.Converters;
 using CafeLib.BsvSharp.Services;
+using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
 using Newtonsoft.Json;
 

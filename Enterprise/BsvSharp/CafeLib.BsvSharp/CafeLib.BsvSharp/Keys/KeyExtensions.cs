@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Numerics;
+using CafeLib.Core.Buffers;
 using Secp256k1Net;
 
 // ReSharper disable InconsistentNaming

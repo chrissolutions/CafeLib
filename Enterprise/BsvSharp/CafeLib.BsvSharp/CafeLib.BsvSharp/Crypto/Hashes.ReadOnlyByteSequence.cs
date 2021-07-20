@@ -6,8 +6,8 @@
 using System;
 using System.Buffers;
 using System.Security.Cryptography;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Numerics;
+using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Crypto
 {

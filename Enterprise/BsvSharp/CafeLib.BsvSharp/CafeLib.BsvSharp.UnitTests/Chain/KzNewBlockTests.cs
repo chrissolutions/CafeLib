@@ -4,8 +4,8 @@
 #endregion
 
 using System.IO;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Transactions;
+using CafeLib.Core.Buffers;
 using Xunit;
 
 namespace CafeLib.BsvSharp.UnitTests.Chain

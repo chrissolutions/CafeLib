@@ -4,8 +4,8 @@
 #endregion
 
 using System;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Encoding;
+using CafeLib.Core.Buffers;
 using Xunit;
 
 namespace CafeLib.BsvSharp.UnitTests.Encode

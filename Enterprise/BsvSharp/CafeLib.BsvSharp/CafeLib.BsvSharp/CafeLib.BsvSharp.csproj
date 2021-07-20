@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Buffers\**" />
+    <EmbeddedResource Remove="Buffers\**" />
+    <None Remove="Buffers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Wallet\Cultures\ChineseSimplified.words" />
     <None Remove="Wallet\Cultures\ChineseTraditional.words" />
     <None Remove="Wallet\Cultures\English.words" />
@@ -32,6 +38,7 @@
 
   <ItemGroup>
     <PackageReference Include="CafeLib.Core" Version="1.0.0" />
+    <PackageReference Include="CafeLib.Core.Buffers" Version="1.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 

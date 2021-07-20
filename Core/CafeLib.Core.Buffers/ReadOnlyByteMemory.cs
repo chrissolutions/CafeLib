@@ -4,7 +4,7 @@ namespace CafeLib.Core.Buffers
 {
     public readonly ref struct ReadOnlyByteMemory
     {
-        internal ReadOnlyMemory<byte> Data { get; }
+        public ReadOnlyMemory<byte> Data { get; }
 
         public ReadOnlyByteMemory(byte[] data = null)
         {

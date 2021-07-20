@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Extensions;
+using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
 
 namespace CafeLib.BsvSharp.Encoding

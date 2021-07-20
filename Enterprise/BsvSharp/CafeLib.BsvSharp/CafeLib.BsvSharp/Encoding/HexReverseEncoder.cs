@@ -1,5 +1,5 @@
 ﻿using System;
-using CafeLib.BsvSharp.Buffers;
+using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Encoding
 {

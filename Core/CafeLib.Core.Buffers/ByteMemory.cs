@@ -4,7 +4,7 @@ namespace CafeLib.Core.Buffers
 {
     public readonly struct ByteMemory
     {
-        internal Memory<byte> Data { get; }
+        public Memory<byte> Data { get; }
 
         public ByteMemory(byte[] data = null)
         {

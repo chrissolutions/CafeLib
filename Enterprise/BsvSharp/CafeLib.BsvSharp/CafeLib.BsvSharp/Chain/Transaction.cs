@@ -7,11 +7,11 @@ using System;
 using System.Buffers;
 using System.Linq;
 using System.Security.Cryptography;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
+using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Chain
 {

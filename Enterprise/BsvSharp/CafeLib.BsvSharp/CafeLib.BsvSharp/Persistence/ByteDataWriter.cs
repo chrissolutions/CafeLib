@@ -4,9 +4,9 @@
 #endregion
 
 using System.Buffers;
-using CafeLib.BsvSharp.Buffers;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
+using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Persistence
 {
