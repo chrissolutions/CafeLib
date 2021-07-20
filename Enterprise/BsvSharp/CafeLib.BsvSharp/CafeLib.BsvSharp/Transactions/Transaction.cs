@@ -384,38 +384,6 @@ namespace CafeLib.BsvSharp.Transactions
             return true;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <returns></returns>
-        public bool TryWriteTransaction(IDataWriter writer)
-        {
-            // set the transaction version
-            writer.Write(Version);
-
-            // set the number of inputs
-            writer.Write(Inputs.Count);
-
-            //write the inputs
-            //inputs.forEach((input) {
-            //    writer.write(input.serialize());
-            //});
-
-            //set the number of outputs to come
-            //writer.write(varintBufNum(outputs.length));
-
-            //write the outputs
-            //outputs.forEach((output) {
-            //    writer.write(output.serialize());
-            //});
-
-            //write the locktime
-            //writer.writeUint32(nLockTime, Endian.little);
-
-            return true;
-        }
-
         #region Helpers
 
         /// <summary>
