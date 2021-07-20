@@ -124,7 +124,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             writer.Write(Encoders.HexReverse.Decode(TxId));
             writer.Write(Index);
-            writer.Write(_scriptBuilder.ToScript());
+            writer.Write(ScriptSig);
             writer.Write(SequenceNumber);
             return writer;
         }

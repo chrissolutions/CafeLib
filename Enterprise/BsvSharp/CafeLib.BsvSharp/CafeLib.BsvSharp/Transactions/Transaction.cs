@@ -250,17 +250,7 @@ namespace CafeLib.BsvSharp.Transactions
             return this;
         }
 
-        public IDataWriter WriteTo(IDataWriter writer, object parameters)
-        {
-            dynamic args = parameters;
-            if (args.performChecks)
-            {
-                DoSerializationChecks();
-            }
-
-            return UncheckedSerialize(writer);
-        }
-
+        public IDataWriter WriteTo(IDataWriter writer, object parameters) => WriteTo(writer);
         public IDataWriter WriteTo(IDataWriter writer)
         {
             writer
