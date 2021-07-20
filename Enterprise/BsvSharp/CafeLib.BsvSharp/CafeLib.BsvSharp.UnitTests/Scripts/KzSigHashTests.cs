@@ -33,13 +33,13 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
 
             public TestVector(string rawTx, string script, int inputIndex, int hashType, string sigHashReg, string sigHashNoFork, string sigHashFork)
             {
-                this.RawTx = rawTx;
-                this.RawScript = script;
-                this.Index = inputIndex;
-                this.SigHashType = new SignatureHashType((uint)hashType);
-                this.SigHashRegHex = sigHashReg;
-                this.SigHashOldHex = sigHashNoFork;
-                this.SigHashRepHex = sigHashFork;
+                RawTx = rawTx;
+                RawScript = script;
+                Index = inputIndex;
+                SigHashType = new SignatureHashType((uint)hashType);
+                SigHashRegHex = sigHashReg;
+                SigHashOldHex = sigHashNoFork;
+                SigHashRepHex = sigHashFork;
             }
         }
 
