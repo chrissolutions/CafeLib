@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CafeLib.BsvSharp.Chain;
-using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Units;
 using CafeLib.BsvSharp.UnitTests.Extensions;
+using CafeLib.Core.Extensions;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -21,71 +21,77 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
         /// <summary>
         /// Test Vector
         /// </summary>
-        class TestVector
+        private class TestVector
         {
-            public string rawTx;
-            public string rawScript;
-            public int nIn;
-            public SignatureHashType sigHashType;
-            public string sigHashRegHex;
-            public string sigHashOldHex;
-            public string sigHashRepHex;
+            public readonly string RawTx;
+            public readonly string RawScript;
+            public readonly int Index;
+            public readonly SignatureHashType SigHashType;
+            public readonly string SigHashRegHex;
+            public readonly string SigHashOldHex;
+            public readonly string SigHashRepHex;
 
             public TestVector(string rawTx, string script, int inputIndex, int hashType, string sigHashReg, string sigHashNoFork, string sigHashFork)
             {
-                this.rawTx = rawTx;
-                this.rawScript = script;
-                this.nIn = inputIndex;
-                this.sigHashType = new SignatureHashType((uint)hashType);
-                this.sigHashRegHex = sigHashReg;
-                this.sigHashOldHex = sigHashNoFork;
-                this.sigHashRepHex = sigHashFork;
+                this.RawTx = rawTx;
+                this.RawScript = script;
+                this.Index = inputIndex;
+                this.SigHashType = new SignatureHashType((uint)hashType);
+                this.SigHashRegHex = sigHashReg;
+                this.SigHashOldHex = sigHashNoFork;
+                this.SigHashRepHex = sigHashFork;
             }
         }
 
-        List<TestVector> tvsForkId;
-        List<TestVector> tvsOther;
+        private readonly List<TestVector> _tvsForkId;
+        private readonly List<TestVector> _tvsOther;
 
         public KzSigHashTests()
         {
             var tvs = new List<TestVector>();
             var json = JArray.Parse(File.ReadAllText(@"..\..\..\data\sighash.json"));
-            foreach (var r in json.Children<JToken>().Where(c => c.Count() >= 6))
-            {
-                var rawTx = r[0].Value<string>();
-                var script = r[1].Value<string>();
-                var inputIndex = r[2].Value<int>();
-                var hashType = r[3].Value<int>();
-                var sigHashReg = r[4].Value<string>();
-                var sigHashNoFork = r[5].Value<string>();
-                var sigHashFork = string.Empty; // r[6].Value<string>();
-                tvs.Add(new TestVector(rawTx, script, inputIndex, hashType, sigHashReg, sigHashNoFork, sigHashFork));
-            }
+            json.Children<JToken>().Where(c => c.Count() >= 6)
+                .ForEach(x =>
+                {
+                    var rawTx = x[0]?.Value<string>();
+                    var script = x[1]?.Value<string>();
+                    var inputIndex = x[2]?.Value<int>() ?? -1;
+                    var hashType = x[3]?.Value<int>() ?? default;
+                    var sigHashReg = x[4]?.Value<string>();
+                    var sigHashNoFork = x[5]?.Value<string>();
+                    var sigHashFork = string.Empty; // r[6].Value<string>();
+                    tvs.Add(new TestVector(rawTx, script, inputIndex, hashType, sigHashReg, sigHashNoFork, sigHashFork));
+                });
 
-            (tvsForkId, tvsOther) = tvs.Partition(tv => tv.sigHashType.HasForkId);
+            (_tvsForkId, _tvsOther) = tvs.Partition(tv => tv.SigHashType.HasForkId);
         }
 
-        void SigHash(List<TestVector> tvs)
+        static void SigHash(IEnumerable<TestVector> tvs)
         {
-            var i = 0;
-            foreach (var tv in tvs) {
-                i++;
-                var tx = Transaction.ParseHex(tv.rawTx);
-                var (scriptCodeOk, scriptCode) = Script.ParseHex(tv.rawScript, withoutLength: true);
+            foreach (var tv in tvs)
+            {
+                var tx = Transaction.ParseHex(tv.RawTx);
+                var (scriptCodeOk, scriptCode) = Script.ParseHex(tv.RawScript, withoutLength: true);
                 Assert.True(tx != null && scriptCodeOk);
 
-                var shreg = TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, tv.nIn, tv.sigHashType, Amount.Zero).ToString();
-                Assert.Equal(tv.sigHashRegHex, shreg);
+                var shreg = TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, tv.Index, tv.SigHashType, Amount.Zero).ToString();
+                Assert.Equal(tv.SigHashRegHex, shreg);
 
-                var shold = TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, tv.nIn, tv.sigHashType, Amount.Zero, 0).ToString();
-                Assert.Equal(tv.sigHashOldHex, shold);
+                var shold = TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, tv.Index, tv.SigHashType, Amount.Zero, 0).ToString();
+                Assert.Equal(tv.SigHashOldHex, shold);
             }
         }
 
         [Fact]
-        public void SigHashForkId() { SigHash(tvsForkId); }
+        public void SigHashForkId()
+        {
+            SigHash(_tvsForkId);
+        }
 
         [Fact]
-        public void SigHashOther() { SigHash(tvsOther); }
+        public void SigHashOther()
+        {
+            SigHash(_tvsOther);
+        }
     }
 }
