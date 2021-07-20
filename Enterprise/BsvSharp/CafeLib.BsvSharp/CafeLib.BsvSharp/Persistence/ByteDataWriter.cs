@@ -3,21 +3,21 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System.Buffers;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
+using CafeLib.Core.Buffers.Arrays;
 
 namespace CafeLib.BsvSharp.Persistence
 {
     public class ByteDataWriter : IDataWriter
     {
-        private readonly ArrayBufferWriter<byte> _writer;
+        private readonly ByteArrayBuffer _buffer;
 
-        public int Length => _writer.WrittenCount;
+        public int Length => _buffer.Length;
 
-        public ReadOnlyByteMemory Memory => _writer.WrittenMemory;
-        public ReadOnlyByteSpan Span => _writer.WrittenSpan;
+        public ReadOnlyByteMemory Memory => _buffer.Memory;
+        public ReadOnlyByteSpan Span => _buffer.Span;
         public byte[] ToArray() => Span.ToArray();
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace CafeLib.BsvSharp.Persistence
         /// </summary>
         public ByteDataWriter()
         {
-            _writer = new ArrayBufferWriter<byte>();
+            _buffer = new ByteArrayBuffer();
         }
 
         /// <summary>
@@ -34,62 +34,61 @@ namespace CafeLib.BsvSharp.Persistence
         /// <param name="bytes"></param>
         public ByteDataWriter(byte[] bytes)
         {
-            _writer =new ArrayBufferWriter<byte>(bytes.Length);
-            _writer.Write(bytes);
+            _buffer = new ByteArrayBuffer(bytes);
         }
         
         public IDataWriter Write(byte[] data)
         {
-            _writer.Write(data);
+            _buffer.Add(data);
             return this;
         }
 
         public IDataWriter Write(byte v)
         {
             ByteSpan span = stackalloc byte[1] {v}; 
-            _writer.Write(span);
+            _buffer.Add(span);
             return this;
         }
 
         public IDataWriter Write(int v)
         {
-            _writer.Write(v.AsReadOnlySpan());
+            _buffer.Add(v.AsReadOnlySpan());
             return this;
         }
 
         public IDataWriter Write(uint v)
         {
-            _writer.Write(v.AsReadOnlySpan());
+            _buffer.Add(v.AsReadOnlySpan());
             return this;
         }
 
         public IDataWriter Write(long v)
         {
-            _writer.Write(v.AsReadOnlySpan());
+            _buffer.Add(v.AsReadOnlySpan());
             return this;
         }
 
         public IDataWriter Write(ulong v)
         {
-            _writer.Write(v.AsReadOnlySpan());
+            _buffer.Add(v.AsReadOnlySpan());
             return this;
         }
 
         public IDataWriter Write(UInt160 v)
         {
-            _writer.Write(v.Span);
+            _buffer.Add(v.Span);
             return this;
         }
 
         public IDataWriter Write(UInt256 v)
         {
-            _writer.Write(v.Span);
+            _buffer.Add(v.Span);
             return this;
         }
 
         public IDataWriter Write(UInt512 v)
         {
-            _writer.Write(v.Span);
+            _buffer.Add(v.Span);
             return this;
         }
     }
