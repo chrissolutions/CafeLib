@@ -200,6 +200,22 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         /// <summary>
+        /// Spend from Utxo
+        /// </summary>
+        /// <param name="txHash">utxo transaction hash</param>
+        /// <param name="outputIndex">utxo index</param>
+        /// <param name="amount">amount</param>
+        /// <param name="scriptPubKey">script pub key</param>
+        /// <returns>transaction</returns>
+        public Transaction SpendFrom(UInt256 txHash, int outputIndex, Amount amount, Script scriptPubKey)
+        {
+            var txIn = new TxIn(txHash, outputIndex, amount, scriptPubKey);
+            Inputs.Add(txIn);
+            UpdateChangeOutput();
+            return this;
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="recipient"></param>
