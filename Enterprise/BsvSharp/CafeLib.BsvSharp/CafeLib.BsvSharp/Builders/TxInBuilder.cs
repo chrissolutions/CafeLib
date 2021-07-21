@@ -84,7 +84,7 @@ namespace CafeLib.BsvSharp.Builders
 
         public static TxInBuilder FromPay2PublicKeyHash(PublicKey pubKey, Amount value, UInt256 prevOutHashTx, int prevOutIndex, Script scriptPub, UInt32 sequence = TxIn.SequenceFinal)
         {
-            var pubKeyHash = new ScriptSigPay2PublicKeyHashBuilder(pubKey);
+            var pubKeyHash = new ScriptPubPay2PublicKeyHashBuilder(pubKey);
             var signatureHash = new ScriptSigPay2PublicKeyHashBuilder(pubKey);
             var script = pubKeyHash.ToScript();
             Debug.Assert(script == scriptPub);
