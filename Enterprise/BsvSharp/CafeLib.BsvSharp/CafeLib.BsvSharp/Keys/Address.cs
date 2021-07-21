@@ -33,8 +33,23 @@ namespace CafeLib.BsvSharp.Keys
     {
         private static readonly HexEncoder Hex = Encoders.Hex;
         private static readonly Base58CheckEncoder Base58Check = Encoders.Base58Check;
-
         private byte[] _bytes;
+
+        /// <summary>
+        /// Address default constructor.
+        /// </summary>
+        private Address()
+        {
+        }
+
+        /// <summary>
+        /// Constructs an Bitcoin address
+        /// </summary>
+        /// <param name="address">base58encoded Bitcoin address</param>
+        public Address(string address)
+        {
+            FromBase58CheckInternal(address);
+        }
 
         /// <summary>
         /// Version property.
@@ -44,7 +59,7 @@ namespace CafeLib.BsvSharp.Keys
         /// <summary>
         /// Public Key Hash.
         /// </summary>
-        public UInt160 PubKeyHash => (UInt160)this;
+        public UInt160 PubKeyHash => this;
 
         public AddressType AddressType
         {
@@ -87,22 +102,6 @@ namespace CafeLib.BsvSharp.Keys
         }
 
         /// <summary>
-        /// Address default constructor.
-        /// </summary>
-        private Address()
-        {
-        }
-
-        /// Constructs a new Address object
-        ///
-        /// [address] is the base58encoded bitcoin address.
-        ///
-        public Address(string address)
-        {
-            FromBase58CheckInternal(address);
-        }
-
-        /// <summary>
         /// Constructs a new Address object from a base58-encoded string.
         ///
         /// Base58-encoded strings are the "standard" means of sharing bitcoin addresses amongst
@@ -123,16 +122,14 @@ namespace CafeLib.BsvSharp.Keys
                 return address;
             }
 
-            throw new FormatException($"Address should be 25 bytes long. Only [{base58Address.Length}] bytes long.");
+            throw new FormatException($"Address should be 25 or 34 bytes long. Only [{base58Address.Length}] bytes long.");
         }
 
-        /// Constructs a new Address object from a public key.
-        ///
-        /// [hexPubKey] is the hexadecimal encoding of a public key.
-        ///
-        /// [networkType] is used to distinguish between MAINNET and TESTNET.
-        ///
-        /// Also see [NetworkType]
+        /// <summary>
+        /// Constructs a new address instance from a public key.
+        /// </summary>
+        /// <param name="hexPubKey">hexadecimal encoding of a public key</param>
+        /// <returns>address</returns>
         public static Address FromHex(string hexPubKey)
         {
             var address = new Address();
@@ -152,18 +149,26 @@ namespace CafeLib.BsvSharp.Keys
             return address;
         }
 
+
+        /// <summary>
         /// Serialize this address object to a base58-encoded string.
         /// This method is an alias for the [toBase58()] method
+        /// </summary>
+        /// <returns>base58 encoded address</returns>
         public override string ToString() => Base58Check.Encode(_bytes);
 
-        /// Returns the public key hash `ripemd160(sha256(public_key))` encoded as a  hexadecimal string
+        /// <summary>
+        /// Returns the public key hash `ripemd160(sha256(public_key))` encoded as a hexadecimal string
+        /// </summary>
+        /// <returns>encoded public key hash</returns>
         public string ToHex() => Hex.Encode(_bytes);
         
         public override int GetHashCode() => _bytes.GetHashCodeOfValues();
+
         public bool Equals(Address o) => !(o is null) && _bytes.SequenceEqual(o._bytes);
         public override bool Equals(object obj) => Equals((Address)obj);
-        public static implicit operator UInt160(Address rhs) => new UInt160(rhs._bytes[1..]);
 
+        public static implicit operator UInt160(Address rhs) => new UInt160(rhs._bytes[1..]);
         public static bool operator ==(Address x, Address y) => x?.Equals(y) ?? y is null;
         public static bool operator !=(Address x, Address y) => !(x == y);
 
