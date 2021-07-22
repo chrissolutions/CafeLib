@@ -28,6 +28,7 @@ namespace Secp256k1Net
         public const int PRIVKEY_LENGTH = 32;
         public const int UNSERIALIZED_SIGNATURE_SIZE = 65;
         public const int SERIALIZED_SIGNATURE_SIZE = 64;
+        public const int SERIALIZED_DER_SIGNATURE_MAX_SIZE = 72;
         public const int SIGNATURE_LENGTH = 64;
         public const int HASH_LENGTH = 32;
         public const int SECRET_LENGTH = 32;
@@ -48,6 +49,7 @@ namespace Secp256k1Net
         readonly Lazy<secp256k1_ecdsa_recoverable_signature_parse_compact> secp256k1_ecdsa_recoverable_signature_parse_compact;
         readonly Lazy<secp256k1_ecdsa_recoverable_signature_serialize_compact> secp256k1_ecdsa_recoverable_signature_serialize_compact;
         readonly Lazy<secp256k1_ecdsa_sign_recoverable> secp256k1_ecdsa_sign_recoverable;
+        readonly Lazy<secp256k1_ecdsa_signature_parse_der> secp256k1_ecdsa_signature_parse_der;
         readonly Lazy<secp256k1_ecdsa_signature_serialize_der> secp256k1_ecdsa_signature_serialize_der;
         readonly Lazy<secp256k1_ecdsa_sign> secp256k1_ecdsa_sign;
         readonly Lazy<secp256k1_ecdsa_recover> secp256k1_ecdsa_recover;
@@ -81,6 +83,7 @@ namespace Secp256k1Net
             secp256k1_ecdsa_verify = LazyDelegate<secp256k1_ecdsa_verify>();
             secp256k1_ecdsa_sign = LazyDelegate<secp256k1_ecdsa_sign>();
             secp256k1_ecdsa_sign_recoverable = LazyDelegate<secp256k1_ecdsa_sign_recoverable>();
+            secp256k1_ecdsa_signature_parse_der = LazyDelegate<secp256k1_ecdsa_signature_parse_der>();
             secp256k1_ecdsa_signature_serialize_der = LazyDelegate<secp256k1_ecdsa_signature_serialize_der>();
             secp256k1_ecdsa_signature_normalize = LazyDelegate<secp256k1_ecdsa_signature_normalize>();
             secp256k1_ecdsa_signature_parse_compact = LazyDelegate<secp256k1_ecdsa_signature_parse_compact>();
@@ -766,7 +769,62 @@ namespace Secp256k1Net
                 return secp256k1_ecdsa_sign.Value(_ctx, sigPtr, msgPtr, secPtr, IntPtr.Zero, IntPtr.Zero.ToPointer()) == 1;
             }
         }
+        
+        /// <summary>
+        /// Parse a DER ECDSA signature
+        /// This function will accept any valid DER encoded signature, even if the
+        /// encoded numbers are out of range.
+        /// After the call, sig will always be initialized. If parsing failed or the
+        /// encoded numbers are out of range, signature validation with it is
+        /// guaranteed to fail for every message and public key.
+        /// </summary>
+        /// <param name="signatureOutput">(Output) a signature object</param>
+        /// <param name="signatureInput">(Input) a signature to be parsed</param>
+        /// <returns>True when the signature could be parsed, false otherwise.</returns>       
 
+        public bool SignatureParseDer(Span<byte> signatureOutput, Span<byte> signatureInput)
+        {
+            if (signatureOutput.Length < SIGNATURE_LENGTH)
+            {
+                throw new ArgumentException($"{nameof(signatureOutput)} must be {SIGNATURE_LENGTH} bytes");
+            }
+
+            uint inputlen = (uint)signatureInput.Length;
+
+            fixed (byte* sig = &MemoryMarshal.GetReference(signatureOutput),
+                input = &MemoryMarshal.GetReference(signatureInput))
+            {
+                return secp256k1_ecdsa_signature_parse_der.Value(_ctx, sig, input, inputlen) == 1;
+            }
+        }
+
+        /// <summary>
+        /// Serialize an ECDSA signature in DER format (72 bytes maximum)
+        /// This function will accept any valid ECDSA encoded signature
+        /// </summary>
+        /// <param name="signatureOutput">(Output) a signature object</param>
+        /// <param name="signatureInput">(Input) a signature to be parsed</param>
+        /// <param name="signatureOutputLength">(Output) lenght of serialized DER signature</param>
+        /// <returns>True when the signature could be serialized, false otherwise.</returns>
+
+        public bool SignatureSerializeDer(Span<byte> signatureOutput, Span<byte> signatureInput, out int signatureOutputLength)
+        {                
+            if (signatureOutput.Length < SERIALIZED_DER_SIGNATURE_MAX_SIZE)
+            {
+                throw new ArgumentException($"{nameof(signatureOutput)} must be {SERIALIZED_DER_SIGNATURE_MAX_SIZE} bytes as maximum to void truncate signature");
+            }
+
+            int sigOutputLength = SERIALIZED_DER_SIGNATURE_MAX_SIZE;
+            
+            fixed (byte* sig = &MemoryMarshal.GetReference(signatureOutput),
+                input = &MemoryMarshal.GetReference(signatureInput))
+            {
+                var result = secp256k1_ecdsa_signature_serialize_der.Value(_ctx, sig, ref sigOutputLength, input);
+                signatureOutputLength = (int)sigOutputLength;
+                return result == 1;
+            }
+        }
+        
         /// <summary>
         /// Compute an EC Diffie-Hellman secret in constant time.
         /// </summary>
@@ -860,8 +918,5 @@ namespace Secp256k1Net
                 _ctx = IntPtr.Zero;
             }
         }
-
-
-
     }
 }
