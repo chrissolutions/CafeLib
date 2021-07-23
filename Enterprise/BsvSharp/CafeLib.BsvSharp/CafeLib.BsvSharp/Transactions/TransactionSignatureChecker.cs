@@ -35,8 +35,8 @@ namespace CafeLib.BsvSharp.Transactions
 
         public bool CheckSignature(VarType scriptSig, VarType vchPubKey, Script script, ScriptFlags flags)
         {
-            if (scriptSig?.IsEmpty ?? false) return false;
-            if (vchPubKey?.IsEmpty ?? false) return false;
+            if (scriptSig.IsEmpty) return false;
+            if (vchPubKey.IsEmpty) return false;
             var publicKey = new PublicKey(vchPubKey);
             return publicKey.IsValid && VerifyTransaction(publicKey, scriptSig, script, _amount);
         }

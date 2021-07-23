@@ -14,13 +14,13 @@ using CafeLib.Core.Buffers.Arrays;
 
 namespace CafeLib.BsvSharp.Numerics
 {
-    public sealed class VarType : IEquatable<VarType>
+    public struct VarType : IEquatable<VarType>
     {
-        private readonly ByteArrayBuffer _buffer;
+        private ByteArrayBuffer _buffer;
 
-        private VarType()
+        private ByteArrayBuffer Buffer
         {
-            _buffer = new ByteArrayBuffer();
+            get { return _buffer ??= new ByteArrayBuffer(); }
         }
 
         public VarType(ReadOnlyByteSpan bytes)
@@ -34,28 +34,28 @@ namespace CafeLib.BsvSharp.Numerics
         public static readonly VarType True = new VarType(new byte[] { 1 });
 
         public bool IsEmpty => Length == 0;
-        public int Length => _buffer.Length;
-        public byte FirstByte => _buffer[0];
-        public byte LastByte => _buffer[Length - 1];
+        public int Length => Buffer.Length;
+        public byte FirstByte => Buffer[0];
+        public byte LastByte => Buffer[Length - 1];
 
 
-        public VarType Slice(int start, int length) => new VarType(_buffer.Span.Slice(start, length));
+        public VarType Slice(int start, int length) => new VarType(Buffer.Span.Slice(start, length));
 
-        public override string ToString() => Encoders.Hex.EncodeSpan(_buffer.Span);
+        public override string ToString() => Encoders.Hex.EncodeSpan(Buffer.Span);
 
-        private byte[] ToArray() => _buffer.Span.ToArray();
+        private byte[] ToArray() => Buffer.Span.ToArray();
 
-        public void CopyTo(byte[] bytes) => _buffer.Span.CopyTo(bytes);
+        public void CopyTo(byte[] bytes) => Buffer.Span.CopyTo(bytes);
 
-        internal ReadOnlyByteSpan Span => _buffer.Span;
+        internal ReadOnlyByteSpan Span => Buffer.Span;
 
         /// <summary>
         /// Return first four bytes as a big endian integer.
         /// </summary>
         /// <returns></returns>
-        public uint AsUInt32BigEndian() => BinaryPrimitives.TryReadUInt32BigEndian(_buffer.Span, out var v) ? v : throw new InvalidOperationException();
+        public uint AsUInt32BigEndian() => BinaryPrimitives.TryReadUInt32BigEndian(Buffer.Span, out var v) ? v : throw new InvalidOperationException();
 
-        public bool ToBool() => _buffer.Any(x => x != 0 && x != 0x80);
+        public bool ToBool() => Buffer.Any(x => x != 0 && x != 0x80);
 
         public int ToInt32() => new ScriptNum(Span).GetInt();
 
@@ -197,7 +197,7 @@ namespace CafeLib.BsvSharp.Numerics
         /// bin may be original value if size matches, otherwise new storage is allocated. None on failure.
         /// ok is true on success. False if can't fit in size.
         /// </returns>
-        public (VarType bin, bool ok) NumResize(uint? size = null)
+        private (VarType bin, bool ok) NumResize(uint? size = null)
         {
             var data = Span;
             var (tooLong, isNeg, extraBytes) = ScriptNum.EvaluateAsNum(data);
@@ -303,10 +303,10 @@ namespace CafeLib.BsvSharp.Numerics
             return (x1, x2);
         }
 
-        public override int GetHashCode() => _buffer.GetHashCode();
+        public override int GetHashCode() => Buffer.GetHashCode();
 
         public override bool Equals(object obj) => obj is VarType type && this == type;
-        public bool Equals(VarType rhs) => !(rhs is null) && _buffer.Span.SequenceEqual(rhs._buffer.Span);
+        public bool Equals(VarType rhs) => Buffer.Span.SequenceEqual(rhs.Buffer.Span);
 
         public static implicit operator VarType(byte[] rhs) => new VarType(rhs);
         public static implicit operator byte[](VarType rhs) => rhs.ToArray();
@@ -316,7 +316,7 @@ namespace CafeLib.BsvSharp.Numerics
         public static implicit operator ReadOnlyByteMemory(VarType rhs) => rhs.ToArray();
         public static implicit operator ReadOnlyByteSpan(VarType rhs) => rhs.Span;
 
-        public static bool operator ==(VarType x, VarType y) => x?.Equals(y) ?? y is null;
+        public static bool operator ==(VarType x, VarType y) => x.Equals(y);
         public static bool operator !=(VarType x, VarType y) => !(x == y);
     }
 }
