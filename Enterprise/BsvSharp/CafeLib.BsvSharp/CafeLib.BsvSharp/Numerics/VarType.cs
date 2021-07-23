@@ -18,10 +18,7 @@ namespace CafeLib.BsvSharp.Numerics
     {
         private ByteArrayBuffer _buffer;
 
-        private ByteArrayBuffer Buffer
-        {
-            get { return _buffer ??= new ByteArrayBuffer(); }
-        }
+        private ByteArrayBuffer Buffer => _buffer ??= new ByteArrayBuffer();
 
         public VarType(ReadOnlyByteSpan bytes)
         {
