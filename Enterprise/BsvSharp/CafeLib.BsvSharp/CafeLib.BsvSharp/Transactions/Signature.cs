@@ -31,7 +31,7 @@ namespace CafeLib.BsvSharp.Transactions
          *
          * This function is consensus-critical since BIP66.
          */
-        public static bool IsTxDerSignatureEncoding(ReadOnlyByteSpan signature)
+        public static bool IsTxDerEncoding(ReadOnlyByteSpan signature)
         {
             // Format: 0x30 [total-length] 0x02 [R-length] [R] 0x02 [S-length] [S]
             // [sighash]

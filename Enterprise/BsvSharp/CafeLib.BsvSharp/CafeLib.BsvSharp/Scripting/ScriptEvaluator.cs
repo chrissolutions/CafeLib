@@ -910,7 +910,7 @@ namespace CafeLib.BsvSharp.Scripting
             if (vchSig.Length == 0) return true;
 
             if ((flags & (ScriptFlags.VERIFY_DERSIG | ScriptFlags.VERIFY_LOW_S | ScriptFlags.VERIFY_STRICTENC)) != 0
-                && !Signature.IsTxDerSignatureEncoding(vchSig))
+                && !Signature.IsTxDerEncoding(vchSig))
             {
                 return SetError(out error, ScriptError.SIG_DER);
             }
@@ -936,7 +936,7 @@ namespace CafeLib.BsvSharp.Scripting
 
         private static bool IsLowDerSignature(VarType vchSig, ref ScriptError error)
         {
-            if (!Signature.IsTxDerSignatureEncoding(vchSig)) return SetError(out error, ScriptError.SIG_DER);
+            if (!Signature.IsTxDerEncoding(vchSig)) return SetError(out error, ScriptError.SIG_DER);
 
             var sigInput = vchSig[..^1];
 
