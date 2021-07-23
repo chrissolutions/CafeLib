@@ -6,7 +6,7 @@ using Secp256k1Net;
 
 namespace CafeLib.BsvSharp.Transactions
 {
-    public class Signature
+    public readonly struct Signature
     {
         private const int SignatureSize = 64;
         
