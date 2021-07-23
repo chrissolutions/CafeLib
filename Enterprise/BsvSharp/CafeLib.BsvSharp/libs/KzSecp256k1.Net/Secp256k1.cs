@@ -263,7 +263,7 @@ namespace Secp256k1Net
         /// </summary>
         /// <param name="input">DER encoded signature to be parsed.</param>
         /// <returns>(ok, sig) tuple where ok is true if parse succeeded. sig is valid only if ok is true.</returns>
-        public (bool ok, byte[] sig) ecdsa_signature_parse_der_lax(ReadOnlySpan<byte> input)
+        private (bool ok, byte[] sig) ecdsa_signature_parse_der_lax(ReadOnlySpan<byte> input)
         {
             var tmpsig = new byte[64];
             var sig = new byte[64];
