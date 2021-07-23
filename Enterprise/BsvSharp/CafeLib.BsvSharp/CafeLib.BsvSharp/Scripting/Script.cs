@@ -397,7 +397,7 @@ namespace CafeLib.BsvSharp.Scripting
         /// </summary>
         /// <param name="script"></param>
         /// <returns></returns>
-        public static bool IsPay2PublicKeyHash(ReadOnlySpan<byte> script)
+        public static bool IsPay2PublicKeyHash(ReadOnlyByteSpan script)
         {
             return script.Length == 25 && script[0] == 0x76 && script[1] == 0xA9 && script[2] == 0x14 && script[23] == 0x88 && script[24] == 0xAC;
         }

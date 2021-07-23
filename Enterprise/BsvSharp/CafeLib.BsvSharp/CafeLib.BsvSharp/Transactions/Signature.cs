@@ -20,17 +20,19 @@ namespace CafeLib.BsvSharp.Transactions
             return !library.SignatureNormalize(sigOut, signature);
         }
 
-        /**
-         * A canonical signature exists of: &lt;30&gt; &lt;total len&gt; &lt;02&gt; &lt;len R&gt; &lt;R&gt; &lt;02&gt;
-         * &lt;len S&gt; &lt;S&gt; &lt;hashtype&gt;, where R and S are not negative (their first byte has its
-         * highest bit not set), and not excessively padded (do not start with a 0 byte,
-         * unless an otherwise negative number follows, in which case a single 0 byte is
-         * necessary and even required).
-         *
-         * See https://bitcointalk.org/index.php?topic=8392.msg127623#msg127623
-         *
-         * This function is consensus-critical since BIP66.
-         */
+        /// <summary>
+        /// A canonical signature exists of: &lt;30&gt; &lt;total len&gt; &lt;02&gt; &lt;len R&gt; &lt;R&gt; &lt;02&gt;
+        /// &lt;len S&gt; &lt;S&gt; &lt;hashtype&gt;, where R and S are not negative (their first byte has its
+        /// highest bit not set), and not excessively padded (do not start with a 0 byte,
+        /// unless an otherwise negative number follows, in which case a single 0 byte is
+        /// necessary and even required).
+        /// 
+        /// See https://bitcointalk.org/index.php?topic=8392.msg127623#msg127623
+        /// 
+        /// This function is consensus-critical since BIP66.
+        /// </summary>
+        /// <param name="signature"></param>
+        /// <returns></returns>
         public static bool IsTxDerEncoding(ReadOnlyByteSpan signature)
         {
             // Format: 0x30 [total-length] 0x02 [R-length] [R] 0x02 [S-length] [S]
