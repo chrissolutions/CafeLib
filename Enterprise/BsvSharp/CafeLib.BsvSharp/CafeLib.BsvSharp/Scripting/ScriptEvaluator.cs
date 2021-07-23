@@ -6,9 +6,9 @@
 using System.Runtime.CompilerServices;
 using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Extensions;
-using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Services;
+using CafeLib.BsvSharp.Transactions;
 using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Scripting
@@ -940,7 +940,7 @@ namespace CafeLib.BsvSharp.Scripting
 
             var sigInput = vchSig[..^1];
 
-            return PublicKey.CheckLowS(sigInput) || SetError(out error, ScriptError.SIG_HIGH_S);
+            return Signature.CheckLowS(sigInput) || SetError(out error, ScriptError.SIG_HIGH_S);
         }
 
         /**

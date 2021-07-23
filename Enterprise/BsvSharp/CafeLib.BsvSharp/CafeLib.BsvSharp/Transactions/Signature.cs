@@ -1,11 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using CafeLib.Core.Buffers;
+using Secp256k1Net;
 
 namespace CafeLib.BsvSharp.Transactions
 {
     public class Signature
     {
+        private const int SignatureSize = 64;
+        
+        /// <summary>
+        /// Check whether a signature is normalized (lower-S).
+        /// </summary>
+        /// <param name="vchSig"></param>
+        /// <returns></returns>
+        public static bool CheckLowS(ReadOnlyByteSpan vchSig)
+        {
+            var sig = new byte[SignatureSize];
+            using var library = new Secp256k1();
+            if (!library.SignatureParseDerLax(sig, vchSig)) return false;
+            return !library.SignatureNormalize(sig, vchSig);
+        }
+
         //final ECDomainParameters _domainParams =  ECDomainParameters('secp256k1');
         //static final SHA256Digest _sha256Digest = SHA256Digest();
         //final ECDSASigner _dsaSigner =  ECDSASigner(null, HMac(_sha256Digest, 64));
@@ -506,30 +523,30 @@ namespace CafeLib.BsvSharp.Transactions
 
 
         /// Returns the signature's *S* value
-//        BigInt get s => _s;
+        //        BigInt get s => _s;
 
-//        /// Returns the signature's *R* value
-//        BigInt get r => _r;
+        //        /// Returns the signature's *R* value
+        //        BigInt get r => _r;
 
-//        /// Returns the public key that will be used to verify signatures
-//        SVPublicKey get publicKey => _publicKey;
+        //        /// Returns the public key that will be used to verify signatures
+        //        SVPublicKey get publicKey => _publicKey;
 
-////    int get i => _i;
+        ////    int get i => _i;
 
-//        /// Returns the [SighashType] value that was detected with [fromTxFormat()] constructor
-//        int get nhashtype => _nhashtype;
+        //        /// Returns the [SighashType] value that was detected with [fromTxFormat()] constructor
+        //        int get nhashtype => _nhashtype;
 
-//        /// Force a specific [SighashType] value that will be returned with [toTxFormat()]
-//        set nhashtype(value)
-//        {
-//            _nhashtype = value;
-//        }
+        //        /// Force a specific [SighashType] value that will be returned with [toTxFormat()]
+        //        set nhashtype(value)
+        //        {
+        //            _nhashtype = value;
+        //        }
 
-//        /// Returns the signature's *S* value as a hexadecimal string
-//        String get sHex => _sHex;
+        //        /// Returns the signature's *S* value as a hexadecimal string
+        //        String get sHex => _sHex;
 
-//        /// Returns the signature's *R* value as a hexadecimal string
-//        String get rHex => _rHex;
+        //        /// Returns the signature's *R* value as a hexadecimal string
+        //        String get rHex => _rHex;
 
 
     }

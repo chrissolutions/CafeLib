@@ -154,20 +154,6 @@ namespace CafeLib.BsvSharp.Keys
         }
 
         /// <summary>
-        /// Check whether a signature is normalized (lower-S).
-        /// </summary>
-        /// <param name="vchSig"></param>
-        /// <returns></returns>
-        public static bool CheckLowS(ReadOnlyByteSpan vchSig)
-        {
-            var sig = new byte[64];
-
-            using var library = new Secp256k1();
-            if (!library.SignatureParseDerLax(sig, vchSig)) return false;
-            return !library.SignatureNormalize(Span<byte>.Empty, vchSig);
-        }
-
-        /// <summary>
         /// The complement function is PrivateKey CreateCompatSignature.
         /// </summary>
         /// <param name="hash"></param>
