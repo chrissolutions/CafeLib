@@ -3,7 +3,6 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using CafeLib.Bitcoin.Units;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Units;

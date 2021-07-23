@@ -4,9 +4,8 @@
 #endregion
 
 using System;
-using CafeLib.BsvSharp.Units;
 
-namespace CafeLib.Bitcoin.Units
+namespace CafeLib.BsvSharp.Units
 {
     /// <summary>
     /// In practice, the value of an amount is often required in terms of a non-Bitcoin fiat or foreign currency.

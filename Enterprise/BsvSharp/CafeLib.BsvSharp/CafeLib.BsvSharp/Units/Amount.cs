@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using CafeLib.Bitcoin.Units;
 
 namespace CafeLib.BsvSharp.Units
 {
