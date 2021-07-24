@@ -10,10 +10,10 @@ using System.Linq;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Encoding;
+using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
-using CafeLib.Core.Buffers.Arrays;
 using CafeLib.Core.Extensions;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -180,6 +180,34 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
             const string txHex = "01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0704ffff001d0104ffffffff0100f2052a0100000043410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858eeac00000000";
             var transaction = new Transactions.Transaction(txHex);
             Assert.True(transaction.IsCoinbase);
+        }
+
+        [Fact]
+        public void Spend_Transaction()
+        {
+            //var fromTx = new Transactions.Transaction("a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458");
+            //var fromTx = new Transactions.Transaction(fromTx.Hash, , );
+            //fromTx.SpendFrom()
+            //var fromAddress = new Address("mszYqVnqKoQx4jcTdJXxwKAissE3Jbrrc1");
+            //var txHash =
+            //"txId": 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
+            //"outputIndex": 0,
+            //"scriptPubKey": P2PKHLockBuilder(fromAddress).getScriptPubkey().toString(),
+            //"satoshis": BigInt.from(1000000)
+
+
+
+            //var simpleUtxoWith1000000Satoshis = new Transactions.Transaction();
+            //simpleUtxoWith1000000Satoshis.SpendFrom(fromAddress,)
+
+
+            //var simpleUtxoWith1000000Satoshis = {
+            //    "address": fromAddress,
+            //    "txId": 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
+            //    "outputIndex": 0,
+            //    "scriptPubKey": P2PKHLockBuilder(fromAddress).getScriptPubkey().toString(),
+            //    "satoshis": BigInt.from(1000000)
+            //};
         }
     }
 }
