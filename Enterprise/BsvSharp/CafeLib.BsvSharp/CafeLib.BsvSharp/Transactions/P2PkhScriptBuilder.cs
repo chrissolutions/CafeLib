@@ -18,7 +18,7 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         public P2PkhScriptBuilder(PublicKey publicKey)
-            : this(publicKey.ToHash160())
+            : this(publicKey.ToPubKeyHash())
         {
         }
     }

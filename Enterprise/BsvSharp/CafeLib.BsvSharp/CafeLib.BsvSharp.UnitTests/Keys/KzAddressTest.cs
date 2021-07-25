@@ -26,6 +26,9 @@ namespace CafeLib.BsvSharp.UnitTests.Keys
         [InlineData("33vt8ViH5jsr115AGkW6cEmEz9MpvJSwDk", AddressType.ScriptHash, NetworkType.Main)]
         [InlineData("37Sp6Rv3y4kVd1nQ1JV5pfqXccHNyZm1x3", AddressType.ScriptHash, NetworkType.Main)]
         [InlineData("3QjYXhTkvuj8qPaXHTTWb5wjXhdsLAAWVy", AddressType.ScriptHash, NetworkType.Main)]
+        [InlineData("mszYqVnqKoQx4jcTdJXxwKAissE3Jbrrc1", AddressType.PubkeyHash, NetworkType.Test)]
+        [InlineData("mrU9pEmAx26HcbKVrABvgL7AwA5fjNFoDc", AddressType.PubkeyHash, NetworkType.Test)]
+        [InlineData("mgBCJAsvzgT2qNNeXsoECg2uPKrUsZ76up", AddressType.PubkeyHash, NetworkType.Test)]
         public void AddressToStringTest(string base58, AddressType addressType, NetworkType networkType)
         {
             var address = new Address(base58);

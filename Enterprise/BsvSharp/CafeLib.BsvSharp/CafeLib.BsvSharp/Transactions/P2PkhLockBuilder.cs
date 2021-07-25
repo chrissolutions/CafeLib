@@ -7,7 +7,17 @@ namespace CafeLib.BsvSharp.Transactions
 {
     public class P2PkhLockBuilder : ScriptBuilder
     {
-        public P2PkhLockBuilder(UInt160 pubKeyHash)
+        public P2PkhLockBuilder(Address address)
+            : this(address.PubKeyHash)
+        {
+        }
+
+        public P2PkhLockBuilder(PublicKey publicKey)
+            : this(publicKey.ToPubKeyHash())
+        {
+        }
+
+        protected P2PkhLockBuilder(UInt160 pubKeyHash)
             :base(true, TemplateId.Pay2PublicKeyHash)
         {
             Add(Opcode.OP_DUP)
@@ -15,11 +25,6 @@ namespace CafeLib.BsvSharp.Transactions
                 .Push(pubKeyHash.Span)
                 .Add(Opcode.OP_EQUALVERIFY)
                 .Add(Opcode.OP_CHECKSIG);
-        }
-
-        public P2PkhLockBuilder(PublicKey publicKey)
-            : this(publicKey.ToHash160())
-        {
         }
     }
 }
