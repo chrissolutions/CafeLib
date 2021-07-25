@@ -14,6 +14,7 @@ using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Transactions;
 using CafeLib.Core.Extensions;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -24,6 +25,70 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
     {
         private const string DataFolder = @"..\..\..\data";
 
+        [Theory]
+        [InlineData("a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458")]
+        [InlineData("0000000000000000000000000000000000000000000000000000000000000000")]
+        [InlineData("0000000000000000000000000000000000000000000000000000000000000001")]
+        public void Verify_TxId_Test(string txId)
+        {
+            var txIn = new Transactions.TxIn(new UInt256(txId), 0, 1000L);
+            Assert.Equal(txId, txIn.Hash.ToString());
+        }
+
+        [Fact]
+        public void Parse_Transaction_Version_As_Signed_Integer()
+        {
+            var transaction = new Transactions.Transaction("ffffffff0000ffffffff");
+            Assert.Equal(-1, transaction.Version);
+            Assert.Equal(0xffffffff, transaction.LockTime);
+        }
+
+        [Fact]
+        public void Deserialize_Transaction()
+        {
+            const string txHex = "01000000015884e5db9de218238671572340b207ee85b628074e7e467096c267266baf77a4000000006a473044022013fa3089327b50263029265572ae1b022a91d10ac80eb4f32f291c914533670b02200d8a5ed5f62634a7e1a0dc9188a3cc460a986267ae4d58faf50c79105431327501210223078d2942df62c45621d209fab84ea9a7a23346201b7727b9b45a29c4e76f5effffffff0150690f00000000001976a9147821c0a3768aa9d1a37e16cf76002aef5373f1a888ac00000000";
+            var writer = new ByteDataWriter();
+
+            var transaction = new Transactions.Transaction(txHex);
+            transaction.WriteTo(writer);
+
+            var serializedHex = Encoders.Hex.Encode(writer.Span);
+            Assert.Equal(txHex, serializedHex);
+        }
+
+        [Fact]
+        public void Coinbase_Transaction()
+        {
+            const string txHex = "01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0704ffff001d0104ffffffff0100f2052a0100000043410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858eeac00000000";
+            var transaction = new Transactions.Transaction(txHex);
+            Assert.True(transaction.IsCoinbase);
+        }
+
+        [Fact]
+        public void Spend_Transaction()
+        {
+            var txHash = new UInt256("a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458");
+            var fromAddress = new Address("mszYqVnqKoQx4jcTdJXxwKAissE3Jbrrc1");
+            var toAddress = new Address("mrU9pEmAx26HcbKVrABvgL7AwA5fjNFoDc");
+            var changeAddress = new Address("mgBCJAsvzgT2qNNeXsoECg2uPKrUsZ76up");
+            var privateKey = PrivateKey.FromWif("cSBnVM4xvxarwGQuAfQFwqDg9k5tErHUHzgWsEfD4zdwUasvqRVY");
+
+            var changeScriptBuilder = new P2PkhLockBuilder(changeAddress);
+
+            var transaction = new Transactions.Transaction()
+                .SpendFrom(txHash, 0, 1000000L, new P2PkhLockBuilder(fromAddress))
+                .SpendTo(toAddress, 500000L, new P2PkhLockBuilder(toAddress))
+                .SendChangeTo(changeAddress, changeScriptBuilder)
+                .WithFeePerKb(100000);
+
+            transaction.SignInput(0, privateKey);
+
+            Assert.Equal(2, transaction.Outputs.Count);
+            Assert.Equal(472899L, transaction.Outputs[1].Amount.Satoshis);
+            Assert.Equal(changeScriptBuilder.ToScript().ToString(), transaction.Outputs[1].Script.ToString());
+        }
+
+
         class TxInfo
         {
             public UInt256 Hash { get; set; }
@@ -31,7 +96,7 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
             public string ScriptPubKey { get; set; }
         }
 
-        class TxInput
+        private class TxInput
         {
             /// <summary>
             /// ScriptSig as hex string.
@@ -151,63 +216,6 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
                     Assert.Equal(expectedHash, previousHash);
                     Assert.Equal(expectedIndex, previousIndex);
                 });
-        }
-
-        [Fact]
-        public void Parse_Transaction_Version_As_Signed_Integer()
-        {
-            var transaction = new Transactions.Transaction("ffffffff0000ffffffff");
-            Assert.Equal(-1, transaction.Version);
-            Assert.Equal(0xffffffff, transaction.LockTime);
-        }
-
-        [Fact]
-        public void Deserialize_Transaction()
-        {
-            const string txHex = "01000000015884e5db9de218238671572340b207ee85b628074e7e467096c267266baf77a4000000006a473044022013fa3089327b50263029265572ae1b022a91d10ac80eb4f32f291c914533670b02200d8a5ed5f62634a7e1a0dc9188a3cc460a986267ae4d58faf50c79105431327501210223078d2942df62c45621d209fab84ea9a7a23346201b7727b9b45a29c4e76f5effffffff0150690f00000000001976a9147821c0a3768aa9d1a37e16cf76002aef5373f1a888ac00000000";
-            var writer = new ByteDataWriter();
-
-            var transaction = new Transactions.Transaction(txHex);
-            transaction.WriteTo(writer);
-
-            var serializedHex = Encoders.Hex.Encode(writer.Span);
-            Assert.Equal(txHex, serializedHex);
-        }
-
-        [Fact]
-        public void Coinbase_Transaction()
-        {
-            const string txHex = "01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0704ffff001d0104ffffffff0100f2052a0100000043410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858eeac00000000";
-            var transaction = new Transactions.Transaction(txHex);
-            Assert.True(transaction.IsCoinbase);
-        }
-
-        [Fact]
-        public void Spend_Transaction()
-        {
-            //var fromTx = new Transactions.Transaction("a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458");
-            //var fromTx = new Transactions.Transaction(fromTx.Hash, , );
-            //fromTx.SpendFrom()
-            //var fromAddress = new Address("mszYqVnqKoQx4jcTdJXxwKAissE3Jbrrc1");
-            //var txHash =
-            //"txId": 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
-            //"outputIndex": 0,
-            //"scriptPubKey": P2PKHLockBuilder(fromAddress).getScriptPubkey().toString(),
-            //"satoshis": BigInt.from(1000000)
-
-
-
-            //var simpleUtxoWith1000000Satoshis = new Transactions.Transaction();
-            //simpleUtxoWith1000000Satoshis.SpendFrom(fromAddress,)
-
-
-            //var simpleUtxoWith1000000Satoshis = {
-            //    "address": fromAddress,
-            //    "txId": 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
-            //    "outputIndex": 0,
-            //    "scriptPubKey": P2PKHLockBuilder(fromAddress).getScriptPubkey().toString(),
-            //    "satoshis": BigInt.from(1000000)
-            //};
         }
     }
 }

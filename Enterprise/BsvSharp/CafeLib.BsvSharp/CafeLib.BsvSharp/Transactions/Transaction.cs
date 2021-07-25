@@ -259,7 +259,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// </summary>
         /// <param name="fee"></param>
         /// <returns></returns>
-        public Transaction WithFeePerKilobyte(int fee)
+        public Transaction WithFeePerKb(int fee)
         {
             _feePerKb = fee;
             UpdateChangeOutput();
