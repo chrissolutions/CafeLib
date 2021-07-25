@@ -17,11 +17,14 @@ namespace CafeLib.BsvSharp.Network
         public Consensus Consensus { get; }
 
         public string NetworkId { get; }
+        
+        public NetworkType NodeType { get; }
 
         protected byte[][] Base58Prefixes { get; }
 
         protected BitcoinNetwork(NetworkType nodeType, Consensus consensus, byte[][] base58Prefixes)
         {
+            NodeType = nodeType;
             Consensus = consensus;
             NetworkId = nodeType.GetDescriptor();
             Base58Prefixes = base58Prefixes;

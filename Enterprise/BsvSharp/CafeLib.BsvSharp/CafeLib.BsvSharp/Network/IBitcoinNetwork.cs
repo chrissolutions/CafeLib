@@ -7,9 +7,20 @@ namespace CafeLib.BsvSharp.Network
 {
     public interface IBitcoinNetwork
     {
+        /// <summary>
+        /// Consensus.
+        /// </summary>
         Consensus Consensus { get; }
 
+        /// <summary>
+        /// Network id.
+        /// </summary>
         string NetworkId { get; }
+        
+        /// <summary>
+        /// Node type.
+        /// </summary>
+        NetworkType NodeType { get; }
 
         /// <summary>
         /// Base58 encoding prefix for public key addresses for the active network.

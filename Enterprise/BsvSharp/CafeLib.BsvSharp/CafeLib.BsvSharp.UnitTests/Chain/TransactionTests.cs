@@ -14,6 +14,7 @@ using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Transactions;
 using CafeLib.Core.Extensions;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -185,6 +186,21 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
         [Fact]
         public void Spend_Transaction()
         {
+            // var tx = new Transactions.Transaction()
+            //     .SpendFrom(new UInt256("a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458"),
+            //             0,
+            //             1000000,
+            //                     new P2PkhLockBuilder()
+            //         
+            // var simpleUtxoWith1000000Satoshis = {
+            //     "address": fromAddress,
+            //     "txId": 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
+            //     "outputIndex": 0,
+            //     "scriptPubKey": P2PKHLockBuilder(fromAddress).getScriptPubkey().toString(),
+            //     "satoshis": BigInt.from(1000000)
+            // };
+            //
+            
             //var fromTx = new Transactions.Transaction("a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458");
             //var fromTx = new Transactions.Transaction(fromTx.Hash, , );
             //fromTx.SpendFrom()

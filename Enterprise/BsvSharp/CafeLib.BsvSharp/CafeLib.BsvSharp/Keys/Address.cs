@@ -52,6 +52,32 @@ namespace CafeLib.BsvSharp.Keys
         }
 
         /// <summary>
+        /// Constructs an Bitcoin address
+        /// </summary>
+        /// <param name="publicKey">public key</param>
+        public Address(PublicKey publicKey)
+        {
+            // Version = RootService.Network
+            // void _createFromHex(String hexPubKey, NetworkType networkType){
+            //
+            //
+            //     //make an assumption about PKH vs PSH for naked address generation
+            //     var versionByte;
+            //     if (networkType == NetworkType.MAIN) {
+            //         versionByte = Networks.getNetworkVersion(NetworkAddressType.MAIN_PKH);
+            //     }
+            //     else {
+            //         versionByte = Networks.getNetworkVersion(NetworkAddressType.TEST_PKH);
+            //     }
+            //
+            //     _version = versionByte & 0XFF;
+            //     _publicKeyHash = HEX.encode(hash160(HEX.decode(hexPubKey)));
+            //     _addressType = Networks.getAddressType(_version);
+            //     _networkType = networkType;
+            // }
+        }
+        
+        /// <summary>
         /// Version property.
         /// </summary>
         public int Version { get; private set; }
