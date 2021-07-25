@@ -187,19 +187,19 @@ namespace CafeLib.BsvSharp.Keys
         /// RIPEMD160 applied to SHA256 of the 33 or 65 public key bytes.
         /// </summary>
         /// <returns>20 byte hash as a KzUInt160</returns>
-        public UInt160 GetId() => ToHash160();
+        public UInt160 GetId() => ToPubKeyHash();
 
         /// <summary>
         /// RIPEMD160 applied to SHA256 of the 33 or 65 public key bytes.
         /// </summary>
         /// <returns>20 byte hash as a KzUInt160</returns>
-        public UInt160 ToHash160() => Data.Hash160();
+        public UInt160 ToPubKeyHash() => Data.Hash160();
 
         /// <summary>
         /// Obtain an address.
         /// </summary>
         /// <returns></returns>
-        public Address ToAddress() => new Address(Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress.ToArray().Concat(ToHash160())));
+        public Address ToAddress() => new Address(Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress.ToArray().Concat(ToPubKeyHash())));
 
         /// <summary>
         /// Obtain the hex representation of the public key.

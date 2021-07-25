@@ -18,7 +18,7 @@ namespace CafeLib.BsvSharp.Builders
         }
 
         public ScriptPubPay2PublicKeyHashBuilder(PublicKey publicKey)
-            : this(publicKey.ToHash160())
+            : this(publicKey.ToPubKeyHash())
 
         {
         }

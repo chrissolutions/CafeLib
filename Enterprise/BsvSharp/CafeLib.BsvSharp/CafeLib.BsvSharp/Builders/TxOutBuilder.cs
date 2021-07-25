@@ -28,7 +28,7 @@ namespace CafeLib.BsvSharp.Builders
 
         public static TxOutBuilder ToPay2PublicKeyHash(PublicKey pubKey, Amount value)
         {
-            var pub = new ScriptPubPay2PublicKeyHashBuilder(pubKey.ToHash160());
+            var pub = new ScriptPubPay2PublicKeyHashBuilder(pubKey.ToPubKeyHash());
 
             var r = new TxOutBuilder {
                 Value = value,
