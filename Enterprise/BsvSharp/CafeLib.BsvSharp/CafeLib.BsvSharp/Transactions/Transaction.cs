@@ -476,8 +476,14 @@ namespace CafeLib.BsvSharp.Transactions
 
             ////can't spend negative amount of change :/
             if (changeAmount <= Amount.Zero) return;
-            var txUpdateOut = new TxOut(txOut.TxHash, txOut.Index, changeAmount, _changeScriptBuilder, true);
-            Outputs[(int)txOut.Index] = txUpdateOut;
+            if (Outputs.Any())
+            {
+                Outputs[(int)txOut.Index] = new TxOut(txOut.TxHash, txOut.Index, changeAmount, _changeScriptBuilder, true);                
+            }
+            else
+            {
+                Outputs.Add(new TxOut(txOut.TxHash, 0, changeAmount, _changeScriptBuilder, true));
+            }
         }
 
         private void RemoveChangeOutputs() => Outputs.Where(x => x.IsChangeOutput).ForEach(x => Outputs.Remove(x));

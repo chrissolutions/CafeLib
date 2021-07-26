@@ -89,7 +89,7 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
         }
 
 
-        class TxInfo
+        private class TxInfo
         {
             public UInt256 Hash { get; set; }
             public int Index { get; set; }
