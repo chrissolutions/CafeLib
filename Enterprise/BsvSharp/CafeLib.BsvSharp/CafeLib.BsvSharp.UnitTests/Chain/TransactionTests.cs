@@ -75,11 +75,11 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
 
             var changeScriptBuilder = new P2PkhLockBuilder(changeAddress);
 
-            var transaction = new Transactions.Transaction()
-                .SpendFrom(txHash, 0, 1000000L, new P2PkhLockBuilder(fromAddress))
-                .SpendTo(toAddress, 500000L, new P2PkhLockBuilder(toAddress))
-                .SendChangeTo(changeAddress, changeScriptBuilder)
-                .WithFeePerKb(100000);
+            var transaction = new Transactions.Transaction();
+                transaction.SpendFrom(txHash, 0, 1000000L, new P2PkhLockBuilder(fromAddress));
+                transaction.SpendTo(toAddress, 500000L, new P2PkhLockBuilder(toAddress));
+                transaction.SendChangeTo(changeAddress, changeScriptBuilder);
+                transaction.WithFeePerKb(100000);
 
             transaction.SignInput(0, privateKey);
 

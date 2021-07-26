@@ -39,6 +39,8 @@ namespace CafeLib.BsvSharp.Transactions
 
         public Transaction()
         {
+            Inputs = new TxInCollection();
+            Outputs = new TxOutCollection();
         }
 
         public Transaction(byte[] bytes)
