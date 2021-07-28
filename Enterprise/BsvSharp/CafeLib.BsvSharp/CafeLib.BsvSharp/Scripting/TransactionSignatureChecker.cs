@@ -267,7 +267,7 @@ namespace CafeLib.BsvSharp.Scripting
                 for (var nOutput = 0; nOutput < nOutputs; nOutput++)
                 {
                     if (sigHashType.IsBaseSingle && nOutput != nIn)
-                        writer.Add(TxOut.Null);
+                        writer.Add(TxOut.Empty);
                     else
                         writer.Add(txTo.Outputs[nOutput]);
                 }

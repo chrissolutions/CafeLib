@@ -126,7 +126,6 @@ namespace CafeLib.BsvSharp.Transactions
             if (txOut != null) return txOut;
 
             txOut = new TxOut(Hash, Outputs.Count, changeBuilder, true);
-            Outputs.Add(txOut);
             return txOut;
         }
 
@@ -479,15 +478,7 @@ namespace CafeLib.BsvSharp.Transactions
             Outputs.Add(new TxOut(txOut.TxHash, 0, changeAmount, _changeScriptBuilder, true));
         }
 
-        private void RemoveChangeOutputs()
-        {
-            var changeOutputs = Outputs.Where(x => x.IsChangeOutput).ToArray();
-            foreach (var output in changeOutputs)
-            {
-                Outputs.Remove(output);
-            }
-            //Outputs.Where(x => x.IsChangeOutput).ForEach(x => Outputs.Remove(x));
-        }
+        private void RemoveChangeOutputs() => Outputs.Where(x => x.IsChangeOutput).ForEach(x => Outputs.Remove(x));
 
         private Amount NonChangeRecipientTotals() =>
             Outputs

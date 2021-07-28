@@ -20,7 +20,7 @@ namespace CafeLib.BsvSharp.Chain
         public long Value => _value;
         public Script Script => _scriptPub;
 
-        public static TxOut Null => new TxOut { _value = -1, _scriptPub = Script.None };
+        public static TxOut Empty => new TxOut { _value = -1, _scriptPub = Script.None };
 
         public TxOut(long value, Script script)
         {
