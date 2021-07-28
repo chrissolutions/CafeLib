@@ -24,7 +24,7 @@ namespace CafeLib.BsvSharp.Transactions
     /// See <see cref="Chain.Transaction"/> when dynamically building a transaction input.
     /// <seealso cref="TxInBuilder"/>
     /// </summary>
-    public struct TxIn : IChainId, IDataSerializer
+    public class TxIn : IChainId, IDataSerializer
     {
         /// <summary>
         /// This is the ScriptPub of the referenced Prevout.
@@ -86,6 +86,13 @@ namespace CafeLib.BsvSharp.Transactions
         /// of a check on where a signature is required.
         /// </summary>
         public bool IsFullySigned { get; }
+
+        /// <summary>
+        /// TxIn default constructor.
+        /// </summary>
+        public TxIn()
+        {
+        }
 
         /// <summary>
         /// Transaction input constructor.

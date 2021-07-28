@@ -129,20 +129,20 @@ namespace CafeLib.BsvSharp.Network
         /// <summary>
         /// Maximum number of public keys per multisig
         /// </summary>
-        public int ScriptMaxPubKeysPerMultiSig => 20;
+        public const int ScriptMaxPubKeysPerMultiSig = 20;
         /// <summary>
         /// Maximum script length in bytes. 
         /// </summary>
-        public int ScriptMaxSize => 10000;
+        public int ScriptMaxSize => 149;
         /// <summary>
         /// Threshold for nLockTime: below this value it is interpreted as block number,
-        /// otherwise as UNIX timestamp. Thresold is Tue Nov 5 00:53:20 1985 UTC
+        /// otherwise as UNIX timestamp. Threshold is Tue Nov 5 00:53:20 1985 UTC
         /// </summary>
         public uint LocktimeThreshold => 500000000U;
 
         public uint MaxScriptElementSize => ScriptMaxElementSize;
         public int MaxOperationsPerScript => ScriptMaxOpsPer;
-        public int MaxScriptSize => ScriptMaxSize;
+        public int MaxScriptSize => 10000;
         public int MaxPubkeysPerMultisig => ScriptMaxPubKeysPerMultiSig;
 #if false
             /// Block height and hash at which BIP34 becomes active

@@ -15,7 +15,7 @@ using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Transactions
 {
-    public struct TxOut : IChainId, IDataSerializer, IEquatable<TxOut>
+    public class TxOut : IChainId, IDataSerializer, IEquatable<TxOut>
     {
         private ScriptBuilder _scriptBuilder;
 
@@ -29,6 +29,13 @@ namespace CafeLib.BsvSharp.Transactions
 
         public UInt256 Hash => TxHash;
 
+        public TxOut()
+        {
+            TxHash = UInt256.Zero;
+            Index = -1;
+            Amount = Amount.Null;
+        }
+
         /// <summary>
         /// Convenience property to check if this output has been made unspendable
         /// using either an OP_RETURN or "OP_FALSE OP_RETURN" in first positions of
@@ -41,7 +48,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <summary>
         /// Null transaction output
         /// </summary>
-        public static TxOut Null => new TxOut(UInt256.Zero, -1, Amount.Null, null);
+        public static TxOut Null => new TxOut();
 
         /// <summary>
         /// 
@@ -156,7 +163,7 @@ namespace CafeLib.BsvSharp.Transactions
 
         public bool Equals(TxOut other)
         {
-            return Equals(_scriptBuilder, other._scriptBuilder) && TxHash.Equals(other.TxHash) && Index == other.Index && Amount.Equals(other.Amount) && IsChangeOutput == other.IsChangeOutput;
+            return !(other is null) && Equals(_scriptBuilder, other._scriptBuilder) && TxHash.Equals(other.TxHash) && Index == other.Index && Amount.Equals(other.Amount) && IsChangeOutput == other.IsChangeOutput;
         }
 
         public override bool Equals(object obj)
@@ -164,7 +171,7 @@ namespace CafeLib.BsvSharp.Transactions
             return obj is TxOut other && Equals(other);
         }
 
-        public static bool operator ==(TxOut x, TxOut y) => x.Equals(y);
+        public static bool operator ==(TxOut x, TxOut y) => x?.Equals(y) ?? y is null;
         public static bool operator !=(TxOut x, TxOut y) => !(x == y);
 
         #region Helpers

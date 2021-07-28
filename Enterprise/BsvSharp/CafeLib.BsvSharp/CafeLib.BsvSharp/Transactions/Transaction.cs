@@ -123,7 +123,7 @@ namespace CafeLib.BsvSharp.Transactions
         public TxOut GetChangeOutput(ScriptBuilder changeBuilder)
         {
             var txOut = Outputs.SingleOrDefault(x => x.IsChangeOutput);
-            if (txOut != TxOut.Null) return txOut;
+            if (txOut != null) return txOut;
 
             txOut = new TxOut(Hash, Outputs.Count, changeBuilder, true);
             Outputs.Add(txOut);
@@ -228,7 +228,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             if (sats <= Amount.Zero) throw new ArgumentException("You can only spend a positive amount of satoshis");
 
-            scriptBuilder ??= new P2PkhScriptBuilder(recipient);
+            scriptBuilder ??= new P2PkhLockBuilder(recipient);
             var txOut = new TxOut(Hash, Outputs.Count, sats, scriptBuilder);
             return AddOutput(txOut);
         }
@@ -479,7 +479,15 @@ namespace CafeLib.BsvSharp.Transactions
             Outputs.Add(new TxOut(txOut.TxHash, 0, changeAmount, _changeScriptBuilder, true));
         }
 
-        private void RemoveChangeOutputs() => Outputs.Where(x => x.IsChangeOutput).ForEach(x => Outputs.Remove(x));
+        private void RemoveChangeOutputs()
+        {
+            var changeOutputs = Outputs.Where(x => x.IsChangeOutput).ToArray();
+            foreach (var output in changeOutputs)
+            {
+                Outputs.Remove(output);
+            }
+            //Outputs.Where(x => x.IsChangeOutput).ForEach(x => Outputs.Remove(x));
+        }
 
         private Amount NonChangeRecipientTotals() =>
             Outputs
@@ -532,12 +540,13 @@ namespace CafeLib.BsvSharp.Transactions
         private int EstimateSize()
         {
             var result = RootService.Network.Consensus.MaximumExtraSize;
+
             //_txnInputs.forEach((input) {
             //    result += SCRIPT_MAX_SIZE; 
             //});
 
             //Note: we're only spending P2PKH atm.
-            result += RootService.Network.Consensus.MaximumExtraSize * Inputs.Count;
+            result += RootService.Network.Consensus.ScriptMaxSize * Inputs.Count;
 
             // <---- HOW DO WE CALCULATE SCRIPT FROM JUST AN ADDRESS !? AND LENGTH ???
             Outputs.ForEach(x => result += Encoders.Hex.Decode(x.Script.ToHexString()).Length + 9);
