@@ -7,11 +7,11 @@ namespace CafeLib.BsvSharp.Transactions
     /// </summary>
     public class ChainCollection<T> : List<T> where T : IChainId
     {
-        public ChainCollection()
+        protected ChainCollection()
         {
         }
 
-        public ChainCollection(IEnumerable<T> collection)
+        protected ChainCollection(IEnumerable<T> collection)
             : base(collection)
         {
         }
