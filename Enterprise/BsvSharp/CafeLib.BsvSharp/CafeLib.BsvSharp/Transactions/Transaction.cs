@@ -68,10 +68,22 @@ namespace CafeLib.BsvSharp.Transactions
         /// Add transaction input
         /// </summary>
         /// <param name="input"></param>
-        /// <returns></returns>
+        /// <returns>transaction</returns>
         public Transaction AddInput(TxIn input)
         {
             Inputs.Add(input);
+            UpdateChangeOutput();
+            return this;
+        }
+
+        /// <summary>
+        /// Add transaction inputs
+        /// </summary>
+        /// <param name="inputs">input collection</param>
+        /// <returns>transaction</returns>
+        public Transaction AddInputs(TxInCollection inputs)
+        {
+            Inputs.AddRange(inputs);
             UpdateChangeOutput();
             return this;
         }
@@ -84,6 +96,18 @@ namespace CafeLib.BsvSharp.Transactions
         public Transaction AddOutput(TxOut output)
         {
             Outputs.Add(output);
+            UpdateChangeOutput();
+            return this;
+        }
+
+        /// <summary>
+        /// Add transaction outputs
+        /// </summary>
+        /// <param name="outputs">output collection</param>
+        /// <returns>transaction</returns>
+        public Transaction AddOutputs(TxOutCollection outputs)
+        {
+            Outputs.AddRange(outputs);
             UpdateChangeOutput();
             return this;
         }
@@ -258,12 +282,40 @@ namespace CafeLib.BsvSharp.Transactions
         /// <summary>
         /// With fee per kilobyte.
         /// </summary>
-        /// <param name="fee"></param>
+        /// <param name="feePerKb"></param>
         /// <returns></returns>
-        public Transaction WithFeePerKb(int fee)
+        public Transaction WithFeePerKb(int feePerKb)
         {
-            _feePerKb = fee;
+            _feePerKb = feePerKb;
             UpdateChangeOutput();
+            return this;
+        }
+
+        /// <summary>
+        /// With locktime.
+        /// </summary>
+        /// <param name="lockTime">locktime</param>
+        /// <returns>transaction</returns>
+        public Transaction WithVersion(uint lockTime)
+        {
+            LockTime = lockTime;
+            return this;
+        }
+
+        public Transaction WithOption(TransactionOption option)
+        {
+            Option = option;
+            return this;
+        }
+
+        /// <summary>
+        /// With version.
+        /// </summary>
+        /// <param name="version">version number</param>
+        /// <returns>transaction</returns>
+        public Transaction WithVersion(int version)
+        {
+            Version = version;
             return this;
         }
 
