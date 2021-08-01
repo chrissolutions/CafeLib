@@ -24,7 +24,7 @@ namespace CafeLib.BsvSharp.Transactions
     /// See <see cref="Chain.Transaction"/> when dynamically building a transaction input.
     /// <seealso cref="TxInBuilder"/>
     /// </summary>
-    public class TxIn : IChainId, IDataSerializer
+    public class TxIn : ITransactionId, IDataSerializer
     {
         /// <summary>
         /// This is the ScriptPub of the referenced Prevout.

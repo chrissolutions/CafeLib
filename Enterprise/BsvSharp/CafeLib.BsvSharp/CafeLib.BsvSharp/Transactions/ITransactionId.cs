@@ -5,7 +5,7 @@ using CafeLib.BsvSharp.Numerics;
 
 namespace CafeLib.BsvSharp.Transactions
 {
-    public interface IChainId
+    public interface ITransactionId
     {
         UInt256 Hash { get; }
     }

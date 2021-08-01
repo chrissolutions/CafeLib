@@ -5,7 +5,7 @@ namespace CafeLib.BsvSharp.Transactions
     /// <summary>
     ///	Collection of vertices.
     /// </summary>
-    public class ChainCollection<T> : List<T> where T : IChainId
+    public class ChainCollection<T> : List<T> where T : ITransactionId
     {
         protected ChainCollection()
         {

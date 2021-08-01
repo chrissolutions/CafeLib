@@ -15,7 +15,7 @@ using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Transactions
 {
-    public class TxOut : IChainId, IDataSerializer, IEquatable<TxOut>
+    public class TxOut : ITransactionId, IDataSerializer, IEquatable<TxOut>
     {
         private ScriptBuilder _scriptBuilder;
 
