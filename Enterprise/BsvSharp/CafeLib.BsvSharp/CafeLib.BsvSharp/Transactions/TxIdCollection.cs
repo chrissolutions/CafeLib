@@ -5,19 +5,19 @@ namespace CafeLib.BsvSharp.Transactions
     /// <summary>
     ///	Collection of vertices.
     /// </summary>
-    public class ChainCollection<T> : List<T> where T : ITransactionId
+    public class TxIdCollection<T> : List<T> where T : ITransactionId
     {
-        protected ChainCollection()
+        protected TxIdCollection()
         {
         }
 
-        protected ChainCollection(IEnumerable<T> collection)
+        protected TxIdCollection(IEnumerable<T> collection)
             : base(collection)
         {
         }
     }
 
-    public class TxInCollection : ChainCollection<TxIn>
+    public class TxInCollection : TxIdCollection<TxIn>
     {
         public TxInCollection()
         {
@@ -29,7 +29,7 @@ namespace CafeLib.BsvSharp.Transactions
         }
     }
 
-    public class TxOutCollection : ChainCollection<TxOut>
+    public class TxOutCollection : TxIdCollection<TxOut>
     {
         public TxOutCollection()
         {
@@ -41,7 +41,7 @@ namespace CafeLib.BsvSharp.Transactions
         }
     }
 
-    public class TxCollection : ChainCollection<Transaction>
+    public class TxCollection : TxIdCollection<Transaction>
     {
         public TxCollection()
         {
