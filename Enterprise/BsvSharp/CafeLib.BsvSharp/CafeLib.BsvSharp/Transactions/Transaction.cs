@@ -16,7 +16,7 @@ using CafeLib.Core.Extensions;
 
 namespace CafeLib.BsvSharp.Transactions
 {
-    public class Transaction : ITransactionId, IDataSerializer
+    public class Transaction : ITxId, IDataSerializer
     {
         private ScriptBuilder _changeScriptBuilder;
         private bool _hasChangeScript;
