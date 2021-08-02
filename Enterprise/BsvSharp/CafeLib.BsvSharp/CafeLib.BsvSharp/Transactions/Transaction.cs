@@ -268,6 +268,15 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         /// <summary>
+        /// ToString
+        /// </summary>
+        /// <returns>transaction string representation</returns>
+        public override string ToString()
+        {
+            return Hash.ToString();
+        }
+
+        /// <summary>
         /// Add fee to transaction.
         /// </summary>
         /// <param name="fee"></param>

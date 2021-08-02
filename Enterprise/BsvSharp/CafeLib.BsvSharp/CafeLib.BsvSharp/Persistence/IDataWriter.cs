@@ -5,13 +5,13 @@ namespace CafeLib.BsvSharp.Persistence
     public interface IDataWriter
     {
         IDataWriter Write(byte[] data);
-        IDataWriter Write(byte v);
-        IDataWriter Write(int v);
-        IDataWriter Write(uint v);
-        IDataWriter Write(long v);
-        IDataWriter Write(ulong v);
-        IDataWriter Write(UInt160 v);
-        IDataWriter Write(UInt256 v);
-        IDataWriter Write(UInt512 v);
+        IDataWriter Write(byte data);
+        IDataWriter Write(int data);
+        IDataWriter Write(uint data);
+        IDataWriter Write(long data);
+        IDataWriter Write(ulong data);
+        IDataWriter Write(UInt160 data);
+        IDataWriter Write(UInt256 data);
+        IDataWriter Write(UInt512 data);
     }
 }
