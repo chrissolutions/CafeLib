@@ -97,25 +97,25 @@ namespace CafeLib.BsvSharp.Persistence
 
         public IDataWriter Write(int data)
         {
-            data.AsReadOnlySpan();
+            _alg.TransformBlock(data.AsReadOnlySpan());
             return this;
         }
 
         public IDataWriter Write(uint data)
         {
-            data.AsReadOnlySpan();
+            _alg.TransformBlock(data.AsReadOnlySpan());
             return this;
         }
 
         public IDataWriter Write(long data)
         {
-            data.AsReadOnlySpan();
+            _alg.TransformBlock(data.AsReadOnlySpan());
             return this;
         }
 
         public IDataWriter Write(ulong data)
         {
-            data.AsReadOnlySpan();
+            _alg.TransformBlock(data.AsReadOnlySpan());
             return this;
         }
 
