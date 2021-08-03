@@ -10,7 +10,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using CafeLib.BsvSharp.Numerics;
 
-namespace CafeLib.BsvSharp.Transactions
+namespace CafeLib.BsvSharp.Chain
 {
     /// <summary>
     /// 

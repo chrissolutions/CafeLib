@@ -33,7 +33,7 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
         public void Verify_TxId_Test(string txId)
         {
             var txIn = new Transactions.TxIn(new UInt256(txId), 0, 1000L);
-            Assert.Equal(txId, txIn.Hash.ToString());
+            Assert.Equal(txId, txIn.TxHash.ToString());
         }
 
         [Fact]

@@ -63,9 +63,9 @@ namespace CafeLib.BsvSharp.Transactions
            * shifting up by 9 bits. */
         public const uint SequenceLocktimeGranularity = 9;
 
-        public UInt256 Hash => PrevOut.TxId;
+        public UInt256 TxHash => PrevOut.TxId;
 
-        public string TxId => Encoders.HexReverse.Encode(Hash);
+        public string TxId => Encoders.HexReverse.Encode(TxHash);
         public int Index => PrevOut.Index;
 
         public OutPoint PrevOut { get; private set; }

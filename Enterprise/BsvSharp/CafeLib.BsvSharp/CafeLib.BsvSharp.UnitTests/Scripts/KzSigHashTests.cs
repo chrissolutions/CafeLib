@@ -69,7 +69,7 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             (_tvsForkId, _tvsOther) = tvs.Partition(tv => tv.SigHashType.HasForkId);
         }
 
-        static void SigHash(IEnumerable<TestVector> tvs)
+        private static void SigHash(IEnumerable<TestVector> tvs)
         {
             foreach (var tv in tvs)
             {

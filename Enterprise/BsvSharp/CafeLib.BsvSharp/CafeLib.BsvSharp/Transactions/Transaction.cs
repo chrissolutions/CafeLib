@@ -23,8 +23,8 @@ namespace CafeLib.BsvSharp.Transactions
         private Amount _fee = Amount.Null;
         private long _feePerKb = RootService.Network.Consensus.FeePerKilobyte;
 
-        public string TxId => Encoders.HexReverse.Encode(Hash);
-        public UInt256 Hash { get; private set; }
+        public string TxId => Encoders.HexReverse.Encode(TxHash);
+        public UInt256 TxHash { get; private set; }
         public int Version { get; private set; } = 1;
         public uint LockTime { get; private set; }
         public Address ChangeAddress { get; private set; }
@@ -33,7 +33,7 @@ namespace CafeLib.BsvSharp.Transactions
         public TxOutCollection Outputs { get; private set; } //this transaction's outputs
 
         //if we have a Transaction with one input, and a prevTransactionId of zero, it's a coinbase.
-        public bool IsCoinbase => Inputs.Count == 1 && Inputs[0].Hash == UInt256.Zero;
+        public bool IsCoinbase => Inputs.Count == 1 && Inputs[0].TxHash == UInt256.Zero;
 
         public TransactionOption Option { get; private set; }
 
@@ -103,7 +103,7 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         /// <summary>
-        /// Add transaction output/
+        /// Add transaction output.
         /// </summary>
         /// <param name="output"></param>
         /// <returns></returns>
@@ -112,6 +112,20 @@ namespace CafeLib.BsvSharp.Transactions
             Outputs.Add(output);
             UpdateChangeOutput();
             return this;
+        }
+
+        /// <summary>
+        /// Add transaction output.
+        /// </summary>
+        /// <param name="txHash"></param>
+        /// <param name="index"></param>
+        /// <param name="amount"></param>
+        /// <param name="script"></param>
+        /// <param name="isChangeOutput"></param>
+        /// <returns></returns>
+        public Transaction AddOutput(UInt256 txHash, long index, Amount amount, ScriptBuilder script, bool isChangeOutput = false)
+        {
+            return AddOutput(new TxOut(txHash, index, amount, script, isChangeOutput));
         }
 
         /// <summary>
@@ -148,7 +162,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             scriptBuilder ??= new ScriptBuilder();
             scriptBuilder.Add(data);
-            var dataOut = new TxOut(Hash, Outputs.Count, scriptBuilder);
+            var dataOut = new TxOut(TxHash, Outputs.Count, scriptBuilder);
             Outputs.Add(dataOut);
             return this;
         }
@@ -163,7 +177,7 @@ namespace CafeLib.BsvSharp.Transactions
             var txOut = Outputs.SingleOrDefault(x => x.IsChangeOutput);
             if (txOut != null) return txOut;
 
-            txOut = new TxOut(Hash, Outputs.Count, changeBuilder, true);
+            txOut = new TxOut(TxHash, Outputs.Count, changeBuilder, true);
             return txOut;
         }
 
@@ -266,7 +280,7 @@ namespace CafeLib.BsvSharp.Transactions
             if (sats <= Amount.Zero) throw new ArgumentException("You can only spend a positive amount of satoshis");
 
             scriptBuilder ??= new P2PkhLockBuilder(recipient);
-            var txOut = new TxOut(Hash, Outputs.Count, sats, scriptBuilder);
+            var txOut = new TxOut(TxHash, Outputs.Count, sats, scriptBuilder);
             return AddOutput(txOut);
         }
 
@@ -287,7 +301,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <returns>transaction string representation</returns>
         public override string ToString()
         {
-            return Hash.ToString();
+            return TxHash.ToString();
         }
 
         /// <summary>
@@ -472,7 +486,7 @@ namespace CafeLib.BsvSharp.Transactions
             using var sha256 = SHA256.Create();
             var hash1 = sha256.ComputeHash(txBytes);
             var hash2 = sha256.ComputeHash(hash1);
-            Hash = new UInt256(hash2);
+            TxHash = new UInt256(hash2);
             return true;
         }
 

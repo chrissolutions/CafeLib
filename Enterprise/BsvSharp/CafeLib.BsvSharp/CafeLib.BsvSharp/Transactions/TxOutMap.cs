@@ -22,7 +22,7 @@ namespace CafeLib.BsvSharp.Transactions
 
         public void SetTransaction(Transaction tx)
         {
-            tx.Outputs.ForEach((x, i) => Set(tx.Hash, i, x));
+            tx.Outputs.ForEach((x, i) => Set(tx.TxHash, i, x));
         }
     }
 }
