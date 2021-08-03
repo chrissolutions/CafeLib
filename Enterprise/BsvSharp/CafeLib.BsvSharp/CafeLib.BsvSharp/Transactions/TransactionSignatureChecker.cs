@@ -268,10 +268,10 @@ namespace CafeLib.BsvSharp.Transactions
                 writer.Write(nOutputs.AsVarIntBytes());
                 for (var nOutput = 0; nOutput < nOutputs; nOutput++)
                 {
-                    //if (sigHashType.IsBaseSingle && nOutput != nIn)
-                    //    writer.Add(TxOut.Null);
-                    //else
-                    //    writer.Add(txTo.Outputs[nOutput]);
+                    if (sigHashType.IsBaseSingle && nOutput != nIn)
+                        writer.Write(TxOut.Empty);
+                    else
+                        writer.Write(txTo.Outputs[nOutput]);
                 }
                 // Finish up...
                 writer
