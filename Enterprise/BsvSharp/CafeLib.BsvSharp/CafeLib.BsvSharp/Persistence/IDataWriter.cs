@@ -10,6 +10,7 @@ namespace CafeLib.BsvSharp.Persistence
         IDataWriter Write(uint data);
         IDataWriter Write(long data);
         IDataWriter Write(ulong data);
+        IDataWriter Write(string data);
         IDataWriter Write(UInt160 data);
         IDataWriter Write(UInt256 data);
         IDataWriter Write(UInt512 data);

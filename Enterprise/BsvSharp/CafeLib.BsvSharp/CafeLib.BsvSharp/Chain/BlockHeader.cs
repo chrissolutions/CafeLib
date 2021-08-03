@@ -11,7 +11,7 @@ using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
 
-namespace CafeLib.BsvSharp.Chain
+namespace CafeLib.BsvSharp.Transactions
 {
 
     /// <summary>

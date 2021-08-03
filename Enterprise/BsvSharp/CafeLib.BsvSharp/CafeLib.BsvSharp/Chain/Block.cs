@@ -10,9 +10,8 @@ using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.Core.Buffers;
 
-namespace CafeLib.BsvSharp.Chain
+namespace CafeLib.BsvSharp.Transactions
 {
-
     /// <summary>
     /// Closely mirrors the data and layout of a serialized Bitcoin block.
     /// Focus is on efficiency when processing large blocks.
@@ -22,34 +21,35 @@ namespace CafeLib.BsvSharp.Chain
     /// </summary>
     public class Block : BlockHeader
     {
-        public Transaction[] Txs { get; private set; }
+        public TxCollection Txs { get; private set; }
 
         public Block()
         {
+            Txs = new TxCollection();
         }
 
         public Block
         (
             Transaction[] txs,
-            Int32 version,
+            int version,
             UInt256 hashPrevBlock,
             UInt256 hashMerkleRoot,
-            UInt32 time,
-            UInt32 bits,
-            UInt32 nonce
+            uint time,
+            uint bits,
+            uint nonce
         )
             : base(version, hashPrevBlock, hashMerkleRoot, time, bits, nonce)
         {
-            Txs = txs;
+            Txs = new TxCollection(txs);
         }
 
-        public bool TryParseBlock(ref ReadOnlyByteSequence ros, int height, IBlockParser bp)
-        {
-            var r = new ByteSequenceReader(ros);
-            if (!TryParseBlock(ref r, height, bp)) return false;
-            ros = ros.Data.Slice(r.Data.Consumed);
-            return true;
-        }
+        //public bool TryParseBlock(ref ReadOnlyByteSequence ros, int height, IBlockParser bp)
+        //{
+        //    var r = new ByteSequenceReader(ros);
+        //    if (!TryParseBlock(ref r, height, bp)) return false;
+        //    ros = ros.Data.Slice(r.Data.Consumed);
+        //    return true;
+        //}
 
         public bool TryReadBlock(ref ReadOnlyByteSequence ros)
         {
@@ -59,59 +59,53 @@ namespace CafeLib.BsvSharp.Chain
             return true;
         }
 
-        public bool TryParseBlock(ref ByteSequenceReader r, int height, IBlockParser bp)
+        //public bool TryParseBlock(ref ByteSequenceReader r, int height, IBlockParser bp)
+        //{
+        //    var offset = r.Data.Consumed;
+
+        //    if (!TryReadBlockHeader(ref r)) goto fail;
+
+        //    Height = height;
+
+        //    bp.BlockStart(this, offset);
+
+        //    if (!r.TryReadVariant(out var count)) goto fail;
+
+        //    Txs = new Chain.Transaction[count];
+
+        //    for (var i = 0L; i < count; i++)
+        //    {
+        //        var t = new Chain.Transaction();
+        //        Txs[i] = t;
+        //        if (!t.TryParseTransaction(ref r, bp)) goto fail;
+        //    }
+
+        //    if (!VerifyMerkleRoot()) goto fail;
+
+        //    bp.BlockParsed(this, r.Data.Consumed);
+
+        //    return true;
+        //fail:
+        //    return false;
+        //}
+
+        private bool TryReadBlock(ref ByteSequenceReader r)
         {
-            var offset = r.Data.Consumed;
+            if (!TryReadBlockHeader(ref r)) return false;
+            if (!r.TryReadVariant(out var count)) return false;
 
-            if (!TryReadBlockHeader(ref r)) goto fail;
-
-            Height = height;
-
-            bp.BlockStart(this, offset);
-
-            if (!r.TryReadVariant(out var count)) goto fail;
-
-            Txs = new Transaction[count];
-
-            for (var i = 0L; i < count; i++)
+            Txs = new TxCollection();
+            for (var i = 0; i < count; i++)
             {
                 var t = new Transaction();
-                Txs[i] = t;
-                if (!t.TryParseTransaction(ref r, bp)) goto fail;
+                if (!t.TryReadTransaction(ref r)) return false;
+                Txs.Add(t);
             }
 
-            if (!VerifyMerkleRoot()) goto fail;
-
-            bp.BlockParsed(this, r.Data.Consumed);
-
-            return true;
-        fail:
-            return false;
+            return VerifyMerkleRoot();
         }
 
-        public bool TryReadBlock(ref ByteSequenceReader r)
-        {
-            if (!TryReadBlockHeader(ref r)) goto fail;
-
-            if (!r.TryReadVariant(out var count)) goto fail;
-
-            Txs = new Transaction[count];
-
-            for (var i = 0L; i < count; i++)
-            {
-                var t = new Transaction();
-                Txs[i] = t;
-                if (!t.TryReadTransaction(ref r)) goto fail;
-            }
-
-            if (!VerifyMerkleRoot()) goto fail;
-
-            return true;
-        fail:
-            return false;
-        }
-
-        private UInt256 ComputeMerkleRoot() => MerkleTree.ComputeMerkleRoot(Txs);
+        private UInt256 ComputeMerkleRoot() => Txs.ComputeMerkleRoot();
 
         private bool VerifyMerkleRoot() => ComputeMerkleRoot() == MerkleRoot;
 
@@ -137,6 +131,5 @@ namespace CafeLib.BsvSharp.Chain
                 }
             }
         }
-
     }
 }

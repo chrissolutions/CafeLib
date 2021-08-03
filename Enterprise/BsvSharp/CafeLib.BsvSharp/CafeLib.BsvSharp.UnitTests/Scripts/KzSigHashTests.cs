@@ -8,11 +8,13 @@ using System.IO;
 using System.Linq;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Transactions;
 using CafeLib.BsvSharp.Units;
 using CafeLib.BsvSharp.UnitTests.Extensions;
 using CafeLib.Core.Extensions;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using TransactionSignatureChecker = CafeLib.BsvSharp.Scripting.TransactionSignatureChecker;
 
 namespace CafeLib.BsvSharp.UnitTests.Scripts
 {

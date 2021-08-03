@@ -1,7 +1,7 @@
 ﻿using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Numerics;
 
-namespace CafeLib.BsvSharp.Chain
+namespace CafeLib.BsvSharp.Transactions
 {
     /// <summary>
     /// As transactions are added to a merkle tree, the path of left and right branches from the

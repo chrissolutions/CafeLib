@@ -10,7 +10,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using CafeLib.BsvSharp.Numerics;
 
-namespace CafeLib.BsvSharp.Chain
+namespace CafeLib.BsvSharp.Transactions
 {
     /// <summary>
     /// 
@@ -31,19 +31,6 @@ namespace CafeLib.BsvSharp.Chain
         public MerkleTree()
         {
             _sha256 = SHA256.Create();
-        }
-
-        public void AddTransactions(IEnumerable<Transaction> txs)
-        {
-            foreach (var tx in txs) 
-                AddTransaction(tx);
-        }
-
-        public static UInt256 ComputeMerkleRoot(IEnumerable<Transaction> txs)
-        {
-            using var mt = new MerkleTree();
-            mt.AddTransactions(txs);
-            return mt.GetMerkleRoot();
         }
 
         /// <summary>
@@ -111,50 +98,21 @@ namespace CafeLib.BsvSharp.Chain
             return ComputeHashMerkleRoot();
         }
 
-        #region IDisposable
-
-        /// <summary>
-        /// Dispose.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(!_disposed);
-            _disposed = true;
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing) return;
-            try
-            {
-                _sha256.Dispose();
-            }
-            catch
-            {
-                // ignore
-            }
-        }
-
-        #endregion
-
-        #region Helpers
-
         /// <summary>
         /// Update the incremental state by one additional transaction hash.
         /// This creates at most one MerkleTreeNode per level of the tree.
         /// These are reused as subtrees fill up.
         /// </summary>
-        /// <param name="tx"></param>
-        private void AddTransaction(Transaction tx)
+        /// <param name="hash"></param>
+        public void AddHash(UInt256 hash)
         {
             _count++;
-            var newHash = tx.Hash;
+            var newHash = hash;
             if (_count == 1)
             {
                 // First transaction.
                 _nodes.Add(new MerkleTreeNode(newHash, null));
-            } 
+            }
             else
             {
                 var n = _nodes[0];
@@ -191,6 +149,31 @@ namespace CafeLib.BsvSharp.Chain
                         n = np;
                     } while (n.HasBoth);
                 }
+            }
+        }
+
+        #region IDisposable
+
+        /// <summary>
+        /// Dispose.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(!_disposed);
+            _disposed = true;
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing) return;
+            try
+            {
+                _sha256.Dispose();
+            }
+            catch
+            {
+                // ignore
             }
         }
 
