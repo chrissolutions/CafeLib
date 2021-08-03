@@ -10,7 +10,7 @@ namespace CafeLib.BsvSharp.Units
     public readonly struct Amount : IComparable<Amount>, IComparable
     {
         public static Amount Zero = new Amount(0L);
-        public static Amount Null => MinValue;
+        public static Amount Null => -1L;
 
         /// <summary>
         /// This is a value slightly higher than the maximum number of satoshis that will ever be in circulation: 21 million coins, 2.1 quadrillion satoshis.
