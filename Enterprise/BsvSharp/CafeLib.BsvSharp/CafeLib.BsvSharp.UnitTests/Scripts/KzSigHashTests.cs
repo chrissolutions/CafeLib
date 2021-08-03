@@ -100,5 +100,13 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
         {
             SigHash(_tvsOther);
         }
+
+        [Fact]
+        public void Compute_Sighash_For_A_Coinbase_Tx()
+        {
+            var tx = new Transactions.Transaction("02000000010000000000000000000000000000000000000000000000000000000000000000ffffffff2e039b1e1304c0737c5b68747470733a2f2f6769746875622e636f6d2f62636578742f01000001c096020000000000ffffffff014a355009000000001976a91448b20e254c0677e760bab964aec16818d6b7134a88ac00000000");
+            var sighash = Transactions.TransactionSignatureChecker.ComputeSignatureHash(Script.None, tx, 0, new SignatureHashType(SignatureHashEnum.All), Amount.Zero).ToString();
+            Assert.Equal("6829f7d44dfd4654749b8027f44c9381527199f78ae9b0d58ffc03fdab3c82f1", sighash);
+        }
     }
 }
