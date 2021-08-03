@@ -19,13 +19,25 @@ namespace CafeLib.BsvSharp.Transactions
     {
         private ScriptBuilder _scriptBuilder;
 
+        /// <summary>
+        /// Empty transaction output
+        /// </summary>
+        public static readonly TxOut Empty = new TxOut();
+
+        /// <summary>
+        /// Owner Transaction Hash.
+        /// </summary>
         public UInt256 TxHash { get; }
+
+        /// <summary>
+        /// Owner Transaction Index.
+        /// </summary>
         public long Index { get; }
 
         public Amount Amount { get; private set; }
         public bool IsChangeOutput { get; }
 
-        public Script Script => _scriptBuilder;
+        public Script Script => _scriptBuilder ?? Script.None;
 
         public UInt256 Hash => TxHash;
 
@@ -44,11 +56,6 @@ namespace CafeLib.BsvSharp.Transactions
         /// <returns></returns>
         public bool IsDataOut => _scriptBuilder.Ops.Any() && _scriptBuilder.Ops[0].Operand.Code == Opcode.OP_FALSE
                    || _scriptBuilder.Ops.Count >= 2 && _scriptBuilder.Ops[0].Operand.Code == Opcode.OP_RETURN;
-
-        /// <summary>
-        /// Null transaction output
-        /// </summary>
-        public static TxOut Null => new TxOut();
 
         /// <summary>
         /// 
@@ -145,7 +152,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             writer
                 .Write(Amount)
-                .Write(_scriptBuilder.ToScript())
+                .Write(Script)
                 ;
             return writer;
         }
