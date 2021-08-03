@@ -40,25 +40,6 @@ namespace CafeLib.BsvSharp.Scripting
         {
         }
 
-        public IBitcoinWriter AddTo(IBitcoinWriter writer, bool withoutCodeSeparators = false)
-        {
-            if (withoutCodeSeparators) 
-            {
-                var ops = Decode().Where(o => o.Code != Opcode.OP_CODESEPARATOR).ToArray();
-                writer.Add(ops.Length.AsVarIntBytes());
-                foreach (var op in ops)
-                    writer.Add(op);
-            }
-            else 
-            {
-                writer
-                    .Add(Data.Length.AsVarIntBytes())
-                    .Add(Data);
-
-            }
-            return writer;
-        }
-
         /// <summary>
         /// Serialize Script to data writer
         /// </summary>

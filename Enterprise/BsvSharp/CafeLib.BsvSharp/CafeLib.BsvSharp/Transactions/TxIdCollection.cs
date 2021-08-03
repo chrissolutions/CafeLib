@@ -7,6 +7,8 @@ namespace CafeLib.BsvSharp.Transactions
     /// </summary>
     public class TxIdCollection<T> : List<T> where T : ITxId
     {
+        public int Length => Count;
+
         protected TxIdCollection()
         {
         }

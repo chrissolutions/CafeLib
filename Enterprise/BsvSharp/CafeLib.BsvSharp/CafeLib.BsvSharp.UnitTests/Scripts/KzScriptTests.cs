@@ -14,11 +14,13 @@ using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Services;
+using CafeLib.BsvSharp.Transactions;
 using CafeLib.BsvSharp.Units;
 using CafeLib.Core.Extensions;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
+using TransactionSignatureChecker = CafeLib.BsvSharp.Scripting.TransactionSignatureChecker;
 
 namespace CafeLib.BsvSharp.UnitTests.Scripts
 {

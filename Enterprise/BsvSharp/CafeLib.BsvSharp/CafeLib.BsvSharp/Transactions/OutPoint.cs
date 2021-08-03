@@ -8,7 +8,7 @@ using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.Core.Buffers;
 
-namespace CafeLib.BsvSharp.Chain
+namespace CafeLib.BsvSharp.Transactions
 {
     /// <summary>
     /// Closely mirrors the data and layout of a Bitcoin transaction input's previous output reference as stored in each block.
@@ -37,12 +37,6 @@ namespace CafeLib.BsvSharp.Chain
             return true;
         }
 
-        public IBitcoinWriter AddTo(IBitcoinWriter writer)
-        {
-            writer.Add(TxId).Add(Index);
-            return writer;
-        }
-        
         public IDataWriter WriteTo(IDataWriter writer)
         {
             writer

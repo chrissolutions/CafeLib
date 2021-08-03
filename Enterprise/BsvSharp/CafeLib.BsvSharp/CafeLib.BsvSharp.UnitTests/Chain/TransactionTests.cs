@@ -15,6 +15,7 @@ using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Transactions;
+using CafeLib.BsvSharp.Units;
 using CafeLib.Core.Extensions;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -165,31 +166,27 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
         }
 
 
-        private TransactionBuilder BuildCreditingTransaction(Script scriptPubKey, long nValue)
-        {
-            var tx = new TransactionBuilder
-            {
-                LockTime = 0,
-                Version = 1,
-            };
+        //private Transaction BuildCreditingTransaction(Script scriptPubKey, long nValue)
+        //{
+        //    var tx = new Transaction();
 
-            tx.AddIn(new OutPoint(), new ScriptBuilder().Push(0).Push(0));
-            tx.AddOut(scriptPubKey, nValue);
-            return tx;
-        }
+        //    tx.AddInput(new OutPoint(), new ScriptBuilder().Push(0).Push(0));
+        //    tx.AddOut(scriptPubKey, nValue);
+        //    return tx;
+        //}
 
-        TransactionBuilder BuildSpendingTransaction(Script scriptSig, TransactionBuilder txCredit)
-        {
-            var tx = new TransactionBuilder
-            {
-                LockTime = 0,
-                Version = 1,
-            };
+        //TransactionBuilder BuildSpendingTransaction(Script scriptSig, TransactionBuilder txCredit)
+        //{
+        //    var tx = new TransactionBuilder
+        //    {
+        //        LockTime = 0,
+        //        Version = 1,
+        //    };
 
-            tx.AddIn(new OutPoint(), new ScriptBuilder().Push(0).Push(0));
-            //tx.AddOut(scriptPubKey, nValue);
-            return tx;
-        }
+        //    tx.AddIn(new OutPoint(), new ScriptBuilder().Push(0).Push(0));
+        //    //tx.AddOut(scriptPubKey, nValue);
+        //    return tx;
+        //}
 
         private static TxInfo BuildTransactionInfo(string hash, string index, string scriptPubKey)
         {

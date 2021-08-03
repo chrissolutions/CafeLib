@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using System.Buffers;
 using System.Security.Cryptography;
 using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Extensions;
@@ -13,7 +12,7 @@ using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Persistence
 {
-    public class HashWriter : IDisposable, IBitcoinWriter, IDataWriter
+    public class HashWriter : IDisposable, IDataWriter
     {
         private readonly SHA256Managed _alg = new SHA256Managed();
 
@@ -32,54 +31,15 @@ namespace CafeLib.BsvSharp.Persistence
             return hash.AsUInt256();
         }
 
-        public IBitcoinWriter Add(byte[] data) { _alg.TransformBlock(data); return this; }
-        public IBitcoinWriter Add(ReadOnlySpan<byte> data) { _alg.TransformBlock(data); return this; }
-        public IBitcoinWriter Add(ReadOnlySequence<byte> data) { _alg.TransformBlock(data); return this; }
-
-        public IBitcoinWriter Add(UInt64 v) { _alg.TransformBlock(v.AsReadOnlySpan()); return this; }
-        public IBitcoinWriter Add(Int64 v) { _alg.TransformBlock(v.AsReadOnlySpan()); return this; }
-        public IBitcoinWriter Add(UInt32 v) { _alg.TransformBlock(v.AsReadOnlySpan()); return this; } 
-        public IBitcoinWriter Add(Int32 v) { _alg.TransformBlock(v.AsReadOnlySpan()); return this; }
-        public IBitcoinWriter Add(ReadOnlyByteSpan data)
-        {
-            _alg.TransformBlock(data.ToArray());
-            return this;
-        }
-
-        public IBitcoinWriter Add(ReadOnlyByteSequence data)
+        public IDataWriter Write(ReadOnlyByteSpan data)
         {
             _alg.TransformBlock(data);
             return this;
         }
 
-        public IBitcoinWriter Add(byte v)
+        public IDataWriter Write(ReadOnlyByteSequence data)
         {
-            _alg.TransformBlock(new[] { v });
-            return this;
-        }
-
-        public IBitcoinWriter Add(UInt160 v)
-        {
-            _alg.TransformBlock(v.Span); 
-            return this;
-        }
-
-        public IBitcoinWriter Add(UInt256 v)
-        {
-            _alg.TransformBlock(v.Span);
-            return this;
-        }
-
-        public IBitcoinWriter Add(UInt512 v)
-        {
-            _alg.TransformBlock(v.Span); 
-            return this;
-        } 
-
-        public HashWriter Add(string ascii)
-        {
-            _alg.TransformBlock(((VarInt)ascii.Length).ToArray());
-            _alg.TransformBlock(ascii.AsciiToBytes());
+            _alg.TransformBlock(data);
             return this;
         }
 
@@ -116,6 +76,13 @@ namespace CafeLib.BsvSharp.Persistence
         public IDataWriter Write(ulong data)
         {
             _alg.TransformBlock(data.AsReadOnlySpan());
+            return this;
+        }
+
+        public IDataWriter Write(string data)
+        {
+            _alg.TransformBlock(((VarInt)data.Length).ToArray());
+            _alg.TransformBlock(data.AsciiToBytes());
             return this;
         }
 

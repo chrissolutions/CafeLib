@@ -3,6 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
@@ -71,6 +72,12 @@ namespace CafeLib.BsvSharp.Persistence
         public IDataWriter Write(ulong v)
         {
             _buffer.Add(v.AsReadOnlySpan());
+            return this;
+        }
+
+        public IDataWriter Write(string data)
+        {
+            Write(Encoders.Utf8.Decode(data));
             return this;
         }
 

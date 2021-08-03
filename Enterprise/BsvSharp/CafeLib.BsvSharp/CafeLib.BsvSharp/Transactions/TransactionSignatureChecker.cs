@@ -122,10 +122,10 @@ namespace CafeLib.BsvSharp.Transactions
             // the nSequenceMasked in the transaction.
             if (
                 !(
-                    txToSequenceMasked < Chain.TxIn.SequenceLocktimeTypeFlag &&
-                    nSequenceMasked < Chain.TxIn.SequenceLocktimeTypeFlag ||
-                    txToSequenceMasked >= Chain.TxIn.SequenceLocktimeTypeFlag &&
-                    nSequenceMasked >= Chain.TxIn.SequenceLocktimeTypeFlag
+                    txToSequenceMasked < TxIn.SequenceLocktimeTypeFlag &&
+                    nSequenceMasked < TxIn.SequenceLocktimeTypeFlag ||
+                    txToSequenceMasked >= TxIn.SequenceLocktimeTypeFlag &&
+                    nSequenceMasked >= TxIn.SequenceLocktimeTypeFlag
                 )
             )
             {

@@ -6,7 +6,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CafeLib.BsvSharp.Chain;
+using CafeLib.BsvSharp.Encoding;
+using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Transactions;
 using CafeLib.BsvSharp.Units;
@@ -72,22 +73,20 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
         {
             foreach (var tv in tvs)
             {
-                var tx = Transaction.ParseHex(tv.RawTx);
+                var tx = new Transaction(tv.RawTx);
                 var (scriptCodeOk, scriptCode) = Script.ParseHex(tv.RawScript, withoutLength: true);
-                Assert.True(tx != null && scriptCodeOk);
+                Assert.True(scriptCodeOk);
 
-                var shreg = TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, tv.Index, tv.SigHashType, Amount.Zero).ToString();
+                var writer = new ByteDataWriter();
+                tx.WriteTo(writer);
+                var serializedHex = Encoders.Hex.Encode(writer.Span);
+                Assert.Equal(tv.RawTx, serializedHex);
+
+                var shreg = Transactions.TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, tv.Index, tv.SigHashType, Amount.Zero).ToString();
                 Assert.Equal(tv.SigHashRegHex, shreg);
 
-                var tx2 = new Transactions.Transaction(tv.RawTx);
-                var shreg2 = Transactions.TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx2, tv.Index, tv.SigHashType, Amount.Zero).ToString();
-                Assert.Equal(tv.SigHashRegHex, shreg2);
-
-                var shold = TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, tv.Index, tv.SigHashType, Amount.Zero, 0).ToString();
+                var shold = Transactions.TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, tv.Index, tv.SigHashType, Amount.Zero, 0).ToString();
                 Assert.Equal(tv.SigHashOldHex, shold);
-                
-                var shold2 = Transactions.TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx2, tv.Index, tv.SigHashType, Amount.Zero, 0).ToString();
-                Assert.Equal(tv.SigHashOldHex, shold2);
             }
         }
 

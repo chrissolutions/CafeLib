@@ -7,6 +7,8 @@ using System;
 using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Transactions;
+using CafeLib.BsvSharp.Units;
 
 namespace CafeLib.BsvSharp.Network
 {
@@ -207,12 +209,13 @@ namespace CafeLib.BsvSharp.Network
                 new Transaction
                 (
                     version: 1,
-                    vin: new[] { new TxIn(new OutPoint(UInt256.Zero, -1), new Script(""), 0 ) },
-                    vout: new[] { new TxOut( value: 0, script: new Script("")) },
+                    vin: new TxInCollection(new[] { new TxIn(UInt256.Zero, -1, Amount.Zero, Script.None, 0 ) }),
+                    vout: new TxOutCollection(new[] { new TxOut(UInt256.Zero, -1, Amount.Zero, Script.None) }),
                     lockTime: 0
                 )
             };
-            var hashMerkleRoot = MerkleTree.ComputeMerkleRoot(txs);
+
+            var hashMerkleRoot = txs.ComputeMerkleRoot();
             var genesis = new Block(
                 txs: txs,
                 version: 1,

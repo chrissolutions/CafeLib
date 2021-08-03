@@ -136,25 +136,10 @@ namespace CafeLib.BsvSharp.Scripting
             }
             if (length > 0) 
             {
-                Data.Span.CopyTo(span.Slice(0, (int)Data.Length));
+                Data.Span.CopyTo(span.Slice(0, Data.Length));
                 span = span.Slice((int)length);
             }
             return true;
-        }
-
-        public IBitcoinWriter AddTo(IBitcoinWriter w)
-        {
-            w.Add((byte)Code);
-            if (Code >= Opcode.OP_PUSHDATA1 && Code <= Opcode.OP_PUSHDATA4) 
-            {
-                ByteSpan lengthBytes = BitConverter.GetBytes((uint)Data.Length).AsSpan(0, LengthBytesCount);
-                w.Add(lengthBytes);
-            }
-
-            if (Data.Length > 0)
-                w.Add(Data);
-
-            return w;
         }
 
         /// <summary>

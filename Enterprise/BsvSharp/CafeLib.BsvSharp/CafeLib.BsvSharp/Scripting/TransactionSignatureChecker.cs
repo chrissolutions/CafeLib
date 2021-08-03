@@ -3,11 +3,11 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
+using CafeLib.BsvSharp.Transactions;
 using CafeLib.BsvSharp.Units;
 
 namespace CafeLib.BsvSharp.Scripting
@@ -71,7 +71,7 @@ namespace CafeLib.BsvSharp.Scripting
             // prevent this condition. Alternatively we could test all
             // inputs, but testing just this input minimizes the data
             // required to prove correct CHECKLOCKTIMEVERIFY execution.
-            return TxIn.SequenceFinal != _tx.Inputs[_index].Sequence;
+            return TxIn.SequenceFinal != _tx.Inputs[_index].SequenceNumber;
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace CafeLib.BsvSharp.Scripting
         {
             // Relative lock times are supported by comparing the passed
             // in operand to the sequence number of the input.
-            var txToSequence = _tx.Inputs[_index].Sequence;
+            var txToSequence = _tx.Inputs[_index].SequenceNumber;
 
             // Fail if the transaction's version number is not set high
             // enough to trigger Bip 68 rules.
@@ -182,30 +182,30 @@ namespace CafeLib.BsvSharp.Scripting
                 else if (sigHashType.GetBaseType() == BaseSignatureHashEnum.Single && nIn < txTo.Outputs.Length)
                 {
                     using var hw = new HashWriter();
-                    hw.Add(txTo.Outputs[nIn]);
+                    hw.Write(txTo.Outputs[nIn]);
                     hashOutputs = hw.GetHashFinal();
                 }
 
                 using var writer = new HashWriter();
                 writer
                     // Version
-                    .Add(txTo.Version)
+                    .Write(txTo.Version)
                     // Input prevouts/nSequence (none/all, depending on flags)
-                    .Add(hashPrevOuts)
-                    .Add(hashSequence)
+                    .Write(hashPrevOuts)
+                    .Write(hashSequence)
                     // The input being signed (replacing the scriptSig with scriptCode +
                     // amount). The prevout may already be contained in hashPrevout, and the
                     // nSequence may already be contain in hashSequence.
-                    .Add(txTo.Inputs[nIn].PrevOut)
-                    .Add(scriptCode)
-                    .Add(amount)
-                    .Add(txTo.Inputs[nIn].Sequence)
+                    .Write(txTo.Inputs[nIn].PrevOut)
+                    .Write(scriptCode)
+                    .Write(amount)
+                    .Write(txTo.Inputs[nIn].SequenceNumber)
                     // Outputs (none/one/all, depending on flags)
-                    .Add(hashOutputs)
+                    .Write(hashOutputs)
                     // Locktime
-                    .Add(txTo.LockTime)
+                    .Write(txTo.LockTime)
                     // Sighash type
-                    .Add(sigHashType.RawSigHashType);
+                    .Write(sigHashType.RawSigHashType);
 
                 return writer.GetHashFinal();
             }
@@ -230,51 +230,51 @@ namespace CafeLib.BsvSharp.Scripting
                 var numberOfInputs = hasAnyoneCanPay ? 1 : txTo.Inputs.Length;
                 using var writer = new HashWriter();
                 // Start with the version...
-                writer.Add(txTo.Version);
+                writer.Write(txTo.Version);
                 // Add Input(s)...
                 if (hasAnyoneCanPay)
                 {
                     // AnyoneCanPay serializes only the input being signed.
                     var i = txTo.Inputs[nIn];
                     writer
-                        .Add((byte)1)
-                        .Add(i.PrevOut)
-                        .Add(scriptCode, true)
-                        .Add(i.Sequence);
+                        .Write((byte)1)
+                        .Write(i.PrevOut)
+                        .Write(scriptCode, true)
+                        .Write(i.SequenceNumber);
                 }
                 else
                 {
                     // Non-AnyoneCanPay case. Process all inputs but handle input being signed in its own way.
                     var isSingleOrNone = sigHashType.IsBaseSingle || sigHashType.IsBaseNone;
-                    writer.Add(txTo.Inputs.Length.AsVarIntBytes());
+                    writer.Write(txTo.Inputs.Length.AsVarIntBytes());
                     for (var nInput = 0; nInput < txTo.Inputs.Length; nInput++)
                     {
                         var i = txTo.Inputs[nInput];
-                        writer.Add(i.PrevOut);
+                        writer.Write(i.PrevOut);
                         if (nInput != nIn)
-                            writer.Add(Script.None);
+                            writer.Write(Script.None);
                         else
-                            writer.Add(scriptCode, true);
+                            writer.Write(scriptCode, true);
                         if (nInput != nIn && isSingleOrNone)
-                            writer.Add(0);
+                            writer.Write(0);
                         else
-                            writer.Add(i.Sequence);
+                            writer.Write(i.SequenceNumber);
                     }
                 }
                 // Add Output(s)...
                 var nOutputs = sigHashType.IsBaseNone ? 0 : sigHashType.IsBaseSingle ? nIn + 1 : txTo.Outputs.Length;
-                writer.Add(nOutputs.AsVarIntBytes());
+                writer.Write(nOutputs.AsVarIntBytes());
                 for (var nOutput = 0; nOutput < nOutputs; nOutput++)
                 {
                     if (sigHashType.IsBaseSingle && nOutput != nIn)
-                        writer.Add(TxOut.Empty);
+                        writer.Write(TxOut.Empty);
                     else
-                        writer.Add(txTo.Outputs[nOutput]);
+                        writer.Write(txTo.Outputs[nOutput]);
                 }
                 // Finish up...
                 writer
-                    .Add(txTo.LockTime)
-                    .Add(sigHashType.RawSigHashType)
+                    .Write(txTo.LockTime)
+                    .Write(sigHashType.RawSigHashType)
                     ;
                 return writer.GetHashFinal();
             }
@@ -285,7 +285,7 @@ namespace CafeLib.BsvSharp.Scripting
             using var hw = new HashWriter();
             foreach (var i in txTo.Inputs)
             {
-                hw.Add(i.PrevOut);
+                hw.Write(i.PrevOut);
             }
 
             return hw.GetHashFinal();
@@ -296,7 +296,7 @@ namespace CafeLib.BsvSharp.Scripting
             using var hw = new HashWriter();
             foreach (var i in txTo.Inputs)
             {
-                hw.Add(i.Sequence);
+                hw.Write(i.SequenceNumber);
             }
 
             return hw.GetHashFinal();
@@ -307,7 +307,7 @@ namespace CafeLib.BsvSharp.Scripting
             using var hw = new HashWriter();
             foreach (var o in txTo.Outputs)
             {
-                hw.Add(o);
+                hw.Write(o);
             }
 
             return hw.GetHashFinal();

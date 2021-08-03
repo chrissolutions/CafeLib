@@ -4,13 +4,14 @@
 #endregion
 
 using System;
+using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Persistence
 {
-    public class MemoryWriter : IBitcoinWriter
+    public class MemoryWriter : IDataWriter
     {
         private readonly ByteMemory _memory;
         public int Length => _memory.Length;
@@ -25,57 +26,63 @@ namespace CafeLib.BsvSharp.Persistence
             _memory = memory;
         }
 
-        public IBitcoinWriter Add(byte[] data)
+        public IDataWriter Write(byte[] data)
         {
             data.CopyTo(_memory.Data);
             return this;
         }
 
-        public IBitcoinWriter Add(byte v)
+        public IDataWriter Write(byte data)
         {
-            _memory[Length] = v; 
+            _memory[Length] = data;
             return this;
         }
 
-        public IBitcoinWriter Add(int v)
+        public IDataWriter Write(int data)
         {
-            v.AsSpan().CopyTo(_memory[Length..]); 
+            data.AsSpan().CopyTo(_memory[Length..]);
             return this;
         }
 
-        public IBitcoinWriter Add(uint v)
+        public IDataWriter Write(uint data)
         {
-            v.AsSpan().CopyTo(_memory[Length..]); 
+            data.AsSpan().CopyTo(_memory[Length..]);
             return this;
         }
 
-        public IBitcoinWriter Add(long v)
+        public IDataWriter Write(long data)
         {
-            v.AsSpan().CopyTo(_memory[Length..]); 
+            data.AsSpan().CopyTo(_memory[Length..]);
             return this;
         }
 
-        public IBitcoinWriter Add(ulong v)
+        public IDataWriter Write(ulong data)
         {
-            v.AsSpan().CopyTo(_memory.Data.Span[Length..]); 
+            data.AsSpan().CopyTo(_memory.Data.Span[Length..]);
             return this;
         }
 
-        public IBitcoinWriter Add(UInt160 v)
+        public IDataWriter Write(string data)
         {
-            v.Span.CopyTo(_memory[Length..]); 
+            Write(Encoders.Utf8.Decode(data));
             return this;
         }
 
-        public IBitcoinWriter Add(UInt256 v)
+        public IDataWriter Write(UInt160 data)
         {
-            v.Span.CopyTo(_memory[Length..]); 
+            data.Span.CopyTo(_memory[Length..]);
             return this;
         }
 
-        public IBitcoinWriter Add(UInt512 v)
+        public IDataWriter Write(UInt256 data)
         {
-            v.Span.CopyTo(_memory[Length..]);
+            data.Span.CopyTo(_memory[Length..]);
+            return this;
+        }
+
+        public IDataWriter Write(UInt512 data)
+        {
+            data.Span.CopyTo(_memory[Length..]);
             return this;
         }
     }

@@ -6,10 +6,10 @@
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
+using CafeLib.BsvSharp.Transactions;
 
 namespace CafeLib.BsvSharp.Scripting
 {
@@ -44,39 +44,6 @@ namespace CafeLib.BsvSharp.Scripting
                 .Aggregate((ScriptFlags)0, (current, sf) => current | sf);
         }
         
-        public static UInt256 GetPrevOutHash(Transaction txTo)
-        {
-            using var hw = new HashWriter();
-            foreach (var i in txTo.Inputs)
-            {
-                hw.Add(i.PrevOut);
-            }
-
-            return hw.GetHashFinal();
-        }
-
-        public static UInt256 GetSequenceHash(Transaction txTo)
-        {
-            using var hw = new HashWriter();
-            foreach (var i in txTo.Inputs)
-            {
-                hw.Add(i.Sequence);
-            }
-
-            return hw.GetHashFinal();
-        }
-
-        public static UInt256 GetOutputsHash(Transaction txTo)
-        {
-            using var hw = new HashWriter();
-            foreach (var o in txTo.Outputs)
-            {
-                hw.Add(o);
-            }
-
-            return hw.GetHashFinal();
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool SetSuccess(out ScriptError ret)
         {

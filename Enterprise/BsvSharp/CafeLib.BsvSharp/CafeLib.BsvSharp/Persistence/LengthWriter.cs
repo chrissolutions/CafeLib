@@ -8,70 +8,77 @@ using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Persistence
 {
-    public class LengthWriter : IBitcoinWriter
+    public class LengthWriter : IDataWriter
     {
         public long Length { get; private set; }
 
-        public IBitcoinWriter Add(byte[] data)
+        public IDataWriter Write(ReadOnlyByteSpan data)
         {
             Length += data.Length;
             return this;
         }
 
-        public IBitcoinWriter Add(ReadOnlyByteSpan data)
+        public IDataWriter Add(ReadOnlyByteSequence data)
         {
-            Length += data.Length; 
+            Length += data.Length;
             return this;
         }
 
-        public IBitcoinWriter Add(ReadOnlyByteSequence data)
+        public IDataWriter Write(byte[] data)
         {
-            Length += data.Length; 
+            Length += data.Length;
             return this;
         }
 
-        public IBitcoinWriter Add(long v)
+        public IDataWriter Write(byte v)
+        {
+            Length += sizeof(byte);
+            return this;
+        }
+
+        public IDataWriter Write(long data)
         {
             Length += sizeof(long);
             return this;
         }
 
-        public IBitcoinWriter Add(ulong v)
+        public IDataWriter Write(ulong data)
         {
             Length += sizeof(ulong); 
             return this;
         }
-        public IBitcoinWriter Add(int v)
+
+        public IDataWriter Write(string data)
+        {
+            Length += data.Length * sizeof(char);
+            return this;
+        }
+
+        public IDataWriter Write(int data)
         {
             Length += sizeof(int);
             return this;
         }
 
-        public IBitcoinWriter Add(uint v)
+        public IDataWriter Write(uint data)
         {
             Length += sizeof(uint); 
             return this;
         }
         
-        public IBitcoinWriter Add(byte v)
-        {
-            Length += sizeof(byte); 
-            return this;
-        }
-
-        public IBitcoinWriter Add(UInt160 v)
+        public IDataWriter Write(UInt160 v)
         {
             Length += UInt160.Length; 
             return this;
         }
 
-        public IBitcoinWriter Add(UInt256 v)
+        public IDataWriter Write(UInt256 v)
         {
             Length += UInt256.Length; 
             return this;
         }
 
-        public IBitcoinWriter Add(UInt512 v)
+        public IDataWriter Write(UInt512 v)
         {
             Length += UInt256.Length; 
             return this;

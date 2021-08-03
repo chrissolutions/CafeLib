@@ -77,6 +77,20 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         /// <summary>
+        /// Add transaction input
+        /// </summary>
+        /// <param name="prevout"></param>
+        /// <param name="scriptSig"></param>
+        /// <param name="amount"></param>
+        /// <param name="sequence"></param>
+        public Transaction AddInput(OutPoint prevout, Script scriptSig, long amount = 0L, uint sequence = TxIn.SequenceFinal)
+        {
+            Inputs.Add(new TxIn(prevout, amount, scriptSig,  sequence));
+            UpdateChangeOutput();
+            return this;
+        }
+
+        /// <summary>
         /// Add transaction inputs
         /// </summary>
         /// <param name="inputs">input collection</param>
@@ -212,7 +226,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <returns></returns>
         public Transaction SendChangeTo(Address changeAddress, ScriptBuilder scriptBuilder = null)
         {
-            scriptBuilder ??= new P2PkhScriptBuilder(changeAddress);
+            scriptBuilder ??= new P2PkhLockBuilder(changeAddress);
 
             _hasChangeScript = true;
             //get fee, and if there is not enough change to cover fee, remove change outputs

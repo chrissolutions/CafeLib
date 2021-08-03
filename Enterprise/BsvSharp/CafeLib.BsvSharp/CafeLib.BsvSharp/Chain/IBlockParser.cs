@@ -4,6 +4,7 @@
 #endregion
 
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Transactions;
 
 namespace CafeLib.BsvSharp.Chain 
 {
