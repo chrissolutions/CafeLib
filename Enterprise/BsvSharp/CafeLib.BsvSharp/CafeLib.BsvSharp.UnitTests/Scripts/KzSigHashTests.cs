@@ -79,9 +79,13 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
 
                 var tx2 = new Transactions.Transaction(tv.RawTx);
                 var shreg2 = Transactions.TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx2, tv.Index, tv.SigHashType, Amount.Zero).ToString();
+                Assert.Equal(tv.SigHashRegHex, shreg2);
 
                 var shold = TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, tv.Index, tv.SigHashType, Amount.Zero, 0).ToString();
                 Assert.Equal(tv.SigHashOldHex, shold);
+                
+                var shold2 = Transactions.TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx2, tv.Index, tv.SigHashType, Amount.Zero, 0).ToString();
+                Assert.Equal(tv.SigHashOldHex, shold2);
             }
         }
 
