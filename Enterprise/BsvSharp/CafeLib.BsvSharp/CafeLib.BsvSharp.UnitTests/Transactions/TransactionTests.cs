@@ -13,6 +13,8 @@ using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Services;
+using CafeLib.BsvSharp.Transactions;
 using CafeLib.Core.Extensions;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -23,20 +25,40 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
     {
         private const string DataFolder = @"..\..\..\data";
 
+        private static readonly Address FromAddress = new Address("mszYqVnqKoQx4jcTdJXxwKAissE3Jbrrc1");
+        private static readonly Address ToAddress = new Address("mrU9pEmAx26HcbKVrABvgL7AwA5fjNFoDc");
+
+        private static readonly dynamic UtxoWith1Coin = new
+        {
+            FromAddress,
+            TxHash = new UInt256("a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458"),
+            OutputIndex = 1,
+            ScriptPubKey = new P2PkhLockBuilder(FromAddress).ToScript(),
+            Amount = RootService.Network.Consensus.SatoshisPerCoin
+        };
+
+        private static readonly dynamic UtxoWith1MillionSatoshis = new {
+            FromAddress,
+            TxHash = new UInt256("a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458"),
+            OutputIndex = 0,
+            ScriptPubKey = new P2PkhLockBuilder(FromAddress).ToScript(),
+            Amount = 1000000L
+        };
+
         [Theory]
         [InlineData("a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458")]
         [InlineData("0000000000000000000000000000000000000000000000000000000000000000")]
         [InlineData("0000000000000000000000000000000000000000000000000000000000000001")]
         public void Verify_TxId_Test(string txId)
         {
-            var txIn = new BsvSharp.Transactions.TxIn(new UInt256(txId), 0, 1000L);
+            var txIn = new TxIn(new UInt256(txId), 0, 1000L);
             Assert.Equal(txId, txIn.TxHash.ToString());
         }
 
         [Fact]
         public void Parse_Transaction_Version_As_Signed_Integer()
         {
-            var transaction = new BsvSharp.Transactions.Transaction("ffffffff0000ffffffff");
+            var transaction = new Transaction("ffffffff0000ffffffff");
             Assert.Equal(-1, transaction.Version);
             Assert.Equal(0xffffffff, transaction.LockTime);
         }
@@ -47,7 +69,7 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
             const string txHex = "01000000015884e5db9de218238671572340b207ee85b628074e7e467096c267266baf77a4000000006a473044022013fa3089327b50263029265572ae1b022a91d10ac80eb4f32f291c914533670b02200d8a5ed5f62634a7e1a0dc9188a3cc460a986267ae4d58faf50c79105431327501210223078d2942df62c45621d209fab84ea9a7a23346201b7727b9b45a29c4e76f5effffffff0150690f00000000001976a9147821c0a3768aa9d1a37e16cf76002aef5373f1a888ac00000000";
             var writer = new ByteDataWriter();
 
-            var transaction = new BsvSharp.Transactions.Transaction(txHex);
+            var transaction = new Transaction(txHex);
             transaction.WriteTo(writer);
 
             var serializedHex = Encoders.Hex.Encode(writer.Span);
@@ -58,24 +80,24 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
         public void Coinbase_Transaction()
         {
             const string txHex = "01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0704ffff001d0104ffffffff0100f2052a0100000043410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858eeac00000000";
-            var transaction = new BsvSharp.Transactions.Transaction(txHex);
+            var transaction = new Transaction(txHex);
             Assert.True(transaction.IsCoinbase);
         }
 
         [Fact]
         public void Spend_Transaction()
         {
-            var txHash = new UInt256("a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458");
-            var fromAddress = new Address("mszYqVnqKoQx4jcTdJXxwKAissE3Jbrrc1");
-            var toAddress = new Address("mrU9pEmAx26HcbKVrABvgL7AwA5fjNFoDc");
             var changeAddress = new Address("mgBCJAsvzgT2qNNeXsoECg2uPKrUsZ76up");
             var privateKey = PrivateKey.FromWif("cSBnVM4xvxarwGQuAfQFwqDg9k5tErHUHzgWsEfD4zdwUasvqRVY");
 
             var changeScriptBuilder = new P2PkhLockBuilder(changeAddress);
 
-            var transaction = new BsvSharp.Transactions.Transaction();
-                transaction.SpendFrom(txHash, 0, 1000000L, new P2PkhLockBuilder(fromAddress));
-                transaction.SpendTo(toAddress, 500000L, new P2PkhLockBuilder(toAddress));
+            var transaction = new Transaction();
+                transaction.SpendFrom(UtxoWith1MillionSatoshis.TxHash,
+                                      UtxoWith1MillionSatoshis.OutputIndex, 
+                                      UtxoWith1MillionSatoshis.Amount, 
+                                      UtxoWith1MillionSatoshis.ScriptPubKey);
+                transaction.SpendTo(ToAddress, 500000L, new P2PkhLockBuilder(ToAddress));
                 transaction.SendChangeTo(changeAddress, changeScriptBuilder);
                 transaction.WithFeePerKb(100000);
 
@@ -95,7 +117,7 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
                 {
                     var expectedHash = x.Transactions.First().Hash;
                     var expectedIndex = x.Transactions.First().Index;
-                    var transaction = new BsvSharp.Transactions.Transaction(Encoders.Hex.Decode(x.Serialized));
+                    var transaction = new Transaction(Encoders.Hex.Decode(x.Serialized));
                     var previousHash = transaction.Inputs.First().PrevOut.TxHash;
                     var previousIndex = transaction.Inputs.First().PrevOut.Index;
                     Assert.Equal(expectedHash, previousHash);
@@ -103,20 +125,15 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
                 });
         }
 
-        //test('fails if no change address was set', () {
-        //    var transaction = new Transaction()
-        //        .spendFromMap(simpleUtxoWith1BTC,
-        //            scriptBuilder: P2PKHUnlockBuilder(privateKey.publicKey))
-        //        .spendTo(toAddress, BigInt.one,
-        //            scriptBuilder: P2PKHLockBuilder(toAddress));
-        //    expect(() => transaction.serialize(), throwsException);
-        //});
         [Fact]
         public void Fail_If_No_Change_Address()
         {
+            var transaction = new Transaction()
+                .SpendFrom(UtxoWith1Coin.TxHash, UtxoWith1Coin.OutputIndex, UtxoWith1Coin.Amount, UtxoWith1Coin.ScriptPubKey)
+                .SpendTo(ToAddress, 500000L, new P2PkhLockBuilder(ToAddress));
 
+            Assert.Throws<TransactionException>(() => transaction.Serialize(true));
         }
-
 
         #region Helpers
 
@@ -127,7 +144,7 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
             public string ScriptPubKey { get; set; }
         }
 
-        private class TxInput
+        private class TxTestInput
         {
             /// <summary>
             /// ScriptSig as hex string.
@@ -137,9 +154,9 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
             public ScriptFlags VerifyFlags { get; set; }
         }
 
-        private static IEnumerable<TxInput> GetValidTransactions()
+        private static IEnumerable<TxTestInput> GetValidTransactions()
         {
-            var values = new List<TxInput>();
+            var values = new List<TxTestInput>();
             var jarray = JArray.Parse(File.ReadAllText(Path.Combine(DataFolder, "tx_valid.json")));
 
             foreach (var json in jarray)
@@ -166,7 +183,7 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
                 return string.Empty;
             }
 
-            static TxInput GetTransactionInput(JToken token)
+            static TxTestInput GetTransactionInput(JToken token)
             {
                 var transactions = new List<TxInfo>();
                 var parent = token.Parent;
@@ -186,7 +203,7 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
                 var flags = parent?.Parent?.Parent?[2]?.Value<string>() ?? "NONE";
                 flags.Split(',').ForEach(x => verify |= Enum.Parse<ScriptFlags>($"VERIFY_{x}"));
 
-                return new TxInput
+                return new TxTestInput
                 {
                     Transactions = transactions,
                     Serialized = parent?.Parent?.Parent?[1]?.Value<string>(),
