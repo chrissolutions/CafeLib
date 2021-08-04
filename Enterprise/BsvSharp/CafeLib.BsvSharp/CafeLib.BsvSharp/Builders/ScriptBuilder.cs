@@ -238,7 +238,7 @@ namespace CafeLib.BsvSharp.Builders
         /// </summary>
         /// <param name="testScript"></param>
         /// <returns></returns>
-        public static ScriptBuilder ParseTestScript(string testScript)
+        internal static ScriptBuilder ParseTestScript(string testScript)
         {
             var sb = new ScriptBuilder();
             var ps = testScript.Split(' ', StringSplitOptions.RemoveEmptyEntries).AsSpan();
