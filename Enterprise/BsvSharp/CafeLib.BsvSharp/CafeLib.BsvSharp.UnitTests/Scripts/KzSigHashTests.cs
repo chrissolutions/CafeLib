@@ -25,6 +25,7 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
         [Theory]
         [InlineData("sighash.json")]
         [InlineData("sighash.dart.json")]
+        [InlineData("sighash-sv.json")]
         public void SigHash_ForkId_Tests(string testcaseFile)
         {
             var testcases = FindForkIdTests(testcaseFile);
@@ -34,6 +35,7 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
         [Theory]
         [InlineData("sighash.json")]
         [InlineData("sighash.dart.json")]
+        [InlineData("sighash-sv.json")]
         public void SigHash_NonForkId_Tests(string testcaseFile)
         {
             var testcases = FindNonForkIdTests(testcaseFile);
@@ -93,12 +95,12 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
                 var serializedHex = Encoders.Hex.Encode(writer.Span);
                 Assert.Equal(test.RawTx, serializedHex);
 
-                var shreg = TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, test.Index, test.SigHashType, Amount.Zero).ToString();
-                Assert.Equal(test.SigHashRegHex, shreg);
+                var sighashReg = TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, test.Index, test.SigHashType, Amount.Zero).ToString();
+                Assert.Equal(test.SigHashRegHex, sighashReg);
 
                 if (string.IsNullOrWhiteSpace(test.SigHashOldHex)) return;
-                var shold = TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, test.Index, test.SigHashType, Amount.Zero, 0).ToString();
-                Assert.Equal(test.SigHashOldHex, shold);
+                var sigHashOld = TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, test.Index, test.SigHashType, Amount.Zero, 0).ToString();
+                Assert.Equal(test.SigHashOldHex, sigHashOld);
             });
         }
 
