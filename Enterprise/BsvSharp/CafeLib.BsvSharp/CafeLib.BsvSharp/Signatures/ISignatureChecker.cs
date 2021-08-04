@@ -6,7 +6,7 @@
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 
-namespace CafeLib.BsvSharp.Transactions
+namespace CafeLib.BsvSharp.Signatures
 {
     public interface ISignatureChecker
     {

@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CafeLib.BsvSharp.Builders;
-using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
@@ -20,7 +19,6 @@ using CafeLib.Core.Extensions;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
-using TransactionSignatureChecker = CafeLib.BsvSharp.Scripting.TransactionSignatureChecker;
 
 namespace CafeLib.BsvSharp.UnitTests.Scripts
 {

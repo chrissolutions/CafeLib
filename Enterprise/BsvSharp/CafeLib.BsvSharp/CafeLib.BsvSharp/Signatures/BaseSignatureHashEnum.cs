@@ -1,4 +1,4 @@
-﻿namespace CafeLib.BsvSharp.Scripting
+﻿namespace CafeLib.BsvSharp.Signatures
 {
     /// <summary>
     /// Base signature hash types

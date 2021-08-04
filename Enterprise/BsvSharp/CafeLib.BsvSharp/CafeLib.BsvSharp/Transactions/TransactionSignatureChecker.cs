@@ -8,6 +8,7 @@ using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Signatures;
 using CafeLib.BsvSharp.Units;
 
 namespace CafeLib.BsvSharp.Transactions

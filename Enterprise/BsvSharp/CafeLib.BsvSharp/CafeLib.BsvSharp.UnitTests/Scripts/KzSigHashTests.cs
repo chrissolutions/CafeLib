@@ -9,22 +9,51 @@ using System.Linq;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Signatures;
 using CafeLib.BsvSharp.Transactions;
 using CafeLib.BsvSharp.Units;
-using CafeLib.BsvSharp.UnitTests.Extensions;
 using CafeLib.Core.Extensions;
 using Newtonsoft.Json.Linq;
 using Xunit;
-using TransactionSignatureChecker = CafeLib.BsvSharp.Scripting.TransactionSignatureChecker;
 
 namespace CafeLib.BsvSharp.UnitTests.Scripts
 {
     public class KzSigHashTests
     {
+        private const string TestCasePath = @"..\..\..\data";
+
+        [Theory]
+        [InlineData("sighash.json")]
+        [InlineData("sighash.dart.json")]
+        public void SigHash_ForkId_Tests(string testcaseFile)
+        {
+            var testcases = FindForkIdTests(testcaseFile);
+            RunAllTests(testcases);
+        }
+
+        [Theory]
+        [InlineData("sighash.json")]
+        [InlineData("sighash.dart.json")]
+        public void SigHash_NonForkId_Tests(string testcaseFile)
+        {
+            var testcases = FindNonForkIdTests(testcaseFile);
+            RunAllTests(testcases);
+        }
+
+        [Fact]
+        public void Compute_Sighash_For_A_Coinbase_Tx()
+        {
+            var tx = new Transaction("02000000010000000000000000000000000000000000000000000000000000000000000000ffffffff2e039b1e1304c0737c5b68747470733a2f2f6769746875622e636f6d2f62636578742f01000001c096020000000000ffffffff014a355009000000001976a91448b20e254c0677e760bab964aec16818d6b7134a88ac00000000");
+            var sighash = TransactionSignatureChecker.ComputeSignatureHash(Script.None, tx, 0, new SignatureHashType(SignatureHashEnum.All), Amount.Zero).ToString();
+            Assert.Equal("6829f7d44dfd4654749b8027f44c9381527199f78ae9b0d58ffc03fdab3c82f1", sighash);
+        }
+
+        #region Helpers
+
         /// <summary>
         /// Test Vector
         /// </summary>
-        private class TestVector
+        private class TestCase
         {
             public readonly string RawTx;
             public readonly string RawScript;
@@ -34,7 +63,7 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             public readonly string SigHashOldHex;
             public readonly string SigHashRepHex;
 
-            public TestVector(string rawTx, string script, int inputIndex, int hashType, string sigHashReg, string sigHashNoFork, string sigHashFork)
+            public TestCase(string rawTx, string script, int inputIndex, int hashType, string sigHashReg, string sigHashNoFork, string sigHashFork)
             {
                 RawTx = rawTx;
                 RawScript = script;
@@ -46,14 +75,50 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             }
         }
 
-        private readonly List<TestVector> _tvsForkId;
-        private readonly List<TestVector> _tvsOther;
-
-        public KzSigHashTests()
+        private static void RunAllTests(IEnumerable<TestCase> testCase)
         {
-            var tvs = new List<TestVector>();
-            var json = JArray.Parse(File.ReadAllText(@"..\..\..\data\sighash.json"));
-            json.Children<JToken>().Where(c => c.Count() >= 6)
+            testCase.ForEach(test =>
+            {
+                var tx = new Transaction(test.RawTx);
+
+                var script = new Script(test.RawScript);
+                Assert.Equal(test.RawScript, script.ToHexString());
+
+                var (scriptCodeOk, scriptCode) = Script.ParseHex(test.RawScript, withoutLength: true);
+                Assert.True(scriptCodeOk);
+                Assert.Equal(script, scriptCode);
+
+                var writer = new ByteDataWriter();
+                tx.WriteTo(writer);
+                var serializedHex = Encoders.Hex.Encode(writer.Span);
+                Assert.Equal(test.RawTx, serializedHex);
+
+                var shreg = Transactions.TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, test.Index, test.SigHashType, Amount.Zero).ToString();
+                Assert.Equal(test.SigHashRegHex, shreg);
+
+                if (string.IsNullOrWhiteSpace(test.SigHashOldHex)) return;
+                var shold = Transactions.TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, test.Index, test.SigHashType, Amount.Zero, 0).ToString();
+                Assert.Equal(test.SigHashOldHex, shold);
+            });
+        }
+
+        private static IEnumerable<TestCase> FindForkIdTests(string testCaseFile)
+        {
+            var tvs = ReadTestCases(testCaseFile);
+            return tvs.Where(x => x.SigHashType.HasForkId);
+        }
+        
+        private static IEnumerable<TestCase> FindNonForkIdTests(string testCaseFile)
+        {
+            var tvs = ReadTestCases(testCaseFile);
+            return tvs.Where(x => !x.SigHashType.HasForkId);
+        }
+        
+        private static IEnumerable<TestCase> ReadTestCases(string testCaseFile)
+        {
+            var tvs = new List<TestCase>();
+            var json = JArray.Parse(File.ReadAllText(Path.Combine( TestCasePath, testCaseFile)));
+            json.Children<JToken>().Where(c => c.Count() >= 5)
                 .ForEach(x =>
                 {
                     var rawTx = x[0]?.Value<string>();
@@ -61,53 +126,14 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
                     var inputIndex = x[2]?.Value<int>() ?? -1;
                     var hashType = x[3]?.Value<int>() ?? default;
                     var sigHashReg = x[4]?.Value<string>();
-                    var sigHashNoFork = x[5]?.Value<string>();
-                    var sigHashFork = string.Empty; // r[6].Value<string>();
-                    tvs.Add(new TestVector(rawTx, script, inputIndex, hashType, sigHashReg, sigHashNoFork, sigHashFork));
+                    var sigHashNoFork = x.ElementAtOrDefault(5)?.Value<string>();
+                    var sigHashFork = x.ElementAtOrDefault(6)?.Value<string>();
+                    tvs.Add(new TestCase(rawTx, script, inputIndex, hashType, sigHashReg, sigHashNoFork, sigHashFork));
                 });
 
-            (_tvsForkId, _tvsOther) = tvs.Partition(tv => tv.SigHashType.HasForkId);
+            return tvs;
         }
 
-        static void SigHash(IEnumerable<TestVector> tvs)
-        {
-            foreach (var tv in tvs)
-            {
-                var tx = new Transaction(tv.RawTx);
-                var (scriptCodeOk, scriptCode) = Script.ParseHex(tv.RawScript, withoutLength: true);
-                Assert.True(scriptCodeOk);
-
-                var writer = new ByteDataWriter();
-                tx.WriteTo(writer);
-                var serializedHex = Encoders.Hex.Encode(writer.Span);
-                Assert.Equal(tv.RawTx, serializedHex);
-
-                var shreg = Transactions.TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, tv.Index, tv.SigHashType, Amount.Zero).ToString();
-                Assert.Equal(tv.SigHashRegHex, shreg);
-
-                var shold = Transactions.TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, tv.Index, tv.SigHashType, Amount.Zero, 0).ToString();
-                Assert.Equal(tv.SigHashOldHex, shold);
-            }
-        }
-
-        [Fact]
-        public void SigHashForkId()
-        {
-            SigHash(_tvsForkId);
-        }
-
-        [Fact]
-        public void SigHashOther()
-        {
-            SigHash(_tvsOther);
-        }
-
-        [Fact]
-        public void Compute_Sighash_For_A_Coinbase_Tx()
-        {
-            var tx = new Transactions.Transaction("02000000010000000000000000000000000000000000000000000000000000000000000000ffffffff2e039b1e1304c0737c5b68747470733a2f2f6769746875622e636f6d2f62636578742f01000001c096020000000000ffffffff014a355009000000001976a91448b20e254c0677e760bab964aec16818d6b7134a88ac00000000");
-            var sighash = Transactions.TransactionSignatureChecker.ComputeSignatureHash(Script.None, tx, 0, new SignatureHashType(SignatureHashEnum.All), Amount.Zero).ToString();
-            Assert.Equal("6829f7d44dfd4654749b8027f44c9381527199f78ae9b0d58ffc03fdab3c82f1", sighash);
-        }
+        #endregion
     }
 }

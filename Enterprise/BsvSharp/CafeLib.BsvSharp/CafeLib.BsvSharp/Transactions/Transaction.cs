@@ -10,6 +10,7 @@ using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Services;
+using CafeLib.BsvSharp.Signatures;
 using CafeLib.BsvSharp.Units;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;

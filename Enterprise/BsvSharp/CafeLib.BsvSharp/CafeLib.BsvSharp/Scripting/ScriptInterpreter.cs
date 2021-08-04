@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
+using CafeLib.BsvSharp.Signatures;
 using CafeLib.BsvSharp.Transactions;
 
 namespace CafeLib.BsvSharp.Scripting

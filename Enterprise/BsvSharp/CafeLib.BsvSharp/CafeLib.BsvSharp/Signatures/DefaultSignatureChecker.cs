@@ -4,15 +4,17 @@
 #endregion
 
 using CafeLib.BsvSharp.Numerics;
+using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Transactions;
 
-namespace CafeLib.BsvSharp.Scripting
+namespace CafeLib.BsvSharp.Signatures
 {
-    public class SignatureCheckerBase : ISignatureChecker
+    public class DefaultSignatureChecker : ISignatureChecker
     {
         public virtual bool CheckSignature(VarType scriptSig, VarType vchPubKey, Script script, ScriptFlags flags) => false;
 
-        public virtual bool CheckLockTime(ScriptNum nLockTime) => false;
+        public bool CheckLockTime(uint lockTime) => false;
 
-        public virtual bool CheckSequence(ScriptNum nSequence) => false;
+        public bool CheckSequence(uint sequenceNumber) => false;
     }
 }

@@ -8,6 +8,7 @@ using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Services;
+using CafeLib.BsvSharp.Signatures;
 using CafeLib.BsvSharp.Transactions;
 using CafeLib.Core.Buffers;
 
@@ -17,7 +18,7 @@ namespace CafeLib.BsvSharp.Scripting
     {
         private readonly ScriptStack<VarType> _stack;
 
-        private static readonly SignatureCheckerBase DefaultSignatureChecker = new SignatureCheckerBase();
+        private static readonly DefaultSignatureChecker DefaultSignatureChecker = new DefaultSignatureChecker();
 
         public int Count => _stack.Count;
 

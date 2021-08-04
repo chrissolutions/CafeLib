@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CafeLib.BsvSharp.Scripting
+namespace CafeLib.BsvSharp.Signatures
 {
     [Flags]
     public enum SignatureHashEnum : byte

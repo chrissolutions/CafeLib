@@ -10,6 +10,7 @@ using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
+using CafeLib.BsvSharp.Signatures;
 using CafeLib.Core.Buffers;
 using Newtonsoft.Json;
 

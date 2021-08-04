@@ -1,7 +1,7 @@
 ﻿using System;
 using CafeLib.BsvSharp.Numerics;
 
-namespace CafeLib.BsvSharp.Scripting
+namespace CafeLib.BsvSharp.Signatures
 {
     /// <summary>
     /// 
