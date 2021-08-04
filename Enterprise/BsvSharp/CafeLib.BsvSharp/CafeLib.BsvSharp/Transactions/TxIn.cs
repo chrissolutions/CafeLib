@@ -21,8 +21,7 @@ namespace CafeLib.BsvSharp.Transactions
     /// Closely mirrors the data and layout of a Bitcoin transaction input as stored in each block.
     /// Focus is on performance when processing large numbers of transactions, including blocks of transactions.
     /// Not used for making dynamic changes (building scripts).
-    /// See <see cref="Chain.Transaction"/> when dynamically building a transaction input.
-    /// <seealso cref="TxInBuilder"/>
+    /// See <see cref="Transaction"/> when dynamically building a transaction input.
     /// </summary>
     public class TxIn : ITxId, IDataSerializer
     {
@@ -173,32 +172,6 @@ namespace CafeLib.BsvSharp.Transactions
 
             return signedOk;
         }
-
-        // public IBitcoinWriter AddTo(IBitcoinWriter writer)
-        // {
-        //     writer
-        //         .Add(_prevOutPoint)
-        //         .Add(_scriptSig)
-        //         .Add(_sequenceNumber);
-        //     return writer;
-        // }
-
-        //public bool TryParseTxIn(ref ByteSequenceReader r, IBlockParser bp)
-        //{
-        //    if (!_prevOutPoint.TryReadOutPoint(ref r)) goto fail;
-
-        //    bp.TxInStart(this, r.Data.Consumed);
-
-        //    if (!_scriptSig.TryParseScript(ref r, bp)) goto fail;
-        //    if (!r.TryReadLittleEndian(out uint sequenceNumber)) goto fail;
-        //    SequenceNumber = sequenceNumber;
-
-        //    bp.TxInParsed(this, r.Data.Consumed);
-
-        //    return true;
-        //    fail:
-        //    return false;
-        //}
 
         public bool TryReadTxIn(ref ByteSequenceReader r)
         {
