@@ -205,41 +205,16 @@ namespace CafeLib.BsvSharp.Scripting
             }
         }
 
-        public bool TryParseScript(ref ByteSequenceReader reader, IBlockParser bp, bool withoutLength = false)
-        {
-
-            var length = reader.Data.Remaining;
-
-            if (!withoutLength && !reader.TryReadVariant(out length)) goto fail;
-
-            bp.ScriptStart(this, reader.Data.Consumed);
-
-            if (reader.Data.Remaining < length) goto fail;
-
-            Data = new VarType((ReadOnlyByteSequence)reader.Data.Sequence.Slice(reader.Data.Position, length));
-            reader.Data.Advance(length);
-
-            bp.ScriptParsed(this, reader.Data.Consumed);
-
-            return true;
-            fail:
-            return false;
-        }
-
         public bool TryReadScript(ref ByteSequenceReader r, bool withoutLength = false)
         {
             var length = r.Data.Remaining;
 
-            if (!withoutLength && !r.TryReadVariant(out length)) goto fail;
-
-            if (r.Data.Remaining < length) goto fail;
+            if (!withoutLength && !r.TryReadVariant(out length)) return false;
+            if (r.Data.Remaining < length) return false;
 
             Data = new VarType((ReadOnlyByteSequence)r.Data.Sequence.Slice(r.Data.Position, length));
             r.Data.Advance(length);
-
             return true;
-            fail:
-            return false;
         }
 
         public readonly string ToHexString()
