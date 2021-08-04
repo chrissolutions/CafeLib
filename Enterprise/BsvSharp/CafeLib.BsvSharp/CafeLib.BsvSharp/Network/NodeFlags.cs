@@ -1,8 +1,11 @@
-﻿namespace CafeLib.BsvSharp.Network
+﻿using System;
+
+namespace CafeLib.BsvSharp.Network
 {
     /**
      * nServices flags.
      */
+    [Flags]
     public enum NodeFlags : long
     {
         // Nothing
@@ -11,23 +14,23 @@
         // NODE_NETWORK means that the node is capable of serving the block chain.
         // It is currently set by all Bitcoin SV nodes, and is unset by SPV clients
         // or other peers that just want network services but don't provide them.
-        Network = (1 << 0),
+        Network = 1,
 
         // NODE_GETUTXO means the node is capable of responding to the getutxo
         // protocol request. Bitcoin SV does not support this but a patch set
         // called Bitcoin XT does. See BIP 64 for details on how this is
         // implemented.
-        GetUtxo = (1 << 1),
+        GetUtxo = 2,
 
         // NODE_BLOOM means the node is capable and willing to handle bloom-filtered
         // connections. Bitcoin SV nodes used to support this by default, without
         // advertising this bit, but no longer do as of protocol version 70011 (=
         // NO_BLOOM_VERSION)
-        BloomFiltered = (1 << 2),
+        BloomFiltered = 4,
 
         // NODE_XTHIN means the node supports Xtreme Thinblocks. If this is turned
         // off then the node will not service nor make xthin requests.
-        XThin = (1 << 4),
+        XThin = 16,
 
         // NODE_BITCOIN_CASH means the node supports Bitcoin Cash and the
         // associated consensus rule changes.
@@ -35,7 +38,7 @@
         // UAHF activation when the Bitcoin Cash network has adequately separated.
         // TODO: remove (free up) the NODE_BITCOIN_CASH service bit once no longer
         // needed.
-        BitcoinCash = (1 << 5),
+        BitcoinCash = 32,
 
         // Bits 24-31 are reserved for temporary experiments. Just pick a bit that
         // isn't getting used, or one not being used much, and notify the
