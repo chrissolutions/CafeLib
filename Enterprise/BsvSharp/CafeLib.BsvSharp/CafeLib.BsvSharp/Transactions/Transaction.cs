@@ -687,40 +687,6 @@ namespace CafeLib.BsvSharp.Transactions
             }
         }
 
-        //private void Sign(TransactionInput input, SVPrivateKey privateKey, { sighashType = SighashType.SIGHASH_ALL | SighashType.SIGHASH_FORKID}){
-
-        //    //FIXME: This is a test work-around for why I can't sign an unsigned raw txn
-        //    //FIXME: This assumes we're signing P2PKH
-
-        //    //FIXME: This should account for ANYONECANPAY mask that limits outputs to sign over
-        //    ///      NOTE: Stripping Subscript should be done inside SIGHASH class
-        //    var subscript = input.subScript; //scriptSig FIXME: WTF !? Sighash should fail on this
-        //    var inputIndex = inputs.indexOf(input);
-        //    var sigHash = Sighash();
-        //    var hash = sigHash.hash(this, sighashType, inputIndex, subscript, input.satoshis);
-
-        //    //FIXME: Revisit this issue surrounding the need to sign a reversed copy of the hash.
-        //    ///      Right now I've factored this out of signature.dart because 'coupling' & 'separation of concerns'.
-        //    var reversedHash = HEX.encode(HEX
-        //        .decode(hash)
-        //        .reversed
-        //        .toList());
-
-        //    // generate a signature for the input
-        //    var sig = SVSignature.fromPrivateKey(privateKey);
-        //    sig.nhashtype = sighashType;
-        //    sig.sign(reversedHash);
-
-        //    if (input.scriptBuilder is SignedUnlockBuilder) {
-
-        //        //culminate in injecting the derived signature into the ScriptBuilder instance
-        //        (input.scriptBuilder as SignedUnlockBuilder).signatures.add(sig);
-        //    }else{
-        //        throw TransactionException("Trying to sign a Transaction Input that is missing a SignedUnlockBuilder");
-        //    }
-
-        //}
-
         /// <summary>
         /// Returns the raw transaction as a hexadecimal string, skipping all checks.
         /// </summary>
@@ -747,8 +713,6 @@ namespace CafeLib.BsvSharp.Transactions
             writer.Write(LockTime);
 
             return writer;
-
-            //return HEX.encode(writer.toBytes().toList());
         }
 
         #endregion
