@@ -4,6 +4,6 @@ namespace CafeLib.BsvSharp.Transactions
 {
     public interface ITxId
     {
-        UInt256 Hash { get; }
+        UInt256 TxHash { get; }
     }
 }

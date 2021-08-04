@@ -8,9 +8,10 @@ using System.Buffers;
 using System.Collections.Generic;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Transactions;
 using CafeLib.Core.Buffers;
 
-namespace CafeLib.BsvSharp.Transactions
+namespace CafeLib.BsvSharp.Chain
 {
     /// <summary>
     /// Closely mirrors the data and layout of a serialized Bitcoin block.

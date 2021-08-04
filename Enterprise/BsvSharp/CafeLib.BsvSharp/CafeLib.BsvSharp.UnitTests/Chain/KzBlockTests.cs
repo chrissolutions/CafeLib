@@ -65,7 +65,7 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
             Assert.True(kzb.PrevBlock.ToString() == "0000000000000000000000000000000000000000000000000000000000000000");
             Assert.True(kzb.Txs.Length == 1);
             var tx = kzb.Txs[0];
-            Assert.True(tx.Hash.ToString() == "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b");
+            Assert.True(tx.TxHash.ToString() == "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b");
             Assert.True(tx.LockTime == 0U);
             Assert.True(tx.Version == 1);
             Assert.True(tx.Inputs.Length == 1);
