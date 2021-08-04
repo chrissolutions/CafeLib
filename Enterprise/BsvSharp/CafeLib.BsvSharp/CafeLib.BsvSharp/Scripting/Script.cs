@@ -320,10 +320,6 @@ namespace CafeLib.BsvSharp.Scripting
             return string.Join(' ', Decode().Select(op => op.ToVerboseString()));
         }
 
-        //public static Script ParseCompact(string compactScript) => KzBScript.ParseCompact(compactScript).ToScript();
-
-        //public static Script ParseTestScript(string testScript) => KzBScript.ParseTestScript(testScript).ToScript();
-
         public override int GetHashCode() => Data.GetHashCode();
         public override bool Equals(object obj) => obj is Script script && this == script;
         public bool Equals(Script o) => Length == o.Length; //&& _script.CompareTo(o._script) == 0;
