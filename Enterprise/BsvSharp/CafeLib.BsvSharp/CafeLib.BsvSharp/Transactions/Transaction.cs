@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
-using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
@@ -356,31 +355,29 @@ namespace CafeLib.BsvSharp.Transactions
             Version = version;
             return this;
         }
+        
+        /// <summary>
+        /// Serialize Script to data writer
+        /// </summary>
+        /// <param name="writer">data writer</param>
+        /// <returns>data writer</returns>
+        public IDataWriter WriteTo(IDataWriter writer) => WriteTo(writer, new { performChecks = false });
 
-        public IDataWriter WriteTo(IDataWriter writer, object parameters) => WriteTo(writer);
-        public IDataWriter WriteTo(IDataWriter writer)
+        /// <summary>
+        /// Serialize Script to data writer
+        /// </summary>
+        /// <param name="writer">data writer</param>
+        /// <param name="parameters">performCheck parameter</param>
+        /// <returns></returns>
+        public IDataWriter WriteTo(IDataWriter writer, object parameters)
         {
-            writer
+            dynamic args = parameters;
+            if (args.performChecks)
+            {
+                DoSerializationChecks();
+            }
 
-                // set the transaction version
-                .Write(Version)
-
-                // write the number of inputs
-                .Write(Inputs.Count.AsVarIntBytes());
-
-            // write the inputs
-            Inputs.ForEach(x => x.WriteTo(writer));
-
-            // write the number of outputs
-            writer.Write(Outputs.Count.AsVarIntBytes());
-
-            // write the outputs
-            Outputs.ForEach(x => x.WriteTo(writer));
-
-            // write the locktime
-            writer.Write(LockTime);
-
-            return writer;
+            return UncheckedSerialize(writer);
         }
 
         /// <summary>
@@ -660,19 +657,12 @@ namespace CafeLib.BsvSharp.Transactions
             }
 
             var unspent = GetUnspentAmount();
-
-            if (unspent < Amount.Zero)
+            if (unspent < Amount.Zero && (Option & TransactionOption.DisableMoreOutputThanInput) == 0)
             {
-                if ((Option & TransactionOption.DisableMoreOutputThanInput) == 0)
-                {
-                    throw new TransactionException("Invalid output sum of satoshis");
-                }
-            }
-            else
-            {
-                CheckForFeeErrors(unspent);
+                throw new TransactionException("Invalid output sum of satoshis");
             }
 
+            CheckForFeeErrors(unspent);
             CheckForDustErrors();
             CheckForMissingSignatures();
         }

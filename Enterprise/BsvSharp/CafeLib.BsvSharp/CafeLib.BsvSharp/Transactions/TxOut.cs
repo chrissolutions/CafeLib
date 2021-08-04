@@ -157,15 +157,6 @@ namespace CafeLib.BsvSharp.Transactions
             return writer;
         }
 
-        //public IBitcoinWriter AddTo(IBitcoinWriter writer)
-        //{
-        //    writer
-        //        .Add(_amount)
-        //        .Add(_script)
-        //        ;
-        //    return writer;
-        //}
-
         public override int GetHashCode() => HashCode.Combine(_scriptBuilder, TxHash, Index, IsChangeOutput);
 
         public bool Equals(TxOut other)
@@ -180,16 +171,5 @@ namespace CafeLib.BsvSharp.Transactions
 
         public static bool operator ==(TxOut x, TxOut y) => x?.Equals(y) ?? y is null;
         public static bool operator !=(TxOut x, TxOut y) => !(x == y);
-
-        #region Helpers
-
-        /// <summary>
-        ///Returns true is satoshi amount if outside of valid range
-        /// See [Transaction.MAX_MONEY]
-        /// </summary>
-        /// <returns></returns>
-        private bool InvalidSatoshis() => Amount.Satoshis < Amount.Zero || Amount.Satoshis > Amount.MaxValue;
-
-        #endregion
     }
 }
