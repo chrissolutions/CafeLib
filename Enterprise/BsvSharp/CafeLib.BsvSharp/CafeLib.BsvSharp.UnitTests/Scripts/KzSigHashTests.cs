@@ -20,7 +20,7 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
 {
     public class KzSigHashTests
     {
-        private const string TestCasePath = @"..\..\..\data";
+        private const string DataFolder = @"..\..\..\data";
 
         [Theory]
         [InlineData("sighash.json")]
@@ -119,7 +119,7 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
         private static IEnumerable<TestCase> ReadTestCases(string testCaseFile)
         {
             var tvs = new List<TestCase>();
-            var json = JArray.Parse(File.ReadAllText(Path.Combine( TestCasePath, testCaseFile)));
+            var json = JArray.Parse(File.ReadAllText(Path.Combine(DataFolder, testCaseFile)));
             json.Children<JToken>().Where(c => c.Count() >= 5)
                 .ForEach(x =>
                 {

@@ -357,30 +357,6 @@ namespace CafeLib.BsvSharp.Transactions
         }
         
         /// <summary>
-        /// Serialize Script to data writer
-        /// </summary>
-        /// <param name="writer">data writer</param>
-        /// <returns>data writer</returns>
-        public IDataWriter WriteTo(IDataWriter writer) => WriteTo(writer, new { performChecks = false });
-
-        /// <summary>
-        /// Serialize Script to data writer
-        /// </summary>
-        /// <param name="writer">data writer</param>
-        /// <param name="parameters">performCheck parameter</param>
-        /// <returns></returns>
-        public IDataWriter WriteTo(IDataWriter writer, object parameters)
-        {
-            dynamic args = parameters;
-            if (args.performChecks)
-            {
-                DoSerializationChecks();
-            }
-
-            return UncheckedSerialize(writer);
-        }
-
-        /// <summary>
         /// Set the locktime flag on the transaction to prevent it becoming
         /// spendable before specified date
         ///
@@ -486,6 +462,41 @@ namespace CafeLib.BsvSharp.Transactions
             var hash2 = sha256.ComputeHash(hash1);
             TxHash = new UInt256(hash2);
             return true;
+        }
+
+        /// <summary>
+        /// Serialize Script to data writer
+        /// </summary>
+        /// <param name="performChecks">perform serialization check flag</param>
+        /// <returns>readonly byte span</returns>
+        public byte[] Serialize(bool performChecks = false)
+        {
+            var writer = (ByteDataWriter) WriteTo(new ByteDataWriter(), new {performChecks});
+            return writer.ToArray();
+        }
+        
+        /// <summary>
+        /// Serialize Script to data writer
+        /// </summary>
+        /// <param name="writer">data writer</param>
+        /// <returns>data writer</returns>
+        public IDataWriter WriteTo(IDataWriter writer) => WriteTo(writer, new { performChecks = false });
+
+        /// <summary>
+        /// Serialize Script to data writer
+        /// </summary>
+        /// <param name="writer">data writer</param>
+        /// <param name="parameters">performCheck parameter</param>
+        /// <returns></returns>
+        public IDataWriter WriteTo(IDataWriter writer, object parameters)
+        {
+            dynamic args = parameters;
+            if (args.performChecks)
+            {
+                DoSerializationChecks();
+            }
+
+            return UncheckedSerialize(writer);
         }
 
         #region Helpers

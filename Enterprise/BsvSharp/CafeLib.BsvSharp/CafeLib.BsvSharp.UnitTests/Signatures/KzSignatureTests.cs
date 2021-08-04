@@ -3,13 +3,11 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System.Threading;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Signatures;
-using CafeLib.BsvSharp.Transactions;
 using Xunit;
 
-namespace CafeLib.BsvSharp.UnitTests.Keys
+namespace CafeLib.BsvSharp.UnitTests.Signatures
 {
     public class KzSignatureTests
     {

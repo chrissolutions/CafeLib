@@ -8,19 +8,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CafeLib.BsvSharp.Builders;
-using CafeLib.BsvSharp.Chain;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
-using CafeLib.BsvSharp.Transactions;
-using CafeLib.BsvSharp.Units;
 using CafeLib.Core.Extensions;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace CafeLib.BsvSharp.UnitTests.Chain
+namespace CafeLib.BsvSharp.UnitTests.Transactions
 {
     public class TransactionTests
     {
@@ -32,14 +29,14 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
         [InlineData("0000000000000000000000000000000000000000000000000000000000000001")]
         public void Verify_TxId_Test(string txId)
         {
-            var txIn = new Transactions.TxIn(new UInt256(txId), 0, 1000L);
+            var txIn = new BsvSharp.Transactions.TxIn(new UInt256(txId), 0, 1000L);
             Assert.Equal(txId, txIn.TxHash.ToString());
         }
 
         [Fact]
         public void Parse_Transaction_Version_As_Signed_Integer()
         {
-            var transaction = new Transactions.Transaction("ffffffff0000ffffffff");
+            var transaction = new BsvSharp.Transactions.Transaction("ffffffff0000ffffffff");
             Assert.Equal(-1, transaction.Version);
             Assert.Equal(0xffffffff, transaction.LockTime);
         }
@@ -50,7 +47,7 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
             const string txHex = "01000000015884e5db9de218238671572340b207ee85b628074e7e467096c267266baf77a4000000006a473044022013fa3089327b50263029265572ae1b022a91d10ac80eb4f32f291c914533670b02200d8a5ed5f62634a7e1a0dc9188a3cc460a986267ae4d58faf50c79105431327501210223078d2942df62c45621d209fab84ea9a7a23346201b7727b9b45a29c4e76f5effffffff0150690f00000000001976a9147821c0a3768aa9d1a37e16cf76002aef5373f1a888ac00000000";
             var writer = new ByteDataWriter();
 
-            var transaction = new Transactions.Transaction(txHex);
+            var transaction = new BsvSharp.Transactions.Transaction(txHex);
             transaction.WriteTo(writer);
 
             var serializedHex = Encoders.Hex.Encode(writer.Span);
@@ -61,7 +58,7 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
         public void Coinbase_Transaction()
         {
             const string txHex = "01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0704ffff001d0104ffffffff0100f2052a0100000043410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858eeac00000000";
-            var transaction = new Transactions.Transaction(txHex);
+            var transaction = new BsvSharp.Transactions.Transaction(txHex);
             Assert.True(transaction.IsCoinbase);
         }
 
@@ -76,7 +73,7 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
 
             var changeScriptBuilder = new P2PkhLockBuilder(changeAddress);
 
-            var transaction = new Transactions.Transaction();
+            var transaction = new BsvSharp.Transactions.Transaction();
                 transaction.SpendFrom(txHash, 0, 1000000L, new P2PkhLockBuilder(fromAddress));
                 transaction.SpendTo(toAddress, 500000L, new P2PkhLockBuilder(toAddress));
                 transaction.SendChangeTo(changeAddress, changeScriptBuilder);
@@ -89,6 +86,39 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
             Assert.Equal(changeScriptBuilder.ToScript().ToString(), transaction.Outputs[1].Script.ToString());
         }
 
+        [Fact]
+        public void Verify_Valid_Transaction()
+        {
+            GetValidTransactions()
+                .Where(x => (x.VerifyFlags & ScriptFlags.VERIFY_P2SH) == 0)
+                .ForEach(x =>
+                {
+                    var expectedHash = x.Transactions.First().Hash;
+                    var expectedIndex = x.Transactions.First().Index;
+                    var transaction = new BsvSharp.Transactions.Transaction(Encoders.Hex.Decode(x.Serialized));
+                    var previousHash = transaction.Inputs.First().PrevOut.TxHash;
+                    var previousIndex = transaction.Inputs.First().PrevOut.Index;
+                    Assert.Equal(expectedHash, previousHash);
+                    Assert.Equal(expectedIndex, previousIndex);
+                });
+        }
+
+        //test('fails if no change address was set', () {
+        //    var transaction = new Transaction()
+        //        .spendFromMap(simpleUtxoWith1BTC,
+        //            scriptBuilder: P2PKHUnlockBuilder(privateKey.publicKey))
+        //        .spendTo(toAddress, BigInt.one,
+        //            scriptBuilder: P2PKHLockBuilder(toAddress));
+        //    expect(() => transaction.serialize(), throwsException);
+        //});
+        [Fact]
+        public void Fail_If_No_Change_Address()
+        {
+
+        }
+
+
+        #region Helpers
 
         private class TxInfo
         {
@@ -165,29 +195,6 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
             }
         }
 
-
-        //private Transaction BuildCreditingTransaction(Script scriptPubKey, long nValue)
-        //{
-        //    var tx = new Transaction();
-
-        //    tx.AddInput(new OutPoint(), new ScriptBuilder().Push(0).Push(0));
-        //    tx.AddOut(scriptPubKey, nValue);
-        //    return tx;
-        //}
-
-        //TransactionBuilder BuildSpendingTransaction(Script scriptSig, TransactionBuilder txCredit)
-        //{
-        //    var tx = new TransactionBuilder
-        //    {
-        //        LockTime = 0,
-        //        Version = 1,
-        //    };
-
-        //    tx.AddIn(new OutPoint(), new ScriptBuilder().Push(0).Push(0));
-        //    //tx.AddOut(scriptPubKey, nValue);
-        //    return tx;
-        //}
-
         private static TxInfo BuildTransactionInfo(string hash, string index, string scriptPubKey)
         {
             return new TxInfo
@@ -198,21 +205,6 @@ namespace CafeLib.BsvSharp.UnitTests.Chain
             };
         }
 
-        [Fact]
-        public void Verify_Valid_Transaction()
-        {
-            GetValidTransactions()
-                .Where(x => (x.VerifyFlags & ScriptFlags.VERIFY_P2SH) == 0)
-                .ForEach(x =>
-                {
-                    var expectedHash = x.Transactions.First().Hash;
-                    var expectedIndex = x.Transactions.First().Index;
-                    var transaction = new Transactions.Transaction(Encoders.Hex.Decode(x.Serialized));
-                    var previousHash = transaction.Inputs.First().PrevOut.TxHash;
-                    var previousIndex = transaction.Inputs.First().PrevOut.Index;
-                    Assert.Equal(expectedHash, previousHash);
-                    Assert.Equal(expectedIndex, previousIndex);
-                });
-        }
+        #endregion
     }
 }
