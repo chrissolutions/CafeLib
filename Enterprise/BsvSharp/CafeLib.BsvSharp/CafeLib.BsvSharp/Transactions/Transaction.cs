@@ -530,15 +530,6 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         /// <summary>
-        /// Determines whether an input transaction exist. 
-        /// </summary>
-        /// <param name="txHash"></param>
-        /// <param name="outputIndex"></param>
-        /// <returns></returns>
-        private bool InputExists(UInt256 txHash, int outputIndex) =>
-            Inputs.Any(x => x.PrevOut.TxId == txHash && x.PrevOut.Index == outputIndex);
-
-        /// <summary>
         ///  Is the collection of inputs fully signed.
         /// </summary>
         /// <returns></returns>
