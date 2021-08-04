@@ -135,10 +135,10 @@ namespace CafeLib.BsvSharp.Transactions
             return writer;
         }
 
-        public bool Sign(Transaction tx, PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
+        internal bool Sign(Transaction tx, PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
             => Sign(tx, privateKey, false, sighashType);
 
-        public bool Sign(Transaction tx, PrivateKey privateKey, bool confirmExistingSignatures, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
+        internal bool Sign(Transaction tx, PrivateKey privateKey, bool confirmExistingSignatures, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
         {
             var signedOk = true;
             var sigHash = new SignatureHashType(SignatureHashEnum.All | SignatureHashEnum.ForkId);
