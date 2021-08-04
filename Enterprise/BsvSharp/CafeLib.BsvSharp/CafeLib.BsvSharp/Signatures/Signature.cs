@@ -3,7 +3,7 @@ using CafeLib.BsvSharp.Encoding;
 using CafeLib.Core.Buffers;
 using Secp256k1Net;
 
-namespace CafeLib.BsvSharp.Transactions
+namespace CafeLib.BsvSharp.Signatures
 {
     public struct Signature
     {

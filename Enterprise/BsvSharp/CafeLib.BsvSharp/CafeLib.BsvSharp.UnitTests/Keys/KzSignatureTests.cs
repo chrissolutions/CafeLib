@@ -5,6 +5,7 @@
 
 using System.Threading;
 using CafeLib.BsvSharp.Encoding;
+using CafeLib.BsvSharp.Signatures;
 using CafeLib.BsvSharp.Transactions;
 using Xunit;
 
