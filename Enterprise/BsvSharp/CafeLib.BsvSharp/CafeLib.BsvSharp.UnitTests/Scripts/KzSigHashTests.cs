@@ -93,11 +93,11 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
                 var serializedHex = Encoders.Hex.Encode(writer.Span);
                 Assert.Equal(test.RawTx, serializedHex);
 
-                var shreg = Transactions.TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, test.Index, test.SigHashType, Amount.Zero).ToString();
+                var shreg = TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, test.Index, test.SigHashType, Amount.Zero).ToString();
                 Assert.Equal(test.SigHashRegHex, shreg);
 
                 if (string.IsNullOrWhiteSpace(test.SigHashOldHex)) return;
-                var shold = Transactions.TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, test.Index, test.SigHashType, Amount.Zero, 0).ToString();
+                var shold = TransactionSignatureChecker.ComputeSignatureHash(scriptCode, tx, test.Index, test.SigHashType, Amount.Zero, 0).ToString();
                 Assert.Equal(test.SigHashOldHex, shold);
             });
         }
