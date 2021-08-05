@@ -123,7 +123,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <param name="script"></param>
         /// <param name="isChangeOutput"></param>
         /// <returns></returns>
-        public Transaction AddOutput(UInt256 txHash, long index, Amount amount, ScriptBuilder script, bool isChangeOutput = false)
+        public Transaction AddOutput(UInt256 txHash, int index, Amount amount, ScriptBuilder script, bool isChangeOutput = false)
         {
             return AddOutput(new TxOut(txHash, index, amount, script, isChangeOutput));
         }
@@ -266,6 +266,19 @@ namespace CafeLib.BsvSharp.Transactions
             Inputs.Add(txIn);
             UpdateChangeOutput();
             return this;
+        }
+
+        /// <summary>
+        /// Spend from Utxo
+        /// </summary>
+        /// <param name="utxo">utxo</param>
+        /// <param name="checkInputExist"></param>
+        /// <returns>transaction</returns>
+        public Transaction SpendFromUtxo(Utxo utxo, bool checkInputExist = false)
+        {
+            return checkInputExist && InputExists(utxo.TxHash, utxo.Index)
+                ? this
+                : SpendFrom(utxo.TxHash, utxo.Index, utxo.Amount, utxo.ScriptPubKey);
         }
 
         /// <summary>
@@ -539,6 +552,15 @@ namespace CafeLib.BsvSharp.Transactions
 
             throw new TransactionException($"Expected less than {maximumFee} but got {unspent}");
         }
+
+        /// <summary>
+        /// Determines whether an input transaction exist. 
+        /// </summary>
+        /// <param name="txHash"></param>
+        /// <param name="outputIndex"></param>
+        /// <returns></returns>
+        private bool InputExists(UInt256 txHash, int outputIndex) =>
+            Inputs.Any(x => x.PrevOut.TxId == txHash && x.PrevOut.Index == outputIndex);
 
         /// <summary>
         ///  Is the collection of inputs fully signed.

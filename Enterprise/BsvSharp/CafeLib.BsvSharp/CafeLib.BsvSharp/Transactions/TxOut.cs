@@ -32,7 +32,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <summary>
         /// Owner Transaction Index.
         /// </summary>
-        public long Index { get; }
+        public int Index { get; }
 
         public Amount Amount { get; private set; }
         public bool IsChangeOutput { get; }
@@ -64,7 +64,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <param name="index"></param>
         /// <param name="script"></param>
         /// <param name="isChangeOutput"></param>
-        public TxOut(UInt256 txHash, long index, ScriptBuilder script, bool isChangeOutput = false)
+        public TxOut(UInt256 txHash, int index, ScriptBuilder script, bool isChangeOutput = false)
             : this (txHash, index, Amount.Zero, script, isChangeOutput)
         {
         }
@@ -77,7 +77,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <param name="amount"></param>
         /// <param name="script"></param>
         /// <param name="isChangeOutput"></param>
-        public TxOut(UInt256 txHash, long index, Amount amount, ScriptBuilder script, bool isChangeOutput = false)
+        public TxOut(UInt256 txHash, int index, Amount amount, ScriptBuilder script, bool isChangeOutput = false)
         {
             TxHash = txHash;
             Index = index;
@@ -85,21 +85,6 @@ namespace CafeLib.BsvSharp.Transactions
             _scriptBuilder = script;
             IsChangeOutput = isChangeOutput;
         }
-
-        //public bool TryParseTxOut(ref ByteSequenceReader r, IBlockParser bp)
-        //{
-        //    if (!r.TryReadLittleEndian(out _amount)) goto fail;
-
-        //    bp.TxOutStart(this, r.Data.Consumed);
-
-        //    if (!_script.TryParseScript(ref r, bp)) goto fail;
-
-        //    bp.TxOutParsed(this, r.Data.Consumed);
-
-        //    return true;
-        //fail:
-        //    return false;
-        //}
 
         public bool TryReadTxOut(ref ByteSequenceReader reader)
         {
