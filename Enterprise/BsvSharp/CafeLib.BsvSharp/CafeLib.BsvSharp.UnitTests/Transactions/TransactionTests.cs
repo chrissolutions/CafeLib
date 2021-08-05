@@ -18,7 +18,6 @@ using CafeLib.BsvSharp.Transactions;
 using CafeLib.BsvSharp.Units;
 using CafeLib.Core.Extensions;
 using Newtonsoft.Json.Linq;
-using NuGet.Frameworks;
 using Xunit;
 
 namespace CafeLib.BsvSharp.UnitTests.Transactions
@@ -149,7 +148,6 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
         public void Fail_If_Not_Positive_Amount()
         {
             var destAddress = new Address("mrU9pEmAx26HcbKVrABvgL7AwA5fjNFoDc");
-            var locker = new P2PkhLockBuilder(ToAddress);
             var tx = new Transaction();
 
             Assert.Throws<TransactionException>(() => tx.SpendTo(destAddress, Amount.Zero, new P2PkhLockBuilder(destAddress)));
