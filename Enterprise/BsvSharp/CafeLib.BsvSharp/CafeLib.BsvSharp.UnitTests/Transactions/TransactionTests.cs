@@ -141,7 +141,7 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
                 .SpendFrom(UtxoWith1Coin.TxHash, UtxoWith1Coin.Index, UtxoWith1Coin.Amount, UtxoWith1Coin.ScriptPubKey)
                 .SpendTo(ToAddress, 500000L, new P2PkhLockBuilder(ToAddress));
 
-            Assert.Throws<TransactionException>(() => tx.Serialize(true));
+            Assert.Throws<TransactionFeeException>(() => tx.Serialize(true));
         }
 
         [Fact]
@@ -150,7 +150,7 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
             var destAddress = new Address("mrU9pEmAx26HcbKVrABvgL7AwA5fjNFoDc");
             var tx = new Transaction();
 
-            Assert.Throws<TransactionException>(() => tx.SpendTo(destAddress, Amount.Zero, new P2PkhLockBuilder(destAddress)));
+            Assert.Throws<TransactionAmountException>(() => tx.SpendTo(destAddress, Amount.Zero, new P2PkhLockBuilder(destAddress)));
         }
 
         [Fact]
@@ -162,7 +162,7 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
                 .WithFee(50000000)
                 .SpendTo(ToAddress, 40000000, new P2PkhLockBuilder(ToAddress));
 
-            var exception = Assert.Throws<TransactionException>(() => tx.Serialize(true));
+            var exception = Assert.Throws<TransactionFeeException>(() => tx.Serialize(true));
             
         }
 
@@ -175,7 +175,7 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
                 .WithFee(50000000)
                 .SpendTo(ToAddress, 40000000, new P2PkhLockBuilder(ToAddress));
 
-            Assert.Throws<TransactionException>(() => tx.Serialize(true));
+            Assert.Throws<TransactionFeeException>(() => tx.Serialize(true));
         }
 
         [Fact]
