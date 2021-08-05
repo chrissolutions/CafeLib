@@ -535,7 +535,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <exception cref="TransactionException"></exception>
         private void CheckForFeeErrors(Amount unspent)
         {
-            if (_fee != unspent)
+            if (_fee != Amount.Null && _fee != unspent)
             {
                 throw new TransactionException($"Unspent amount is {unspent} but the specified fee is {_fee}.");
             }
