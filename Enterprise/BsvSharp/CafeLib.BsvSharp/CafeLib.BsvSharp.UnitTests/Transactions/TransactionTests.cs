@@ -171,19 +171,18 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
             Assert.Equal(Amount.Zero, coinbaseTransaction.GetFee());
         }
 
-        //[Fact]
-        //public void Verify_Dust_Output()
-        //{
-        //    var tx = new Transaction()
-        //        .SpendFrom(UtxoWith100000Satoshis.TxHash,
-        //                UtxoWith100000Satoshis.Index,
-        //                UtxoWith100000Satoshis.Amount,
-        //                new P2PkhUnlockBuilder(PrivateKeyFromWif.CreatePublicKey()))
-        //        .SpendTo(ToAddress, 546, new P2PkhLockBuilder(ToAddress))
-        //        .SendChangeTo(ChangeAddress, new P2PkhLockBuilder(ChangeAddress));
+        [Fact]
+        public void Verify_Dust_Output()
+        {   
+            var tx = new Transaction();
+                tx.SpendFromUtxo(UtxoWith1Coin, new P2PkhUnlockBuilder(PrivateKeyFromWif.CreatePublicKey()));
+                tx.SpendTo(ToAddress, 546, new P2PkhLockBuilder(ToAddress));
+                tx.SendChangeTo(ChangeAddress, new P2PkhLockBuilder(ChangeAddress));
+            
+            tx.SignInput(0, PrivateKeyFromWif);
 
-        //    Assert.NotNull(tx.Serialize(true));
-        //}
+            Assert.NotNull(tx.Serialize(true));
+        }
 
         [Fact]
         public void Verify_Hash_Decoded_Correctly()

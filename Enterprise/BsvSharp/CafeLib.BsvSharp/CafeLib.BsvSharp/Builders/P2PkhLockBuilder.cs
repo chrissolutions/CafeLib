@@ -4,7 +4,7 @@ using CafeLib.BsvSharp.Scripting;
 
 namespace CafeLib.BsvSharp.Builders
 {
-    public class P2PkhLockBuilder : ScriptBuilder
+    public class P2PkhLockBuilder : LockingScriptBuilder
     {
         public P2PkhLockBuilder(Address address)
             : this(address.PubKeyHash)
@@ -16,8 +16,8 @@ namespace CafeLib.BsvSharp.Builders
         {
         }
 
-        protected P2PkhLockBuilder(UInt160 pubKeyHash)
-            :base(true, TemplateId.Pay2PublicKeyHash)
+        private P2PkhLockBuilder(UInt160 pubKeyHash)
+            :base(pubKeyHash, TemplateId.Pay2ScriptHash)
         {
             Add(Opcode.OP_DUP)
                 .Add(Opcode.OP_HASH160)

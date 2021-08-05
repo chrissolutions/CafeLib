@@ -8,10 +8,10 @@ using CafeLib.BsvSharp.Scripting;
 
 namespace CafeLib.BsvSharp.Builders
 {
-    public class P2PkhUnlockBuilder : ScriptBuilder
+    public class P2PkhUnlockBuilder : SignedUnlockBuilder
     {
         public P2PkhUnlockBuilder(PublicKey pubKey)
-            : base(false, TemplateId.Pay2PublicKeyHash)
+            : base(pubKey, TemplateId.Pay2PublicKeyHash)
         {
             Push(new byte[72]) // This will become the CHECKSIG signature
                 .Push(pubKey);

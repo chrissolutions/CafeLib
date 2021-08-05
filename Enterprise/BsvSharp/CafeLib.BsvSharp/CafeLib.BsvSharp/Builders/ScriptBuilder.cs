@@ -50,7 +50,7 @@ namespace CafeLib.BsvSharp.Builders
         /// If the script implements a known template, this will be the template type.
         /// Otherwise it will be Unknown.
         /// </summary>
-        public TemplateId TemplateId { get; protected set; }
+        public TemplateId TemplateId { get; }
 
         /// <summary>
         /// ScriptBuilder default constructor.

@@ -106,9 +106,9 @@ namespace CafeLib.BsvSharp.Transactions
             PrevOut = prevOutPoint;
             Amount = amount;
             ScriptSig = utxoScript;
-            IsFullySigned = false;
-            _scriptBuilder = scriptBuilder;
+            _scriptBuilder = scriptBuilder ?? new SignedUnlockBuilder();
             SequenceNumber = sequenceNumber;
+            IsFullySigned = _scriptBuilder is SignedUnlockBuilder;
         }
 
         /// <summary>

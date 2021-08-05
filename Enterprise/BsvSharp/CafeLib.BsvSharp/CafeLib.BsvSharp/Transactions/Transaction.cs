@@ -260,7 +260,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <param name="amount">amount</param>
         /// <param name="scriptPubKey">script pub key</param>
         /// <returns>transaction</returns>
-        public Transaction SpendFrom(UInt256 txHash, int outputIndex, Amount amount, Script scriptPubKey)
+        public Transaction SpendFrom(UInt256 txHash, int outputIndex, Amount amount, Script scriptPubKey, SignedUnlockBuilder scriptBuilder = null)
         {
             var txIn = new TxIn(txHash, outputIndex, amount, scriptPubKey);
             Inputs.Add(txIn);
@@ -271,14 +271,24 @@ namespace CafeLib.BsvSharp.Transactions
         /// <summary>
         /// Spend from Utxo
         /// </summary>
+        /// <param name="utxo"></param>
+        /// <param name="checkInputExist"></param>
+        /// <returns></returns>
+        public Transaction SpendFromUtxo(Utxo utxo, bool checkInputExist = false) =>
+            SpendFromUtxo(utxo, null, checkInputExist);
+        
+        /// <summary>
+        /// Spend from Utxo
+        /// </summary>
         /// <param name="utxo">utxo</param>
+        /// <param name="scriptBuilder"></param>
         /// <param name="checkInputExist"></param>
         /// <returns>transaction</returns>
-        public Transaction SpendFromUtxo(Utxo utxo, bool checkInputExist = false)
+        public Transaction SpendFromUtxo(Utxo utxo, SignedUnlockBuilder scriptBuilder, bool checkInputExist = false)
         {
             return checkInputExist && InputExists(utxo.TxHash, utxo.Index)
                 ? this
-                : SpendFrom(utxo.TxHash, utxo.Index, utxo.Amount, utxo.ScriptPubKey);
+                : SpendFrom(utxo.TxHash, utxo.Index, utxo.Amount, utxo.ScriptPubKey, scriptBuilder);
         }
 
         /// <summary>
