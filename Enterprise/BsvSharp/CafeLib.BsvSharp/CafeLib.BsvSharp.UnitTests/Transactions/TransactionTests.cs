@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
+using CafeLib.BsvSharp.Exceptions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
@@ -124,6 +125,7 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
                 {
                     var expectedHash = x.Transactions.First().Hash;
                     var expectedIndex = x.Transactions.First().Index;
+                    var _ = x.Transactions.First().ScriptPubKey;
                     var transaction = new Transaction(Encoders.Hex.Decode(x.Serialized));
                     var previousHash = transaction.Inputs.First().PrevOut.TxHash;
                     var previousIndex = transaction.Inputs.First().PrevOut.Index;
@@ -160,6 +162,19 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
                 .WithFee(50000000)
                 .SpendTo(ToAddress, 40000000, new P2PkhLockBuilder(ToAddress));
 
+            var exception = Assert.Throws<TransactionException>(() => tx.Serialize(true));
+            
+        }
+
+        [Fact]
+        public void Fail_Fee_Error()
+        {
+            var tx = new Transaction()
+                .SpendFromUtxo(UtxoWith1Coin)
+                .SendChangeTo(ChangeAddress, new P2PkhLockBuilder(ChangeAddress))
+                .WithFee(50000000)
+                .SpendTo(ToAddress, 40000000, new P2PkhLockBuilder(ToAddress));
+
             Assert.Throws<TransactionException>(() => tx.Serialize(true));
         }
 
@@ -171,7 +186,7 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
                 .SpendTo(ToAddress, 545, new P2PkhLockBuilder(ToAddress))
                 .SendChangeTo(ChangeAddress, new P2PkhLockBuilder(ChangeAddress));
 
-            Assert.Throws<TransactionException>(() => tx.Serialize(true));
+            Assert.Throws<TransactionAmountException>(() => tx.Serialize(true));
         }
 
         [Fact]
@@ -182,7 +197,7 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
                 .SpendTo(ToAddress, 99900000, new P2PkhLockBuilder(ToAddress))
                 .WithFee(99999);
             
-            Assert.Throws<TransactionException>(() => tx.Serialize(true));
+            Assert.Throws<TransactionFeeException>(() => tx.Serialize(true));
         }
 
         [Fact]

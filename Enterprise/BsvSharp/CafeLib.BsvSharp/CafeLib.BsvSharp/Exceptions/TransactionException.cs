@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CafeLib.BsvSharp.Transactions
+namespace CafeLib.BsvSharp.Exceptions
 {
     public class TransactionException : Exception
     {

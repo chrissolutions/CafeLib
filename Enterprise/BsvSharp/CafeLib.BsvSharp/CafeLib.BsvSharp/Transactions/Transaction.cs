@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
+using CafeLib.BsvSharp.Exceptions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
@@ -300,7 +301,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <returns></returns>
         public Transaction SpendTo(Address recipient, Amount sats, ScriptBuilder scriptBuilder = null)
         {
-            if (sats <= Amount.Zero) throw new TransactionException("You can only spend a positive amount of satoshis");
+            if (sats <= Amount.Zero) throw new TransactionAmountException("You can only spend a positive amount of satoshis");
 
             scriptBuilder ??= new P2PkhLockBuilder(recipient);
             var txOut = new TxOut(TxHash, Outputs.Count, sats, scriptBuilder);
@@ -391,7 +392,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             if (future.ToUnixTime() < RootService.Network.Consensus.LocktimeBlockheightLimit)
             {
-                throw new TransactionException("Block time is set too early");
+                throw new LockTimeException("Block time is set too early");
             }
 
             Inputs.ForEach(x =>
@@ -527,7 +528,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <summary>
         ///  Check for missing signature.
         /// </summary>
-        /// <exception cref="TransactionException"></exception>
+        /// <exception cref="CafeLib.BsvSharp.Exceptions.TransactionException"></exception>
         private void CheckForMissingSignatures()
         {
             if ((Option & TransactionOption.DisableFullySigned) != 0) return;
@@ -542,12 +543,12 @@ namespace CafeLib.BsvSharp.Transactions
         /// Check for fee errors
         /// </summary>
         /// <param name="unspent">unspent amount</param>
-        /// <exception cref="TransactionException"></exception>
+        /// <exception cref="CafeLib.BsvSharp.Exceptions.TransactionException"></exception>
         private void CheckForFeeErrors(Amount unspent)
         {
             if (_fee != Amount.Null && _fee != unspent)
             {
-                throw new TransactionException($"Unspent amount is {unspent} but the specified fee is {_fee}.");
+                throw new TransactionFeeException($"Unspent amount is {unspent} but the specified fee is {_fee}.");
             }
 
             if ((Option & TransactionOption.DisableLargeFees) != 0) return;
@@ -557,10 +558,10 @@ namespace CafeLib.BsvSharp.Transactions
 
             if (!_hasChangeScript)
             {
-                throw new TransactionException("Fee is too large and no change address was provided");
+                throw new TransactionFeeException("Fee is too large and no change address was provided");
             }
 
-            throw new TransactionException($"Expected less than {maximumFee} but got {unspent}");
+            throw new TransactionFeeException($"Expected less than {maximumFee} but got {unspent}");
         }
 
         /// <summary>
@@ -687,13 +688,13 @@ namespace CafeLib.BsvSharp.Transactions
         {
             if (Outputs.Any(x => !x.ValidAmount))
             {
-                throw new TransactionException("Invalid amount of satoshis");
+                throw new TransactionAmountException("Invalid amount of satoshis");
             }
 
             var unspent = GetUnspentAmount();
             if (unspent < Amount.Zero && (Option & TransactionOption.DisableMoreOutputThanInput) == 0)
             {
-                throw new TransactionException("Invalid output sum of satoshis");
+                throw new TransactionAmountException("Invalid output sum of satoshis");
             }
 
             CheckForFeeErrors(unspent);
@@ -707,7 +708,7 @@ namespace CafeLib.BsvSharp.Transactions
 
             if (Outputs.Any(x => x.Amount < RootService.Network.Consensus.DustLimit && !x.IsDataOut))
             {
-                throw new TransactionException("You have outputs with spending values below the dust limit");
+                throw new TransactionAmountException("You have outputs with spending values below the dust limit");
             }
         }
 
