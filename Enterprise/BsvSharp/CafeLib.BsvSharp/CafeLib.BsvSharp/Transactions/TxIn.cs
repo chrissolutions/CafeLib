@@ -156,7 +156,7 @@ namespace CafeLib.BsvSharp.Transactions
                         ? tx.Outputs[PrevOut.Index].Amount
                         : Amount.Zero;
 
-                var signatureHash = TransactionSignatureChecker.ComputeSignatureHash(_scriptBuilder, tx, Index, sigHash, Amount);
+                var signatureHash = TransactionSignatureChecker.ComputeSignatureHash(_scriptBuilder, tx, tx.Inputs.IndexOf(this), sigHash, Amount);
                 var signature = privateKey.CreateSignature(signatureHash);
                 if (signature == null) return false;
 
