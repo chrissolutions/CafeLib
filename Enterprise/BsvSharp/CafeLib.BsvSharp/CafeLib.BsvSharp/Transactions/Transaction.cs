@@ -277,7 +277,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <returns></returns>
         public Transaction SpendTo(Address recipient, Amount sats, ScriptBuilder scriptBuilder = null)
         {
-            if (sats <= Amount.Zero) throw new ArgumentException("You can only spend a positive amount of satoshis");
+            if (sats <= Amount.Zero) throw new TransactionException("You can only spend a positive amount of satoshis");
 
             scriptBuilder ??= new P2PkhLockBuilder(recipient);
             var txOut = new TxOut(TxHash, Outputs.Count, sats, scriptBuilder);

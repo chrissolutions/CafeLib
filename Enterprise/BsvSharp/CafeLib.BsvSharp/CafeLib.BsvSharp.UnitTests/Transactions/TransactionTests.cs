@@ -15,8 +15,10 @@ using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Services;
 using CafeLib.BsvSharp.Transactions;
+using CafeLib.BsvSharp.Units;
 using CafeLib.Core.Extensions;
 using Newtonsoft.Json.Linq;
+using NuGet.Frameworks;
 using Xunit;
 
 namespace CafeLib.BsvSharp.UnitTests.Transactions
@@ -27,6 +29,8 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
 
         private static readonly Address FromAddress = new Address("mszYqVnqKoQx4jcTdJXxwKAissE3Jbrrc1");
         private static readonly Address ToAddress = new Address("mrU9pEmAx26HcbKVrABvgL7AwA5fjNFoDc");
+        private static readonly Address ChangeAddress = new Address("mgBCJAsvzgT2qNNeXsoECg2uPKrUsZ76up");
+        private static readonly PrivateKey PrivateKeyFromWif = PrivateKey.FromWif("cSBnVM4xvxarwGQuAfQFwqDg9k5tErHUHzgWsEfD4zdwUasvqRVY");
 
         private static readonly dynamic UtxoWith1Coin = new
         {
@@ -43,6 +47,15 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
             OutputIndex = 0,
             ScriptPubKey = new P2PkhLockBuilder(FromAddress).ToScript(),
             Amount = 1000000L
+        };
+
+        private static readonly dynamic UtxoWith100000Satoshis = new 
+        {
+            FromAddress,
+            TxHash = new UInt256("a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458"),
+            OutputIndex = 0,
+            ScriptPubKey = new P2PkhLockBuilder(FromAddress).ToScript(),
+            Amount = 100000
         };
 
         [Theory]
@@ -87,10 +100,7 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
         [Fact]
         public void Spend_Transaction()
         {
-            var changeAddress = new Address("mgBCJAsvzgT2qNNeXsoECg2uPKrUsZ76up");
-            var privateKey = PrivateKey.FromWif("cSBnVM4xvxarwGQuAfQFwqDg9k5tErHUHzgWsEfD4zdwUasvqRVY");
-
-            var changeScriptBuilder = new P2PkhLockBuilder(changeAddress);
+            var changeScriptBuilder = new P2PkhLockBuilder(ChangeAddress);
 
             var transaction = new Transaction();
                 transaction.SpendFrom(UtxoWith1MillionSatoshis.TxHash,
@@ -98,10 +108,10 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
                                       UtxoWith1MillionSatoshis.Amount, 
                                       UtxoWith1MillionSatoshis.ScriptPubKey);
                 transaction.SpendTo(ToAddress, 500000L, new P2PkhLockBuilder(ToAddress));
-                transaction.SendChangeTo(changeAddress, changeScriptBuilder);
+                transaction.SendChangeTo(ChangeAddress, changeScriptBuilder);
                 transaction.WithFeePerKb(100000);
 
-            transaction.SignInput(0, privateKey);
+            transaction.SignInput(0, PrivateKeyFromWif);
 
             Assert.Equal(2, transaction.Outputs.Count);
             Assert.Equal(472899L, transaction.Outputs[1].Amount.Satoshis);
@@ -128,12 +138,93 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
         [Fact]
         public void Fail_If_No_Change_Address()
         {
-            var transaction = new Transaction()
+            var tx = new Transaction()
                 .SpendFrom(UtxoWith1Coin.TxHash, UtxoWith1Coin.OutputIndex, UtxoWith1Coin.Amount, UtxoWith1Coin.ScriptPubKey)
                 .SpendTo(ToAddress, 500000L, new P2PkhLockBuilder(ToAddress));
 
-            Assert.Throws<TransactionException>(() => transaction.Serialize(true));
+            Assert.Throws<TransactionException>(() => tx.Serialize(true));
         }
+
+        [Fact]
+        public void Fail_If_Not_Positive_Amount()
+        {
+            var destAddress = new Address("mrU9pEmAx26HcbKVrABvgL7AwA5fjNFoDc");
+            var locker = new P2PkhLockBuilder(ToAddress);
+            var tx = new Transaction();
+
+            Assert.Throws<TransactionException>(() => tx.SpendTo(destAddress, Amount.Zero, new P2PkhLockBuilder(destAddress)));
+        }
+
+        [Fact]
+        public void Verify_Zero_Fee_For_A_Coinbase()
+        {
+            var coinbaseTransaction = new Transaction("01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0704ffff001d0104ffffffff0100f2052a0100000043410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858eeac00000000");
+            Assert.True(coinbaseTransaction.IsCoinbase);
+            Assert.Equal(Amount.Zero, coinbaseTransaction.GetFee());
+        }
+
+        [Fact]
+        public void Verify_Hash_Decoded_Correctly()
+        {
+            const string tx1Hex = "01000000015884e5db9de218238671572340b207ee85b628074e7e467096c267266baf77a4000000006a473044022013fa3089327b50263029265572ae1b022a91d10ac80eb4f32f291c914533670b02200d8a5ed5f62634a7e1a0dc9188a3cc460a986267ae4d58faf50c79105431327501210223078d2942df62c45621d209fab84ea9a7a23346201b7727b9b45a29c4e76f5effffffff0150690f00000000001976a9147821c0a3768aa9d1a37e16cf76002aef5373f1a888ac00000000";
+            var tx = new Transaction(tx1Hex);
+            Assert.Equal(Encoders.Hex.Encode(tx.Serialize()), tx1Hex);
+        }
+
+        [Fact]
+        public void Recalculate_Change_Amount()
+        {
+            var transaction = new Transaction();
+            transaction.SpendFrom(UtxoWith100000Satoshis.TxHash,
+                UtxoWith100000Satoshis.OutputIndex,
+                UtxoWith100000Satoshis.Amount,
+                UtxoWith100000Satoshis.ScriptPubKey);
+            transaction.SpendTo(ToAddress, 50000L, new P2PkhLockBuilder(ToAddress));
+            transaction.SendChangeTo(ChangeAddress, new P2PkhLockBuilder(ChangeAddress));
+            transaction.WithFee(Amount.Zero);
+
+            transaction.SignInput(0, PrivateKeyFromWif);
+
+            var changeLocker = new P2PkhLockBuilder(ChangeAddress);
+            Assert.Equal(new Amount(50000), transaction.GetChangeOutput(changeLocker).Amount);
+
+            transaction = transaction.SpendTo(ToAddress, 20000L);
+            transaction.SignInput(0, PrivateKeyFromWif);
+
+            Assert.Equal(3, transaction.Outputs.Length);
+            Assert.Equal(new Amount(30000), transaction.Outputs[2].Amount);
+            Assert.Equal(changeLocker.ToScript().ToString(), transaction.Outputs[2].Script.ToString());
+        }
+
+        [Fact]
+        public void Adds_No_Fee_If_No_Available_Change()
+        {
+            var transaction = new Transaction();
+            transaction.SpendFrom(UtxoWith100000Satoshis.TxHash,
+                UtxoWith100000Satoshis.OutputIndex,
+                UtxoWith100000Satoshis.Amount,
+                new P2PkhUnlockBuilder(PrivateKeyFromWif.CreatePublicKey()));
+            transaction.SpendTo(ToAddress, 99000L, new P2PkhLockBuilder(ToAddress));
+            Assert.Equal(1, transaction.Outputs.Length);
+            Assert.Equal(1000, transaction.GetFee());
+        }
+
+        // [Fact]
+        // public void Utxo_Are_Added_Exactly_Once()
+        // {  
+        //     var transaction = new Transaction();
+        //     transaction.SpendFrom(UtxoWith1Coin.TxHash,
+        //         UtxoWith1Coin.OutputIndex,
+        //         UtxoWith1Coin.Amount,
+        //         UtxoWith1Coin.ScriptPubKey);
+        //     
+        //     transaction.SpendFrom(UtxoWith1Coin.TxHash,
+        //         UtxoWith1Coin.OutputIndex,
+        //         UtxoWith1Coin.Amount,
+        //         UtxoWith1Coin.ScriptPubKey);
+        //
+        //     Assert.Equal(1, transaction.Inputs.Length);
+        // }
 
         #region Helpers
 
