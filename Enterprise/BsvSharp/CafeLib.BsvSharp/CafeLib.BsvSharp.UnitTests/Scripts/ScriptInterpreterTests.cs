@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using CafeLib.BsvSharp.Builders;
+using CafeLib.BsvSharp.Encoding;
+using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Transactions;
 using CafeLib.BsvSharp.Units;
@@ -29,6 +31,16 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             var pub = ScriptBuilder.ParseScript(scriptPub);
             var ok = ScriptInterpreter.VerifyScript(sig, pub, ScriptFlags.VERIFY_NONE, DefaultChecker, out _);
             Assert.Equal(result, ok);
+        }
+
+        [Theory]
+        [InlineData("0x00", false)]
+        [InlineData("0x01", true)]
+        [InlineData("0x0080", false)]
+        [InlineData("", false)]
+        public void VerifyVarType_ToBool(string value, bool result)
+        {
+            Assert.Equal(new VarType(Encoders.Hex.Decode(value)), result);
         }
     }
 }
