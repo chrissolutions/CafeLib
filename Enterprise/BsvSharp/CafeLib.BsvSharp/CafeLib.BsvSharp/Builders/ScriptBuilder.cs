@@ -143,8 +143,16 @@ namespace CafeLib.BsvSharp.Builders
             return this;
         }
 
+        /// <summary>
+        /// Build Script.
+        /// </summary>
+        /// <returns>script</returns>
         public virtual Script ToScript() => new Script(ToBytes());
 
+        /// <summary>
+        /// Convert script builder to byte array.
+        /// </summary>
+        /// <returns></returns>
         public byte[] ToBytes()
         {
             var bytes = new byte[Ops.Sum(o => o.Length)];

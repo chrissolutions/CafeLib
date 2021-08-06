@@ -260,6 +260,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <param name="outputIndex">utxo index</param>
         /// <param name="amount">amount</param>
         /// <param name="scriptPubKey">script pub key</param>
+        /// <param name="scriptBuilder">signed unlock script</param>
         /// <returns>transaction</returns>
         public Transaction SpendFrom(UInt256 txHash, int outputIndex, Amount amount, Script scriptPubKey, SignedUnlockBuilder scriptBuilder = null)
         {

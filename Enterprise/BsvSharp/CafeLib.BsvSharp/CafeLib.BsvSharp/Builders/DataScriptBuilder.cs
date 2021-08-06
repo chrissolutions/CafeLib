@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CafeLib.BsvSharp.Exceptions;
-using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.Core.Buffers.Arrays;
 
@@ -11,11 +9,18 @@ namespace CafeLib.BsvSharp.Builders
     {
         private readonly List<ByteArrayBuffer> _dataCache;
 
+        /// <summary>
+        /// DataScriptBuilder default constructor.
+        /// </summary>
         public DataScriptBuilder()
         {
             _dataCache = new List<ByteArrayBuffer>();
         }
 
+        /// <summary>
+        /// DataScriptBuilder constructor.
+        /// </summary>
+        /// <param name="data">data</param>
         public DataScriptBuilder(byte[] data)
             : this()
         {
@@ -23,7 +28,7 @@ namespace CafeLib.BsvSharp.Builders
         }
 
         /// <summary>
-        /// 
+        /// Add bytes to data builder.
         /// </summary>
         /// <param name="data"></param>
         public override ScriptBuilder Add(byte[] data)
@@ -33,7 +38,7 @@ namespace CafeLib.BsvSharp.Builders
         }
 
         /// <summary>
-        /// 
+        /// Clear the builder.
         /// </summary>
         public override ScriptBuilder Clear()
         {
@@ -42,7 +47,7 @@ namespace CafeLib.BsvSharp.Builders
         }
 
         /// <summary>
-        /// 
+        /// Convert builder to script.
         /// </summary>
         /// <returns></returns>
         public override Script ToScript()
@@ -59,17 +64,7 @@ namespace CafeLib.BsvSharp.Builders
             _dataCache.ForEach(x =>
             {
                 if (x is null || !x.Any()) return;
-
-                var code = (ulong) x.Length switch
-                {
-                    _ when x.Length < (int) Opcode.OP_PUSHDATA1 => (Opcode) x.Length,
-                    _ when x.Length <= 0xff => Opcode.OP_PUSHDATA1,
-                    _ when x.Length < 0xffff => Opcode.OP_PUSHDATA2,
-                    _ when (ulong) x.Length <= 0xffffffff => Opcode.OP_PUSHDATA4,
-                    _ => throw new ScriptException("Data push limit exceeded.")
-                };
-
-                Add(code, new VarType(x.ToArray()));
+                Push(x.ToArray());
             });
 
             return base.ToScript();
