@@ -39,5 +39,39 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
         {
             Assert.Equal(new VarType(Encoders.Hex.Decode(value)), result);
         }
+
+        //[Fact]
+        //public void Verify_Script_From_Simple_Transaction()
+        //{
+        //    RootService.Bootstrap(NetworkType.Test);
+        //    var privateKey = PrivateKey.FromWif("cSBnVM4xvxarwGQuAfQFwqDg9k5tErHUHzgWsEfD4zdwUasvqRVY");
+        //    var publicKey = privateKey.CreatePublicKey();
+        //    var fromAddress = publicKey.ToAddress();
+        //    var toAddress = new Address("mrU9pEmAx26HcbKVrABvgL7AwA5fjNFoDc");
+        //    var scriptPubkey = new P2PkhLockBuilder(fromAddress).ToScript();
+
+        //    var utxo = new Utxo
+        //    {
+        //        TxHash = new UInt256("a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458"),
+        //        Index = 0,
+        //        ScriptPubKey = scriptPubkey,
+        //        Amount = 100000
+        //    };                    
+
+        //    var tx = new Transaction();
+        //    tx.SpendFromUtxo(utxo, new P2PkhUnlockBuilder(publicKey));
+        //    tx.SpendTo(toAddress, 100000L, new P2PkhLockBuilder(toAddress));
+        //    tx.SignInput(0, privateKey, SignatureHashEnum.All);
+            
+        //    // we then extract the signature from the first input
+        //    var scriptSig = tx.Inputs[0].ScriptSig;
+
+        //    var scriptBuilder = new P2PkhUnlockBuilder(publicKey);
+
+        //    var flags = ScriptFlags.VERIFY_P2SH | ScriptFlags.VERIFY_STRICTENC;
+        //    var checker = new TransactionSignatureChecker(tx, 0, utxo.Amount);
+        //    var verified = ScriptInterpreter.VerifyScript(scriptSig, scriptPubkey, flags, checker, out var error);
+        //    Assert.True(verified);
+        //}
     }
 }
