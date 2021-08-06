@@ -62,10 +62,10 @@ namespace CafeLib.BsvSharp.Transactions
         /// </summary>
         /// <param name="txHash"></param>
         /// <param name="index"></param>
-        /// <param name="script"></param>
+        /// <param name="scriptBuilder"></param>
         /// <param name="isChangeOutput"></param>
-        public TxOut(UInt256 txHash, int index, ScriptBuilder script, bool isChangeOutput = false)
-            : this (txHash, index, Amount.Zero, script, isChangeOutput)
+        public TxOut(UInt256 txHash, int index, ScriptBuilder scriptBuilder, bool isChangeOutput = false)
+            : this (txHash, index, Amount.Zero, scriptBuilder, isChangeOutput)
         {
         }
 
@@ -75,14 +75,14 @@ namespace CafeLib.BsvSharp.Transactions
         /// <param name="txHash"></param>
         /// <param name="index"></param>
         /// <param name="amount"></param>
-        /// <param name="script"></param>
+        /// <param name="scriptBuilder"></param>
         /// <param name="isChangeOutput"></param>
-        public TxOut(UInt256 txHash, int index, Amount amount, ScriptBuilder script, bool isChangeOutput = false)
+        public TxOut(UInt256 txHash, int index, Amount amount, ScriptBuilder scriptBuilder, bool isChangeOutput = false)
         {
             TxHash = txHash;
             Index = index;
             Amount = amount;
-            _scriptBuilder = script;
+            _scriptBuilder = scriptBuilder;
             IsChangeOutput = isChangeOutput;
         }
 

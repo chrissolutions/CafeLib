@@ -161,7 +161,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <returns></returns>
         public Transaction AddData(byte[] data, ScriptBuilder scriptBuilder = null)
         {
-            scriptBuilder ??= new ScriptBuilder();
+            scriptBuilder ??= new DataScriptBuilder();
             scriptBuilder.Add(data);
             var dataOut = new TxOut(TxHash, Outputs.Count, scriptBuilder);
             Outputs.Add(dataOut);
@@ -498,7 +498,33 @@ namespace CafeLib.BsvSharp.Transactions
             var writer = (ByteDataWriter) WriteTo(new ByteDataWriter(), new {performChecks});
             return writer.ToArray();
         }
-        
+
+        /// <summary>
+        /// Try verify transaction.
+        /// </summary>
+        /// <param name="errorMessage">error message</param>
+        /// <returns>true if successful; false otherwise</returns>
+        public bool TryVerify(out string errorMessage)
+        {
+            try
+            {
+                DoSerializationChecks();
+                errorMessage = null;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Verify transaction.
+        /// </summary>
+        /// <returns>true if successful; false otherwise</returns>
+        public bool Verify() => TryVerify(out _);
+
         /// <summary>
         /// Serialize Script to data writer
         /// </summary>

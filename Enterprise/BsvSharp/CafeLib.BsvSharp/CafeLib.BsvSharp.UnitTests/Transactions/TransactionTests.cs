@@ -10,6 +10,7 @@ using System.Linq;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Exceptions;
+using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
@@ -162,8 +163,7 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
                 .WithFee(50000000)
                 .SpendTo(ToAddress, 40000000, new P2PkhLockBuilder(ToAddress));
 
-            var exception = Assert.Throws<TransactionFeeException>(() => tx.Serialize(true));
-            
+            Assert.Throws<TransactionFeeException>(() => tx.Serialize(true));
         }
 
         [Fact]
@@ -218,9 +218,24 @@ namespace CafeLib.BsvSharp.UnitTests.Transactions
             
             tx.SignInput(0, PrivateKeyFromWif);
 
-            Assert.NotNull(tx.Serialize(true));
+            Assert.True(tx.Verify());
+            Assert.NotNull(tx.Serialize());
         }
-        
+
+        [Fact]
+        public void Verify_Dust_As_OpReturn()
+        {
+            var tx = new Transaction();
+            tx.SpendFromUtxo(UtxoWith1Coin, new P2PkhUnlockBuilder(PrivateKeyFromWif.CreatePublicKey()));
+            tx.AddData("not dust!".Utf8ToBytes());
+            tx.SendChangeTo(ChangeAddress, new P2PkhLockBuilder(ChangeAddress));
+
+            tx.SignInput(0, PrivateKeyFromWif);
+
+            Assert.True(tx.Verify());
+            Assert.NotNull(tx.Serialize());
+        }
+
         [Fact]
         public void Verify_Hash_Decoded_Correctly()
         {

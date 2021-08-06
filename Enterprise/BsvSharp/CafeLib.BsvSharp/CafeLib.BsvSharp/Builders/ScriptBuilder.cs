@@ -75,7 +75,7 @@ namespace CafeLib.BsvSharp.Builders
             Set(script);
         }
 
-        public ScriptBuilder Clear()
+        public virtual ScriptBuilder Clear()
         {
             Ops.Clear(); 
             return this;
@@ -119,7 +119,7 @@ namespace CafeLib.BsvSharp.Builders
             return Add(script);
         }
 
-        public ScriptBuilder Add(byte[] raw)
+        public virtual ScriptBuilder Add(byte[] raw)
         {
             Ops.Add(new OperandBuilder(new VarType(raw)));
             return this;
@@ -143,7 +143,7 @@ namespace CafeLib.BsvSharp.Builders
             return this;
         }
 
-        public Script ToScript() => new Script(ToBytes());
+        public virtual Script ToScript() => new Script(ToBytes());
 
         public byte[] ToBytes()
         {

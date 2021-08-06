@@ -7,6 +7,7 @@ using System;
 using System.Buffers;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
+using CafeLib.BsvSharp.Exceptions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.Core.Buffers;
@@ -47,33 +48,19 @@ namespace CafeLib.BsvSharp.Scripting
 
         public static Operand Push(ReadOnlyByteSpan data)
         {
-            Opcode code;
-            var val = VarType.Empty;
-            if (data.Length == 1 && data[0] <= 16)
+            var opOnly = data.Length == 1 && data[0] <= 16;
+            
+            var code = (ulong)data.Length switch
             {
-                code = data[0] == 0 ? Opcode.OP_0 : (Opcode)(data[0] - 1 + (int)Opcode.OP_1);
-            }
-            else
-            {
-                if (data.Length < (int)Opcode.OP_PUSHDATA1)
-                {
-                    code = (Opcode)data.Length;
-                }
-                else if (data.Length <= 0xff) 
-                {
-                    code = Opcode.OP_PUSHDATA1;
-                }
-                else if (data.Length <= 0xffff) 
-                {
-                    code = Opcode.OP_PUSHDATA2;
-                }
-                else
-                {
-                    code = Opcode.OP_PUSHDATA4;
-                }
-
-                val = new VarType(data.ToArray());
-            }
+                _ when opOnly => data[0] == 0 ? Opcode.OP_0 : (Opcode)(data[0] - 1 + (int)Opcode.OP_1),
+                _ when data.Length < (int)Opcode.OP_PUSHDATA1 => (Opcode)data.Length,
+                _ when data.Length <= 0xff => Opcode.OP_PUSHDATA1,
+                _ when data.Length < 0xffff => Opcode.OP_PUSHDATA2,
+                _ when (ulong)data.Length <= 0xffffffff => Opcode.OP_PUSHDATA4,
+                _ => throw new ScriptException("Data push limit exceeded.")
+            };
+            
+            var val = opOnly ? VarType.Empty : new VarType(data.ToArray());
             var op = new Operand(code, val);
             return op;
         }
