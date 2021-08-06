@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using CafeLib.BsvSharp.Builders;
+﻿using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
