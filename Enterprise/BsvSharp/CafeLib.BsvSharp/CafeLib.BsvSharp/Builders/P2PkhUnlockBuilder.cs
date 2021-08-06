@@ -10,6 +10,8 @@ namespace CafeLib.BsvSharp.Builders
 {
     public class P2PkhUnlockBuilder : SignedUnlockBuilder
     {
+        private PublicKey _signerPublicKey;
+
         public P2PkhUnlockBuilder(PublicKey pubKey)
             : base(pubKey, TemplateId.Pay2PublicKeyHash)
         {

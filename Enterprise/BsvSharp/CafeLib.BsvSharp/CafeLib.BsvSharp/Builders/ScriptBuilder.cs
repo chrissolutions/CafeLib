@@ -23,14 +23,14 @@ namespace CafeLib.BsvSharp.Builders
         /// but note that individual operations may still NOT be final.
         /// false by default.
         /// </summary>
-        protected bool _isFinal;
+        private bool _isFinal;
 
         /// <summary>
         /// true if script is associated with a scriptPub.
         /// false if script is associated with a scriptSig.
         /// null if script purpose is unknown.
         /// </summary>
-        protected bool? _isPub;
+        private bool? _isPub;
 
         /// <summary>
         /// The sequence of operations where each operation is an opcode and optional data.
@@ -42,9 +42,23 @@ namespace CafeLib.BsvSharp.Builders
         /// <summary>
         /// true when no more additions, deletions or changes to existing operations will occur.
         /// </summary>
-        public bool IsFinal => _isFinal && Ops.All(op => op.IsFinal);
-        public bool IsPub { get => _isPub == true; set => _isPub = value ? (bool?)true : null; }
-        public bool IsSig { get => _isPub == false; set => _isPub = value ? (bool?)false : null; }
+        public bool IsFinal
+        {
+            get => _isFinal && Ops.All(op => op.IsFinal);
+            protected set => _isFinal = value;
+        }
+
+        public bool IsPub
+        {
+            get => _isPub == true; 
+            set => _isPub = value ? (bool?)true : null;
+        }
+
+        public bool IsSig
+        {
+            get => _isPub == false; 
+            set => _isPub = value ? (bool?)false : null;
+        }
 
         /// <summary>
         /// If the script implements a known template, this will be the template type.
@@ -142,6 +156,12 @@ namespace CafeLib.BsvSharp.Builders
             Ops.Add(Operand.Push(v));
             return this;
         }
+
+        /// <summary>
+        /// Populate builder from script.
+        /// </summary>
+        /// <param name="script"></param>
+        public virtual void FromScript(Script script) => Set(script);
 
         /// <summary>
         /// Build Script.
