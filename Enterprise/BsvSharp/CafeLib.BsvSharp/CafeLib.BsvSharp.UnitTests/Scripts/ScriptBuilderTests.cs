@@ -3,10 +3,8 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System;
 using System.Linq;
 using CafeLib.BsvSharp.Builders;
-using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Signatures;
 using Xunit;
@@ -25,6 +23,17 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             var builder = new P2PkhUnlockBuilder(script);
             Assert.Equal(publicKey, builder.PublicKey);
             Assert.Equal(signature, builder.Signatures.First());
+        }
+
+        [Fact]
+        public void P2PkhLockBuilder_Test()
+        {
+            var address = new Address("1NaTVwXDDUJaXDQajoa9MqHhz4uTxtgK14");
+            var lockBuilder = new P2PkhLockBuilder(address);
+            var script = lockBuilder.ToScript();
+
+            Assert.Equal("OP_DUP OP_HASH160 20 0xecae7d092947b7ee4998e254aa48900d26d2ce1d OP_EQUALVERIFY OP_CHECKSIG", script.ToString());
+            Assert.Equal("1NaTVwXDDUJaXDQajoa9MqHhz4uTxtgK14", address.ToString());
         }
     }
 }
