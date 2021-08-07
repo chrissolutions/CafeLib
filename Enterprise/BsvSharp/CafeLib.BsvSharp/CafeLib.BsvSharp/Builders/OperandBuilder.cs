@@ -4,7 +4,6 @@
 #endregion
 
 using CafeLib.BsvSharp.Encoding;
-using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.Core.Buffers;
@@ -85,13 +84,6 @@ namespace CafeLib.BsvSharp.Builders
         public override string ToString()
         {
             return ToVerboseString();
-        }
-
-        public PublicKey ToPubKey()
-        {
-            var pubKey = new PublicKey();
-            pubKey.Set(Operand.Data);
-            return pubKey.IsValid ? pubKey : null;
         }
     }
 }

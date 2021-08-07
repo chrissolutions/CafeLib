@@ -5,7 +5,7 @@ using Secp256k1Net;
 
 namespace CafeLib.BsvSharp.Signatures
 {
-    public struct Signature
+    public struct Signature : IEquatable<Signature>
     {
         private const int SignatureSize = 64;
         private byte[] _signature;
@@ -129,6 +129,21 @@ namespace CafeLib.BsvSharp.Signatures
             // Null bytes at the start of S are not allowed, unless S would otherwise be
             // interpreted as a negative number.
             return lenS <= 1 || (signature[lenR + 6] != 0x00) || (signature[lenR + 7] & 0x80) != 0;
+        }
+
+        public bool Equals(Signature other)
+        {
+            return Data.SequenceCompareTo(other.Data) == 0;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Signature other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return (_signature != null ? _signature.GetHashCode() : 0);
         }
     }
 }

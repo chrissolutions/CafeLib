@@ -16,8 +16,6 @@ namespace CafeLib.BsvSharp.Builders
 {
     public class ScriptBuilder
     {
-        private static readonly Script DefaultScript = new Script(new[] {(byte) Opcode.OP_FALSE, (byte) Opcode.OP_RETURN});
-
         /// <summary>
         /// true if no more additions or removals from the operations will occur,
         /// but note that individual operations may still NOT be final.
@@ -156,12 +154,6 @@ namespace CafeLib.BsvSharp.Builders
             Ops.Add(Operand.Push(v));
             return this;
         }
-
-        /// <summary>
-        /// Populate builder from script.
-        /// </summary>
-        /// <param name="script"></param>
-        public virtual void FromScript(Script script) => Set(script);
 
         /// <summary>
         /// Build Script.
