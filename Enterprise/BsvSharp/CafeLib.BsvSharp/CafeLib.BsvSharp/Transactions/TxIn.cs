@@ -173,6 +173,11 @@ namespace CafeLib.BsvSharp.Transactions
             return signedOk;
         }
 
+        internal void Sign(PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool TryReadTxIn(ref ByteSequenceReader r)
         {
             var prevOut = new OutPoint();
