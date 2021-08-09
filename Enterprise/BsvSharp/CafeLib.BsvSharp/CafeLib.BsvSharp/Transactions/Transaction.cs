@@ -264,7 +264,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <returns>transaction</returns>
         public Transaction SpendFrom(UInt256 txHash, int outputIndex, Amount amount, Script scriptPubKey, SignedUnlockBuilder scriptBuilder = null)
         {
-            var txIn = new TxIn(txHash, outputIndex, amount, scriptPubKey);
+            var txIn = new TxIn(txHash, outputIndex, amount, scriptPubKey, scriptBuilder);
             Inputs.Add(txIn);
             UpdateChangeOutput();
             return this;
@@ -425,7 +425,7 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         /// <summary>
-        /// 
+        /// Sign input transaction.
         /// </summary>
         /// <param name="nTxIn"></param>
         /// <param name="privateKey"></param>

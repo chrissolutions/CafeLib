@@ -68,7 +68,7 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             tx.SignInput(0, privateKey, SignatureHashEnum.All);
 
             // we then extract the signature from the first input
-            var scriptSig = tx.Inputs[0].UtxoScript;
+            var scriptSig = tx.Inputs[0].ScriptSig;
 
             var scriptBuilder = new P2PkhUnlockBuilder(publicKey);
 

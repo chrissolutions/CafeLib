@@ -6,7 +6,6 @@
 using System;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
-using CafeLib.BsvSharp.Exceptions;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
@@ -35,7 +34,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <summary>
         /// Setting nSequence to this value for every input in a transaction disables nLockTime.
         /// </summary>
-        public const uint SequenceFinal = 0xffffffff;
+        public const uint SequenceFinal = uint.MaxValue;
 
         /// <summary>
         /// Below flags apply in the context of Bip 68.
@@ -76,6 +75,8 @@ namespace CafeLib.BsvSharp.Transactions
 
         public Amount Amount { get; private set; }
 
+        public Script ScriptSig => _scriptBuilder;
+
         /// <summary>
         /// This is used by the Transaction during serialization checks.
         /// It is only used in the context of P2PKH transaction types and
@@ -85,7 +86,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// validate the _scriptBuilder Signatures. At the moment this is more
         /// of a check on where a signature is required.
         /// </summary>
-        public bool IsFullySigned { get; }
+        public bool IsFullySigned { get; private set; }
 
         /// <summary>
         /// TxIn default constructor.
@@ -109,7 +110,6 @@ namespace CafeLib.BsvSharp.Transactions
             UtxoScript = utxoScript;
             _scriptBuilder = scriptBuilder ?? new SignedUnlockBuilder();
             SequenceNumber = sequenceNumber;
-            IsFullySigned = _scriptBuilder is SignedUnlockBuilder;
         }
 
         /// <summary>
@@ -119,10 +119,23 @@ namespace CafeLib.BsvSharp.Transactions
         /// <param name="outIndex"></param>
         /// <param name="amount"></param>
         /// <param name="utxoScript"></param>
-        /// <param name="nSequenceIn"></param>
         /// <param name="scriptBuilder"></param>
-        public TxIn(UInt256 prevTxId, int outIndex, Amount amount, Script utxoScript = new Script(), uint nSequenceIn = SequenceFinal, ScriptBuilder scriptBuilder = null)
-            : this(new OutPoint(prevTxId, outIndex), amount, utxoScript, nSequenceIn, scriptBuilder)
+        public TxIn(UInt256 prevTxId, int outIndex, Amount amount, Script utxoScript, ScriptBuilder scriptBuilder)
+            : this(prevTxId, outIndex, amount, utxoScript, SequenceFinal -1, scriptBuilder)
+        {
+        }
+
+        /// <summary>
+        /// Transaction input constructor.
+        /// </summary>
+        /// <param name="prevTxId"></param>
+        /// <param name="outIndex"></param>
+        /// <param name="amount"></param>
+        /// <param name="utxoScript"></param>
+        /// <param name="sequenceNumber"></param>
+        /// <param name="scriptBuilder"></param>
+        public TxIn(UInt256 prevTxId, int outIndex, Amount amount, Script utxoScript = new Script(), uint sequenceNumber = SequenceFinal, ScriptBuilder scriptBuilder = null)
+            : this(new OutPoint(prevTxId, outIndex), amount, utxoScript, sequenceNumber, scriptBuilder)
         {
         }
 
@@ -137,7 +150,7 @@ namespace CafeLib.BsvSharp.Transactions
         }
 
         internal bool Sign(Transaction tx, PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
-            => Sign(tx, privateKey, false, sighashType);
+            => Sign2(tx, privateKey, sighashType);
 
         internal bool Sign(Transaction tx, PrivateKey privateKey, bool confirmExistingSignatures, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
         {
@@ -174,7 +187,7 @@ namespace CafeLib.BsvSharp.Transactions
             return signedOk;
         }
 
-        internal void Sign2(Transaction tx, PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
+        internal bool Sign2(Transaction tx, PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
         {
             var sigHash = new SignatureHashType(SignatureHashEnum.All | SignatureHashEnum.ForkId);
             var signatureHash = TransactionSignatureChecker.ComputeSignatureHash(_scriptBuilder, tx, tx.Inputs.IndexOf(this), sigHash, Amount);
@@ -184,10 +197,14 @@ namespace CafeLib.BsvSharp.Transactions
             {
                 //culminate in injecting the derived signature into the ScriptBuilder instance
                 builder.AddSignature(signature);
+                IsFullySigned = true;
+                return true;
             }
             else
             {
-                throw new TransactionException("Trying to sign a Transaction Input that is missing a SignedUnlockBuilder");
+                IsFullySigned = false;
+                return false;
+                //throw new TransactionException("Trying to sign a Transaction Input that is missing a SignedUnlockBuilder");
             }
         }
 
