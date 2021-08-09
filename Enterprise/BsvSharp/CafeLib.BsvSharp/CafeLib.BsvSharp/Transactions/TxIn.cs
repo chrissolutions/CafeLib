@@ -159,7 +159,7 @@ namespace CafeLib.BsvSharp.Transactions
                 var signatureHash = TransactionSignatureChecker.ComputeSignatureHash(_scriptBuilder, tx, tx.Inputs.IndexOf(this), sigHash, Amount);
                 var signature = privateKey.CreateSignature(signatureHash);
                 if (signature == null) return false;
-
+    
                 var sigWithType = new byte[signature.Length + 1];
                 signature.CopyTo(sigWithType.AsSpan());
                 sigWithType[^1] = (byte)sigHash.RawSigHashType;
@@ -173,8 +173,12 @@ namespace CafeLib.BsvSharp.Transactions
             return signedOk;
         }
 
-        internal void Sign(PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
+        internal void Sign2(Transaction tx, PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
         {
+            var sigHash = new SignatureHashType(SignatureHashEnum.All | SignatureHashEnum.ForkId);
+            var signatureHash = TransactionSignatureChecker.ComputeSignatureHash(_scriptBuilder, tx, tx.Inputs.IndexOf(this), sigHash, Amount);
+            var signature = new Signature(privateKey.CreateSignature(signatureHash));
+
             throw new NotImplementedException();
         }
 
