@@ -69,7 +69,7 @@ namespace CafeLib.BsvSharp.Transactions
 
         public OutPoint PrevOut { get; private set; }
 
-        public Script ScriptSig { get; private set; }
+        public Script UtxoScript { get; private set; }
 
         public uint SequenceNumber { get; set; }
 
@@ -105,7 +105,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             PrevOut = prevOutPoint;
             Amount = amount;
-            ScriptSig = utxoScript;
+            UtxoScript = utxoScript;
             _scriptBuilder = scriptBuilder ?? new SignedUnlockBuilder();
             SequenceNumber = sequenceNumber;
             IsFullySigned = _scriptBuilder is SignedUnlockBuilder;
@@ -117,11 +117,11 @@ namespace CafeLib.BsvSharp.Transactions
         /// <param name="prevTxId"></param>
         /// <param name="outIndex"></param>
         /// <param name="amount"></param>
-        /// <param name="scriptSigIn"></param>
+        /// <param name="utxoScript"></param>
         /// <param name="nSequenceIn"></param>
         /// <param name="scriptBuilder"></param>
-        public TxIn(UInt256 prevTxId, int outIndex, Amount amount, Script scriptSigIn = new Script(), uint nSequenceIn = SequenceFinal, ScriptBuilder scriptBuilder = null)
-            : this(new OutPoint(prevTxId, outIndex), amount, scriptSigIn, nSequenceIn, scriptBuilder)
+        public TxIn(UInt256 prevTxId, int outIndex, Amount amount, Script utxoScript = new Script(), uint nSequenceIn = SequenceFinal, ScriptBuilder scriptBuilder = null)
+            : this(new OutPoint(prevTxId, outIndex), amount, utxoScript, nSequenceIn, scriptBuilder)
         {
         }
 
@@ -130,7 +130,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             writer.Write(Encoders.HexReverse.Decode(TxId));
             writer.Write(Index);
-            writer.Write(ScriptSig);
+            writer.Write(UtxoScript);
             writer.Write(SequenceNumber);
             return writer;
         }
@@ -142,7 +142,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             var signedOk = true;
             var sigHash = new SignatureHashType(SignatureHashEnum.All | SignatureHashEnum.ForkId);
-            var scriptSig = new ScriptBuilder(ScriptSig);
+            var scriptSig = new ScriptBuilder(UtxoScript);
 
             if (scriptSig.Ops.Count == 2)
             {
@@ -178,6 +178,9 @@ namespace CafeLib.BsvSharp.Transactions
             var sigHash = new SignatureHashType(SignatureHashEnum.All | SignatureHashEnum.ForkId);
             var signatureHash = TransactionSignatureChecker.ComputeSignatureHash(_scriptBuilder, tx, tx.Inputs.IndexOf(this), sigHash, Amount);
             var signature = new Signature(privateKey.CreateSignature(signatureHash));
+            //ScriptSig = new P
+            
+            
 
             throw new NotImplementedException();
         }
@@ -190,7 +193,7 @@ namespace CafeLib.BsvSharp.Transactions
 
             var script = new Script();
             if (!script.TryReadScript(ref r)) return false;
-            ScriptSig = script;
+            UtxoScript = script;
 
             if (!r.TryReadLittleEndian(out uint sequenceNumber)) return false;
             SequenceNumber = sequenceNumber;
