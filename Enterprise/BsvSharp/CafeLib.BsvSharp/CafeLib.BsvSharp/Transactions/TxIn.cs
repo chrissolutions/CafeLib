@@ -6,6 +6,7 @@
 using System;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
+using CafeLib.BsvSharp.Exceptions;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
@@ -178,11 +179,16 @@ namespace CafeLib.BsvSharp.Transactions
             var sigHash = new SignatureHashType(SignatureHashEnum.All | SignatureHashEnum.ForkId);
             var signatureHash = TransactionSignatureChecker.ComputeSignatureHash(_scriptBuilder, tx, tx.Inputs.IndexOf(this), sigHash, Amount);
             var signature = new Signature(privateKey.CreateSignature(signatureHash));
-            //ScriptSig = new P
-            
-            
 
-            throw new NotImplementedException();
+            if (_scriptBuilder is SignedUnlockBuilder builder)
+            {
+                //culminate in injecting the derived signature into the ScriptBuilder instance
+                builder.AddSignature(signature);
+            }
+            else
+            {
+                throw new TransactionException("Trying to sign a Transaction Input that is missing a SignedUnlockBuilder");
+            }
         }
 
         public bool TryReadTxIn(ref ByteSequenceReader r)

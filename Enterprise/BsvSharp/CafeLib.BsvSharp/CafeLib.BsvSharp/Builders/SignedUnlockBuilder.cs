@@ -11,6 +11,9 @@ namespace CafeLib.BsvSharp.Builders
 
         public IEnumerable<Signature> Signatures { get; protected set; }
 
+        public virtual void AddSignature(Signature signature) => 
+            (Signatures as ICollection<Signature>)?.Add(signature);
+
         internal SignedUnlockBuilder()
             : this(null)
         {

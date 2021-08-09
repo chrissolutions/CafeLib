@@ -35,6 +35,11 @@ namespace CafeLib.BsvSharp.Builders
             UnlockScript(script);
         }
 
+        public override void AddSignature(Signature signature)
+        {
+            _signatures.Add(signature);
+        }
+
         public override void Sign(Script scriptSig)
         {
             UnlockScript(scriptSig);
