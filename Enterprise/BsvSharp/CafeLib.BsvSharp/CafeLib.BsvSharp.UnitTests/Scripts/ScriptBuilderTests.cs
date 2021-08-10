@@ -3,7 +3,9 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Signatures;
@@ -23,6 +25,12 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             var builder = new P2PkhUnlockBuilder(script);
             Assert.Equal(publicKey, builder.PublicKey);
             Assert.Equal(signature, builder.Signatures.First());
+
+            builder = new P2PkhUnlockBuilder(publicKey);
+            builder.AddSignature(signature);
+            var scriptResult = builder.ToScript();
+
+            Assert.Equal(script.ToString(), scriptResult.ToString());
         }
 
         [Fact]

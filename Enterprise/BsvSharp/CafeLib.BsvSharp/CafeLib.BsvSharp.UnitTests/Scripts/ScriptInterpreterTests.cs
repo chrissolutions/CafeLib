@@ -70,8 +70,6 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
             // we then extract the signature from the first input
             var scriptSig = tx.Inputs[0].ScriptSig;
 
-            var scriptBuilder = new P2PkhUnlockBuilder(publicKey);
-
             var flags = ScriptFlags.VERIFY_P2SH | ScriptFlags.VERIFY_STRICTENC;
             var checker = new TransactionSignatureChecker(tx, 0, utxo.Amount);
             var verified = ScriptInterpreter.VerifyScript(scriptSig, scriptPubkey, flags, checker, out var error);

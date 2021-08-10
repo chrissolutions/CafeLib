@@ -10,7 +10,7 @@ namespace CafeLib.BsvSharp.Signatures
         private const int SignatureSize = 64;
         private byte[] _signature;
 
-        private ReadOnlyByteSpan Data => _signature ??= Array.Empty<byte>();
+        internal ReadOnlyByteSpan Data => _signature ??= Array.Empty<byte>();
 
         /// <summary>
         /// Null signature.
