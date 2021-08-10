@@ -189,9 +189,9 @@ namespace CafeLib.BsvSharp.Transactions
 
         internal bool Sign2(Transaction tx, PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
         {
-            var sigHash = new SignatureHashType(SignatureHashEnum.All | SignatureHashEnum.ForkId);
-            var signatureHash = TransactionSignatureChecker.ComputeSignatureHash(_scriptBuilder, tx, tx.Inputs.IndexOf(this), sigHash, Amount);
-            var signature = new Signature(privateKey.CreateSignature(signatureHash));
+            var sigHash = new SignatureHashType(sighashType);
+            var signatureHash = TransactionSignatureChecker.ComputeSignatureHash(UtxoScript, tx, tx.Inputs.IndexOf(this), sigHash, Amount);
+             var signature = new Signature(privateKey.CreateSignature(signatureHash));
 
             if (_scriptBuilder is SignedUnlockBuilder builder)
             {

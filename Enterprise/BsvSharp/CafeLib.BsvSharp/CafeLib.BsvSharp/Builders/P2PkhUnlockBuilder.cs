@@ -45,6 +45,16 @@ namespace CafeLib.BsvSharp.Builders
             UnlockScript(scriptSig);
         }
 
+        public override Script ToScript()
+        {
+            base.Clear();
+            
+            Push(Signatures.FirstOrDefault().ToDer().Data)
+                .Push(PublicKey);
+
+            return base.ToScript();
+        }
+
         private void UnlockScript(Script scriptSig)
         {
             if (scriptSig == Script.None)

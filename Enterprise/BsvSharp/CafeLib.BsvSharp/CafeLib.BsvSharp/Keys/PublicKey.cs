@@ -33,8 +33,14 @@ namespace CafeLib.BsvSharp.Keys
         private byte[] _bytes;
 
         /// <summary>
-        /// 
+        /// HardenedBit.
         /// </summary>
+        private const uint HardenedBit = 0x80000000;
+
+        /// <summary>
+        /// Secp256K1 library.
+        /// </summary>
+        private static Secp256k1 Secp256K1 => LazySecp256K1.Value;
         private static readonly Lazy<Secp256k1> LazySecp256K1 = new Lazy<Secp256k1>(() =>
         {
             var ctx = new Secp256k1();
@@ -42,24 +48,32 @@ namespace CafeLib.BsvSharp.Keys
             return ctx;
         }, true);
 
-        private const uint HardenedBit = 0x80000000;
-
-        private static Secp256k1 Secp256K1 => LazySecp256K1.Value;
-
+        // Constants.                        
         internal const int CompressedLength = 33;
         internal const int UncompressedLength = 65;
 
+        /// <summary>
+        /// PublicKey default constructor.
+        /// </summary>
         public PublicKey()
         {
             Invalidate();
         }
 
+        /// <summary>
+        /// PublicKey constructor
+        /// </summary>
+        /// <param name="compressed">compressed flag</param>
         public PublicKey(bool compressed)
             : this()
         {
             _bytes = new byte[compressed ? CompressedLength : UncompressedLength];
         }
 
+        /// <summary>
+        /// PublicKey constructor
+        /// </summary>
+        /// <param name="bytes">bytes</param>
         public PublicKey(ReadOnlyByteSpan bytes)
             : this()
         {
@@ -70,6 +84,10 @@ namespace CafeLib.BsvSharp.Keys
             }
         }
 
+        /// <summary>
+        /// PublicKey constructor
+        /// </summary>
+        /// <param name="varType">Variable length type</param>
         public PublicKey(VarType varType)
             : this()
         {
@@ -80,6 +98,10 @@ namespace CafeLib.BsvSharp.Keys
             varType.CopyTo(_bytes);
         }
 
+        /// <summary>
+        /// PublicKey constructor
+        /// </summary>
+        /// <param name="hex">hexadecimal value</param>
         public PublicKey(string hex)
             : this()
         {

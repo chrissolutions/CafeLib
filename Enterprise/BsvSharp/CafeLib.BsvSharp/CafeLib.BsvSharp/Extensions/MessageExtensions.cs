@@ -22,17 +22,14 @@ namespace CafeLib.BsvSharp.Extensions
             return ((HashWriter)new HashWriter().Write(MessageMagic).Write(messageHash)).GetHashFinal();
         }
 
-        public static byte[] SignMessage(this PrivateKey key, string message) => SignMessage(key, message.Utf8ToBytes());
+        public static byte[] SignMessage(this PrivateKey key, string message)
+            => SignMessage(key, message.Utf8ToBytes());
 
-        public static byte[] SignMessage(this PrivateKey key, ReadOnlyByteSpan message)
-        {
-            return key.CreateSignature(message);
-        }
+        public static byte[] SignMessage(this PrivateKey key, ReadOnlyByteSpan message) 
+            => key.CreateSignature(message);
 
         public static byte[] SignMessageCompact(this PrivateKey key, UInt256 hash)
-        {
-            return key.CreateCompactSignature(hash);
-        }
+            => key.CreateCompactSignature(hash);
 
         public static string SignMessageToBase64(this PrivateKey key, ReadOnlyByteSpan message)
         {

@@ -1,15 +1,22 @@
 ﻿using System;
 using CafeLib.BsvSharp.Encoding;
+using CafeLib.BsvSharp.Exceptions;
 using CafeLib.Core.Buffers;
+using CafeLib.Core.Extensions;
 using Secp256k1Net;
 
 namespace CafeLib.BsvSharp.Signatures
 {
     public struct Signature : IEquatable<Signature>
     {
-        private const int SignatureSize = 64;
         private byte[] _signature;
-
+        
+        private const int SignatureSize = 64;
+        private const int SignatureDerSize = 72;
+        
+        /// <summary>
+        /// Signature data.
+        /// </summary>
         internal ReadOnlyByteSpan Data => _signature ??= Array.Empty<byte>();
 
         /// <summary>
@@ -23,7 +30,8 @@ namespace CafeLib.BsvSharp.Signatures
         /// <param name="signature">signature as byte array</param>
         public Signature(byte[] signature)
         {
-            _signature = signature;
+            //var rawHash = hashType != null ? new[] {(byte) hashType.RawSigHashType} : Array.Empty<byte>();
+            _signature = signature; //.Concat(rawHash);
         }
 
         /// <summary>
@@ -36,6 +44,7 @@ namespace CafeLib.BsvSharp.Signatures
         }
 
         public bool IsLowS() => IsLowS(Data);
+        public Signature ToDer() => ToDer(Data);
         public bool IsTxDerEncoding() => IsTxDerEncoding(Data);
 
         /// <summary>
@@ -49,6 +58,28 @@ namespace CafeLib.BsvSharp.Signatures
             using var library = new Secp256k1();
             if (!library.SignatureParseDerLax(sigOut, signature)) return false;
             return !library.SignatureNormalize(sigOut, signature);
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="signature"></param>
+        /// <returns></returns>
+        public static Signature ToDer(ReadOnlyByteSpan signature)
+        {
+            var sigOutSize = SignatureDerSize;
+            var sigOut = new byte[sigOutSize];
+
+            if (!signature.IsEmpty)
+            {
+                using var library = new Secp256k1();
+                if (!library.SignatureSerializeDer(sigOut, signature, out sigOutSize))
+                {
+                    throw new SignatureException("Cannot convert signature");
+                }
+            }
+            
+            return new Signature(sigOut[..sigOutSize]);
         }
 
         /// <summary>
