@@ -10,7 +10,7 @@ namespace CafeLib.BsvSharp.Signatures
     public struct Signature : IEquatable<Signature>
     {
         private byte[] _signature;
-        
+
         private const int SignatureSize = 64;
         private const int SignatureDerSize = 72;
         
@@ -18,6 +18,8 @@ namespace CafeLib.BsvSharp.Signatures
         /// Signature data.
         /// </summary>
         internal ReadOnlyByteSpan Data => _signature ??= Array.Empty<byte>();
+
+        internal uint HashType { get; }
 
         /// <summary>
         /// Null signature.
@@ -28,10 +30,11 @@ namespace CafeLib.BsvSharp.Signatures
         /// Signature constructor.
         /// </summary>
         /// <param name="signature">signature as byte array</param>
-        public Signature(byte[] signature)
+        /// <param name="hashType"></param>
+        public Signature(byte[] signature, SignatureHashType hashType = null)
         {
-            //var rawHash = hashType != null ? new[] {(byte) hashType.RawSigHashType} : Array.Empty<byte>();
-            _signature = signature; //.Concat(rawHash);
+            HashType = hashType?.RawSigHashType ?? 0;
+            _signature = signature;
         }
 
         /// <summary>
@@ -45,6 +48,7 @@ namespace CafeLib.BsvSharp.Signatures
 
         public bool IsLowS() => IsLowS(Data);
         public Signature ToDer() => ToDer(Data);
+        public Signature ToTxFormat() => ToTxFormat(Data, HashType);
         public bool IsTxDerEncoding() => IsTxDerEncoding(Data);
 
         /// <summary>
@@ -80,6 +84,18 @@ namespace CafeLib.BsvSharp.Signatures
             }
             
             return new Signature(sigOut[..sigOutSize]);
+        }
+
+        /// <summary>
+        /// Return transaction formatted signature
+        /// </summary>
+        /// <param name="signature">signature</param>
+        /// <param name="hashType">hash type</param>
+        /// <returns></returns>
+        public static Signature ToTxFormat(ReadOnlyByteSpan signature, uint hashType)
+        {
+            var derSig = ToDer(signature);
+            return new Signature(derSig._signature.Concat( new[] {(byte)hashType}));
         }
 
         /// <summary>

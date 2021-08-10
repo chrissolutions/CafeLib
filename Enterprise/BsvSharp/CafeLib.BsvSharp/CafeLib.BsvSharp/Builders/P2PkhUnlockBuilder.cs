@@ -49,7 +49,7 @@ namespace CafeLib.BsvSharp.Builders
         {
             base.Clear();
             
-            Push(Signatures.FirstOrDefault().ToDer().Data)
+            Push(Signatures.FirstOrDefault().ToTxFormat().Data)
                 .Push(PublicKey);
 
             return base.ToScript();
