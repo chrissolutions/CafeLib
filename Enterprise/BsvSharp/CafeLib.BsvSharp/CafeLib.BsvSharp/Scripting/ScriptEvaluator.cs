@@ -67,7 +67,7 @@ namespace CafeLib.BsvSharp.Scripting
                         return SetError(out error, ScriptError.BAD_OPCODE);
                     }
 
-                    if (op.Length > RootService.Network.Consensus.MaxScriptElementSize)
+                    if (op.Data.Length > RootService.Network.Consensus.MaxScriptElementSize)
                     {
                         return SetError(out error, ScriptError.PUSH_SIZE);
                     }

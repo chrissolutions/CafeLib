@@ -236,7 +236,8 @@ namespace CafeLib.BsvSharp.UnitTests.Scripts
                     {
                         if (correct == false)
                         {
-                            _testOutputHelper.WriteLine($"{opcode} {i}");
+                            _testOutputHelper.WriteLine($"testcase: {i}");
+                            _testOutputHelper.WriteLine($"{opcode}");
                             _testOutputHelper.WriteLine($"Sig: {tv.scriptSig.ToHexString()} => {tv.scriptSig}");
                             _testOutputHelper.WriteLine($"Pub: {tv.scriptPub.ToHexString()} => {tv.scriptPub}");
                         }

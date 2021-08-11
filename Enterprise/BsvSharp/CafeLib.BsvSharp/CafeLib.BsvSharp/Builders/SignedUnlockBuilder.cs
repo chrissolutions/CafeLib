@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Signatures;
@@ -10,15 +9,10 @@ namespace CafeLib.BsvSharp.Builders
     {
         public PublicKey PublicKey { get; protected set; }
 
-        public IEnumerable<Signature> Signatures { get; protected set; } = ArraySegment<Signature>.Empty;
+        public IEnumerable<Signature> Signatures { get; protected set; }
 
         public virtual void AddSignature(Signature signature) => 
             (Signatures as ICollection<Signature>)?.Add(signature);
-
-        internal SignedUnlockBuilder()
-            : this(null)
-        {
-        }
 
         protected SignedUnlockBuilder(PublicKey pubKey, TemplateId templateId = TemplateId.Unknown)
             : base(false, templateId)
@@ -30,19 +24,5 @@ namespace CafeLib.BsvSharp.Builders
         {
             Set(scriptSig);
         }
-
-        //public override Script ToScript()
-        //{
-        //    if (!Signatures.Any())
-        //    {
-        //        return Ops.Any() ? base.ToScript() : Script.None;
-        //    }
-
-        //    base.Clear();
-        //    Push(Signatures.First().Data)
-        //        .Push(PublicKey);
-
-        //    return base.ToScript();
-        //}
     }
 }

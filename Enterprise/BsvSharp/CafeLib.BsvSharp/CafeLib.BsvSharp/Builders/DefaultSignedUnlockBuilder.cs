@@ -1,37 +1,24 @@
-﻿using CafeLib.BsvSharp.Keys;
+﻿using System.Collections.Generic;
+using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Signatures;
 
 namespace CafeLib.BsvSharp.Builders
 {
     public class DefaultSignedUnlockBuilder : SignedUnlockBuilder
     {
+        private readonly List<Signature> _signatures = new List<Signature>();
+
         internal DefaultSignedUnlockBuilder()
             : this(null)
         {
+            Signatures = _signatures;
         }
 
         protected DefaultSignedUnlockBuilder(PublicKey pubKey, TemplateId templateId = TemplateId.Unknown)
             : base(pubKey, templateId)
         {
+            Signatures = _signatures;
         }
-
-        //public virtual void Sign(Script scriptSig)
-        //{
-        //    Set(scriptSig);
-        //}
-
-        //public override Script ToScript()
-        //{
-        //    if (!Signatures.Any())
-        //    {
-        //        return Ops.Any() ? base.ToScript() : Script.None;
-        //    }
-
-        //    base.Clear();
-        //    Push(Signatures.First().Data)
-        //        .Push(PublicKey);
-
-        //    return base.ToScript();
-        //}
     }
 }
