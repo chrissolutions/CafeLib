@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using CafeLib.BsvSharp.Keys;
+﻿using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Scripting;
-using CafeLib.BsvSharp.Signatures;
 
 namespace CafeLib.BsvSharp.Builders
 {

@@ -8,7 +8,6 @@ using CafeLib.BsvSharp.Exceptions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Signatures;
-using CafeLib.Core.Buffers.Arrays;
 
 namespace CafeLib.BsvSharp.Builders
 {
