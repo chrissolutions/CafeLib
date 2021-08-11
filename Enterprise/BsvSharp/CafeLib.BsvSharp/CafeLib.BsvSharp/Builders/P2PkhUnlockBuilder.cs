@@ -14,8 +14,6 @@ namespace CafeLib.BsvSharp.Builders
 {
     public class P2PkhUnlockBuilder : SignedUnlockBuilder
     {
-        private readonly ArrayBuffer<Signature> _signatures = new ArrayBuffer<Signature>();
-
         /// <summary>
         /// P2PkhUnlockBuilder constructor.
         /// </summary>
@@ -23,7 +21,6 @@ namespace CafeLib.BsvSharp.Builders
         public P2PkhUnlockBuilder(PublicKey publicKey)
             : base(publicKey, TemplateId.Pay2PublicKeyHash)
         {
-            Signatures = _signatures;
             Push(new byte[72]) // This will become the CHECKSIG signature
                 .Push(publicKey);
         }
@@ -31,13 +28,7 @@ namespace CafeLib.BsvSharp.Builders
         public P2PkhUnlockBuilder(Script script)
             : base(null, TemplateId.Pay2PublicKeyHash)
         {
-            Signatures = _signatures;
             UnlockScript(script);
-        }
-
-        public override void AddSignature(Signature signature)
-        {
-            _signatures.Add(signature);
         }
 
         public override void Sign(Script scriptSig)
@@ -69,7 +60,7 @@ namespace CafeLib.BsvSharp.Builders
                 throw new ScriptException("Wrong number of data elements for P2PKH ScriptSig");
             }
 
-            _signatures.Add(new Signature(Ops.First().Operand.Data));
+            AddSignature(new Signature(Ops.First().Operand.Data));
             PublicKey = new PublicKey(Ops.Last().Operand.Data);
         }
     }

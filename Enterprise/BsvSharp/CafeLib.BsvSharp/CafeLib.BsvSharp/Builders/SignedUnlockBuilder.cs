@@ -9,9 +9,9 @@ namespace CafeLib.BsvSharp.Builders
     {
         public PublicKey PublicKey { get; protected set; }
 
-        public IEnumerable<Signature> Signatures { get; protected set; }
+        public IEnumerable<Signature> Signatures { get; } = new List<Signature>();
 
-        public virtual void AddSignature(Signature signature) => 
+        public void AddSignature(Signature signature) => 
             (Signatures as ICollection<Signature>)?.Add(signature);
 
         protected SignedUnlockBuilder(PublicKey pubKey, TemplateId templateId = TemplateId.Unknown)
