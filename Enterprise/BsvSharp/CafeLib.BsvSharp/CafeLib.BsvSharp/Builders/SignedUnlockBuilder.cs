@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Signatures;
 
 namespace CafeLib.BsvSharp.Builders
 {
-    public class SignedUnlockBuilder : ScriptBuilder
+    public abstract class SignedUnlockBuilder : ScriptBuilder
     {
         public PublicKey PublicKey { get; protected set; }
 
@@ -32,18 +31,18 @@ namespace CafeLib.BsvSharp.Builders
             Set(scriptSig);
         }
 
-        public override Script ToScript()
-        {
-            if (!Signatures.Any())
-            {
-                return Ops.Any() ? base.ToScript() : Script.None;
-            }
+        //public override Script ToScript()
+        //{
+        //    if (!Signatures.Any())
+        //    {
+        //        return Ops.Any() ? base.ToScript() : Script.None;
+        //    }
 
-            base.Clear();
-            Push(Signatures.First().Data)
-                .Push(PublicKey);
+        //    base.Clear();
+        //    Push(Signatures.First().Data)
+        //        .Push(PublicKey);
 
-            return base.ToScript();
-        }
+        //    return base.ToScript();
+        //}
     }
 }

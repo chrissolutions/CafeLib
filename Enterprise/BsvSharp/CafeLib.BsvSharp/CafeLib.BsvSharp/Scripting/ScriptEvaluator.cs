@@ -40,9 +40,9 @@ namespace CafeLib.BsvSharp.Scripting
         {
             var ros = new ReadOnlyByteSequence(script.Data);
             // ReSharper disable once UnusedVariable
-            var pc = ros.Data.Start;
-            var pend = ros.Data.End;
-            var pBeginCodeHash = ros.Data.Start;
+            var pc = ros.Start;
+            var pend = ros.End;
+            var pBeginCodeHash = ros.Start;
             var op = new Operand();
             var vfExec = new ScriptStack<bool>();
             var altStack = new ScriptStack<VarType>();
@@ -67,7 +67,7 @@ namespace CafeLib.BsvSharp.Scripting
                         return SetError(out error, ScriptError.BAD_OPCODE);
                     }
 
-                    if (op.Data.Length > RootService.Network.Consensus.MaxScriptElementSize)
+                    if (op.Length > RootService.Network.Consensus.MaxScriptElementSize)
                     {
                         return SetError(out error, ScriptError.PUSH_SIZE);
                     }

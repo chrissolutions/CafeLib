@@ -1,6 +1,5 @@
 ﻿using System;
 using CafeLib.BsvSharp.Encoding;
-using CafeLib.BsvSharp.Exceptions;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
 using Secp256k1Net;
@@ -10,21 +9,19 @@ namespace CafeLib.BsvSharp.Signatures
     public struct Signature : IEquatable<Signature>
     {
         private byte[] _signature;
+        private readonly uint _hashType;
 
         private const int SignatureSize = 64;
-        private const int SignatureDerSize = 72;
         
         /// <summary>
         /// Signature data.
         /// </summary>
         internal ReadOnlyByteSpan Data => _signature ??= Array.Empty<byte>();
 
-        internal uint HashType { get; }
-
         /// <summary>
         /// Null signature.
         /// </summary>
-        public static readonly Signature Null = new Signature();
+        public static readonly Signature Empty = new Signature();
 
         /// <summary>
         /// Signature constructor.
@@ -33,8 +30,8 @@ namespace CafeLib.BsvSharp.Signatures
         /// <param name="hashType"></param>
         public Signature(byte[] signature, SignatureHashType hashType = null)
         {
-            HashType = hashType?.RawSigHashType ?? 0;
             _signature = signature;
+            _hashType = hashType?.RawSigHashType ?? 0;
         }
 
         /// <summary>
@@ -47,9 +44,17 @@ namespace CafeLib.BsvSharp.Signatures
         }
 
         public bool IsLowS() => IsLowS(Data);
-        public Signature ToDer() => ToDer(Data);
-        public Signature ToTxFormat() => ToTxFormat(Data, HashType);
         public bool IsTxDerEncoding() => IsTxDerEncoding(Data);
+
+        /// <summary>
+        /// Convert to transaction signature format.
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>Appends the hash type to the DER formatted signature.</remarks>
+        public Signature ToTxFormat()
+        {
+            return _hashType == 0 ? this : new Signature(_signature.Concat(new[] { (byte)_hashType }));
+        }
 
         /// <summary>
         /// Determine whether a signature is normalized (lower-S).
@@ -65,28 +70,6 @@ namespace CafeLib.BsvSharp.Signatures
         }
         
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="signature"></param>
-        /// <returns></returns>
-        public static Signature ToDer(ReadOnlyByteSpan signature)
-        {
-            var sigOutSize = SignatureDerSize;
-            var sigOut = new byte[sigOutSize];
-
-            if (!signature.IsEmpty)
-            {
-                using var library = new Secp256k1();
-                if (!library.SignatureSerializeDer(sigOut, signature, out sigOutSize))
-                {
-                    throw new SignatureException("Cannot convert signature");
-                }
-            }
-            
-            return new Signature(sigOut[..sigOutSize]);
-        }
-
-        /// <summary>
         /// Return transaction formatted signature
         /// </summary>
         /// <param name="signature">signature</param>
@@ -94,8 +77,7 @@ namespace CafeLib.BsvSharp.Signatures
         /// <returns></returns>
         public static Signature ToTxFormat(ReadOnlyByteSpan signature, uint hashType)
         {
-            var derSig = ToDer(signature);
-            return new Signature(derSig._signature.Concat( new[] {(byte)hashType}));
+            return new Signature(signature.ToArray().Concat( new[] {(byte)hashType}));
         }
 
         /// <summary>
@@ -190,7 +172,7 @@ namespace CafeLib.BsvSharp.Signatures
 
         public override int GetHashCode()
         {
-            return (_signature != null ? _signature.GetHashCode() : 0);
+            return _hashType.GetHashCode();
         }
     }
 }

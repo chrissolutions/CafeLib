@@ -22,6 +22,9 @@ namespace CafeLib.Core.Buffers
 
         public bool IsEmpty => Data.IsEmpty;
 
+        public SequencePosition Start => Data.Start;
+        public SequencePosition End => Data.GetPosition(Length);
+        
         public long Length => Data.Length;
 
         public byte[] ToArray() => Data.ToArray();
