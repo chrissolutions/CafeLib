@@ -36,7 +36,7 @@ namespace CafeLib.BsvSharp.Services
         {
             return networkType switch
             {
-                NetworkType.Main => (IBitcoinNetwork) new MainNetwork(),
+                NetworkType.Main => new MainNetwork(),
                 NetworkType.Test => new TestNetwork(),
                 NetworkType.Regression => new RegressionTestNetwork(),
                 NetworkType.Scaling => new ScalingTestNetwork(),
