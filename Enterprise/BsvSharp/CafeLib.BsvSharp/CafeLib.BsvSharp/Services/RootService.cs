@@ -15,16 +15,15 @@ namespace CafeLib.BsvSharp.Services
         public static void Bootstrap(NetworkType networkType)
         {
             if (_bitcoinNetwork != null) throw new InvalidOperationException();
-            lock (Mutex)
-            {
-                _bitcoinNetwork = CreateNetwork(networkType);
-            }
+            AssignNetwork(networkType);
         }
 
         public static void AssignNetwork(NetworkType networkType)
         {
-            if (!Networks.IsValueCreated) throw new InvalidOperationException("RootService is not bootstrapped");
-            _bitcoinNetwork = CreateNetwork(networkType);
+            lock (Mutex)
+            {
+                _bitcoinNetwork = CreateNetwork(networkType);
+            }
         }
 
         private static IBitcoinNetwork CreateNetwork(NetworkType networkType)
