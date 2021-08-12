@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+// ReSharper disable InconsistentNaming
 
 namespace Secp256k1Net
 {
@@ -64,8 +63,9 @@ namespace Secp256k1Net
         static readonly Lazy<string> _libPath = new Lazy<string>(() => LibPathResolver.Resolve(LIB), true);
         static readonly Lazy<IntPtr> _libPtr = new Lazy<IntPtr>(() => LoadLibNative.LoadLibrary(_libPath.Value), true);
 
-        IntPtr _ctx;
-
+        private IntPtr _ctx;
+        private bool _disposed;
+        
         static Secp256k1()
         {
             secp256k1_context_create = LazyDelegate<secp256k1_context_create>();
@@ -93,15 +93,25 @@ namespace Secp256k1Net
             //ecdsa_signature_parse_der_lax = LazyDelegate<ecdsa_signature_parse_der_lax>();
         }
 
+        /// <summary>
+        /// Secp256k1 constructor.
+        /// </summary>
+        /// <param name="sign"></param>
+        /// <param name="verify"></param>
         public Secp256k1(bool sign = true, bool verify = true)
         {
             var flags = Flags.SECP256K1_CONTEXT_NONE;
-            if (sign) flags = flags | Flags.SECP256K1_CONTEXT_SIGN;
-            if (verify) flags = flags | Flags.SECP256K1_CONTEXT_VERIFY;
+            if (sign) flags |= Flags.SECP256K1_CONTEXT_SIGN;
+            if (verify) flags |= Flags.SECP256K1_CONTEXT_VERIFY;
 
             _ctx = secp256k1_context_create.Value((uint)flags);
         }
-
+        
+        /// <summary>
+        /// Secp256k1 finalizer.
+        /// </summary>
+        ~Secp256k1() => Dispose(!_disposed);
+        
         private static Lazy<TDelegate> LazyDelegate<TDelegate>()
         {
             var symbol = SymbolNameCache<TDelegate>.GetSymbolName();
@@ -912,14 +922,25 @@ namespace Secp256k1Net
             }
         }
 
-
+        /// <summary>
+        /// Dispose library
+        /// </summary>
         public void Dispose()
         {
-            if (_ctx != IntPtr.Zero)
-            {
-                secp256k1_context_destroy.Value(_ctx);
-                _ctx = IntPtr.Zero;
-            }
+            Dispose(!_disposed);
+            GC.SuppressFinalize(this);
+        }
+        
+        /// <summary>
+        /// Dispose library resources.
+        /// </summary>
+        /// <param name="disposing">flag indicating disposing</param>
+        private void Dispose(bool disposing)
+        {
+            if (!disposing || _ctx == IntPtr.Zero) return;
+            secp256k1_context_destroy.Value(_ctx);
+            _ctx = IntPtr.Zero;
+            _disposed = true;
         }
     }
 }
