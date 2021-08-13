@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Core.Data" Version="1.0.0" />
+    <PackageReference Include="CafeLib.Core.Data" Version="1.1.0" />
     <PackageReference Include="RepoDb" Version="1.12.7" />
   </ItemGroup>
 
