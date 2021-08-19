@@ -1,0 +1,49 @@
+@echo off
+set rc=0
+
+:: verify environment
+if not '%configuration%' == '' goto exit
+if not '%msbld%' == '' goto exit
+if not '%pack%' == '' goto exit
+if not '%nuget%' == '' goto exit
+
+:: Settings
+set apikey=
+set apiswitch=
+set version=
+set configuration=Debug
+set msbld=dotnet build
+set pack=dotnet pack
+set nuget=dotnet nuget
+
+:: Parse arguments
+if '%1' == '' goto usage
+:nextarg
+set arg=%1
+if '%arg%' == '' goto start
+if '%arg%' == '-v' set version=%2&&shift&&shift&&goto nextarg
+if '%arg%' == '/v' set version=%2&&shift&&shift&&goto nextarg
+if '%arg%' == '-c' set configuration=%2&&shift&&shift&&goto nextarg
+if '%arg%' == '/c' set configuration=%1&&shift&&shift&&goto nextarg
+if '%arg%' == '-k' set apikey=%2&&shift&&shift&&goto nextarg
+if '%arg%' == '/k' set apikey=%2&&shift&&shift&&goto nextarg
+if '%arg%' == '-s' set nugetServer=%2&&shift&&shift&&goto nextarg
+if '%arg%' == '/s' set nugetServer=%2&&shift&&shift&&goto nextarg
+goto usage
+
+:start
+if '%version%' == '' goto usage
+if not '%configuration%' == 'Debug' if not '%configuration%' == 'Release' goto usage
+if not '%apikey%' == '' set apiswitch=-k %apikey%
+if '%configuration%' == '' set configuration=Debug
+if '%nugetServer%' == '' set nugetServer=C:\Nuget\repo
+set libPath=bin\%configuration%
+goto exit
+
+:usage
+echo build -v ^<version number^> [-c ^<configuration^> Debug is default] [-k ^<apikey^>] [-s ^<nugetServer^> C:\Nuget\repo is default]
+set rc=1
+goto exit
+
+:exit
+exit /b %rc%
