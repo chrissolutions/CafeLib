@@ -1,5 +1,6 @@
 @echo off
-set rc=0
+set root=%~d0%~p0
+set root=%root:\build\=%
 
 :: verify environment
 if not '%configuration%' == '' goto exit
@@ -42,8 +43,10 @@ goto exit
 
 :usage
 echo build -v ^<version number^> [-c ^<configuration^> Debug is default] [-k ^<apikey^>] [-s ^<nugetServer^> C:\Nuget\repo is default]
-set rc=1
-goto exit
+goto error
 
 :exit
-exit /b %rc%
+exit /b 0
+
+:error
+exit /b 1
