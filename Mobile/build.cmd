@@ -1,5 +1,6 @@
 @echo off
 setlocal
+if '%root%' == '' set root=..
 
 :: Type
 set type=Mobile
@@ -9,8 +10,8 @@ call ..\build\buildenv %*
 if ERRORLEVEL 1 goto error
 set msbld=msbuild.exe
 set nugetpack=nuget.exe pack
-set sourcepath=.
 set solution=CafeLib.%type%
+set sourcepath=%root%\%type%
 
 :: Setup libraries.
 set libs=%solution%

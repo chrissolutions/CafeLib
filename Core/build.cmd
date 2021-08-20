@@ -1,14 +1,15 @@
 @echo off
 setlocal
+if '%root%' == '' set root=..
 
 :: Type
 set type=Core
 
 :: Settings
-call ..\build\buildenv %*
+call %root%\build\buildenv %*
 if ERRORLEVEL 1 goto error
-set sourcepath=.
 set solution=CafeLib.%type%
+set sourcepath=%root%\%type%
 
 :: Setup libraries.
 set libs=%solution%
@@ -29,7 +30,7 @@ set libs=%libs% %solution%.Security
 ::
 
 :: Run script to build the libraries
-call ..\build\buildlibs
+call %root%\build\buildlibs
 if ERRORLEVEL 1 goto error
 
 :exit

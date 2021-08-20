@@ -1,5 +1,6 @@
 @echo off
 setlocal
+if '%root%' == '' set root=..
 
 :: Type
 set type=Data
@@ -7,8 +8,8 @@ set type=Data
 :: Settings
 call ..\build\buildenv %*
 if ERRORLEVEL 1 goto error
-set sourcepath=.
 set solution=CafeLib.%type%
+set sourcepath=%root%\%type%
 
 :: Setup libraries.
 set libs=%solution%
