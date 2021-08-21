@@ -17,7 +17,7 @@ set libs=%libs% %solution%.Tokens
 ::
 
 :: Run script to build the libraries
-call ..\build\buildlibs
+call %root%\build\buildlibs
 if ERRORLEVEL 1 goto error
 
 :exit

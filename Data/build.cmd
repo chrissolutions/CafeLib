@@ -6,7 +6,7 @@ if '%root%' == '' set root=..
 set type=Data
 
 :: Settings
-call ..\build\buildenv %*
+call %root%\build\buildenv %*
 if ERRORLEVEL 1 goto error
 set solution=CafeLib.%type%
 set sourcepath=%root%\%type%
@@ -21,7 +21,7 @@ set libs=%libs% %solution%.Sources.SqlServer
 ::
 
 :: Run script to build the libraries
-call ..\build\buildlibs
+call %root%\build\buildlibs
 if ERRORLEVEL 1 goto error
 
 :exit

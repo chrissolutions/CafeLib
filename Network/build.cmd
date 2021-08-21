@@ -6,7 +6,7 @@ if '%root%' == '' set root=..
 set type=Network
 
 :: Settings
-call ..\build\buildenv %*
+call %root%\build\buildenv %*
 if ERRORLEVEL 1 goto error
 set solution=CafeLib.%type%
 set sourcepath=%root%\%type%
@@ -19,7 +19,7 @@ set libs=%libs% CafeLib.Web.SignalR.Hubs
 ::
 
 :: Run script to build the libraries
-call ..\build\buildlibs
+call %root%\build\buildlibs
 if ERRORLEVEL 1 goto error
 
 :exit
