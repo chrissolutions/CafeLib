@@ -1,8 +1,9 @@
 @echo off
 setlocal
+if '%root%' == '' set root=.
 
 :: Settings
-call .\build\buildenv %*
+call %root%\build\buildenv %*
 if ERRORLEVEL 1 goto exit
 
 :: Setup domains.
