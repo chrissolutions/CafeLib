@@ -1,22 +1,24 @@
-@echo off
+@echo on
 setlocal
+if '%root%' == '' set root=..\..
 
 :: Type
 set type=BsvSharp
+set location=Enterprise\%type%
 
 :: Settings
-call ..\..\..\build\buildenv %*
+call %root%\build\buildenv %*
 if ERRORLEVEL 1 goto error
-set sourcepath=.
 set solution=CafeLib.%type%
+set sourcepath=%root%\%location%
 
 :: Setup libraries.
-set libs=%solution%.Identity
-set libs=%libs% %solution%.Tokens
+set libs=%solution%
+rem set libs=%libs% %solution%.Tokens
 ::
 
 :: Run script to build the libraries
-call ..\build\buildlibs
+call %root%\build\buildlibs
 if ERRORLEVEL 1 goto error
 
 :exit
