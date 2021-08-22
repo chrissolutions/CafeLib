@@ -9,12 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Buffers\**" />
-    <EmbeddedResource Remove="Buffers\**" />
-    <None Remove="Buffers\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Wallet\Cultures\ChineseSimplified.words" />
     <None Remove="Wallet\Cultures\ChineseTraditional.words" />
     <None Remove="Wallet\Cultures\English.words" />
