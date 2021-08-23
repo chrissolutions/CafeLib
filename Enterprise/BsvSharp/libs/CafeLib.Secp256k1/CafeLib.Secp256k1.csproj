@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <Company></Company>
+    <Authors>TonesNotes</Authors>
+    <PackageTags>Secp256k1 libsecp256k1 ECDSA  BSV Bitcoin SV</PackageTags>
+    <Description>.NET wrapper for native secp256k1 library</Description>
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <NoWarn>1591,1573</NoWarn>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version Condition="'$(VersionSuffix)' != ''">0.1.$(VersionSuffix)</Version>
+    <Version Condition="'$(VersionSuffix)' == ''">0.1.0</Version>
+    <RootNamespace>Secp256k1Net</RootNamespace>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Copyright>Copyright (c) 2020 TonesNotes</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.8.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Secp256k1.Native" Version="0.1.20" PrivateAssets="all" />
+    <PackageReference Include="System.Memory" Version="4.5.4" />
+  </ItemGroup>
+
+  <Target Name="PackTaskDependencies" BeforeTargets="GenerateNuspec">
+    <ItemGroup>
+      <_PackageFiles Include="$(OutputPath)/native/**/*">
+        <BuildAction>Content</BuildAction>
+        <PackagePath>content/native/</PackagePath>
+        <!--<CopyToOutput>true</CopyToOutput>-->
+        <!--<PackageCopyToOutput>true</PackageCopyToOutput>-->
+      </_PackageFiles>
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup>
+    <_PackageFiles Include="Secp256k1.Net.targets">
+      <BuildAction>None</BuildAction>
+      <PackagePath>build/</PackagePath>
+    </_PackageFiles>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+  
+  
+</Project>
