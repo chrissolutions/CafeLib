@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\libs\KzSecp256k1.Net\KzSecp256k1.Net.csproj" />
+    <ProjectReference Include="..\libs\CafeLib.Secp256k1\CafeLib.Secp256k1.csproj" />
   </ItemGroup>
 
 </Project>
