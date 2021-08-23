@@ -9,17 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Wallet\Cultures\ChineseSimplified.words" />
-    <None Remove="Wallet\Cultures\ChineseTraditional.words" />
-    <None Remove="Wallet\Cultures\English.words" />
-    <None Remove="Wallet\Cultures\French.words" />
-    <None Remove="Wallet\Cultures\Italian.words" />
-    <None Remove="Wallet\Cultures\Japanese.words" />
-    <None Remove="Wallet\Cultures\PortugueseBrazil.words" />
-    <None Remove="Wallet\Cultures\Spanish.words" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Wallet\Cultures\ChineseSimplified.words" />
     <EmbeddedResource Include="Wallet\Cultures\ChineseTraditional.words" />
     <EmbeddedResource Include="Wallet\Cultures\English.words" />
