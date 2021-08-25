@@ -37,7 +37,7 @@
     <ItemGroup>
       <_PackageFiles Include="$(OutputPath)/native/**/*">
         <BuildAction>Content</BuildAction>
-        <PackagePath>content/native/</PackagePath>
+        <PackagePath>runtimes/native/</PackagePath>
         <!--<CopyToOutput>true</CopyToOutput>-->
         <!--<PackageCopyToOutput>true</PackageCopyToOutput>-->
       </_PackageFiles>
@@ -45,7 +45,7 @@
   </Target>
 
   <ItemGroup>
-    <_PackageFiles Include="Secp256k1.Net.targets">
+    <_PackageFiles Include="CafeLib.Secp256k1.targets">
       <BuildAction>None</BuildAction>
       <PackagePath>build/</PackagePath>
     </_PackageFiles>
