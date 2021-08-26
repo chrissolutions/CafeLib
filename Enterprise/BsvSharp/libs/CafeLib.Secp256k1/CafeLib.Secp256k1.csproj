@@ -22,6 +22,11 @@
     <RootNamespace>Secp256k1Net</RootNamespace>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Copyright>Copyright (c) 2020 TonesNotes</Copyright>
+    <PackageIcon>cafelib.png</PackageIcon>
+    <PackageIconUrl />
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
@@ -52,6 +57,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\..\..\cafelib.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

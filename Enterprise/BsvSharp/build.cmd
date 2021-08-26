@@ -21,6 +21,13 @@ rem set libs=%libs% %solution%.Tokens
 call %root%\build\buildlibs
 if ERRORLEVEL 1 goto error
 
+:: Package Secp256k1 to Nuget.
+set solution=CafeLib.Secp256k1
+set sourcepath=%sourcepath%\libs\%solution%
+echo %nuget% push %sourcepath%\%libPath%\%solution%.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
+%nuget% push %sourcepath%\%libPath%\%solution%.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
+if ERRORLEVEL 1 goto error
+
 :exit
 endlocal
 exit /b 0
