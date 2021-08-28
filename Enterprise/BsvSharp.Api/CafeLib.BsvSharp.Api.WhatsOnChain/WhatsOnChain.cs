@@ -5,14 +5,11 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CafeLib.Bitcoin.Api.WhatsOnChain.Models;
-using CafeLib.Bitcoin.Extensions;
-using CafeLib.Bitcoin.Network;
-using CafeLib.Core.Extensions;
+using CafeLib.BsvSharp.Api.WhatsOnChain.Models;
 using CafeLib.Web.Request;
 using Newtonsoft.Json;
 
-namespace CafeLib.Bitcoin.Api.WhatsOnChain 
+namespace CafeLib.BsvSharp.Api.WhatsOnChain 
 {
     public class WhatsOnChain : BasicApiRequest
     {

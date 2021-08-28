@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace CafeLib.Bitcoin.Api.WhatsOnChain.Models
+namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models
 {
     public class ExchangeRate
     {
