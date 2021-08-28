@@ -4,18 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using CafeLib.Bitcoin.Api.Paymail.Models;
-using CafeLib.Bitcoin.Extensions;
-using CafeLib.Bitcoin.Keys;
-using CafeLib.Bitcoin.Scripting;
-using CafeLib.Bitcoin.Units;
+using CafeLib.BsvSharp.Api.Paymail.Models;
+using CafeLib.BsvSharp.Extensions;
+using CafeLib.BsvSharp.Keys;
+using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Units;
 using CafeLib.Web.Request;
 using DnsClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using EnumExtensions = CafeLib.Core.Extensions.EnumExtensions;
 
-namespace CafeLib.Bitcoin.Api.Paymail
+namespace CafeLib.BsvSharp.Api.Paymail
 {
     public class PaymailClient : BasicApiRequest, IPaymail
     {

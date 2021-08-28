@@ -5,12 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Web.Request" Version="1.0.0" />
-    <PackageReference Include="DnsClient" Version="1.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\CafeLib.Bitcoin\CafeLib.Bitcoin.csproj" />
+    <PackageReference Include="CafeLib.BsvSharp" Version="1.1.0" />
+    <PackageReference Include="CafeLib.Web.Request" Version="1.1.0" />
+    <PackageReference Include="DnsClient" Version="1.5.0" />
   </ItemGroup>
 
 </Project>

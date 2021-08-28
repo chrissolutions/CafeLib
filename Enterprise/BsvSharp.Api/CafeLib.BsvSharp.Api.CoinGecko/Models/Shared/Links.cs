@@ -1,8 +1,8 @@
 using System;
-using CafeLib.Bitcoin.Api.CoinGecko.Models.Coins;
+using CafeLib.BsvSharp.Api.CoinGecko.Models.Coins;
 using Newtonsoft.Json;
 
-namespace CafeLib.Bitcoin.Api.CoinGecko.Models.Shared
+namespace CafeLib.BsvSharp.Api.CoinGecko.Models.Shared
 {
     public class Links
     {

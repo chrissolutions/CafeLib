@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace CafeLib.Bitcoin.Api.Paymail.Models
+namespace CafeLib.BsvSharp.Api.Paymail.Models
 {
     internal class GetOutputScriptResponse
     {

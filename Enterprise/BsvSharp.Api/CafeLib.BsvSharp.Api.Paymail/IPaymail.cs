@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
-using CafeLib.Bitcoin.Keys;
-using CafeLib.Bitcoin.Scripting;
-using CafeLib.Bitcoin.Units;
+using CafeLib.BsvSharp.Keys;
+using CafeLib.BsvSharp.Scripting;
+using CafeLib.BsvSharp.Units;
 
-namespace CafeLib.Bitcoin.Api.Paymail
+namespace CafeLib.BsvSharp.Api.Paymail
 {
     public interface IPaymail
     {

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using CafeLib.Bitcoin.Api.CoinGecko.Models.Shared;
+using CafeLib.BsvSharp.Api.CoinGecko.Models.Shared;
 using Newtonsoft.Json;
 
-namespace CafeLib.Bitcoin.Api.CoinGecko.Models.Coins
+namespace CafeLib.BsvSharp.Api.CoinGecko.Models.Coins
 {
     public class CoinFullData : CoinFullDataWithOutMarketData
     {

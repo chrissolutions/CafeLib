@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CafeLib.Bitcoin.Api.Paymail.Models
+namespace CafeLib.BsvSharp.Api.Paymail.Models
 {
     internal class CapabilitiesResponse
     {

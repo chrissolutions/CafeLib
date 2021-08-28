@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace CafeLib.Bitcoin.Api.Paymail
+namespace CafeLib.BsvSharp.Api.Paymail
 {
     public enum Capability
     {

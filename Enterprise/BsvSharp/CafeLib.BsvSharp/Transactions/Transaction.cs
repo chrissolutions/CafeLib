@@ -555,7 +555,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// <summary>
         ///  Check for missing signature.
         /// </summary>
-        /// <exception cref="CafeLib.BsvSharp.Exceptions.TransactionException"></exception>
+        /// <exception cref="TransactionException"></exception>
         private void CheckForMissingSignatures()
         {
             if ((Option & TransactionOption.DisableFullySigned) != 0) return;
@@ -570,7 +570,7 @@ namespace CafeLib.BsvSharp.Transactions
         /// Check for fee errors
         /// </summary>
         /// <param name="unspent">unspent amount</param>
-        /// <exception cref="CafeLib.BsvSharp.Exceptions.TransactionException"></exception>
+        /// <exception cref="TransactionException"></exception>
         private void CheckForFeeErrors(Amount unspent)
         {
             if (_fee != Amount.Null && _fee != unspent)

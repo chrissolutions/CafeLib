@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using CafeLib.Bitcoin.Api.CoinGecko.Models.Coins;
+using CafeLib.BsvSharp.Api.CoinGecko.Models.Coins;
 using CafeLib.Web.Request;
 using Newtonsoft.Json;
 
-namespace CafeLib.Bitcoin.Api.CoinGecko
+namespace CafeLib.BsvSharp.Api.CoinGecko
 {
     public class CoinGecko : BasicApiRequest
     {

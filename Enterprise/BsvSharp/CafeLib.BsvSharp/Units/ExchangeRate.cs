@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace CafeLib.BsvSharp.Units 
 {
@@ -30,7 +29,6 @@ namespace CafeLib.BsvSharp.Units
         /// <summary>
         /// Was in KzWdbExchangeRate class but started drawing an error...
         /// </summary>
-        [Key]
         public int Id { get; set; }
 
         /// <summary>

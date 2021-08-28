@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace CafeLib.Bitcoin.Api.CoinGecko.Models.Coins
+namespace CafeLib.BsvSharp.Api.CoinGecko.Models.Coins
 {
     public class CoinMarkets:MarketDataOhlcv
     {

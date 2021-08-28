@@ -7,7 +7,7 @@ using System;
 using System.Threading.Tasks;
 using CafeLib.Web.Request;
 
-namespace CafeLib.Bitcoin.Api.CoinMarketCap
+namespace CafeLib.BsvSharp.Api.CoinMarketCap
 {
     public class CoinMarketCap : BasicApiRequest
     {
