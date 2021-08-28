@@ -102,7 +102,7 @@ namespace CafeLib.Web.SignalR
             await CloseChannel();
         }
 
-        protected override async Task Run()
+        protected override async Task Run(CancellationToken cancellationToken)
         {
             try
             {
