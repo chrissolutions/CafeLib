@@ -11,7 +11,7 @@ using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Crypto
 {
-    internal static partial class Hashes
+    public static partial class Hashes
     {
         public static void Ripemd160(this ReadOnlyByteSequence data, ByteSpan hash)
         {

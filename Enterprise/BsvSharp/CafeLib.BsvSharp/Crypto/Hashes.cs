@@ -12,7 +12,7 @@ using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Crypto
 {
-    internal static partial class Hashes
+    public static partial class Hashes
     {
         private const int MaxBufferSize = 1 << 20; // Max ArrayPool<byte>.Shared buffer size.
 
