@@ -12,10 +12,10 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="CafeLib.Core" Version="1.0.0" />
-    <PackageReference Include="CafeLib.Core.Collections" Version="1.0.0" />
-    <PackageReference Include="CafeLib.Core.Eventing" Version="1.0.0" />
-    <PackageReference Include="CafeLib.Core.IoC" Version="1.0.0" />
+    <PackageReference Include="CafeLib.Core" Version="1.1.0" />
+    <PackageReference Include="CafeLib.Core.Collections" Version="1.1.0" />
+    <PackageReference Include="CafeLib.Core.Eventing" Version="1.1.0" />
+    <PackageReference Include="CafeLib.Core.IoC" Version="1.1.0" />
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
   </ItemGroup>
   
