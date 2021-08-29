@@ -6,11 +6,15 @@
     <title></title>
     <authors>Chris Solutions</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-	<iconUrl>file:///C:/Projects/ChrisSolutions/CafeLib/cafelib.png</iconUrl>
+	<icon>cafelib.png</icon>
     <description>CafeLib Android Library</description>
+	<dependencies>
+      <group targetFramework="netstandard2.1" />
+    </dependencies>	
   </metadata>
   <files>
-    <file src="bin\$configuration$\CafeLib.Mobile.Android.dll" target="lib\netstandard2.1\CafeLib.Mobile.Android.dll" />
-    <file src="bin\$configuration$\CafeLib.Mobile.Android.pdb" target="lib\netstandard2.1\CafeLib.Mobile.Android.pdb" />
+    <file src="bin\$configuration$\CafeLib.Mobile.Android.dll" target="lib/netstandard2.1/CafeLib.Mobile.Android.dll" />
+    <file src="bin\$configuration$\CafeLib.Mobile.Android.pdb" target="lib/netstandard2.1/CafeLib.Mobile.Android.pdb" />
+    <file src="..\..\cafelib.png" target="cafelib.png" />
   </files>
 </package>
