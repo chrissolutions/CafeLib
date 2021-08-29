@@ -13,6 +13,7 @@ set libs=%libs% Data
 set libs=%libs% Authorization
 set libs=%libs% Network
 set libs=%libs% Mobile
+set libs=%libs% Enterprise\BsvSharp
 
 for %%X in (%libs%) do (
     set rc=0
