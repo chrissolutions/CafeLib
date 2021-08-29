@@ -36,6 +36,9 @@ echo Create Nuget Packages for %solution% ...
 echo %pack% %sourcepath%\%solution%\%solution%.csproj -p:Version=%version% -p:PackageVersion=%version% -p:Configuration=%configuration%
 %pack% %sourcepath%\%solution%\%solution%.csproj -p:Version=%version% -p:PackageVersion=%version% -p:Configuration=%configuration%
 
+echo %pack% %sourcepath%\%solution%.Test.Core\%solution%.Test.Core.csproj -p:Version=%version% -p:PackageVersion=%version% -p:Configuration=%configuration%
+%pack% %sourcepath%\%solution%.Test.Core\%solution%.Test.Core.csproj -p:Version=%version% -p:PackageVersion=%version% -p:Configuration=%configuration%
+
 echo %nugetpack% %sourcepath%\%solution%.Android\%solution%.Android.nuspec -Version %version% -Properties Configuration=%configuration% -OutputDirectory %sourcepath%\%solution%.Android\%libPath%
 %nugetpack% %sourcepath%\%solution%.Android\%solution%.Android.nuspec -Version %version% -Properties Configuration=%configuration% -OutputDirectory %sourcepath%\%solution%.Android\%libPath%
 
