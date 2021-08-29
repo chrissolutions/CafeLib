@@ -1,4 +1,4 @@
-@echo on
+@echo off
 setlocal
 if '%root%' == '' set root=..\..
 
@@ -11,10 +11,10 @@ call %root%\build\buildenv %*
 if ERRORLEVEL 1 goto error
 set solution=CafeLib.%type%
 set sourcepath=%root%\%location%
+set nugetpack=nuget pack
 
 :: Setup libraries.
 set libs=%solution%
-rem set libs=%libs% %solution%.Tokens
 ::
 
 :: Run script to build the libraries
@@ -24,6 +24,10 @@ if ERRORLEVEL 1 goto error
 :: Package Secp256k1 to Nuget.
 set solution=CafeLib.Secp256k1
 set sourcepath=%sourcepath%\libs\%solution%
+
+echo %nugetpack% %sourcepath%\%solution%.nuspec -Version %version% -Properties Configuration=%configuration% -OutputDirectory %sourcepath%\%libPath%
+%nugetpack% %sourcepath%\%solution%.nuspec -Version %version% -Properties Configuration=%configuration% -OutputDirectory %sourcepath%\%libPath%
+
 echo %nuget% push %sourcepath%\%libPath%\%solution%.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
 %nuget% push %sourcepath%\%libPath%\%solution%.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
 if ERRORLEVEL 1 goto error
