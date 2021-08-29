@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>CafeLib.Secp256k1</id>
+    <version>1.1.0</version>
+    <authors>TonesNotes</authors>
+    <owners></owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="file">LICENSE</license>
+    <icon>cafelib.png</icon>
+    <description>.NET wrapper for native secp256k1 library</description>
+    <copyright>Copyright (c) 2020 TonesNotes</copyright>
+    <tags>Secp256k1 libsecp256k1 ECDSA BSV Bitcoin SV</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="System.Memory" version="4.5.4" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="build\CafeLib.Secp256k1.targets" target="build\CafeLib.Secp256k1.targets" />
+    <file src="lib\netstandard2.1\CafeLib.Secp256k1.dll" target="lib\netstandard2.1\CafeLib.Secp256k1.dll" />
+    <file src="lib\netstandard2.1\CafeLib.Secp256k1.xml" target="lib\netstandard2.1\CafeLib.Secp256k1.xml" />
+    <file src="runtimes\linux-x64\native\libsecp256k1.so" target="runtimes\linux-x64\native\libsecp256k1.so" />
+    <file src="runtimes\osx-x64\native\libsecp256k1.dylib" target="runtimes\osx-x64\native\libsecp256k1.dylib" />
+    <file src="runtimes\win-x64\native\secp256k1.dll" target="runtimes\win-x64\native\secp256k1.dll" />
+    <file src="runtimes\win-x86\native\secp256k1.dll" target="runtimes\win-x86\native\secp256k1.dll" />
+    <file src="cafelib.png" target="cafelib.png" />
+    <file src="LICENSE" target="LICENSE" />
+  </files>
+</package>
