@@ -2,12 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-	<LangVersion>8.0</LangVersion>
-	<Version>1.0.0</Version>
-	<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-	<Description>Cafelib sql repository persistence package.</Description>
-	<Authors>Chris Solutions</Authors>
-	<PackageIcon>cafelib.png</PackageIcon>		
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  	<Description>Cafelib sql repository persistence package.</Description>
+    <Description>Provides core functionality across applications and services.</Description>
+    <Version Condition=" '$(Version)' == '' ">1.1.0</Version>
+    <Copyright>© 2021 Chris Solutions</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageIcon>cafelib.png</PackageIcon>
+    <AssemblyVersion>$(Version).0</AssemblyVersion>
+    <FileVersion>$(Version).0</FileVersion>
+    <PackageIconUrl />
+    <Authors>Chris Solutions</Authors>
+    <Company>Chris Solutions</Company>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Core.IoC" Version="1.1.0" />
+    <PackageReference Include="CafeLib.Core.IoC" Version="$(Version)" />
   </ItemGroup>
 
   <ItemGroup>
