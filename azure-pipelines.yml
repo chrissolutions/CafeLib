@@ -20,5 +20,5 @@ steps:
 - script: set
 - task: BatchScript@1
   inputs:
-    filename: 'nugetinstall.cmd'
+    filename: 'build.cmd'
     arguments: '-v $(version) -c $(buildConfiguration) -k $(apikey) -s $(nugetServer)'
