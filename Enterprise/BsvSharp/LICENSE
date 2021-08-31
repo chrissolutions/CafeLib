@@ -1,5 +1,5 @@
 Open BSV License
-Copyright (c) 2019 kzbsv.org
+
 Copyright (c) 2021 Chris Solutions
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,7 +27,9 @@ THE SOFTWARE.
 Parts of this software are based on the following projects which are
 also licensed under the Open BSV License:
 
-bitcoin-sv: Copyright (c) 2019 Bitcoin Association
+KzBsv: 		Copyright (c) 2019 kzbsv.org, TonesNotes
+dartsv:		Copyright (c) 2019-2020 Stephan M. February <stephan@werkswinkel.com>
+bitcoin-sv:	Copyright (c) 2019 Bitcoin Association
 
 Parts of this software are based on the following projects which are
 licensed under The MIT License (included below):
