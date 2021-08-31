@@ -26,18 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="CafeLib.Core">
-      <HintPath>..\..\Core\CafeLib.Core.IoC\bin\Debug\netstandard2.0\CafeLib.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="CafeLib.Core.Eventing">
-      <HintPath>..\..\Core\CafeLib.Core.IoC\bin\Debug\netstandard2.0\CafeLib.Core.Eventing.dll</HintPath>
-    </Reference>
-    <Reference Include="CafeLib.Core.IoC">
-      <HintPath>..\..\Core\CafeLib.Core.IoC\bin\Debug\netstandard2.0\CafeLib.Core.IoC.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\..\cafelib.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
