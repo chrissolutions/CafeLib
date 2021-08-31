@@ -11,7 +11,6 @@ call %root%\build\buildenv %*
 if ERRORLEVEL 1 goto error
 set solution=CafeLib.%type%
 set sourcepath=%root%\%location%
-set nugetpack=nuget pack
 
 :: Setup libraries.
 set libs=%solution%
@@ -29,7 +28,7 @@ echo %nugetpack% %sourcepath%\%solution%.nuspec -Version %version% -Properties C
 %nugetpack% %sourcepath%\%solution%.nuspec -Version %version% -Properties Configuration=%configuration% -OutputDirectory %sourcepath%\%libPath%
 
 echo %nuget% push %sourcepath%\%libPath%\%solution%.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
-%nuget% push %sourcepath%\%libPath%\%solution%.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
+if '%debug%' == '' %nuget% push %sourcepath%\%libPath%\%solution%.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
 if ERRORLEVEL 1 goto error
 
 :exit

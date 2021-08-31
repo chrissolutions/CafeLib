@@ -12,10 +12,13 @@ if not '%nuget%' == '' goto exit
 set apikey=
 set apiswitch=
 set version=
+set debug=
 set configuration=Debug
 set msbld=dotnet build
+set msbuild=msbuild.exe
 set pack=dotnet pack
 set nuget=dotnet nuget
+set nugetpack=nuget pack
 
 :: Parse arguments
 if '%1' == '' goto usage
@@ -30,6 +33,10 @@ if '%arg%' == '-k' set apikey=%2&&shift&&shift&&goto nextarg
 if '%arg%' == '/k' set apikey=%2&&shift&&shift&&goto nextarg
 if '%arg%' == '-s' set nugetServer=%2&&shift&&shift&&goto nextarg
 if '%arg%' == '/s' set nugetServer=%2&&shift&&shift&&goto nextarg
+if '%arg%' == '-s' set nugetServer=%2&&shift&&shift&&goto nextarg
+if '%arg%' == '/s' set nugetServer=%2&&shift&&shift&&goto nextarg
+if '%arg%' == '-d' set debug=true&&shift&&goto nextarg
+if '%arg%' == '/d' set debug=true&&shift&&goto nextarg
 goto usage
 
 :start

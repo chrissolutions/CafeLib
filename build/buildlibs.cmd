@@ -17,7 +17,7 @@ for %%X in (%libs%) do (
 echo Push Packages to Nuget repository ...
 for %%X in (%libs%) do (
     echo %nuget% push %sourcepath%\%%X\%libPath%\%%X.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
-    %nuget% push %sourcepath%\%%X\%libPath%\%%X.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
+    if '%debug%' == '' %nuget% push %sourcepath%\%%X\%libPath%\%%X.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
     if ERRORLEVEL 1 goto error
 )
 
