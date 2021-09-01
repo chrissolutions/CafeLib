@@ -8,9 +8,10 @@
     <Copyright>© 2021 Chris Solutions</Copyright>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageIcon>cafelib.png</PackageIcon>
+    <PackageTags>Bitcoin SV BSV</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <AssemblyVersion>$(Version).0</AssemblyVersion>
     <FileVersion>$(Version).0</FileVersion>
-    <PackageIconUrl />
     <Authors>Chris Solutions</Authors>
     <Company>Chris Solutions</Company>
     <LangVersion>latest</LangVersion>
@@ -44,6 +45,13 @@
 
   <ItemGroup>
     <None Include="..\..\..\cafelib.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
