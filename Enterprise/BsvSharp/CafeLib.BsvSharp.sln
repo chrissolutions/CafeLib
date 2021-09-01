@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.BsvSharp", "CafeLib
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.BsvSharp.UnitTests", "CafeLib.BsvSharp.UnitTests\CafeLib.BsvSharp.UnitTests.csproj", "{E01E924B-3A78-4FFD-A9FC-D15AF700F753}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.BsvSharp.Testnet.UnitTests", "CafeLib.BsvSharp..Testnet.UnitTests\CafeLib.BsvSharp.Testnet.UnitTests.csproj", "{30D6950D-2F84-4217-BD54-DC3AE4515120}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.BsvSharp.Testnet.UnitTests", "CafeLib.BsvSharp.Testnet.UnitTests\CafeLib.BsvSharp.Testnet.UnitTests.csproj", "{30D6950D-2F84-4217-BD54-DC3AE4515120}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Secp256k1", "libs\CafeLib.Secp256k1\CafeLib.Secp256k1.csproj", "{BEFA3D29-BD59-4A32-9880-775D140A7866}"
 EndProject

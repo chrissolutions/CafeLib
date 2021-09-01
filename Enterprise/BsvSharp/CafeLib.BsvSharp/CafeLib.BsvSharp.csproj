@@ -20,6 +20,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
     <EmbeddedResource Include="Wallet\Cultures\ChineseSimplified.words" />
     <EmbeddedResource Include="Wallet\Cultures\ChineseTraditional.words" />
