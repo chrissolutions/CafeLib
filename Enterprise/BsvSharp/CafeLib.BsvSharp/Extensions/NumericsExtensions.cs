@@ -150,7 +150,7 @@ namespace CafeLib.BsvSharp.Extensions
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public static ReadOnlySpan<byte> AsReadOnlySpan(this ref ulong i) => i.AsSpan();
+        public static ReadOnlyByteSpan AsReadOnlySpan(this ref ulong i) => i.AsSpan();
 
         /// <summary>
         /// 

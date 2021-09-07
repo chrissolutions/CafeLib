@@ -4,8 +4,7 @@
 #endregion
 
 using System;
-using System.Security.Cryptography;
-using CafeLib.BsvSharp.Crypto;
+using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
@@ -14,93 +13,93 @@ namespace CafeLib.BsvSharp.Persistence
 {
     public class HashWriter : IDisposable, IDataWriter
     {
-        private readonly SHA256Managed _alg = new SHA256Managed();
+        private readonly Sha256Digest _sha256 = new Sha256Digest();
 
         public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
 
         protected virtual void Dispose(bool alsoCleanupManaged)
         {
-            _alg.Dispose();
         }
 
         public UInt256 GetHashFinal()
         {
-            var hash = _alg.GetHashFinal();
-            _alg.TransformFinalBlock(hash, 0, hash.Length);
-            hash = _alg.Hash;
-            return hash.AsUInt256();
+            var rv = new byte[32];
+            _sha256.DoFinal(rv, 0);
+            _sha256.BlockUpdate(rv, 0, rv.Length);
+            _sha256.DoFinal(rv, 0);
+            return rv.AsUInt256();
         }
 
         public IDataWriter Write(ReadOnlyByteSpan data)
         {
-            _alg.TransformBlock(data);
+            _sha256.BlockUpdate(data, 0, data.Length);
             return this;
         }
 
         public IDataWriter Write(ReadOnlyByteSequence data)
         {
-            _alg.TransformBlock(data);
+            _sha256.BlockUpdate(data.ToArray(), 0, (int)data.Length);
             return this;
         }
 
         public IDataWriter Write(byte[] data)
         {
-            _alg.TransformBlock(data);
+            _sha256.BlockUpdate(data, 0, data.Length);
             return this;
         }
 
         public IDataWriter Write(byte data)
         {
-            _alg.TransformBlock(new[] { data });
+            _sha256.BlockUpdate(new[] { data }, 0, sizeof(byte));
             return this;
         }
 
         public IDataWriter Write(int data)
         {
-            _alg.TransformBlock(data.AsReadOnlySpan());
+            _sha256.BlockUpdate(data.AsReadOnlySpan(), 0, sizeof(int));
             return this;
         }
 
         public IDataWriter Write(uint data)
         {
-            _alg.TransformBlock(data.AsReadOnlySpan());
+            _sha256.BlockUpdate(data.AsReadOnlySpan(), 0, sizeof(uint));
             return this;
         }
 
         public IDataWriter Write(long data)
         {
-            _alg.TransformBlock(data.AsReadOnlySpan());
+            _sha256.BlockUpdate(data.AsReadOnlySpan(), 0, sizeof(long));
             return this;
         }
 
         public IDataWriter Write(ulong data)
         {
-            _alg.TransformBlock(data.AsReadOnlySpan());
+            _sha256.BlockUpdate(data.AsReadOnlySpan(), 0, sizeof(ulong));
             return this;
         }
 
         public IDataWriter Write(string data)
         {
-            _alg.TransformBlock(((VarInt)data.Length).ToArray());
-            _alg.TransformBlock(data.AsciiToBytes());
+            var bytes = ((VarInt)data.Length).ToArray();
+            _sha256.BlockUpdate(bytes, 0, bytes.Length);
             return this;
         }
 
         public IDataWriter Write(UInt160 data)
         {
-            _alg.TransformBlock(data.Span);
+            _sha256.BlockUpdate(data.Span, 0, data.Span.Length);
             return this;
         }
 
         public IDataWriter Write(UInt256 data)
         {
-            _alg.TransformBlock(data.Span);
+            _sha256.BlockUpdate(data.Span, 0, data.Span.Length);
             return this;
         }
 
         public IDataWriter Write(UInt512 data)
         {
-            _alg.TransformBlock(data.Span);
+            _sha256.BlockUpdate(data.Span, 0, data.Span.Length);
             return this;
         }
     }
