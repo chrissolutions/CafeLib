@@ -4,7 +4,8 @@
 #endregion
 
 using System;
-using System.Security.Cryptography;
+using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
+using CafeLib.BsvSharp.BouncyCastle.Crypto.Prng;
 using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Numerics
@@ -30,8 +31,8 @@ namespace CafeLib.BsvSharp.Numerics
         public static Span<byte> GetStrongRandBytes(int length)
         {
             var buf = new byte[length];
-            var rng = new RNGCryptoServiceProvider();
-            rng.GetBytes(buf);
+            var rng = new DigestRandomGenerator(new Sha256Digest());
+            rng.NextBytes(buf);
             return buf;
         }
 

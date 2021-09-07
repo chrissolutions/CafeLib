@@ -10,7 +10,7 @@ using System.Linq;
 using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
-using CafeLib.BsvSharp.Wallet;
+using CafeLib.BsvSharp.Passphrase;
 using CafeLib.Core.Buffers;
 
 // ReSharper disable NonReadonlyMemberInGetHashCode

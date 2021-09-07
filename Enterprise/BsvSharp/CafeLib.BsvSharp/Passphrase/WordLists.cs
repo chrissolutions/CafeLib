@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using CafeLib.Core.Extensions;
 
-namespace CafeLib.BsvSharp.Wallet
+namespace CafeLib.BsvSharp.Passphrase
 {
     public static class WordLists
     {

@@ -1,4 +1,4 @@
-﻿namespace CafeLib.BsvSharp.Wallet
+﻿namespace CafeLib.BsvSharp.Passphrase
 {
     public enum Languages
     {

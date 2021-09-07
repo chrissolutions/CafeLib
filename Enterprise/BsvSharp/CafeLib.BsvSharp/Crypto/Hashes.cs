@@ -6,6 +6,7 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography;
+using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
@@ -124,6 +125,17 @@ namespace CafeLib.BsvSharp.Crypto
             }
 
             return xhash;
+        }
+
+        public static byte[] ComputeSha256(byte[] data) => ComputeSha256(data, data.Length);
+
+        public static byte[] ComputeSha256(byte[] data, int count)
+        {
+            var sha256 = new Sha256Digest();
+            sha256.BlockUpdate(data, 0, count);
+            var rv = new byte[32];
+            sha256.DoFinal(rv, 0);
+            return rv;
         }
     }
 }

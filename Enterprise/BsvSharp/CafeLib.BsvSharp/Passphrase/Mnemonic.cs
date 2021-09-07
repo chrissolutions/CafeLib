@@ -15,7 +15,7 @@ using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
 
-namespace CafeLib.BsvSharp.Wallet
+namespace CafeLib.BsvSharp.Passphrase
 {
 	/// <summary>
 	/// BIP39 based support for converting binary data of specific lengths into sequences of words to facilitate written record keeping and verbal transmission.

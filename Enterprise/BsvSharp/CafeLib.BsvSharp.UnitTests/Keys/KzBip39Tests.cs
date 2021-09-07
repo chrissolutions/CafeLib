@@ -6,7 +6,7 @@
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
-using CafeLib.BsvSharp.Wallet;
+using CafeLib.BsvSharp.Passphrase;
 using Xunit;
 
 namespace CafeLib.BsvSharp.UnitTests.Keys 

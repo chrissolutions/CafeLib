@@ -26,14 +26,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Wallet\Cultures\ChineseSimplified.words" />
-    <EmbeddedResource Include="Wallet\Cultures\ChineseTraditional.words" />
-    <EmbeddedResource Include="Wallet\Cultures\English.words" />
-    <EmbeddedResource Include="Wallet\Cultures\French.words" />
-    <EmbeddedResource Include="Wallet\Cultures\Italian.words" />
-    <EmbeddedResource Include="Wallet\Cultures\Japanese.words" />
-    <EmbeddedResource Include="Wallet\Cultures\PortugueseBrazil.words" />
-    <EmbeddedResource Include="Wallet\Cultures\Spanish.words" />
+    <EmbeddedResource Include="Passphrase\Cultures\ChineseSimplified.words" />
+    <EmbeddedResource Include="Passphrase\Cultures\ChineseTraditional.words" />
+    <EmbeddedResource Include="Passphrase\Cultures\English.words" />
+    <EmbeddedResource Include="Passphrase\Cultures\French.words" />
+    <EmbeddedResource Include="Passphrase\Cultures\Italian.words" />
+    <EmbeddedResource Include="Passphrase\Cultures\Japanese.words" />
+    <EmbeddedResource Include="Passphrase\Cultures\PortugueseBrazil.words" />
+    <EmbeddedResource Include="Passphrase\Cultures\Spanish.words" />
   </ItemGroup>
 
   <ItemGroup>

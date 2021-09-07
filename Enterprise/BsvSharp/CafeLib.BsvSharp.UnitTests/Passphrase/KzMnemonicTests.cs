@@ -8,10 +8,10 @@ using System.Linq;
 using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
-using CafeLib.BsvSharp.Wallet;
+using CafeLib.BsvSharp.Passphrase;
 using Xunit;
 
-namespace CafeLib.BsvSharp.UnitTests.Wallet
+namespace CafeLib.BsvSharp.UnitTests.Passphrase
 {
     public class MnemonicTests
     {
