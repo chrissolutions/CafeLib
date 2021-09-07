@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Secp256k1", "libs\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Secp256k1.UnitTests", "libs\CafeLib.Secp256k1.UnitTests\CafeLib.Secp256k1.UnitTests.csproj", "{1D6CA62A-8215-4E6B-8A8C-A0D009DE7BED}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.BsvSharp.BouncyCastle", "libs\CafeLib.BsvSharp.BouncyCastle\CafeLib.BsvSharp.BouncyCastle.csproj", "{8F09BA85-CA26-4000-BEF4-AB294984DE2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{1D6CA62A-8215-4E6B-8A8C-A0D009DE7BED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D6CA62A-8215-4E6B-8A8C-A0D009DE7BED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D6CA62A-8215-4E6B-8A8C-A0D009DE7BED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F09BA85-CA26-4000-BEF4-AB294984DE2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F09BA85-CA26-4000-BEF4-AB294984DE2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F09BA85-CA26-4000-BEF4-AB294984DE2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F09BA85-CA26-4000-BEF4-AB294984DE2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

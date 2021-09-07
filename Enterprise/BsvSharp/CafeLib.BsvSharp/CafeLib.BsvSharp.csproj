@@ -58,6 +58,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\libs\CafeLib.BsvSharp.BouncyCastle\CafeLib.BsvSharp.BouncyCastle.csproj" />
     <ProjectReference Include="..\libs\CafeLib.Secp256k1\CafeLib.Secp256k1.csproj" />
   </ItemGroup>
 
