@@ -6,6 +6,7 @@
 using System;
 using System.Buffers;
 using System.Security.Cryptography;
+using CafeLib.BsvSharp.BouncyCastle.Hash;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
 
@@ -27,34 +28,38 @@ namespace CafeLib.BsvSharp.Crypto
 
         public static void Sha1(this ReadOnlyByteSequence data, ByteSpan hash)
         {
-            using var sha = new SHA1Managed();
-            sha.TransformFinalBlock(data, hash);
+            new Sha1().ComputeHash(data.ToSpan()).CopyTo(hash);
         }
 
         public static UInt160 Sha1(this ReadOnlyByteSequence data)
         {
             var hash = new UInt160();
-            Sha1(data, hash.Span);
+            data.Sha1(hash.Span);
             return hash;
         }
 
         public static void Sha256(this ReadOnlyByteSequence data, ByteSpan hash)
         {
-            using var sha = new SHA256Managed();
-            sha.TransformFinalBlock(data, hash);
+            new Sha256().ComputeHash(data.ToSpan()).CopyTo(hash);
         }
 
         public static UInt256 Sha256(this ReadOnlyByteSequence data)
         {
             var hash = new UInt256();
-            Sha256(data, hash.Span);
+            data.Sha256(hash.Span);
             return hash;
         }
 
         public static void Sha512(this ReadOnlyByteSequence data, ByteSpan hash)
         {
-            using var sha = new SHA512Managed();
-            sha.TransformFinalBlock(data, hash);
+            new Sha512().ComputeHash(data.ToSpan()).CopyTo(hash);
+        }
+
+        public static UInt512 Sha512(this ReadOnlyByteSequence data)
+        {
+            var hash = new UInt512();
+            data.Sha512(hash.Span);
+            return hash;
         }
 
         /// <summary>
