@@ -133,12 +133,12 @@ namespace CafeLib.BsvSharp.Crypto
             return hash;
         }
 
-        public static byte[] ComputeHash(this HashAlgorithm alg, ReadOnlyByteSpan buffer)
-        {
-            var hash = new byte[alg.HashSize];
-            alg.TransformFinalBlock(buffer, hash);
-            return hash;
-        }
+        //public static byte[] ComputeHash(this HashAlgorithm alg, ReadOnlyByteSpan buffer)
+        //{
+        //    var hash = new byte[alg.HashSize];
+        //    alg.TransformFinalBlock(buffer, hash);
+        //    return hash;
+        //}
 
         public static void TransformFinalBlock(this HashAlgorithm alg, ReadOnlyByteSpan data, ByteSpan hash)
         {
