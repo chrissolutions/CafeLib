@@ -53,8 +53,8 @@ namespace CafeLib.BsvSharp.Crypto
 
         public static void Sha512(this ReadOnlyByteSpan data, ByteSpan hash)
         {
-            using var sha = new SHA512Managed();
-            sha.TransformFinalBlock(data, hash);
+            var computed = ComputeSha512(data);
+            computed.CopyTo(hash);
         }
 
         public static UInt512 Sha512(this ReadOnlyByteSpan data)

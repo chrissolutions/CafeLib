@@ -148,5 +148,16 @@ namespace CafeLib.BsvSharp.Crypto
             sha256.DoFinal(rv, 0);
             return rv;
         }
+
+        public static byte[] ComputeSha512(byte[] data) => ComputeSha512(data, data.Length);
+
+        public static byte[] ComputeSha512(byte[] data, int count)
+        {
+            var sha256 = new Sha512Digest();
+            sha256.BlockUpdate(data, 0, count);
+            var rv = new byte[64];
+            sha256.DoFinal(rv, 0);
+            return rv;
+        }
     }
 }
