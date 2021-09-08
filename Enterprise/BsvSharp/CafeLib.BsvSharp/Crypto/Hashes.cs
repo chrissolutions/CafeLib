@@ -6,7 +6,6 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
 using CafeLib.BsvSharp.BouncyCastle.Hash;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
