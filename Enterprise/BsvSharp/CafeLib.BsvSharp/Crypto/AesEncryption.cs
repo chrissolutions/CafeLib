@@ -1,9 +1,12 @@
 ﻿using System;
 using CafeLib.BsvSharp.BouncyCastle.Crypto;
+using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Parameters;
+using CafeLib.BsvSharp.BouncyCastle.Crypto.Prng;
 using CafeLib.BsvSharp.BouncyCastle.Security;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
+using CafeLib.Core.Support;
 
 namespace CafeLib.BsvSharp.Crypto
 {
@@ -11,11 +14,24 @@ namespace CafeLib.BsvSharp.Crypto
     {
         private const string Algorithm = "AES";
 
+        //private const int DefaultVectorLength = 16;
+        private const int DefaultKeyLength = 16;
+        private const int DefaultSaltLength = 8;
+        private const int DefaultIterations = 2048;
+
         private const byte AesIvSize = 16;
 
-        private static readonly string AesCryptoService = $"{Algorithm}/{AesTypes.CipherMode.CBC}/{AesTypes.Padding.PKCS7}";
+        public static byte[] KeyFromPassword(NonNullable<string> password, byte[] salt = null, int iterations = DefaultIterations, int keyLength = DefaultKeyLength)
+            => KeyFromPassword(password.Value.Utf8ToBytes(), salt, iterations, keyLength);
 
-        public static string Encrypt(string plainText, string key) => Encrypt(plainText, key.Utf8ToBytes());
+        public static byte[] KeyFromPassword(NonNullable<byte[]> password, byte[] salt = null, int iterations = DefaultIterations, int keyLength = DefaultKeyLength)
+        {
+            salt ??= SaltBytes();
+            var derive = new Pkcs5S2DeriveBytes();
+            return derive.GenerateDerivedKey(keyLength, password.Value, salt, iterations);
+        }
+
+        private static readonly string AesCryptoService = $"{Algorithm}/{AesTypes.CipherMode.CBC}/{AesTypes.Padding.PKCS7}";
 
         public static string Encrypt(string plainText, byte[] key)
         {
@@ -31,8 +47,6 @@ namespace CafeLib.BsvSharp.Crypto
             return PackCipherData(cipherText, iv);
         }
 
-        public static string Decrypt(string cipherText, string key) => Decrypt(cipherText, key.Utf8ToBytes());
-
         public static string Decrypt(string cipherText, byte[] key)
         {
             var (encryptedBytes, iv)  = UnpackCipherData(cipherText);
@@ -45,6 +59,12 @@ namespace CafeLib.BsvSharp.Crypto
         }
 
         #region Helpers
+
+        private static byte[] SaltBytes(int length = DefaultSaltLength)
+        {
+            var random = new SecureRandom(new DigestRandomGenerator(new Sha256Digest()));
+            return random.GenerateSeed(length);
+        }
 
         private static ICipherParameters CreateKeyParameters(byte[] key, byte[] iv)
         {

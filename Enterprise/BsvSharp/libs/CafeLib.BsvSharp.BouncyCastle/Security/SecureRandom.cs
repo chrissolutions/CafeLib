@@ -41,7 +41,8 @@ namespace CafeLib.BsvSharp.BouncyCastle.Security
             }
         }
 #else
-		private static readonly SecureRandom master = null;//new SecureRandom(new CryptoApiRandomGenerator());
+        private static readonly SecureRandom master = new SecureRandom(new VmpcRandomGenerator());
+		//private static readonly SecureRandom master = null;//new SecureRandom(new CryptoApiRandomGenerator());
         private static SecureRandom Master
         {
             get { return master; }
