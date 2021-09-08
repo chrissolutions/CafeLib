@@ -108,34 +108,34 @@ namespace CafeLib.BsvSharp.Crypto
 
         public static void HmacSha256(this ReadOnlyByteSpan key, ReadOnlyByteSequence data, ByteSpan hash)
         {
-            new HMACSHA256(key).TransformFinalBlock(data, hash);
+            new HmacSha256(key).ComputeHash(data.ToSpan()).CopyTo(hash);
         }
 
         public static UInt256 HmacSha256(this ReadOnlyByteSpan key, ReadOnlyByteSequence data)
         {
             var hash = new UInt256();
-            new HMACSHA256(key).TransformFinalBlock(data, hash.Span);
+            key.HmacSha256(data, hash.Span);
             return hash;
         }
 
         public static void HmacSha512(this ReadOnlyByteSpan key, ReadOnlyByteSequence data, ByteSpan hash)
         {
-            new HMACSHA512(key).TransformFinalBlock(data, hash);
+            new HmacSha512(key).ComputeHash(data.ToSpan()).CopyTo(hash);
         }
 
         public static UInt512 HmacSha512(this ReadOnlyByteSpan key, ReadOnlyByteSequence data)
         {
             var hash = new UInt512();
-            new HMACSHA512(key).TransformFinalBlock(data, hash.Span);
+            key.HmacSha512(data, hash.Span);
             return hash;
         }
 
-        public static byte[] ComputeHash(this HashAlgorithm alg, ReadOnlyByteSequence buffer)
-        {
-            var hash = new byte[alg.HashSize];
-            alg.TransformFinalBlock(buffer, hash);
-            return hash;
-        }
+        //public static byte[] ComputeHash(this HashAlgorithm alg, ReadOnlyByteSequence buffer)
+        //{
+        //    var hash = new byte[alg.HashSize];
+        //    alg.TransformFinalBlock(buffer, hash);
+        //    return hash;
+        //}
 
         public static void TransformFinalBlock(this HashAlgorithm alg, ReadOnlyByteSequence data, ByteSpan hash)
         {
