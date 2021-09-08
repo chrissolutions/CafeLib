@@ -69,10 +69,8 @@ namespace CafeLib.BsvSharp.Crypto
         /// <param name="hash">Output: SHA256 of SHA256 of data.</param>
         public static void Hash256(this ReadOnlyByteSequence data, ByteSpan hash)
         {
-            var h1 = new UInt256();
-            using var sha = new SHA256Managed();
-            TransformFinalBlock(sha, data, h1.Span);
-            TransformFinalBlock(sha, h1.Span, hash);
+            var computed = ComputeSha256(ComputeSha256(data.ToSpan()));
+            computed.CopyTo(hash);
         }
 
         /// <summary>
