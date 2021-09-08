@@ -127,6 +127,17 @@ namespace CafeLib.BsvSharp.Crypto
             return xhash;
         }
 
+        public static byte[] ComputeSha1(byte[] data) => ComputeSha1(data, data.Length);
+
+        public static byte[] ComputeSha1(byte[] data, int count)
+        {
+            var sha1 = new Sha1Digest();
+            sha1.BlockUpdate(data, 0, count);
+            var rv = new byte[20];
+            sha1.DoFinal(rv, 0);
+            return rv;
+        }
+
         public static byte[] ComputeSha256(byte[] data) => ComputeSha256(data, data.Length);
 
         public static byte[] ComputeSha256(byte[] data, int count)

@@ -27,8 +27,8 @@ namespace CafeLib.BsvSharp.Crypto
 
         public static void Sha1(this ReadOnlyByteSpan data, ByteSpan hash)
         {
-            using var sha = new SHA1Managed();
-            sha.TransformFinalBlock(data, hash);
+            var computed = ComputeSha1(data);
+            computed.CopyTo(hash);
         }
 
         public static UInt160 Sha1(this ReadOnlyByteSpan data)
@@ -40,8 +40,8 @@ namespace CafeLib.BsvSharp.Crypto
 
         public static void Sha256(this ReadOnlyByteSpan data, ByteSpan hash)
         {
-            using var sha = new SHA256Managed();
-            sha.TransformFinalBlock(data, hash);
+            var computed = ComputeSha256(data);
+            computed.CopyTo(hash);
         }
 
         public static UInt256 Sha256(this ReadOnlyByteSpan data)
@@ -71,10 +71,8 @@ namespace CafeLib.BsvSharp.Crypto
         /// <param name="hash">Output: SHA256 of SHA256 of data.</param>
         public static void Hash256(this ReadOnlyByteSpan data, ByteSpan hash)
         {
-            var x = new UInt256();
-            using var sha = new SHA256Managed();
-            TransformFinalBlock(sha, data, x.Span);
-            TransformFinalBlock(sha, x.Span, hash);
+            var computed = ComputeSha256(ComputeSha256(data));
+            computed.CopyTo(hash);
         }
 
         /// <summary>
