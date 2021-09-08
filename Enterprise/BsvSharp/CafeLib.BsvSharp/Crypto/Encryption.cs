@@ -9,7 +9,7 @@ using CafeLib.Core.Support;
 
 namespace CafeLib.BsvSharp.Crypto
 {
-    public class Encryption 
+    public static class Encryption 
     {
         private const int DefaultVectorLength = 16;
         private const int DefaultKeyLength = 16;
