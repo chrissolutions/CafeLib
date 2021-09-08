@@ -6,6 +6,7 @@
 using System;
 using System.Buffers;
 using System.Security.Cryptography;
+using CafeLib.BsvSharp.BouncyCastle.Hash;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
 
@@ -110,25 +111,25 @@ namespace CafeLib.BsvSharp.Crypto
 
         public static void HmacSha256(this ReadOnlyByteSpan key, ReadOnlyByteSpan data, ByteSpan hash)
         {
-            new HMACSHA256(key).TransformFinalBlock(data, hash);
+            new HmacSha256(key).ComputeHash(data).CopyTo(hash);
         }
 
         public static UInt256 HmacSha256(this ReadOnlyByteSpan key, ReadOnlyByteSpan data)
         {
             var hash = new UInt256();
-            new HMACSHA256(key).TransformFinalBlock(data, hash.Span);
+            HmacSha256(key, data, hash.Span);
             return hash;
         }
 
         public static void HmacSha512(this ReadOnlyByteSpan key, ReadOnlyByteSpan data, ByteSpan hash)
         {
-            new HMACSHA512(key).TransformFinalBlock(data, hash);
+            new HmacSha512(key).ComputeHash(data).CopyTo(hash);
         }
 
         public static UInt512 HmacSha512(this ReadOnlyByteSpan key, ReadOnlyByteSpan data)
         {
             var hash = new UInt512();
-            new HMACSHA512(key).TransformFinalBlock(data, hash.Span);
+            HmacSha512(key, data, hash.Span);
             return hash;
         }
 
