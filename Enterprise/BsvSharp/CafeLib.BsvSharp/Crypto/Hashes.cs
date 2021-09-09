@@ -6,7 +6,11 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography;
+using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
+using CafeLib.BsvSharp.BouncyCastle.Crypto.Macs;
+using CafeLib.BsvSharp.BouncyCastle.Crypto.Parameters;
 using CafeLib.BsvSharp.BouncyCastle.Hash;
+using CafeLib.BsvSharp.Crypto.Cryptsharp;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
@@ -60,6 +64,17 @@ namespace CafeLib.BsvSharp.Crypto
             num[3] = (byte)((nChild >> 0) & 0xFF);
 
             HmacSha512(chainCode.Span, s, output);
+        }
+
+        public static UInt512 Bip39Seed(string passphrase, string password = null, string passwordPrefix = "mnemonic")
+        {
+            var bytes = passphrase.Utf8NormalizedToBytes();
+            var salt = $"{passwordPrefix}{password}".Utf8NormalizedToBytes();
+
+            var mac = new HMac(new Sha512Digest());
+            mac.Init(new KeyParameter(bytes));
+            var key = Pbkdf2.ComputeDerivedKey(mac, salt, 2048, 64);
+            return new UInt512(key);
         }
 
         /// <summary>
