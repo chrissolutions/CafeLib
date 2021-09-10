@@ -102,7 +102,7 @@ namespace CafeLib.BsvSharp.Keys
         /// <returns>Computes 512 bit Bip39 seed.</returns>
         public static UInt512 Bip39Seed(string passphrase, string password = null, string passwordPrefix = "mnemonic")
         {
-            return Hashes.Bip39Seed(passphrase);
+            return Hashes.Bip39Seed(passphrase, password);
             //return Hashes.PbKdf2HmacSha512(passphrase.Utf8NormalizedToBytes(), $"{passwordPrefix}{password}".Utf8NormalizedToBytes(), 2048);
         }
 

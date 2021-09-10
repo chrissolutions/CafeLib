@@ -18,9 +18,12 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 #endregion
 
+#define USEBC
+
 using System;
 using System.Security.Cryptography;
 using System.Threading;
+using System.Threading.Tasks;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Macs;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Parameters;

@@ -4,6 +4,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Security.Cryptography;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
@@ -66,10 +67,10 @@ namespace CafeLib.BsvSharp.Crypto
             HmacSha512(chainCode.Span, s, output);
         }
 
-        public static UInt512 Bip39Seed(string passphrase, string password = null, string passwordPrefix = "mnemonic")
+        public static UInt512 Bip39Seed(string mnumonic, string passphrase = null, string passwordPrefix = "mnemonic")
         {
-            var bytes = passphrase.Utf8NormalizedToBytes();
-            var salt = $"{passwordPrefix}{password}".Utf8NormalizedToBytes();
+            var salt = $"{passwordPrefix}{passphrase}".Utf8NormalizedToBytes();
+            var bytes = mnumonic.Utf8NormalizedToBytes();
 
             var mac = new HMac(new Sha512Digest());
             mac.Init(new KeyParameter(bytes));

@@ -17,9 +17,15 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 #endregion
 
+#define USEBC
+
 using System;
 using System.IO;
 using CafeLib.BsvSharp.BouncyCastle.Crypto;
+
+#if !WINDOWS_UWP && !USEBC
+using System.Security.Cryptography;
+#endif
 
 namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 {
@@ -44,12 +50,21 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 	/// Stream derivedKeyStream = new Pbkdf2(new HMACSHA512(key), salt, 1000);
 	/// </code>
 	/// </example>
+	[Obsolete("This might disappear in favour of .NET BCL's Rfc2898DeriveBytes class")]
 	public class Pbkdf2 : Stream
 	{
+		#region PBKDF2
+
         private readonly byte[] _saltBuffer;
         private readonly byte[] _digest;
         private readonly byte[] _digestT1;
+
+#if USEBC || WINDOWS_UWP || NETSTANDARD1X
         private readonly IMac _hmacAlgorithm;
+#else
+		KeyedHashAlgorithm _hmacAlgorithm;
+#endif
+
         private readonly int _iterations;
 
 		/// <summary>
@@ -62,6 +77,7 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 		///     A unique salt means a unique PBKDF2 stream, even if the original key is identical.
 		/// </param>
 		/// <param name="iterations">The number of iterations to apply.</param>
+#if USEBC || WINDOWS_UWP || NETSTANDARD1X
 		internal Pbkdf2(IMac hmacAlgorithm, byte[] salt, int iterations)
 		{
 			Check.Null("hmacAlgorithm", hmacAlgorithm);
@@ -76,7 +92,24 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 			_digest = new byte[hmacLength];
 			_digestT1 = new byte[hmacLength];
 		}
+#else
+		public Pbkdf2(KeyedHashAlgorithm hmacAlgorithm, byte[] salt, int iterations)
+		{
+			NBitcoin.Crypto.Internal.Check.Null("hmacAlgorithm", hmacAlgorithm);
+			NBitcoin.Crypto.Internal.Check.Null("salt", salt);
+			NBitcoin.Crypto.Internal.Check.Length("salt", salt, 0, int.MaxValue - 4);
+			NBitcoin.Crypto.Internal.Check.Range("iterations", iterations, 1, int.MaxValue);
+			if (hmacAlgorithm.HashSize == 0 || hmacAlgorithm.HashSize % 8 != 0)
+			{
+				throw Exceptions.Argument("hmacAlgorithm", "Unsupported hash size.");
+			}
 
+			int hmacLength = hmacAlgorithm.HashSize / 8;
+			_saltBuffer = new byte[salt.Length + 4]; Array.Copy(salt, _saltBuffer, salt.Length);
+			_iterations = iterations; _hmacAlgorithm = hmacAlgorithm;
+			_digest = new byte[hmacLength]; _digestT1 = new byte[hmacLength];
+		}
+#endif
 		/// <summary>
 		/// Reads from the derived key stream.
 		/// </summary>
@@ -86,9 +119,9 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 		{
 			Check.Range("count", count, 0, int.MaxValue);
 
-			byte[] buffer = new byte[count];
-			int bytes = Read(buffer, 0, count);
-			if(bytes < count)
+			var buffer = new byte[count];
+			var bytes = Read(buffer, 0, count);
+			if (bytes < count)
 			{
 				throw Exceptions.Argument("count", "Can only return {0} bytes.", bytes);
 			}
@@ -108,6 +141,7 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 		/// <param name="iterations">The number of iterations to apply.</param>
 		/// <param name="derivedKeyLength">The desired length of the derived key.</param>
 		/// <returns>The derived key.</returns>
+#if USEBC || WINDOWS_UWP || NETSTANDARD1X
 		internal static byte[] ComputeDerivedKey(IMac hmacAlgorithm, byte[] salt, int iterations,
 											   int derivedKeyLength)
 		{
@@ -116,10 +150,24 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
             using var kdf = new Pbkdf2(hmacAlgorithm, salt, iterations);
             return kdf.Read(derivedKeyLength);
         }
+#else
+		public static byte[] ComputeDerivedKey(KeyedHashAlgorithm hmacAlgorithm, byte[] salt, int iterations,
+											   int derivedKeyLength)
+		{
+			NBitcoin.Crypto.Internal.Check.Range("derivedKeyLength", derivedKeyLength, 0, int.MaxValue);
+
+			using (Pbkdf2 kdf = new Pbkdf2(hmacAlgorithm, salt, iterations))
+			{
+				return kdf.Read(derivedKeyLength);
+			}
+		}
+#endif
+
 
 		/// <summary>
 		/// Closes the stream, clearing memory and disposing of the HMAC algorithm.
 		/// </summary>
+#if USEBC || WINDOWS_UWP || NETSTANDARD1X
 		protected override void Dispose(bool disposing)
 		{
 			Security.Clear(_saltBuffer);
@@ -128,22 +176,36 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 
 			DisposeHmac();
 		}
+#else
+		public override void Close()
+		{
+			NBitcoin.Crypto.Internal.Security.Clear(_saltBuffer);
+			NBitcoin.Crypto.Internal.Security.Clear(_digest);
+			NBitcoin.Crypto.Internal.Security.Clear(_digestT1);
+
+			DisposeHmac();
+		}
+#endif
 
 		private void DisposeHmac()
 		{
+#if USEBC || WINDOWS_UWP || NETSTANDARD1X
 			_hmacAlgorithm.Reset();
+#else
+			_hmacAlgorithm.Clear();
+#endif
 		}
 
-        private void ComputeBlock(uint pos)
+		void ComputeBlock(uint pos)
 		{
 			BitPacking.BEBytesFromUInt32(pos, _saltBuffer, _saltBuffer.Length - 4);
 			ComputeHmac(_saltBuffer, _digestT1);
 			Array.Copy(_digestT1, _digest, _digestT1.Length);
 
-			for(int i = 1; i < _iterations; i++)
+			for (int i = 1; i < _iterations; i++)
 			{
 				ComputeHmac(_digestT1, _digestT1);
-				for(int j = 0; j < _digest.Length; j++)
+				for (int j = 0; j < _digest.Length; j++)
 				{
 					_digest[j] ^= _digestT1[j];
 				}
@@ -152,13 +214,24 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 			Security.Clear(_digestT1);
 		}
 
-        private void ComputeHmac(byte[] input, byte[] output)
+#if USEBC || WINDOWS_UWP || NETSTANDARD1X
+		void ComputeHmac(byte[] input, byte[] output)
 		{
 			var hash = new byte[_hmacAlgorithm.GetMacSize()];
 			_hmacAlgorithm.BlockUpdate(input, 0, input.Length);
 			_hmacAlgorithm.DoFinal(hash, 0);
 			Array.Copy(hash, output, output.Length);
 		}
+#else
+		void ComputeHmac(byte[] input, byte[] output)
+		{
+			_hmacAlgorithm.Initialize();
+			_hmacAlgorithm.TransformBlock(input, 0, input.Length, input, 0);
+			_hmacAlgorithm.TransformFinalBlock(new byte[0], 0, 0);
+			Array.Copy(_hmacAlgorithm.Hash, output, output.Length);
+		}
+#endif
+		#endregion
 
 		#region Stream
 		long _blockStart, _blockEnd, _pos;
@@ -175,11 +248,11 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 			Check.Bounds("buffer", buffer, offset, count);
 			int bytes = 0;
 
-			while(count > 0)
+			while (count > 0)
 			{
-				if(Position < _blockStart || Position >= _blockEnd)
+				if (Position < _blockStart || Position >= _blockEnd)
 				{
-					if(Position >= Length)
+					if (Position >= Length)
 					{
 						break;
 					}
@@ -206,7 +279,7 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 		{
 			long pos;
 
-			switch(origin)
+			switch (origin)
 			{
 				case SeekOrigin.Begin:
 					pos = offset;
@@ -221,7 +294,7 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 					throw Exceptions.ArgumentOutOfRange("origin", "Unknown seek type.");
 			}
 
-			if(pos < 0)
+			if (pos < 0)
 			{
 				throw Exceptions.Argument("offset", "Can't seek before the stream start.");
 			}
@@ -263,7 +336,7 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 			get => _pos;
             set
 			{
-				if(_pos < 0)
+				if (_pos < 0)
 				{
 					throw Exceptions.Argument(null, "Can't seek before the stream start.");
 				}
