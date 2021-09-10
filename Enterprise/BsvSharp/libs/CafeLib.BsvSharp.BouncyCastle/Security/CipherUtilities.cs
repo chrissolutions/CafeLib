@@ -217,7 +217,7 @@ namespace CafeLib.BsvSharp.BouncyCastle.Security
             string mechanism)
         {
             if (mechanism == null)
-                throw new ArgumentNullException("mechanism");
+                throw new ArgumentNullException(nameof(mechanism));
 
             mechanism = Platform.ToUpperInvariant(mechanism);
             string aliased = (string) algorithms[mechanism];
@@ -243,7 +243,7 @@ namespace CafeLib.BsvSharp.BouncyCastle.Security
             string algorithm)
         {
             if (algorithm == null)
-                throw new ArgumentNullException("algorithm");
+                throw new ArgumentNullException(nameof(algorithm));
 
             algorithm = Platform.ToUpperInvariant(algorithm);
 

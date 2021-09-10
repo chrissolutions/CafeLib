@@ -6,7 +6,9 @@ using CafeLib.BsvSharp.BouncyCastle.Crypto.Prng;
 using CafeLib.BsvSharp.BouncyCastle.Security;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
+using CafeLib.Core.Buffers;
 using CafeLib.Core.Support;
+// ReSharper disable InconsistentNaming
 
 namespace CafeLib.BsvSharp.Crypto
 {
@@ -14,12 +16,15 @@ namespace CafeLib.BsvSharp.Crypto
     {
         private const string Algorithm = "AES";
 
-        //private const int DefaultVectorLength = 16;
+        private const int DefaultVectorLength = 16;
         private const int DefaultKeyLength = 16;
         private const int DefaultSaltLength = 8;
         private const int DefaultIterations = 2048;
 
         private const byte AesIvSize = 16;
+
+        public static byte[] InitializationVector(ReadOnlyByteSpan key, ReadOnlySpan<byte> data, int length = DefaultVectorLength)
+            => key.HmacSha256(data).Span.Slice(0, length).ToArray();
 
         public static byte[] KeyFromPassword(NonNullable<string> password, byte[] salt = null, int iterations = DefaultIterations, int keyLength = DefaultKeyLength)
             => KeyFromPassword(password.Value.Utf8ToBytes(), salt, iterations, keyLength);
@@ -35,8 +40,7 @@ namespace CafeLib.BsvSharp.Crypto
 
         public static string Encrypt(string plainText, byte[] key)
         {
-            var random = new SecureRandom();
-            var iv = random.GenerateSeed(AesIvSize);
+            var iv = GenerateIV();
             var keyParameters = CreateKeyParameters(key, iv);
             var cipher = CipherUtilities.GetCipher(AesCryptoService);
             cipher.Init(true, keyParameters);
@@ -101,6 +105,12 @@ namespace CafeLib.BsvSharp.Crypto
             var encryptedBytes = new byte[cipherData.Length - index];
             Array.Copy(cipherData, index, encryptedBytes, 0, encryptedBytes.Length);
             return (encryptedBytes, iv);
+        }
+
+        private static byte[] GenerateIV()
+        {
+            var random = new SecureRandom();
+            return random.GenerateSeed(AesIvSize);
         }
 
         #endregion
