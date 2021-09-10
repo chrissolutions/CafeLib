@@ -58,13 +58,25 @@ namespace CafeLib.BsvSharp.Crypto
 
         public static string Decrypt(string cipherText, byte[] key)
         {
-            var (encryptedBytes, iv)  = UnpackCipherData(cipherText);
+            var cipherData = Convert.FromBase64String(cipherText);
+            var (encryptedBytes, iv) = UnpackCipherData(cipherData);
+            var decryptedData = Decrypt(encryptedBytes, key, iv);
+            return Encoders.Utf8.Encode(decryptedData);
+        }
+
+        public static byte[] Decrypt(ReadOnlyByteSpan data, byte[] key, byte[] iv = null, int ivLength = DefaultVectorLength)
+        {
+            if (iv == null)
+            {
+                iv = data[..ivLength];
+                data = data[ivLength..];
+            }
+
             var keyParameters = CreateKeyParameters(key, iv);
             var cipher = CipherUtilities.GetCipher(AesCryptoService);
             cipher.Init(false, keyParameters);
-
-            var decryptedData = cipher.DoFinal(encryptedBytes);
-            return Encoders.Utf8.Encode(decryptedData);
+            var decryptedData = cipher.DoFinal(data);
+            return decryptedData;
         }
 
         #region Helpers
@@ -81,21 +93,6 @@ namespace CafeLib.BsvSharp.Crypto
             return new ParametersWithIV(keyParameter, iv);
         }
 
-        //private static string PackCipherData(byte[] encryptedBytes, byte[] iv)
-        //{
-        //    var dataSize = encryptedBytes.Length + iv.Length + 1;
-        //    var index = 0;
-        //    var data = new byte[dataSize];
-        //    data[index] = AesIvSize;
-        //    index += 1;
-
-        //    Array.Copy(iv, 0, data, index, iv.Length);
-        //    index += iv.Length;
-        //    Array.Copy(encryptedBytes, 0, data, index, encryptedBytes.Length);
-
-        //    return Convert.ToBase64String(data);
-        //}
-
         private static byte[] PackCipherData(byte[] encryptedBytes, byte[] iv)
         {
             var dataSize = encryptedBytes.Length + iv.Length + 1;
@@ -109,6 +106,21 @@ namespace CafeLib.BsvSharp.Crypto
             Array.Copy(encryptedBytes, 0, data, index, encryptedBytes.Length);
 
             return data;
+        }
+
+        private static (byte[], byte[]) UnpackCipherData(byte[] cipherData)
+        {
+            var index = 0;
+            var ivSize = cipherData[index];
+            index += 1;
+
+            var iv = new byte[ivSize];
+            Array.Copy(cipherData, index, iv, 0, ivSize);
+            index += ivSize;
+
+            var encryptedBytes = new byte[cipherData.Length - index];
+            Array.Copy(cipherData, index, encryptedBytes, 0, encryptedBytes.Length);
+            return (encryptedBytes, iv);
         }
 
         private static (byte[], byte[]) UnpackCipherData(string cipherText)
