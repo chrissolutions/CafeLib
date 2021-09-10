@@ -21,15 +21,11 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define USEBC
 
 using System;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Macs;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Parameters;
-
-#if !USEBC
-#endif
 
 namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 {
@@ -77,11 +73,9 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 		{
 			Check.Range("derivedKeyLength", derivedKeyLength, 0, int.MaxValue);
 
-			using(Pbkdf2 kdf = GetStream(key, salt, cost, blockSize, parallel, maxThreads))
-			{
-				return kdf.Read(derivedKeyLength);
-			}
-		}
+            using var kdf = GetStream(key, salt, cost, blockSize, parallel, maxThreads);
+            return kdf.Read(derivedKeyLength);
+        }
 
 		/// <summary>
 		/// The SCrypt algorithm creates a salt which it then uses as a one-iteration
@@ -150,7 +144,7 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 			byte[] B = GetEffectivePbkdf2Salt(key, salt, cost, blockSize, parallel, maxThreads);
 			var mac = new HMac(new Sha256Digest());
 			mac.Init(new KeyParameter(key));
-			Pbkdf2 kdf = new Pbkdf2(mac, B, 1);
+			var kdf = new Pbkdf2(mac, B, 1);
 			Security.Clear(B);
 			return kdf;
 		}
@@ -190,39 +184,7 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 
 			return B;
 		}
-#if !(USEBC || NETSTANDARD1X)
-		static void ThreadSMixCalls(uint[] B0, int MFLen,
-									int cost, int blockSize, int parallel, int maxThreads)
-		{
-			int current = 0;
-			ThreadStart workerThread = delegate ()
-			{
-				while(true)
-				{
-					int j = Interlocked.Increment(ref current) - 1;
-					if(j >= parallel)
-					{
-						break;
-					}
 
-					SMix(B0, j * MFLen / 4, B0, j * MFLen / 4, (uint)cost, blockSize);
-				}
-			};
-
-			int threadCount = Math.Max(1, Math.Min(Environment.ProcessorCount, Math.Min(maxThreads, parallel)));
-			Thread[] threads = new Thread[threadCount - 1];
-			for(int i = 0; i < threads.Length; i++)
-			{
-				(threads[i] = new Thread(workerThread, 8192 * 16)).Start();
-			}
-			workerThread();
-			for(int i = 0; i < threads.Length; i++)
-			{
-				threads[i].Join();
-			}
-		}
-
-#else
 		static void ThreadSMixCalls(uint[] B0, int MFLen,
 									int cost, int blockSize, int parallel, int maxThreads)
 		{
@@ -248,12 +210,11 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 				threads[i] = Task.Run(workerThread);
 			}
 			workerThread();
-			for(int i = 0 ; i < threads.Length ; i++)
-			{
-				threads[i].Wait();
-			}
+			foreach (var t in threads)
+            {
+                t.Wait();
+            }
 		}
-#endif
 		static void SMix(uint[] B, int Boffset, uint[] Bp, int Bpoffset, uint N, int r)
 		{
 			uint Nmask = N - 1;
