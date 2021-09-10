@@ -50,7 +50,6 @@ namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 	/// Stream derivedKeyStream = new Pbkdf2(new HMACSHA512(key), salt, 1000);
 	/// </code>
 	/// </example>
-	[Obsolete("This might disappear in favour of .NET BCL's Rfc2898DeriveBytes class")]
 	public class Pbkdf2 : Stream
 	{
 		#region PBKDF2
