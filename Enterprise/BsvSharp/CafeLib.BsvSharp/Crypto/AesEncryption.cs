@@ -41,14 +41,19 @@ namespace CafeLib.BsvSharp.Crypto
         public static string Encrypt(string plainText, byte[] key)
         {
             var iv = GenerateIV();
+            var plainTextData = plainText.Utf8ToBytes();
+            var data = Encrypt(plainTextData, key, iv);
+            return Convert.ToBase64String(data);
+        }
+
+        public static byte[] Encrypt(ReadOnlyByteSpan data, byte[] key, byte[] iv = null)
+        {
+            iv ??= GenerateIV();
             var keyParameters = CreateKeyParameters(key, iv);
             var cipher = CipherUtilities.GetCipher(AesCryptoService);
             cipher.Init(true, keyParameters);
-
-            var plainTextData = plainText.Utf8ToBytes();
-            var cipherText = cipher.DoFinal(plainTextData);
-
-            return PackCipherData(cipherText, iv);
+            var cipherData = cipher.DoFinal(data);
+            return PackCipherData(cipherData, iv);
         }
 
         public static string Decrypt(string cipherText, byte[] key)
@@ -76,7 +81,22 @@ namespace CafeLib.BsvSharp.Crypto
             return new ParametersWithIV(keyParameter, iv);
         }
 
-        private static string PackCipherData(byte[] encryptedBytes, byte[] iv)
+        //private static string PackCipherData(byte[] encryptedBytes, byte[] iv)
+        //{
+        //    var dataSize = encryptedBytes.Length + iv.Length + 1;
+        //    var index = 0;
+        //    var data = new byte[dataSize];
+        //    data[index] = AesIvSize;
+        //    index += 1;
+
+        //    Array.Copy(iv, 0, data, index, iv.Length);
+        //    index += iv.Length;
+        //    Array.Copy(encryptedBytes, 0, data, index, encryptedBytes.Length);
+
+        //    return Convert.ToBase64String(data);
+        //}
+
+        private static byte[] PackCipherData(byte[] encryptedBytes, byte[] iv)
         {
             var dataSize = encryptedBytes.Length + iv.Length + 1;
             var index = 0;
@@ -88,7 +108,7 @@ namespace CafeLib.BsvSharp.Crypto
             index += iv.Length;
             Array.Copy(encryptedBytes, 0, data, index, encryptedBytes.Length);
 
-            return Convert.ToBase64String(data);
+            return data;
         }
 
         private static (byte[], byte[]) UnpackCipherData(string cipherText)
