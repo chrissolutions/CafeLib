@@ -71,6 +71,10 @@ namespace CafeLib.BsvSharp.UnitTests.Encrypt
                 r = ms.ToArray();
             }
             Assert.Equal(encrypted, r);
+
+
+            var t = AesEncryption.Encrypt(plaintext, key, iv);
+            Assert.Equal(encrypted, t);
         }
 
         [Fact]

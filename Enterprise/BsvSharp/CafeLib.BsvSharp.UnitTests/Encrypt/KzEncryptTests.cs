@@ -4,6 +4,8 @@
 #endregion
 
 using CafeLib.BsvSharp.Crypto;
+using CafeLib.BsvSharp.Encoding;
+using CafeLib.BsvSharp.Extensions;
 using Xunit;
 
 namespace CafeLib.BsvSharp.UnitTests.Encrypt
@@ -11,7 +13,7 @@ namespace CafeLib.BsvSharp.UnitTests.Encrypt
     public class KzEncryptTests
     {
         [Fact]
-        public void AesEncryptTests()
+        public void Aes_Encrypt_Decrypt()
         {
             var msg = "all good men must act";
             var password = "really strong password...;-)";
@@ -39,6 +41,23 @@ namespace CafeLib.BsvSharp.UnitTests.Encrypt
             //    Assert.Equal(msg, Encoders.Utf8.Encode(ddata1));
             //}
         }
+
+        [Fact]
+        public void Aes_Encrypt_Decrypt_With_IV()
+        {
+            var msg = "all good men must act";
+            var data1 = msg.Utf8ToBytes();
+            var password = "really strong password...;-)";
+
+            var key = AesEncryption.KeyFromPassword(password);
+
+            var iv = AesEncryption.InitializationVector(key, data1);
+            var edata1 = Encryption.AesEncrypt(data1, key, iv, false);
+            var ddata1 = Encryption.AesDecrypt(edata1, key, iv);
+            Assert.Equal(data1, ddata1);
+            Assert.Equal(msg, Encoders.Utf8.Encode(ddata1));
+        }
+
 
         //[Fact]
         //public void AesEncryptStringTests()
