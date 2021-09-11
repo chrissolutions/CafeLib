@@ -19,8 +19,8 @@ namespace CafeLib.BsvSharp.UnitTests.Encrypt
             const string msg = "all good men must act";
             const string password = "really strong password...;-)";
 
-            var encrypt = Encryption.AesEncrypt(msg, password);
-            var decrypt = Encryption.AesDecrypt(encrypt, password);
+            var encrypt = AesEncryption.Encrypt(msg, password);
+            var decrypt = AesEncryption.Decrypt(encrypt, password);
             Assert.Equal(msg, decrypt);
         }
 

@@ -4,9 +4,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Security.Cryptography;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Macs;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Parameters;
@@ -21,26 +18,6 @@ namespace CafeLib.BsvSharp.Crypto
     public static partial class Hashes
     {
         private const int MaxBufferSize = 1 << 20; // Max ArrayPool<byte>.Shared buffer size.
-
-        public static void GetHashFinal(this HashAlgorithm alg, ByteSpan hash)
-        {
-            var data = new byte[0];
-            alg.TransformFinalBlock(data, 0, 0);
-            alg.Hash.CopyTo(hash);
-        }
-
-        public static byte[] GetHashFinal(this HashAlgorithm alg)
-        {
-            var data = new byte[0];
-            alg.TransformFinalBlock(data, 0, 0);
-            return alg.Hash;
-        }
-
-        public static void TransformFinalBlock(this HashAlgorithm alg, byte[] data, int start, int length, ByteSpan hash)
-        {
-            alg.TransformFinalBlock(data, start, length);
-            alg.Hash.CopyTo(hash);
-        }
 
         /// <summary>
         /// Hash used to implement BIP 32 key derivations.
@@ -67,80 +44,15 @@ namespace CafeLib.BsvSharp.Crypto
             HmacSha512(chainCode.Span, s, output);
         }
 
-        public static UInt512 Bip39Seed(string mnumonic, string passphrase = null, string passwordPrefix = "mnemonic")
+        public static UInt512 Bip39Seed(string mnemonic, string passphrase = null, string passwordPrefix = "mnemonic")
         {
             var salt = $"{passwordPrefix}{passphrase}".Utf8NormalizedToBytes();
-            var bytes = mnumonic.Utf8NormalizedToBytes();
+            var bytes = mnemonic.Utf8NormalizedToBytes();
 
             var mac = new HMac(new Sha512Digest());
             mac.Init(new KeyParameter(bytes));
             var key = Pbkdf2.ComputeDerivedKey(mac, salt, 2048, 64);
             return new UInt512(key);
-        }
-
-        /// <summary>
-        /// Duplicates Python hash library pbkdf2_hmac for hash_name = 'sha512' and dklen = None
-        ///
-        /// Performance can be improved by pre-computing _trans_36 and _trans_5c.
-        /// Unlike Python's hash functions, .NET doesn't currently support copying state between blocks.
-        /// This results in having to recompute hash of innerSeed and outerSeed on each iteration.
-        /// </summary>
-        /// <param name="password"></param>
-        /// <param name="salt"></param>
-        /// <param name="iterations"></param>
-        /// <returns></returns>
-        public static UInt512 PbKdf2HmacSha512(ReadOnlyByteSpan password, ReadOnlyByteSpan salt, int iterations)
-        {
-            if (iterations < 1)
-                throw new ArgumentException();
-
-            byte[] passwordBytes = password;
-
-            using var inner = new SHA512Managed();
-            using var outer = new SHA512Managed();
-
-            const int blocksize = 128; // match python hash library sha512 block size.
-
-            if (passwordBytes.Length > blocksize)
-            {
-                inner.TransformFinalBlock(passwordBytes, 0, passwordBytes.Length);
-                passwordBytes = inner.Hash;
-                //inner.Initialize();
-            }
-
-            if (passwordBytes.Length < blocksize)
-                Array.Resize(ref passwordBytes, blocksize);
-
-            var trans36 = new byte[256];
-            var trans5C = new byte[256];
-            for (var i = 0; i < 256; i++)
-            {
-                trans36[i] = (byte)(i ^ 0x36);
-                trans5C[i] = (byte)(i ^ 0x5c);
-            }
-
-            var innerSeed = passwordBytes.Select(pb => trans36[pb]).ToArray();
-            var outerSeed = passwordBytes.Select(pb => trans5C[pb]).ToArray();
-
-            var hash = new UInt512();
-            var xhash = new UInt512();
-
-            var data = new byte[salt.Length + 4];
-            salt.CopyTo(data);
-            1.AsReadOnlySpan(bigEndian: true).CopyTo(data.AsSpan(salt.Length));
-            var dataSpan = data.AsSpan();
-
-            for (var i = 0; i < iterations; i++)
-            {
-                inner.TransformBlock(innerSeed);
-                outer.TransformBlock(outerSeed);
-                inner.TransformFinalBlock(dataSpan, hash.Span);
-                outer.TransformFinalBlock(hash.Span, hash.Span);
-                dataSpan = hash.Span;
-                xhash = i == 0 ? hash : xhash ^ hash;
-            }
-
-            return xhash;
         }
 
         public static byte[] ComputeSha1(byte[] data) => new Sha1().ComputeHash(data);

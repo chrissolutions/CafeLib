@@ -109,14 +109,14 @@ namespace CafeLib.BsvSharp.Crypto
             var (salt, key, iv, encrypt) = UnpackArrays(encrypted);
 
             ReadOnlyByteSpan keySpan = key;
-            ReadOnlyByteSpan authKey = Encryption.KeyFromPassword(password, salt);
+            ReadOnlyByteSpan authKey = KeyFromPassword(password, salt);
 
             if (authKey.Data.SequenceCompareTo(keySpan.Data) != 0)
             {
                 throw new ApplicationException("Invalid signature");
             }
 
-            var decrypt = Encryption.AesDecrypt(encrypt, key, iv);
+            var decrypt = Decrypt(encrypt, key, iv);
             return Encoders.Utf8.Encode(decrypt);
         }
 
