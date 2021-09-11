@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using CafeLib.BsvSharp.BouncyCastle.Crypto;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Parameters;
@@ -23,6 +24,8 @@ namespace CafeLib.BsvSharp.Crypto
 
         private const byte AesIvSize = 16;
 
+        private static readonly string AesCryptoService = $"{Algorithm}/{AesTypes.CipherMode.CBC}/{AesTypes.Padding.PKCS7}";
+
         public static byte[] InitializationVector(ReadOnlyByteSpan key, ReadOnlySpan<byte> data, int length = DefaultVectorLength)
             => key.HmacSha256(data).Span.Slice(0, length).ToArray();
 
@@ -36,34 +39,52 @@ namespace CafeLib.BsvSharp.Crypto
             return derive.GenerateDerivedKey(keyLength, password.Value, salt, iterations);
         }
 
-        private static readonly string AesCryptoService = $"{Algorithm}/{AesTypes.CipherMode.CBC}/{AesTypes.Padding.PKCS7}";
-
-        public static string Encrypt(string plainText, byte[] key)
-        {
-            var iv = GenerateIV();
-            var plainTextData = plainText.Utf8ToBytes();
-            var data = Encrypt(plainTextData, key, iv);
-            return Convert.ToBase64String(data);
-        }
-
-        public static byte[] Encrypt(ReadOnlyByteSpan data, byte[] key, byte[] iv = null)
+        /// <summary>
+        /// Applies AES encryption to data with the specified key.
+        /// iv can be specified (must be 16 bytes) or left null.
+        /// The actual iv used is added to the first 16 bytes of the output result unless noIV = true.
+        /// Padding is PKCS7.
+        /// Mode is CBC.
+        /// </summary>
+        /// <param name="data">The data to encrypt.</param>
+        /// <param name="key">The encryption key to use. The same key must be used to decrypt.</param>
+        /// <param name="iv">null or 16 bytes of random initialization vector data</param>
+        /// <param name="noInitVector">If true, the initialization vector used is not prepended to the encrypted result.</param>
+        /// <returns>16 bytes of IV followed by encrypted data bytes.</returns>
+        public static byte[] Encrypt(ReadOnlyByteSpan data, byte[] key, byte[] iv = null, bool noInitVector = false)
         {
             iv ??= GenerateIV();
-            var keyParameters = CreateKeyParameters(key, iv);
-            var cipher = CipherUtilities.GetCipher(AesCryptoService);
-            cipher.Init(true, keyParameters);
-            var cipherData = cipher.DoFinal(data);
-            return PackCipherData(cipherData, iv);
+            var aes = CreateAes(key, iv, true);
+            var aesData = aes.DoFinal(data);
+            return noInitVector ? aesData : iv.Concat(aesData).ToArray();
         }
 
-        public static string Decrypt(string cipherText, byte[] key)
+        /// <summary>
+        /// Encrypted message
+        /// </summary>
+        /// <param name="message">message to be encrypted</param>
+        /// <param name="password">password</param>
+        /// <returns></returns>
+        public static byte[] Encrypt(string message, string password)
         {
-            var cipherData = Convert.FromBase64String(cipherText);
-            var (encryptedBytes, iv) = UnpackCipherData(cipherData);
-            var decryptedData = Decrypt(encryptedBytes, key, iv);
-            return Encoders.Utf8.Encode(decryptedData);
+            var bytes = message.Utf8ToBytes();
+            var keySalt = SaltBytes();
+            var key = KeyFromPassword(password, keySalt);
+            var iv = InitializationVector(key, bytes);
+            var data = Encrypt(bytes, key, iv, true);
+
+            return PackArrays(keySalt, key, iv, data);
         }
 
+        /// <summary>
+        /// Applies AES decryption to data encrypted with AesEncrypt and the specified key.
+        /// The actual iv used is obtained from the first 16 bytes of data if null.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="key"></param>
+        /// <param name="iv">The IV to use. If null, the first 16 bytes of data are used.</param>
+        /// <param name="ivLength">IV length</param>
+        /// <returns>Decryption of data.</returns>
         public static byte[] Decrypt(ReadOnlyByteSpan data, byte[] key, byte[] iv = null, int ivLength = DefaultVectorLength)
         {
             if (iv == null)
@@ -72,19 +93,41 @@ namespace CafeLib.BsvSharp.Crypto
                 data = data[ivLength..];
             }
 
-            var keyParameters = CreateKeyParameters(key, iv);
-            var cipher = CipherUtilities.GetCipher(AesCryptoService);
-            cipher.Init(false, keyParameters);
-            var decryptedData = cipher.DoFinal(data);
-            return decryptedData;
+            var aes = CreateAes(key, iv, false);
+            var aesData = aes.DoFinal(data);
+            return aesData;
+        }
+
+        /// <summary>
+        /// Decrypted encrypted byte array.
+        /// </summary>
+        /// <param name="encrypted">encrypted byte array</param>
+        /// <param name="password">password</param>
+        /// <returns>decrypted message</returns>
+        public static string Decrypt(byte[] encrypted, string password)
+        {
+            var (salt, key, iv, encrypt) = UnpackArrays(encrypted);
+
+            ReadOnlyByteSpan keySpan = key;
+            ReadOnlyByteSpan authKey = Encryption.KeyFromPassword(password, salt);
+
+            if (authKey.Data.SequenceCompareTo(keySpan.Data) != 0)
+            {
+                throw new ApplicationException("Invalid signature");
+            }
+
+            var decrypt = Encryption.AesDecrypt(encrypt, key, iv);
+            return Encoders.Utf8.Encode(decrypt);
         }
 
         #region Helpers
 
-        private static byte[] SaltBytes(int length = DefaultSaltLength)
+        private static IBufferedCipher CreateAes(byte[] key, byte[] iv, bool encryptFlag)
         {
-            var random = new SecureRandom(new DigestRandomGenerator(new Sha256Digest()));
-            return random.GenerateSeed(length);
+            var cipher = CipherUtilities.GetCipher(AesCryptoService);
+            var keyParameters = CreateKeyParameters(key, iv);
+            cipher.Init(encryptFlag, keyParameters);
+            return cipher;
         }
 
         private static ICipherParameters CreateKeyParameters(byte[] key, byte[] iv)
@@ -93,56 +136,62 @@ namespace CafeLib.BsvSharp.Crypto
             return new ParametersWithIV(keyParameter, iv);
         }
 
-        private static byte[] PackCipherData(byte[] encryptedBytes, byte[] iv)
-        {
-            var dataSize = encryptedBytes.Length + iv.Length + 1;
-            var index = 0;
-            var data = new byte[dataSize];
-            data[index] = AesIvSize;
-            index += 1;
-
-            Array.Copy(iv, 0, data, index, iv.Length);
-            index += iv.Length;
-            Array.Copy(encryptedBytes, 0, data, index, encryptedBytes.Length);
-
-            return data;
-        }
-
-        private static (byte[], byte[]) UnpackCipherData(byte[] cipherData)
-        {
-            var index = 0;
-            var ivSize = cipherData[index];
-            index += 1;
-
-            var iv = new byte[ivSize];
-            Array.Copy(cipherData, index, iv, 0, ivSize);
-            index += ivSize;
-
-            var encryptedBytes = new byte[cipherData.Length - index];
-            Array.Copy(cipherData, index, encryptedBytes, 0, encryptedBytes.Length);
-            return (encryptedBytes, iv);
-        }
-
-        private static (byte[], byte[]) UnpackCipherData(string cipherText)
-        {
-            var index = 0;
-            var cipherData = Convert.FromBase64String(cipherText);
-            var ivSize = cipherData[index];
-            index += 1;
-
-            var iv = new byte[ivSize];
-            Array.Copy(cipherData, index, iv, 0, ivSize);
-            index += ivSize;
-
-            var encryptedBytes = new byte[cipherData.Length - index];
-            Array.Copy(cipherData, index, encryptedBytes, 0, encryptedBytes.Length);
-            return (encryptedBytes, iv);
-        }
-
         private static byte[] GenerateIV()
         {
             var random = new SecureRandom();
             return random.GenerateSeed(AesIvSize);
+        }
+
+        private static byte[] SaltBytes(int length = DefaultSaltLength)
+        {
+            var random = new SecureRandom(new DigestRandomGenerator(new Sha256Digest()));
+            return random.GenerateSeed(length);
+        }
+
+        /// <summary>
+        /// Pack encryption components. 
+        /// </summary>
+        /// <param name="salt">password salt</param>
+        /// <param name="key">encryption key</param>
+        /// <param name="iv">initialization vector</param>
+        /// <param name="data">encrypted data</param>
+        /// <returns>merged encrypted components</returns>
+        private static byte[] PackArrays(byte[] salt, byte[] key, byte[] iv, byte[] data)
+        {
+            var arrays = new[] { salt, key, iv, data };
+            var merge = new byte[arrays.Sum(a => a.Length) + arrays.Length * sizeof(int)];
+            var index = 0;
+            foreach (var a in arrays)
+            {
+                Array.Copy(BitConverter.GetBytes(a.Length), 0, merge, index, sizeof(int));
+                index += sizeof(int);
+                Array.Copy(a, 0, merge, index, a.Length);
+                index += a.Length;
+            }
+
+            return merge;
+        }
+
+        /// <summary>
+        /// Restore encryption components from merged encrypted data
+        /// </summary>
+        /// <param name="encryptedBytes">encrypted bytes</param>
+        /// <returns>encrypted components</returns>
+        private static (byte[] salt, byte[] key, byte[] iv, byte[] data) UnpackArrays(byte[] encryptedBytes)
+        {
+            var arrays = new byte[4][];
+
+            var index = 0;
+            for (var item = 0; item < arrays.Length; ++item)
+            {
+                var length = BitConverter.ToInt32(encryptedBytes, index);
+                index += sizeof(int);
+                arrays[item] = new byte[length];
+                Array.Copy(encryptedBytes, index, arrays[item], 0, length);
+                index += length;
+            }
+
+            return (arrays[0], arrays[1], arrays[2], arrays[3]);
         }
 
         #endregion

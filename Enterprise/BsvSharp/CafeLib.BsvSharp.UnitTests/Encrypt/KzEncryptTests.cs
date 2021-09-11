@@ -3,6 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using System;
 using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
@@ -13,16 +14,14 @@ namespace CafeLib.BsvSharp.UnitTests.Encrypt
     public class KzEncryptTests
     {
         [Fact]
-        public void Aes_Encrypt_Decrypt()
+        public void Aes_Encrypt_Decrypt_String()
         {
-            var msg = "all good men must act";
-            var password = "really strong password...;-)";
+            const string msg = "all good men must act";
+            const string password = "really strong password...;-)";
 
-            var key = AesEncryption.KeyFromPassword(password);
-
-            var encrypted = AesEncryption.Encrypt(msg, key);
-            var decrypted = AesEncryption.Decrypt(encrypted, key);
-            Assert.Equal(msg, decrypted);
+            var encrypt = Encryption.AesEncrypt(msg, password);
+            var decrypt = Encryption.AesDecrypt(encrypt, password);
+            Assert.Equal(msg, decrypt);
         }
 
         [Fact]
@@ -32,37 +31,23 @@ namespace CafeLib.BsvSharp.UnitTests.Encrypt
             var data1 = msg.Utf8ToBytes();
             var password = "really strong password...;-)";
 
-            var key = Encryption2.KeyFromPassword(password);
+            var key = AesEncryption.KeyFromPassword(password);
 
-            var iv = Encryption2.InitializationVector(key, data1);
-            var edata1 = Encryption2.AesEncrypt(data1, key, iv, true);
-            var ddata1 = Encryption2.AesDecrypt(edata1, key, iv);
+            var iv = AesEncryption.InitializationVector(key, data1);
+            var edata1 = AesEncryption.Encrypt(data1, key, iv, true);
+            var ddata1 = AesEncryption.Decrypt(edata1, key, iv);
             Assert.Equal(data1, ddata1);
             Assert.Equal(msg, Encoders.Utf8.Encode(ddata1));
         }
 
+        [Fact]
+        public void AesEncryptStringTests_BadPassword()
+        {
+            const string msg = "all good men must act";
+            const string password = "really strong password...;-)";
 
-        //[Fact]
-        //public void AesEncryptStringTests()
-        //{
-        //    const string msg = "all good men must act";
-        //    const string password = "really strong password...;-)";
-
-        //    var encrypt = Encryption.AesEncrypt(msg, password);
-        //    var decrypt = Encryption.AesDecrypt(encrypt, password);
-        //    Assert.Equal(msg, decrypt);
-        //}
-
-        //[Fact]
-        //public void AesEncryptStringTests_BadPassword()
-        //{
-        //    const string msg = "all good men must act";
-        //    const string password = "really strong password...;-)";
-
-        //    var encrypt = Encryption.AesEncrypt(msg, password);
-        //    Assert.Throws<CryptographicException>(() => Encryption.AesDecrypt(encrypt, "Bad password"));
-        //    var decrypt = Encryption.AesDecrypt(encrypt, password);
-        //    Assert.Equal(msg, decrypt);
-        //}
+            var encrypt = AesEncryption.Encrypt(msg, password);
+            Assert.Throws<ApplicationException>(() => AesEncryption.Decrypt(encrypt, "Bad password"));
+        }
     }
 }
