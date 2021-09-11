@@ -52,7 +52,7 @@ namespace CafeLib.BsvSharp.UnitTests.Encrypt
             var key = AesEncryption.KeyFromPassword(password);
 
             var iv = AesEncryption.InitializationVector(key, data1);
-            var edata1 = Encryption.AesEncrypt(data1, key, iv, false);
+            var edata1 = Encryption.AesEncrypt(data1, key, iv, true);
             var ddata1 = Encryption.AesDecrypt(edata1, key, iv);
             Assert.Equal(data1, ddata1);
             Assert.Equal(msg, Encoders.Utf8.Encode(ddata1));
