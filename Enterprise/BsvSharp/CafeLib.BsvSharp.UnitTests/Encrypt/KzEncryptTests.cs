@@ -23,23 +23,6 @@ namespace CafeLib.BsvSharp.UnitTests.Encrypt
             var encrypted = AesEncryption.Encrypt(msg, key);
             var decrypted = AesEncryption.Decrypt(encrypted, key);
             Assert.Equal(msg, decrypted);
-
-            //var key = Encryption.KeyFromPassword(password);
-
-            //{
-            //    var edata1 = Encryption.AesEncrypt(data1, key);
-            //    var ddata1 = Encryption.AesDecrypt(edata1, key);
-            //    Assert.Equal(data1, ddata1);
-            //    Assert.Equal(msg, Encoders.Utf8.Encode(ddata1));
-            //}
-
-            //{
-            //    var iv = Encryption.InitializationVector(key, data1);
-            //    var edata1 = Encryption.AesEncrypt(data1, key, iv, true);
-            //    var ddata1 = Encryption.AesDecrypt(edata1, key, iv);
-            //    Assert.Equal(data1, ddata1);
-            //    Assert.Equal(msg, Encoders.Utf8.Encode(ddata1));
-            //}
         }
 
         [Fact]
@@ -49,11 +32,11 @@ namespace CafeLib.BsvSharp.UnitTests.Encrypt
             var data1 = msg.Utf8ToBytes();
             var password = "really strong password...;-)";
 
-            var key = AesEncryption.KeyFromPassword(password);
+            var key = Encryption2.KeyFromPassword(password);
 
-            var iv = AesEncryption.InitializationVector(key, data1);
-            var edata1 = Encryption.AesEncrypt(data1, key, iv, true);
-            var ddata1 = Encryption.AesDecrypt(edata1, key, iv);
+            var iv = Encryption2.InitializationVector(key, data1);
+            var edata1 = Encryption2.AesEncrypt(data1, key, iv, true);
+            var ddata1 = Encryption2.AesDecrypt(edata1, key, iv);
             Assert.Equal(data1, ddata1);
             Assert.Equal(msg, Encoders.Utf8.Encode(ddata1));
         }
