@@ -1,11 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
+//using System.Security.Cryptography;
 using CafeLib.BsvSharp.BouncyCastle.Crypto;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Engines;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Paddings;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Parameters;
 using CafeLib.BsvSharp.BouncyCastle.Crypto.Prng;
 using CafeLib.BsvSharp.BouncyCastle.Security;
@@ -97,14 +94,9 @@ namespace CafeLib.BsvSharp.Crypto
                 data = data[ivLength..];
             }
 
-            using var aes = new AesCryptoServiceProvider { Padding = PaddingMode.PKCS7, Mode = CipherMode.CBC, Key = key, IV = iv };
-            using var ms = new MemoryStream();
-            using (var cs = new CryptoStream(ms, aes.CreateDecryptor(key, iv), CryptoStreamMode.Write)) 
-            {
-                cs.Write(data);
-            }
-
-            return ms.ToArray();
+            var aes = CreateAes(key, iv, false);
+            var aesData = aes.DoFinal(data);
+            return aesData;
         }
 
         /// <summary>
@@ -122,7 +114,7 @@ namespace CafeLib.BsvSharp.Crypto
 
             if (authKey.Data.SequenceCompareTo(keySpan.Data) != 0)
             {
-                throw new CryptographicException("Invalid signature");
+                throw new ApplicationException("Invalid signature");
             }
 
             var decrypt = Encryption.AesDecrypt(encrypt, key, iv);
