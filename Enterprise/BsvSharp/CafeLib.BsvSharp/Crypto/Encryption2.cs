@@ -58,7 +58,7 @@ namespace CafeLib.BsvSharp.Crypto
         public static byte[] AesEncrypt(ReadOnlyByteSpan data, byte[] key, byte[] iv = null, bool noInitVector = false)
         {
             iv ??= GenerateIV();
-            var aes = CreateAes(key, iv);
+            var aes = CreateAes(key, iv, true);
             var aesData = aes.DoFinal(data);
             return noInitVector ? aesData : iv.Concat(aesData).ToArray();
         }
@@ -131,11 +131,11 @@ namespace CafeLib.BsvSharp.Crypto
 
         #region Helpers
 
-        private static IBufferedCipher CreateAes(byte[] key, byte[] iv)
+        private static IBufferedCipher CreateAes(byte[] key, byte[] iv, bool encryptFlag)
         {
             var cipher = CipherUtilities.GetCipher(AesCryptoService);
             var keyParameters = CreateKeyParameters(key, iv);
-            cipher.Init(true, keyParameters);
+            cipher.Init(encryptFlag, keyParameters);
             return cipher;
         }
 
