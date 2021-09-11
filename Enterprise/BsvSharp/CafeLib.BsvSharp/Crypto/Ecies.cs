@@ -89,9 +89,9 @@ namespace CafeLib.BsvSharp.Crypto
 
         public byte[] Encrypt(ReadOnlyByteSpan data)
         {
-            var iv = Encryption.InitializationVector(_privateKey.Bytes, data);
+            var iv = AesEncryption.InitializationVector(_privateKey.Bytes, data);
 
-            var c = Encryption.AesEncrypt(data, _kE.Span, iv);
+            var c = AesEncryption.Encrypt(data, _kE.Span, iv);
             //var c = AESCBC_Encrypt(data.ToArray(), _kE.ToBytes(), iv);
             var d = Hashes.HmacSha256(_kM.Span, c).Span;
             if (ShortTag) d = d.Slice(0, 4);
@@ -136,7 +136,7 @@ namespace CafeLib.BsvSharp.Crypto
                 return null;
             }
 
-            var r = Encryption.AesDecrypt(c, _kE);
+            var r = AesEncryption.Decrypt(c, _kE);
 
             return r;
         }

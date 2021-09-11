@@ -14,14 +14,6 @@ namespace CafeLib.BsvSharp.UnitTests.Encrypt
 {
     public class KzEciesTests
     {
-        /*
-        class TC { public bool ok; public string hex; public string b58; }
-
-        TC[] tcs = new TC[] {
-            new TC { },
-        };
-        */
-
         [Fact]
         public void BsvPrivateKeyTests()
         {
@@ -71,10 +63,31 @@ namespace CafeLib.BsvSharp.UnitTests.Encrypt
                 r = ms.ToArray();
             }
             Assert.Equal(encrypted, r);
+        }
 
+        [Fact]
+        public void Default_Ecies_Test()
+        {
+            const string message = "attack at dawn";
 
-            var t = AesEncryption.Encrypt(plaintext, key, iv);
-            Assert.Equal(encrypted, t);
+            var aliceKey = PrivateKey.FromWif("L1Ejc5dAigm5XrM3mNptMEsNnHzS7s51YxU7J61ewGshZTKkbmzJ");
+            var bobKey = PrivateKey.FromWif("KxfxrUXSMjJQcb3JgnaaA6MqsrKQ1nBSxvhuigdKRyFiEm6BZDgG");
+
+            var encrypted = "0339e504d6492b082da96e11e8f039796b06cd4855c101e2492a6f10f3e056a9e712c732611c6917ab5c57a1926973bc44a1586e94a783f81d05ce72518d9b0a80e2e13c7ff7d1306583f9cc7a48def5b37fbf2d5f294f128472a6e9c78dede5f5";
+            // encrypted broken down: 
+            // priv.pubkey 0339e504d6492b082da96e11e8f039796b06cd4855c101e2492a6f10f3e056a9e7
+            // ivbuf       12c732611c6917ab5c57a1926973bc44
+            // encrypted   a1586e94a783f81d05ce72518d9b0a80
+            // sig         e2e13c7ff7d1306583f9cc7a48def5b37fbf2d5f294f128472a6e9c78dede5f5
+
+            var alice = new Ecies { PrivateKey = aliceKey, PublicKey = bobKey.CreatePublicKey() };
+            var bob = new Ecies { PrivateKey = bobKey };
+
+            var ciphertext = alice.Encrypt(message);
+            Assert.Equal(encrypted, ciphertext.ToHex());
+
+            var decryptedText = bob.DecryptToUtf8(ciphertext);
+            Assert.Equal(message, decryptedText);
         }
 
         [Fact]
