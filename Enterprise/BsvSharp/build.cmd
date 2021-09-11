@@ -20,9 +20,23 @@ set libs=%solution%
 call %root%\build\buildlibs
 if ERRORLEVEL 1 goto error
 
+:: Package BouncyCastle.
+set solution=CafeLib.%type%.BouncyCastle
+set sourcepath=%root%\%location%\libs\%solution%
+
+echo Create Nuget Packages for %solution% ...
+echo %pack% %sourcepath%\%solution%.csproj -p:Version=%version% -p:PackageVersion=%version% -p:Configuration=%configuration%
+%pack% %sourcepath%\%solution%.csproj -p:Version=%version% -p:PackageVersion=%version% -p:Configuration=%configuration%
+if ERRORLEVEL 1 goto error
+
+echo Push Packages to Nuget repository ...
+echo %nuget% push %sourcepath%\%libPath%\%solution%.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
+if '%debug%' == '' %nuget% push %sourcepath%\%libPath%\%solution%.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
+if ERRORLEVEL 1 goto error
+
 :: Package Secp256k1 to Nuget.
 set solution=CafeLib.Secp256k1
-set sourcepath=%sourcepath%\libs\%solution%
+set sourcepath=%root%\%location%\libs\%solution%
 
 echo %nugetpack% %sourcepath%\%solution%.nuspec -Version %version% -Properties Configuration=%configuration% -OutputDirectory %sourcepath%\%libPath%
 %nugetpack% %sourcepath%\%solution%.nuspec -Version %version% -Properties Configuration=%configuration% -OutputDirectory %sourcepath%\%libPath%
