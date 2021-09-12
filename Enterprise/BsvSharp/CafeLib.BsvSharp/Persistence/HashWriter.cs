@@ -4,10 +4,10 @@
 #endregion
 
 using System;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Digests;
 
 namespace CafeLib.BsvSharp.Persistence
 {

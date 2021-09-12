@@ -39,6 +39,7 @@
   <ItemGroup>
     <PackageReference Include="CafeLib.Core" Version="$(Version)" />
     <PackageReference Include="CafeLib.Core.Buffers" Version="$(Version)" />
+    <PackageReference Include="CafeLib.Cryptography.BouncyCastle" Version="$(Version)" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
@@ -58,7 +59,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\libs\CafeLib.BsvSharp.BouncyCastle\CafeLib.BsvSharp.BouncyCastle.csproj" />
     <ProjectReference Include="..\libs\CafeLib.Secp256k1\CafeLib.Secp256k1.csproj" />
   </ItemGroup>
 

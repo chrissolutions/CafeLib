@@ -4,9 +4,9 @@
 #endregion
 
 using System;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Prng;
 using CafeLib.Core.Buffers;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Digests;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Prng;
 
 namespace CafeLib.BsvSharp.Numerics
 {

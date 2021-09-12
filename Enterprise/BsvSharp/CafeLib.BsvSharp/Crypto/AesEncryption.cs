@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
-using CafeLib.BsvSharp.BouncyCastle.Crypto;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Parameters;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Prng;
-using CafeLib.BsvSharp.BouncyCastle.Security;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Support;
+using CafeLib.Cryptography.BouncyCastle.Crypto;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Digests;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Parameters;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Prng;
+using CafeLib.Cryptography.BouncyCastle.Security;
 // ReSharper disable InconsistentNaming
 
 namespace CafeLib.BsvSharp.Crypto

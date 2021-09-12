@@ -4,10 +4,10 @@
 #endregion
 
 using System;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Macs;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Parameters;
-using CafeLib.BsvSharp.BouncyCastle.Hash;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Digests;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Macs;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Parameters;
+using CafeLib.Cryptography.BouncyCastle.Hash;
 using CafeLib.BsvSharp.Crypto.Cryptsharp;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;

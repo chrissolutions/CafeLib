@@ -4,11 +4,9 @@
 #endregion
 
 using System;
-using System.Buffers;
-using System.Security.Cryptography;
-using CafeLib.BsvSharp.BouncyCastle.Hash;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
+using CafeLib.Cryptography.BouncyCastle.Hash;
 
 namespace CafeLib.BsvSharp.Crypto
 {
@@ -128,72 +126,6 @@ namespace CafeLib.BsvSharp.Crypto
             var hash = new UInt512();
             key.HmacSha512(data, hash.Span);
             return hash;
-        }
-
-        //public static byte[] ComputeHash(this HashAlgorithm alg, ReadOnlyByteSequence buffer)
-        //{
-        //    var hash = new byte[alg.HashSize];
-        //    alg.TransformFinalBlock(buffer, hash);
-        //    return hash;
-        //}
-
-        public static void TransformFinalBlock(this HashAlgorithm alg, ReadOnlyByteSequence data, ByteSpan hash)
-        {
-            var length = data.Length;
-            var array = ArrayPool<byte>.Shared.Rent((int)Math.Min(MaxBufferSize, length));
-            try
-            {
-                var offset = 0L;
-                foreach (var m in data.Data)
-                {
-                    var mOff = 0;
-                    do 
-                    {
-                        var mLen = Math.Min(array.Length, m.Length - mOff);
-                        m.Span.Slice(mOff, mLen).CopyTo(array);
-                        mOff += mLen;
-                        offset += mLen;
-                        if (offset < length) 
-                        {
-                            alg.TransformBlock(array, 0, mLen, null, 0);
-                        } 
-                        else 
-                        {
-                            alg.TransformFinalBlock(array, 0, mLen);
-                            alg.Hash.CopyTo(hash);
-                        }
-                    } 
-                    while (mOff < m.Length);
-                }
-            }
-            finally {
-                Array.Clear(array, 0, array.Length);
-                ArrayPool<byte>.Shared.Return(array);
-            }
-        }
-
-        public static void TransformBlock(this HashAlgorithm alg, ReadOnlyByteSequence data)
-        {
-            var length = data.Length;
-            var array = ArrayPool<byte>.Shared.Rent((int)Math.Min(MaxBufferSize, length));
-            try
-            {
-                foreach (var m in data) 
-                {
-                    var mOff = 0;
-                    do {
-                        var mLen = Math.Min(array.Length, m.Length - mOff);
-                        m.Data.Span.Slice(mOff, mLen).CopyTo(array);
-                        mOff += mLen;
-                        alg.TransformBlock(array, 0, mLen, null, 0);
-                    } while (mOff < m.Length);
-                }
-            }
-            finally 
-            {
-                Array.Clear(array, 0, array.Length);
-                ArrayPool<byte>.Shared.Return(array);
-            }
         }
     }
 }

@@ -17,11 +17,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 #endregion
 
-#define USEBC
-
 using System;
 using System.IO;
-using CafeLib.BsvSharp.BouncyCastle.Crypto;
+using CafeLib.Cryptography.BouncyCastle.Crypto;
 
 namespace CafeLib.BsvSharp.Crypto.Cryptsharp
 {

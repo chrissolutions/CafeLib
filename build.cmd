@@ -9,6 +9,7 @@ if ERRORLEVEL 1 goto exit
 :: Setup domains.
 set libs=
 set libs=%libs% Core
+set libs=%libs% Cryptography
 set libs=%libs% Data
 set libs=%libs% Authorization
 set libs=%libs% Network

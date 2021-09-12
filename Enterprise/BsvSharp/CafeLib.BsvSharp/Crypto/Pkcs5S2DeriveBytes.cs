@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using CafeLib.BsvSharp.BouncyCastle.Crypto;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Digests;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Macs;
-using CafeLib.BsvSharp.BouncyCastle.Crypto.Parameters;
+using CafeLib.Cryptography.BouncyCastle.Crypto;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Digests;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Macs;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Parameters;
 
 namespace CafeLib.BsvSharp.Crypto
 {
