@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CafeLib.Core.Buffers\CafeLib.Core.Buffers.csproj" />
+    <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />
   </ItemGroup>
 
 </Project>

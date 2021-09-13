@@ -35,5 +35,12 @@ namespace CafeLib.Core.Extensions
 
             return bytes.ToArray();
         }
+
+        public static byte[] Duplicate(this byte[] source)
+        {
+            var dup = new byte[source.Length];
+            Buffer.BlockCopy(source, 0, dup, 0, source.Length);
+            return dup;
+        }
     }
 }
