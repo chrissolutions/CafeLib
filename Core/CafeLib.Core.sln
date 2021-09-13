@@ -35,7 +35,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Collections.Di
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Security", "CafeLib.Core.Security\CafeLib.Core.Security.csproj", "{69F1A71E-B39E-479B-A68A-BC1DD6F49B0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Core.Buffers", "CafeLib.Core.Buffers\CafeLib.Core.Buffers.csproj", "{21256246-FB8E-4418-87FD-693B733D6AE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Buffers", "CafeLib.Core.Buffers\CafeLib.Core.Buffers.csproj", "{21256246-FB8E-4418-87FD-693B733D6AE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Core.Encoding", "CafeLib.Core.Encoding\CafeLib.Core.Encoding.csproj", "{9B070E31-2AEC-42D9-8BB1-F4044CBC3779}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +113,10 @@ Global
 		{21256246-FB8E-4418-87FD-693B733D6AE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21256246-FB8E-4418-87FD-693B733D6AE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21256246-FB8E-4418-87FD-693B733D6AE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B070E31-2AEC-42D9-8BB1-F4044CBC3779}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B070E31-2AEC-42D9-8BB1-F4044CBC3779}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B070E31-2AEC-42D9-8BB1-F4044CBC3779}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B070E31-2AEC-42D9-8BB1-F4044CBC3779}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
