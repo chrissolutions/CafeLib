@@ -24,4 +24,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CafeLib.Core.Buffers\CafeLib.Core.Buffers.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace CafeLib.Core.Encoding
+﻿namespace CafeLib.Core.Encodings
 {
     public interface IEncoder
     {

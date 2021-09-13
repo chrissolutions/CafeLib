@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Security", "Ca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Buffers", "CafeLib.Core.Buffers\CafeLib.Core.Buffers.csproj", "{21256246-FB8E-4418-87FD-693B733D6AE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Core.Encoding", "CafeLib.Core.Encoding\CafeLib.Core.Encoding.csproj", "{9B070E31-2AEC-42D9-8BB1-F4044CBC3779}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Core.Encodings", "CafeLib.Core.Encodings\CafeLib.Core.Encodings.csproj", "{9B070E31-2AEC-42D9-8BB1-F4044CBC3779}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
