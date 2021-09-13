@@ -12,8 +12,7 @@ set solution=CafeLib.%type%
 set sourcepath=%root%\%type%
 
 :: Setup libraries.
-rem set libs=%solution%
-set libs=
+set libs=%solution%
 set libs=%libs% %solution%.BouncyCastle
 ::
 
