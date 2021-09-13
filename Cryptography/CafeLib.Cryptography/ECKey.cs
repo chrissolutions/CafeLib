@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CafeLib.Core.Encodings;
 using CafeLib.Cryptography.BouncyCastle.Asn1;
 using CafeLib.Cryptography.BouncyCastle.Asn1.Sec;
 using CafeLib.Cryptography.BouncyCastle.Asn1.X9;
@@ -11,13 +12,13 @@ using CafeLib.Cryptography.BouncyCastle.Crypto.Parameters;
 using CafeLib.Cryptography.BouncyCastle.Crypto.Signers;
 using CafeLib.Cryptography.BouncyCastle.Math;
 using CafeLib.Cryptography.BouncyCastle.Math.EC;
-using NBitcoin.DataEncoders;
 // ReSharper disable InconsistentNaming
 
 namespace CafeLib.Cryptography
 {
 	public class ECKey
-	{
+    {
+        private static readonly HexEncoder _hexEncoder = new HexEncoder();
         private readonly ECKeyParameters _key;
 
 		public ECPrivateKeyParameters PrivateKey => _key as ECPrivateKeyParameters;
@@ -42,7 +43,6 @@ namespace CafeLib.Cryptography
 				_key = new ECPublicKeyParameters("EC", q, DomainParameter);
 			}
 		}
-
 
 		X9ECParameters _secp256k1;
 		public X9ECParameters Secp256k1
@@ -192,8 +192,6 @@ namespace CafeLib.Cryptography
 			return curve.DecodePoint(compEnc);
 		}
 
-
-
 		public static ECKey FromDER(byte[] der)
 		{
 
@@ -224,18 +222,14 @@ namespace CafeLib.Cryptography
 
 		public static string DumpDer(byte[] der)
 		{
-			StringBuilder builder = new StringBuilder();
-			Asn1InputStream decoder = new Asn1InputStream(der);
-			DerSequence seq = (DerSequence)decoder.ReadObject();
-			builder.AppendLine("Version : " + Encoders.Hex.EncodeData(seq[0].GetDerEncoded()));
-			builder.AppendLine("Private : " + Encoders.Hex.EncodeData(seq[1].GetDerEncoded()));
-			builder.AppendLine("Params : " + Encoders.Hex.EncodeData(((DerTaggedObject)seq[2]).GetObject().GetDerEncoded()));
-			builder.AppendLine("Public : " + Encoders.Hex.EncodeData(seq[3].GetDerEncoded()));
-#if !PORTABLE
+			var builder = new StringBuilder();
+			var decoder = new Asn1InputStream(der);
+			var seq = (DerSequence)decoder.ReadObject();
+			builder.AppendLine("Version : " + _hexEncoder.Encode(seq[0].GetDerEncoded()));
+			builder.AppendLine("Private : " + _hexEncoder.Encode(seq[1].GetDerEncoded()));
+			builder.AppendLine("Params : " + _hexEncoder.Encode(((DerTaggedObject)seq[2]).GetObject().GetDerEncoded()));
+			builder.AppendLine("Public : " + _hexEncoder.Encode(seq[3].GetDerEncoded()));
 			decoder.Close();
-#else
-		decoder.Dispose();
-#endif
 			return builder.ToString();
 		}
 
@@ -268,11 +262,11 @@ namespace CafeLib.Cryptography
 			Asn1Object secp256k1Der = null;
 			if (compressed)
 			{
-				secp256k1Der = DerSequence.FromByteArray(DataEncoders.Encoders.Hex.DecodeData("308182020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f300604010004010704210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141020101"));
+				secp256k1Der = DerSequence.FromByteArray(_hexEncoder.Decode("308182020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f300604010004010704210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141020101"));
 			}
 			else
 			{
-				secp256k1Der = DerSequence.FromByteArray(DataEncoders.Encoders.Hex.DecodeData("3081a2020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f300604010004010704410479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141020101"));
+				secp256k1Der = DerSequence.FromByteArray(_hexEncoder.Decode("3081a2020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f300604010004010704410479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141020101"));
 			}
 			seq.AddObject(new DerTaggedObject(0, secp256k1Der));
 			seq.AddObject(new DerTaggedObject(1, new DerBitString(GetPublicKeyPoint(compressed))));

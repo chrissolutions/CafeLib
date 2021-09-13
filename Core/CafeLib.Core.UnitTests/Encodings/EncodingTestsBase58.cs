@@ -3,7 +3,7 @@ using Xunit;
 
 namespace CafeLib.Core.UnitTests
 {
-    public class Base58EncodingTests
+    public class EncodingTestsBase58
     {
         private readonly Base58Encoder _base58Encoder = new Base58Encoder();
         private readonly HexEncoder _hexEncoder = new HexEncoder();

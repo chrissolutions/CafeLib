@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using CafeLib.Cryptography.BouncyCastle.Asn1;
 using CafeLib.Cryptography.BouncyCastle.Math;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace CafeLib.Cryptography
 {
