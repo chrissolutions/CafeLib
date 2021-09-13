@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using CafeLib.Core.Encodings;
 using CafeLib.Core.Numerics;
 using CafeLib.Cryptography.BouncyCastle.Asn1;
@@ -13,25 +10,24 @@ using CafeLib.Cryptography.BouncyCastle.Crypto.Parameters;
 using CafeLib.Cryptography.BouncyCastle.Crypto.Signers;
 using CafeLib.Cryptography.BouncyCastle.Math;
 using CafeLib.Cryptography.BouncyCastle.Math.EC;
-// ReSharper disable InconsistentNaming
 
 namespace CafeLib.Cryptography
 {
 	public class ECKey
     {
-        private static readonly HexEncoder _hexEncoder = new HexEncoder();
+        private static readonly HexEncoder HexEncoder = new HexEncoder();
         private readonly ECKeyParameters _key;
 
-		public ECPrivateKeyParameters PrivateKey => _key as ECPrivateKeyParameters;
+        public static BigInteger HalfCurveOrder;
+        public static ECDomainParameters Curve;
 
-		public static BigInteger HALF_CURVE_ORDER;
-		public static ECDomainParameters CURVE;
+		public ECPrivateKeyParameters PrivateKey => _key as ECPrivateKeyParameters;
 
 		static ECKey()
 		{
 			X9ECParameters parameters = CreateCurve();
-			CURVE = new ECDomainParameters(parameters.Curve, parameters.G, parameters.N, parameters.H);
-			HALF_CURVE_ORDER = parameters.N.ShiftRight(1);
+			Curve = new ECDomainParameters(parameters.Curve, parameters.G, parameters.N, parameters.H);
+			HalfCurveOrder = parameters.N.ShiftRight(1);
 		}
 
 		public ECKey(byte[] vch, bool isPrivate)
@@ -46,34 +42,18 @@ namespace CafeLib.Cryptography
 		}
 
 		X9ECParameters _secp256k1;
-		public X9ECParameters Secp256k1
-		{
-			get
-			{
-				if (_secp256k1 == null)
-					_secp256k1 = CreateCurve();
-				return _secp256k1;
-			}
-		}
+		public X9ECParameters Secp256k1 => _secp256k1 ??= CreateCurve();
 
-		public static X9ECParameters CreateCurve()
+        public static X9ECParameters CreateCurve()
 		{
 			return SecNamedCurves.GetByName("secp256k1");
 		}
 
-		ECDomainParameters _DomainParameter;
-		public ECDomainParameters DomainParameter
-		{
-			get
-			{
-				if (_DomainParameter == null)
-					_DomainParameter = new ECDomainParameters(Secp256k1.Curve, Secp256k1.G, Secp256k1.N, Secp256k1.H);
-				return _DomainParameter;
-			}
-		}
+        private ECDomainParameters _domainParameter;
+		public ECDomainParameters DomainParameter => _domainParameter ??= new ECDomainParameters(Secp256k1.Curve, Secp256k1.G, Secp256k1.N, Secp256k1.H);
 
 
-		public ECDSASignature Sign(UInt256 hash)
+        public ECDSASignature Sign(UInt256 hash)
 		{
 			AssertPrivateKey();
 			var signer = new DeterministicECDSA();
@@ -226,15 +206,16 @@ namespace CafeLib.Cryptography
 			var builder = new StringBuilder();
 			var decoder = new Asn1InputStream(der);
 			var seq = (DerSequence)decoder.ReadObject();
-			builder.AppendLine("Version : " + _hexEncoder.Encode(seq[0].GetDerEncoded()));
-			builder.AppendLine("Private : " + _hexEncoder.Encode(seq[1].GetDerEncoded()));
-			builder.AppendLine("Params : " + _hexEncoder.Encode(((DerTaggedObject)seq[2]).GetObject().GetDerEncoded()));
-			builder.AppendLine("Public : " + _hexEncoder.Encode(seq[3].GetDerEncoded()));
+			builder.AppendLine("Version : " + HexEncoder.Encode(seq[0].GetDerEncoded()));
+			builder.AppendLine("Private : " + HexEncoder.Encode(seq[1].GetDerEncoded()));
+			builder.AppendLine("Params : " + HexEncoder.Encode(((DerTaggedObject)seq[2]).GetObject().GetDerEncoded()));
+			builder.AppendLine("Public : " + HexEncoder.Encode(seq[3].GetDerEncoded()));
 			decoder.Close();
 			return builder.ToString();
 		}
 
-		static void CheckArgument(bool predicate, string msg)
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
+        private static void CheckArgument(bool predicate, string msg)
 		{
 			if (!predicate)
 			{
@@ -245,7 +226,7 @@ namespace CafeLib.Cryptography
 		public byte[] ToDER(bool compressed)
 		{
 			AssertPrivateKey();
-			MemoryStream baos = new MemoryStream();
+			var baos = new MemoryStream();
 
 			// ASN1_SEQUENCE(EC_PRIVATEKEY) = {
 			//   ASN1_SIMPLE(EC_PRIVATEKEY, version, LONG),
@@ -253,23 +234,15 @@ namespace CafeLib.Cryptography
 			//   ASN1_EXP_OPT(EC_PRIVATEKEY, parameters, ECPKPARAMETERS, 0),
 			//   ASN1_EXP_OPT(EC_PRIVATEKEY, publicKey, ASN1_BIT_STRING, 1)
 			// } ASN1_SEQUENCE_END(EC_PRIVATEKEY)
-			DerSequenceGenerator seq = new DerSequenceGenerator(baos);
+			var seq = new DerSequenceGenerator(baos);
 			seq.AddObject(new DerInteger(1)); // version
 			seq.AddObject(new DerOctetString(PrivateKey.D.ToByteArrayUnsigned()));
 
 
 			//Did not managed to generate the same der as brainwallet by using this
 			//seq.AddObject(new DerTaggedObject(0, Secp256k1.ToAsn1Object()));
-			Asn1Object secp256k1Der = null;
-			if (compressed)
-			{
-				secp256k1Der = DerSequence.FromByteArray(_hexEncoder.Decode("308182020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f300604010004010704210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141020101"));
-			}
-			else
-			{
-				secp256k1Der = DerSequence.FromByteArray(_hexEncoder.Decode("3081a2020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f300604010004010704410479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141020101"));
-			}
-			seq.AddObject(new DerTaggedObject(0, secp256k1Der));
+            var secp256k1Der = Asn1Object.FromByteArray(compressed ? HexEncoder.Decode("308182020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f300604010004010704210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141020101") : HexEncoder.Decode("3081a2020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f300604010004010704410479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141020101"));
+            seq.AddObject(new DerTaggedObject(0, secp256k1Der));
 			seq.AddObject(new DerTaggedObject(1, new DerBitString(GetPublicKeyPoint(compressed))));
 			seq.Close();
 			return baos.ToArray();

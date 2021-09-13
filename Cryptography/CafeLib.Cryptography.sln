@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Cryptography.BouncyCastle", "CafeLib.Cryptography.BouncyCastle\CafeLib.Cryptography.BouncyCastle.csproj", "{1F30B46F-CF75-4AAE-8AD2-25F533943DD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Cryptography", "CafeLib.Cryptography\CafeLib.Cryptography.csproj", "{F1224A83-3339-4CB0-BAAC-7ECB3BD67A0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Cryptography", "CafeLib.Cryptography\CafeLib.Cryptography.csproj", "{F1224A83-3339-4CB0-BAAC-7ECB3BD67A0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Cryptography.UnitTests", "CafeLib.Cryptography.UnitTests\CafeLib.Cryptography.UnitTests.csproj", "{1997C1E8-FF2C-4DEA-92EF-2B20168A447C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{F1224A83-3339-4CB0-BAAC-7ECB3BD67A0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1224A83-3339-4CB0-BAAC-7ECB3BD67A0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1224A83-3339-4CB0-BAAC-7ECB3BD67A0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1997C1E8-FF2C-4DEA-92EF-2B20168A447C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1997C1E8-FF2C-4DEA-92EF-2B20168A447C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1997C1E8-FF2C-4DEA-92EF-2B20168A447C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1997C1E8-FF2C-4DEA-92EF-2B20168A447C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

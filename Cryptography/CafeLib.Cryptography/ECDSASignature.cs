@@ -59,7 +59,7 @@ namespace CafeLib.Cryptography
 
 		public ECDSASignature MakeCanonical()
         {
-            return S.CompareTo(ECKey.HALF_CURVE_ORDER) > 0
+            return S.CompareTo(ECKey.HalfCurveOrder) > 0
                 ? new ECDSASignature(R, ECKey.CreateCurve().N.Subtract(S))
                 : this;
         }
