@@ -8,23 +8,20 @@ namespace CafeLib.Cryptography
 {
 	public class ECDSASignature
 	{
-		private readonly BigInteger _r;
+        public BigInteger R { get; }
 
-		public BigInteger R => _r;
-
-        private BigInteger _s;
-		public BigInteger S => _s;
+        public BigInteger S { get; }
 
         public ECDSASignature(BigInteger r, BigInteger s)
 		{
-			_r = r;
-			_s = s;
+			R = r;
+			S = s;
 		}
 
 		public ECDSASignature(IReadOnlyList<BigInteger> rs)
 		{
-			_r = rs[0];
-			_s = rs[1];
+			R = rs[0];
+			S = rs[1];
 		}
 
 		/**
@@ -35,8 +32,8 @@ namespace CafeLib.Cryptography
 		public byte[] ToDER()
 		{
 			// Usually 70-72 bytes.
-			MemoryStream bos = new MemoryStream(72);
-			DerSequenceGenerator seq = new DerSequenceGenerator(bos);
+			var bos = new MemoryStream(72);
+			var seq = new DerSequenceGenerator(bos);
 			seq.AddObject(new DerInteger(R));
 			seq.AddObject(new DerInteger(S));
 			seq.Close();
@@ -61,31 +58,25 @@ namespace CafeLib.Cryptography
 		}
 
 		public ECDSASignature MakeCanonical()
-		{
-			if (this.S.CompareTo(ECKey.HALF_CURVE_ORDER) > 0)
-			{
-				return new ECDSASignature(this.R, ECKey.CreateCurve().N.Subtract(this.S));
-			}
-			else
-				return this;
-		}
-
-
+        {
+            return S.CompareTo(ECKey.HALF_CURVE_ORDER) > 0
+                ? new ECDSASignature(R, ECKey.CreateCurve().N.Subtract(S))
+                : this;
+        }
 
 		public static bool IsValidDER(byte[] bytes)
 		{
 			try
 			{
-				ECDSASignature.FromDER(bytes);
+				FromDER(bytes);
 				return true;
 			}
 			catch (FormatException)
 			{
 				return false;
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				Utils.error("Unexpected exception in ECDSASignature.IsValidDER " + ex.Message);
 				return false;
 			}
 		}

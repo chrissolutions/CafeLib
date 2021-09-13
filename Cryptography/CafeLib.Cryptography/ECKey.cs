@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CafeLib.Core.Encodings;
+using CafeLib.Core.Numerics;
 using CafeLib.Cryptography.BouncyCastle.Asn1;
 using CafeLib.Cryptography.BouncyCastle.Asn1.Sec;
 using CafeLib.Cryptography.BouncyCastle.Asn1.X9;
@@ -72,12 +73,12 @@ namespace CafeLib.Cryptography
 		}
 
 
-		public ECDSASignature Sign(uint256 hash)
+		public ECDSASignature Sign(UInt256 hash)
 		{
 			AssertPrivateKey();
-			DeterministicECDSA signer = new DeterministicECDSA();
+			var signer = new DeterministicECDSA();
 			signer.SetPrivateKey(PrivateKey);
-			var sig = ECDSASignature.FromDER(signer.SignHash(hash.ToBytes()));
+			var sig = ECDSASignature.FromDER(signer.SignHash(hash));
 			return sig.MakeCanonical();
 		}
 
@@ -89,11 +90,11 @@ namespace CafeLib.Cryptography
 
 
 
-		internal bool Verify(uint256 hash, ECDSASignature sig)
+		internal bool Verify(UInt256 hash, ECDSASignature sig)
 		{
 			var signer = new ECDsaSigner();
 			signer.Init(false, GetPublicKeyParameters());
-			return signer.VerifySignature(hash.ToBytes(), sig.R, sig.S);
+			return signer.VerifySignature(hash, sig.R, sig.S);
 		}
 
 		public byte[] GetPublicKeyPoint(bool isCompressed)
@@ -116,7 +117,7 @@ namespace CafeLib.Cryptography
 		}
 
 
-		public static ECKey RecoverFromSignature(int recId, ECDSASignature sig, uint256 message, bool compressed)
+		public static ECKey RecoverFromSignature(int recId, ECDSASignature sig, UInt256 message, bool compressed)
 		{
 			if (recId < 0)
 				throw new ArgumentException("recId should be positive");
@@ -125,7 +126,7 @@ namespace CafeLib.Cryptography
 			if (sig.S.SignValue < 0)
 				throw new ArgumentException("s should be positive");
 			if (message == null)
-				throw new ArgumentNullException("message");
+				throw new ArgumentNullException(nameof(message));
 
 
 			var curve = ECKey.CreateCurve();
@@ -159,7 +160,7 @@ namespace CafeLib.Cryptography
 				return null;
 
 			//   1.5. Compute e from M using Steps 2 and 3 of ECDSA signature verification.
-			var e = new BigInteger(1, (byte[])message.ToBytes());
+			var e = new BigInteger(1, message);
 			//   1.6. For k from 1 to 2 do the following.   (loop is outside this function via iterating recId)
 			//   1.6.1. Compute a candidate public key as:
 			//               Q = mi(r) * (sR - eG)
