@@ -62,5 +62,29 @@ namespace CafeLib.Core.UnitTests
             Assert.Equal(s0R, hexReverse.Encode(b0R));
             Assert.Equal(b0R, hexReverse.Decode(s0R));
         }
+
+        [Fact]
+        public void Ascii_Encode_Decode_Test()
+        {
+            const string message = "Kilroy was here!";
+            var asciiEncoder = new AsciiEncoder();
+
+            var encodedBytes = asciiEncoder.Decode(message);
+            var decoded = asciiEncoder.Encode(encodedBytes);
+
+            Assert.Equal(message, decoded);
+        }
+
+        [Fact]
+        public void Utf8_Encode_Decode_Test()
+        {
+            const string message = "Kilroy was here!";
+            var utf8Encoder = new Utf8Encoder();
+
+            var encodedBytes = utf8Encoder.Decode(message);
+            var decoded = utf8Encoder.Encode(encodedBytes);
+
+            Assert.Equal(message, decoded);
+        }
     }
 }

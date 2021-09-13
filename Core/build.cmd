@@ -19,6 +19,7 @@ set libs=%libs% %solution%.Collections
 set libs=%libs% %solution%.Collections.DirectedGraph
 set libs=%libs% %solution%.Data 
 set libs=%libs% %solution%.Dynamic
+set libs=%libs% %solution%.Encodings
 set libs=%libs% %solution%.Eventing
 set libs=%libs% %solution%.FileIO
 set libs=%libs% %solution%.IoC
