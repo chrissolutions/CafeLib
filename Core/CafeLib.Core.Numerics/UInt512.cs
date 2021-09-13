@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Numerics;
+using CafeLib.Core.Buffers;
+using CafeLib.Core.Encodings;
 
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
@@ -20,7 +22,7 @@ namespace CafeLib.Core.Numerics
         private static readonly HexEncoder Hex = Encoders.Hex;
         private static readonly HexReverseEncoder HexReverse = Encoders.HexReverse;
 
-        public const int Length = 64;
+        public const int Length = 8*sizeof(ulong);
 
         public UInt512(ReadOnlyByteSpan span, bool reverse = false)
             : this()

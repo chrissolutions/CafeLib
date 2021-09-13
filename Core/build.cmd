@@ -26,6 +26,7 @@ set libs=%libs% %solution%.IoC
 set libs=%libs% %solution%.Logging
 set libs=%libs% %solution%.Messaging
 set libs=%libs% %solution%.MethodBinding
+set libs=%libs% %solution%.Numerics
 set libs=%libs% %solution%.Queueing
 set libs=%libs% %solution%.Runnable
 set libs=%libs% %solution%.Security

@@ -11,7 +11,7 @@ namespace CafeLib.Core.Encodings
     /// </summary>
     public class HexReverseEncoder : HexEncoder
     {
-        internal override string EncodeSpan(ReadOnlyByteSpan bytes)
+        public override string EncodeSpan(ReadOnlyByteSpan bytes)
         {
             var s = new char[bytes.Length * 2];
             var i = s.Length;
@@ -24,7 +24,7 @@ namespace CafeLib.Core.Encodings
             return new string(s);
         }
 
-        internal override bool TryDecodeSpan(string hex, ByteSpan bytes)
+        public override bool TryDecodeSpan(string hex, ByteSpan bytes)
         {
             if (hex.Length % 2 == 1)
                 throw new ArgumentException("Invalid hex bytes string.", nameof(hex));

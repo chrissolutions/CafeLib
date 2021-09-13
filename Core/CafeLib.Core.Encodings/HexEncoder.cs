@@ -40,7 +40,7 @@ namespace CafeLib.Core.Encodings
             return TryDecodeSpan(hex, span);
         }
 
-        internal virtual string EncodeSpan(ReadOnlyByteSpan bytes)
+        public virtual string EncodeSpan(ReadOnlyByteSpan bytes)
         {
             var s = new char[bytes.Length * sizeof(char)];
             var i = 0;
@@ -53,7 +53,7 @@ namespace CafeLib.Core.Encodings
             return new string(s);
         }
 
-        internal virtual bool TryDecodeSpan(string hex, ByteSpan bytes)
+        public virtual bool TryDecodeSpan(string hex, ByteSpan bytes)
         {
             if (hex.Length % 2 == 1 || hex.Length / 2 > bytes.Length)
                 return false;

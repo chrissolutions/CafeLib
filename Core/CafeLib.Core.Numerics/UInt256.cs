@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Numerics;
+using CafeLib.Core.Buffers;
 
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
@@ -13,7 +14,7 @@ namespace CafeLib.Core.Numerics
         private ulong _n2;
         private ulong _n3;
 
-        public const int Length = 32;
+        public const int Length = 4*sizeof(ulong);
 
         public UInt256(UInt256 uint256)
             : this(uint256.Span)

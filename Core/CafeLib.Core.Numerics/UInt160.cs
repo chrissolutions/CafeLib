@@ -1,20 +1,8 @@
-﻿#region Copyright
-// Copyright (c) 2020 TonesNotes
-// Distributed under the Open BSV software license, see the accompanying file LICENSE.
-#endregion
-
-using System;
+﻿using System;
 using System.IO;
-using System.Numerics;
-using CafeLib.BsvSharp.Encoding;
-using CafeLib.BsvSharp.Services;
 using CafeLib.Core.Buffers;
-using CafeLib.Core.Extensions;
-using Newtonsoft.Json;
 
-// ReSharper disable NonReadonlyMemberInGetHashCode
-
-namespace CafeLib.BsvSharp.Numerics
+namespace CafeLib.Core.Numerics
 {
     public struct UInt160 : IComparable<UInt160>
     {
@@ -22,7 +10,7 @@ namespace CafeLib.BsvSharp.Numerics
         private ulong _n1;
         private uint _n2;
 
-        public const int Length = 20;
+        public const int Length = 2*sizeof(ulong)+sizeof(uint);
 
         public UInt160(ReadOnlyByteSpan span, bool reverse = false) : this()
         {
