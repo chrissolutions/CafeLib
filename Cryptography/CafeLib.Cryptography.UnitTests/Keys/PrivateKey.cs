@@ -11,7 +11,7 @@ namespace CafeLib.Cryptography.UnitTests.Keys
     public class PrivateKey : IEquatable<PrivateKey>
     {
         private const int KeySize = UInt256.Length;
-        //private static readonly ECKey _ecKey = new ECKey();
+        private static ECKey _ecKey;
 
         /// <summary>
         /// PrivateKey data.
@@ -23,35 +23,57 @@ namespace CafeLib.Cryptography.UnitTests.Keys
         /// </summary>
         private const uint HardenedBit = 0x80000000;
 
+        /// <summary>
+        /// PrivateKey default constructor.
+        /// </summary>
         public PrivateKey()
             : this(true)
         {
-
-        }
-
-        public PrivateKey(bool compressed)
-        {
-            var data = new byte[KeySize];
-
-            do
-            {
-                data = Randomizer.GetStrongRandBytes(UInt256.Length);
-            } while (!CheckData(data));
-
-            //SetBytes(data, data.Length, fCompressedIn);
         }
 
         /// <summary>
-        /// 
+        /// PrivateKey constructor.
+        /// </summary>
+        /// <param name="compressed"></param>
+        public PrivateKey(bool compressed)
+        {
+            byte[] data;
+            do
+            {
+                data = Randomizer.GetStrongRandBytes(KeySize);
+            } while (!VerifyData(data));
+
+            SetData(data, compressed);
+        }
+
+        /// <summary>
+        /// PrivateKey constructor.
         /// </summary>
         /// <param name="keyData"></param>
         public PrivateKey(UInt256 keyData)
+            : this(keyData, true)
         {
-            _keyData = keyData;
-            IsCompressed = true;
-            IsValid = true;
         }
 
+        /// <summary>
+        /// PrivateKey constructor.
+        /// </summary>
+        /// <param name="keyData"></param>
+        /// <param name="compressed"></param>
+        private PrivateKey(UInt256 keyData, bool compressed)
+        {
+            SetData(keyData, compressed);
+        }
+
+        /// <summary>
+        /// PrivateKey constructor.
+        /// </summary>
+        /// <param name="hex"></param>
+        /// <param name="compressed"></param>
+        public PrivateKey(string hex, bool compressed = true)
+            : this(new UInt256(hex, compressed), compressed)
+        {
+        }
 
         /// <summary>
         /// Determines validity of the private key.
@@ -63,10 +85,8 @@ namespace CafeLib.Cryptography.UnitTests.Keys
         /// </summary>
         public bool IsCompressed { get; private set; }
 
-
         public static implicit operator BigInteger(PrivateKey rhs) => rhs._keyData.ToBigInteger();
         public static implicit operator ReadOnlyByteSpan(PrivateKey rhs) => rhs._keyData.Span;
-
 
         public bool Equals(PrivateKey other)
         {
@@ -77,7 +97,7 @@ namespace CafeLib.Cryptography.UnitTests.Keys
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((PrivateKey) obj);
         }
 
@@ -88,35 +108,23 @@ namespace CafeLib.Cryptography.UnitTests.Keys
 
         #region Helpers
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="compressed"></param>
-        private void Set(ReadOnlyByteSpan data, bool compressed = true)
+        private void SetData(ReadOnlyByteSpan data, bool compressed = true)
         {
-            if (data.Length != UInt256.Length || !VerifyKeyData(data))
+            if (data.Length != UInt256.Length || !VerifyData(data))
+            {
                 IsValid = false;
+            }
             else
             {
-                data.CopyTo(_keyData.Span);
+                var vch = new byte[KeySize];
+                data.CopyTo(vch);
                 IsCompressed = compressed;
                 IsValid = true;
+                _ecKey = new ECKey(vch, true);
             }
         }
 
-        /// <summary>
-        /// Verify key data.
-        /// </summary>
-        /// <param name="vch"></param>
-        /// <returns></returns>
-        private static bool VerifyKeyData(ReadOnlyByteSpan vch)
-        {
-            return true;
-            //return Secp256K1.SecretKeyVerify(vch);
-        }
-
-        private bool CheckData(ReadOnlyByteSpan data)
+        private bool VerifyData(ReadOnlyByteSpan data)
         {
             // Do not convert to OpenSSL's data structures for range-checking keys,
             // it's easy enough to do directly.
