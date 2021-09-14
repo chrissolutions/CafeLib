@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Numerics;
-using CafeLib.Cryptography.BouncyCastle.Security;
 
-namespace CafeLib.Cryptography.UnitTests.Keys
+namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 {
     public class PrivateKey : IEquatable<PrivateKey>
     {

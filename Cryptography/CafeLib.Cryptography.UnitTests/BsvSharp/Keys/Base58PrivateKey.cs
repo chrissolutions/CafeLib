@@ -7,7 +7,7 @@ using System;
 using System.Diagnostics;
 using CafeLib.Core.Numerics;
 
-namespace CafeLib.Cryptography.UnitTests.Keys
+namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 {
     public class Base58PrivateKey : Base58Data
     {

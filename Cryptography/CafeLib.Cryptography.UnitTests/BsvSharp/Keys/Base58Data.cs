@@ -6,8 +6,9 @@
 using System;
 using System.Linq;
 using CafeLib.Core.Buffers;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
 
-namespace CafeLib.Cryptography.UnitTests.Keys
+namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 {
     /// <summary>
     /// Base class for Base58 encoded objects.

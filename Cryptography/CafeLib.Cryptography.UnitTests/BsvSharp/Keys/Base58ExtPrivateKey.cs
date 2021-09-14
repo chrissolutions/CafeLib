@@ -3,7 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-namespace CafeLib.Cryptography.UnitTests.Keys
+namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 {
     public class Base58ExtPrivateKey : Base58Data
     {
