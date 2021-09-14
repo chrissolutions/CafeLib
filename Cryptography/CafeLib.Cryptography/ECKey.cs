@@ -25,7 +25,7 @@ namespace CafeLib.Cryptography
 
 		static ECKey()
 		{
-			X9ECParameters parameters = CreateCurve();
+			var parameters = CreateCurve();
 			Curve = new ECDomainParameters(parameters.Curve, parameters.G, parameters.N, parameters.H);
 			HalfCurveOrder = parameters.N.ShiftRight(1);
 		}
@@ -68,8 +68,6 @@ namespace CafeLib.Cryptography
 				throw new InvalidOperationException("This key should be a private key for such operation");
 		}
 
-
-
 		internal bool Verify(UInt256 hash, ECDSASignature sig)
 		{
 			var signer = new ECDsaSigner();
@@ -87,14 +85,12 @@ namespace CafeLib.Cryptography
 
 		public ECPublicKeyParameters GetPublicKeyParameters()
 		{
-			if (_key is ECPublicKeyParameters)
-				return (ECPublicKeyParameters)_key;
-			else
-			{
-				ECPoint q = Secp256k1.G.Multiply(PrivateKey.D);
-				return new ECPublicKeyParameters("EC", q, DomainParameter);
-			}
-		}
+			if (_key is ECPublicKeyParameters key)
+				return key;
+
+            ECPoint q = Secp256k1.G.Multiply(PrivateKey.D);
+            return new ECPublicKeyParameters("EC", q, DomainParameter);
+        }
 
 
 		public static ECKey RecoverFromSignature(int recId, ECDSASignature sig, UInt256 message, bool compressed)
