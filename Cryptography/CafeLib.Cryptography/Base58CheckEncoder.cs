@@ -1,9 +1,4 @@
-﻿#region Copyright
-// Copyright (c) 2020 TonesNotes
-// Distributed under the Open BSV software license, see the accompanying file LICENSE.
-#endregion
-
-using System;
+﻿using System;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Encodings;
 
@@ -11,6 +6,8 @@ namespace CafeLib.Cryptography
 {
     public class Base58CheckEncoder : IEncoder
     {
+        private static readonly Base58Encoder Base58Encoder = new Base58Encoder();
+
         /// <summary>
         /// Appends first 4 bytes of double SHA256 hash to bytes before standard Base58 encoding.
         /// </summary>
@@ -23,7 +20,7 @@ namespace CafeLib.Cryptography
             var buf = new byte[span.Length + 4];
             span.CopyTo(buf);
             checksum.Span[..4].CopyTo(buf.AsSpan()[span.Length..]);
-            return Encoders.Base58.Encode(buf);
+            return Base58Encoder.Encode(buf);
         }
 
         public byte[] Decode(string source)
@@ -35,11 +32,11 @@ namespace CafeLib.Cryptography
 
         public bool TryDecode(string encoded, out byte[] bytes)
         {
-            if (!Encoders.Base58.TryDecode(encoded, out bytes)) return false;
+            if (!Base58Encoder.TryDecode(encoded, out bytes)) return false;
             var span = bytes.AsSpan();
             var checksum = span[^4..];
             bytes = span[..^4].ToArray();
-            var hash = Hashes.Hash256(bytes);
+            var hash = ((ReadOnlyByteSpan)bytes).Hash256();
             return checksum.SequenceEqual(hash.Span[..4]);
         }
     }
