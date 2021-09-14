@@ -2,7 +2,6 @@
 using System.IO;
 using System.Numerics;
 using CafeLib.Core.Buffers;
-
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.Core.Numerics
@@ -48,6 +47,25 @@ namespace CafeLib.Core.Numerics
 
         public static UInt256 Zero { get; } = new UInt256(0);
         public static UInt256 One { get; } = new UInt256(1);
+
+        public static UInt256 Parse(string hex)
+        {
+            return new UInt256(hex);
+        }
+
+        public static bool TryParse(string hex, out UInt256 result)
+        {
+            try
+            {
+                result = Parse(hex);
+                return true;
+            }
+            catch (Exception)
+            {
+                result = new UInt256();
+                return false;
+            }
+        }
 
         public UInt64Span Span64
         {
