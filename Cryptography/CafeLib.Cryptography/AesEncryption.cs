@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Linq;
-using CafeLib.BsvSharp.Encoding;
-using CafeLib.BsvSharp.Extensions;
 using CafeLib.Core.Buffers;
+using CafeLib.Core.Encodings;
 using CafeLib.Core.Support;
 using CafeLib.Cryptography.BouncyCastle.Crypto;
 using CafeLib.Cryptography.BouncyCastle.Crypto.Digests;
@@ -11,7 +10,7 @@ using CafeLib.Cryptography.BouncyCastle.Crypto.Prng;
 using CafeLib.Cryptography.BouncyCastle.Security;
 // ReSharper disable InconsistentNaming
 
-namespace CafeLib.BsvSharp.Crypto
+namespace CafeLib.Cryptography
 {
     public static class AesEncryption
     {
@@ -25,12 +24,13 @@ namespace CafeLib.BsvSharp.Crypto
         private const byte AesIvSize = 16;
 
         private static readonly string AesCryptoService = $"{Algorithm}/{AesTypes.CipherMode.CBC}/{AesTypes.Padding.PKCS7}";
+        private static readonly Utf8Encoder Utf8Encoder = new Utf8Encoder();
 
         public static byte[] InitializationVector(ReadOnlyByteSpan key, ReadOnlySpan<byte> data, int length = DefaultVectorLength)
             => key.HmacSha256(data).Span.Slice(0, length).ToArray();
 
         public static byte[] KeyFromPassword(NonNullable<string> password, byte[] salt = null, int iterations = DefaultIterations, int keyLength = DefaultKeyLength)
-            => KeyFromPassword(password.Value.Utf8ToBytes(), salt, iterations, keyLength);
+            => KeyFromPassword(Utf8Encoder.Decode(password.Value), salt, iterations, keyLength);
 
         public static byte[] KeyFromPassword(NonNullable<byte[]> password, byte[] salt = null, int iterations = DefaultIterations, int keyLength = DefaultKeyLength)
         {
@@ -67,7 +67,7 @@ namespace CafeLib.BsvSharp.Crypto
         /// <returns></returns>
         public static byte[] Encrypt(string message, string password)
         {
-            var bytes = message.Utf8ToBytes();
+            var bytes = Utf8Encoder.Decode(message);
             var keySalt = SaltBytes();
             var key = KeyFromPassword(password, keySalt);
             var iv = InitializationVector(key, bytes);
@@ -117,7 +117,7 @@ namespace CafeLib.BsvSharp.Crypto
             }
 
             var decrypt = Decrypt(encrypt, key, iv);
-            return Encoders.Utf8.Encode(decrypt);
+            return Utf8Encoder.Encode(decrypt);
         }
 
         #region Helpers
