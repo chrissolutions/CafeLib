@@ -23,7 +23,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 
         public void SetKey(ExtPrivateKey privateKey)
         {
-            var prefix = RootService.Network.ExtSecretKey;
+            var prefix = UnitTest.Network.ExtSecretKey;
             var data = new byte[prefix.Length + ExtKey.Bip32KeySize];
             prefix.CopyTo(data, 0);
             privateKey.Encode(data.Slice(prefix.Length));
@@ -40,6 +40,6 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             return privateKey;
         }
 
-        public bool SetString(string b58) => SetString(b58, RootService.Network.ExtSecretKey.Length);
+        public bool SetString(string b58) => SetString(b58, UnitTest.Network.ExtSecretKey.Length);
     }
 }

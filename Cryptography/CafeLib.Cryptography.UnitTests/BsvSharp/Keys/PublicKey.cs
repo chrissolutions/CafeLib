@@ -216,7 +216,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// Obtain an address.
         /// </summary>
         /// <returns></returns>
-        public Address ToAddress() => new Address(Encoders.Base58Check.Encode(RootService.Network.PublicKeyAddress.ToArray().Concat(ToPubKeyHash())));
+        public Address ToAddress() => new Address(Encoders.Base58Check.Encode(UnitTest.Network.PublicKeyAddress.ToArray().Concat(ToPubKeyHash())));
 
         /// <summary>
         /// Obtain the hex representation of the public key.

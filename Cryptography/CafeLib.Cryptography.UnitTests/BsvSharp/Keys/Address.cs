@@ -179,7 +179,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 
         private void FromHexInternal(string hexPubKey)
         {
-            Version = RootService.Network.PublicKeyAddress[0];
+            Version = UnitTest.Network.PublicKeyAddress[0];
             _bytes = new[]{(byte)Version}.Concat(Hex.Decode(hexPubKey).Hash160().ToArray());
         }
 

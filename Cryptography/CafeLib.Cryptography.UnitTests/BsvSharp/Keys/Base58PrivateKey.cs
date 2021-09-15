@@ -14,7 +14,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         public void SetKey(PrivateKey privateKey)
         {
             Debug.Assert(privateKey.IsValid);
-            SetData(RootService.Network.SecretKey, privateKey.Bytes, privateKey.IsCompressed);
+            SetData(UnitTest.Network.SecretKey, privateKey.Bytes, privateKey.IsCompressed);
         }
 
         public PrivateKey GetKey()
@@ -33,12 +33,12 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
                 var d = KeyData;
                 var fExpectedFormat = d.Length == UInt256.Length || d.Length == UInt256.Length + 1 && d[^1] == 1;
                 var v = Version;
-                var fCorrectVersion = v.Data.SequenceEqual(RootService.Network.SecretKey);
+                var fCorrectVersion = v.Data.SequenceEqual(UnitTest.Network.SecretKey);
                 return fExpectedFormat && fCorrectVersion;
             }
         }
 
-        public bool SetString(string base58) => SetString(base58, RootService.Network.SecretKey.Length) && IsValid;
+        public bool SetString(string base58) => SetString(base58, UnitTest.Network.SecretKey.Length) && IsValid;
 
         public Base58PrivateKey() {}
         public Base58PrivateKey(PrivateKey privateKey) => SetKey(privateKey);

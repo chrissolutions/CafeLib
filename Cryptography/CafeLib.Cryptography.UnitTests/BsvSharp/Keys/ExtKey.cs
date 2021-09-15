@@ -5,6 +5,7 @@
 
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Numerics;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 {
