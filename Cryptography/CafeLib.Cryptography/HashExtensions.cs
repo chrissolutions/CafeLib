@@ -1,5 +1,6 @@
 ﻿using System;
 using CafeLib.Core.Buffers;
+using CafeLib.Core.Extensions;
 using CafeLib.Core.Numerics;
 using CafeLib.Cryptography.BouncyCastle.Hash;
 
@@ -133,28 +134,25 @@ namespace CafeLib.Cryptography
         public static byte[] ComputeSha512(byte[] data) => new Sha512().ComputeHash(data);
 
         /// <summary>
-        /// Hash used to implement BIP 32 key derivations.
+        /// 
         /// </summary>
         /// <param name="chainCode"></param>
         /// <param name="nChild"></param>
         /// <param name="header"></param>
         /// <param name="data"></param>
-        /// <param name="output">512 bit, 64 byte hash.</param>
-        public static void Bip32Hash(UInt256 chainCode, uint nChild, byte header, ReadOnlyByteSpan data, ByteSpan output)
+        /// <returns>512 bit, 64 byte hash</returns>
+        public static byte[] Bip32Hash(this UInt256 chainCode, uint nChild, byte header, byte[] data)
         {
-            var len = data.Length;
-            var buf = new byte[1 + len + 4]; // header, data, nChild
-            var s = buf.AsSpan();
-            s[0] = header;
-            data.CopyTo(s.Slice(1, len));
-            var num = s.Slice(1 + len, 4);
+            byte[] num = new byte[4];
             num[0] = (byte)((nChild >> 24) & 0xFF);
             num[1] = (byte)((nChild >> 16) & 0xFF);
             num[2] = (byte)((nChild >> 8) & 0xFF);
-            // ReSharper disable once ShiftExpressionRealShiftCountIsZero
             num[3] = (byte)((nChild >> 0) & 0xFF);
 
-            HmacSha512(chainCode.Span, s, output);
+            return HmacSha512(chainCode,
+                new byte[] { header }
+                .Concat(data)
+                .Concat(num));
         }
     }
 }

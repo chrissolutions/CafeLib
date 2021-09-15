@@ -82,6 +82,43 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// </summary>
         public bool IsCompressed { get; private set; }
 
+        public byte[] ToArray() => _keyData;
+
+        public (PrivateKey keyChild, UInt256 ccChild) Derivate(UInt256 cc, uint nChild)
+        {
+            byte[] l = null;
+            byte[] ll = new byte[32];
+            byte[] lr = new byte[32];
+
+            if ((nChild >> 31) == 0)
+            {
+                var pubKey = this.CreatePublicKey().ToArray();
+                l = cc.Bip32Hash(nChild, pubKey[0], pubKey[1..]);
+            }
+            else
+            {
+                l = cc.Bip32Hash(nChild, 0, ToArray());
+            }
+            Array.Copy(l, ll, 32);
+            Array.Copy(l, 32, lr, 0, 32);
+            var ccChild = lr;
+
+            BigInteger parse256LL = new BigInteger(1, ll);
+            BigInteger kPar = new BigInteger(1, vch);
+            BigInteger N = ECKey.CURVE.N;
+
+            if (parse256LL.CompareTo(N) >= 0)
+                throw new InvalidOperationException("You won a prize ! this should happen very rarely. Take a screenshot, and roll the dice again.");
+            var key = parse256LL.Add(kPar).Mod(N);
+            if (key == BigInteger.Zero)
+                throw new InvalidOperationException("You won the big prize ! this would happen only 1 in 2^127. Take a screenshot, and roll the dice again.");
+
+            var keyBytes = key.ToByteArrayUnsigned();
+            if (keyBytes.Length < 32)
+                keyBytes = new byte[32 - keyBytes.Length].Concat(keyBytes).ToArray();
+            return new Key(keyBytes);
+        }
+
         public static implicit operator BigInteger(PrivateKey rhs) => rhs._keyData.ToBigInteger();
         public static implicit operator ReadOnlyByteSpan(PrivateKey rhs) => rhs._keyData.Span;
 
@@ -148,6 +185,5 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         }
 
         #endregion
-
     }
 }
