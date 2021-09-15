@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using CafeLib.Core.Buffers;
+using CafeLib.Core.Numerics;
 
 // ReSharper disable InconsistentNaming
 
