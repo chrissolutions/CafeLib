@@ -7,7 +7,11 @@ using System;
 using System.Linq;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Numerics;
+using CafeLib.Cryptography.BouncyCastle.Math;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Extensions;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Numeric;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 {
@@ -102,9 +106,8 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         {
             try
             {
-                var vch = hex.HexToBytes();
-                if ((vch.Length == CompressedLength || vch.Length == UncompressedLength) &&
-                    vch.Length == PredictLength(vch[0]))
+                var vch = Encoders.Hex.Decode(hex);
+                if ((vch.Length == CompressedLength || vch.Length == UncompressedLength) && vch.Length == PredictLength(vch[0]))
                     _bytes = vch;
             }
             catch
@@ -260,12 +263,47 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             return (true, keyChild, ccChild);
         }
 
+        public Key Derivate(byte[] cc, uint nChild, out byte[] ccChild)
+        {
+            byte[] l = null;
+            byte[] ll = new byte[32];
+            byte[] lr = new byte[32];
+            if ((nChild >> 31) == 0)
+            {
+                var pubKey = PubKey.ToBytes();
+                l = Hashes.BIP32Hash(cc, nChild, pubKey[0], pubKey.Skip(1).ToArray());
+            }
+            else
+            {
+                l = Hashes.BIP32Hash(cc, nChild, 0, this.ToBytes());
+            }
+            Array.Copy(l, ll, 32);
+            Array.Copy(l, 32, lr, 0, 32);
+            ccChild = lr;
+
+            BigInteger parse256LL = new BigInteger(1, ll);
+            BigInteger kPar = new BigInteger(1, vch);
+            BigInteger N = ECKey.Curve.N;
+
+            if (parse256LL.CompareTo(N) >= 0)
+                throw new InvalidOperationException("You won a prize ! this should happen very rarely. Take a screenshot, and roll the dice again.");
+            var key = parse256LL.Add(kPar).Mod(N);
+            if (key == BigInteger.Zero)
+                throw new InvalidOperationException("You won the big prize ! this would happen only 1 in 2^127. Take a screenshot, and roll the dice again.");
+
+            var keyBytes = key.ToByteArrayUnsigned();
+            if (keyBytes.Length < 32)
+                keyBytes = new byte[32 - keyBytes.Length].Concat(keyBytes).ToArray();
+            return new Key(keyBytes);
+        }
+
+
         public override int GetHashCode() => _bytes.GetHashCodeOfValues();
 
         public bool Equals(PublicKey o) => !(o is null) && _bytes.SequenceEqual(o._bytes);
         public override bool Equals(object obj) => obj is PublicKey key && this == key;
 
-        public static explicit operator UInt256(PublicKey rhs) => new UInt256(rhs._bytes.Slice(1, UInt256.Length));
+        public static explicit operator UInt256(PublicKey rhs) => new UInt256(rhs._bytes[1..(UInt256.Length + 1)]);
 
         public static explicit operator PublicKey(byte[] rhs) => new PublicKey(rhs);
         public static implicit operator byte[](PublicKey rhs) => rhs._bytes;

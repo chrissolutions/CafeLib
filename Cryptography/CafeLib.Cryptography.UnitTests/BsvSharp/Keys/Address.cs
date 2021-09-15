@@ -3,7 +3,9 @@ using System.Linq;
 using CafeLib.Core.Encodings;
 using CafeLib.Core.Numerics;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Extensions;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Network;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 {

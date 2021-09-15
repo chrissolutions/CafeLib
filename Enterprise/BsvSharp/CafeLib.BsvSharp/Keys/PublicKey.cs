@@ -13,6 +13,7 @@ using CafeLib.BsvSharp.Services;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
 using Secp256k1Net;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.BsvSharp.Keys
 {
