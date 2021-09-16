@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using CafeLib.Core.Encodings;
+using CafeLib.Core.Extensions;
 using CafeLib.Core.Numerics;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Extensions;
