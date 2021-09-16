@@ -39,17 +39,6 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// </summary>
         private const uint HardenedBit = 0x80000000;
 
-        /// <summary>
-        /// Secp256K1 library.
-        /// </summary>
-        private static Secp256k1 Secp256K1 => LazySecp256K1.Value;
-        private static readonly Lazy<Secp256k1> LazySecp256K1 = new Lazy<Secp256k1>(() =>
-        {
-            var ctx = new Secp256k1();
-            ctx.Randomize(Randomizer.GetStrongRandBytes(32));
-            return ctx;
-        }, true);
-
         // Constants.                        
         internal const int CompressedLength = 33;
         internal const int UncompressedLength = 65;
@@ -180,30 +169,59 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// The complement function is PrivateKey CreateCompatSignature.
         /// </summary>
         /// <param name="hash"></param>
-        /// <param name="sig"></param>
+        /// <param name="signatureEncoded"></param>
         /// <returns></returns>
-        public bool RecoverCompact(UInt256 hash, ReadOnlyByteSpan sig)
+        public PublicKey RecoverCompact(UInt256 hash, ReadOnlyByteSpan signatureEncoded)
         {
-            var (ok, vch) = Secp256K1.PublicKeyRecoverCompact(hash.Span, sig);
+            if (signatureEncoded.Length < 65)
+                throw new ArgumentException("Signature truncated, expected 65 bytes and got " + signatureEncoded.Length);
 
-            if (!ok)
-                Invalidate();
-            else
-                _keyData = vch;
+            int header = signatureEncoded[0];
 
-            return ok;
+            // The header byte: 0x1B = first key with even y, 0x1C = first key with odd y,
+            //                  0x1D = second key with even y, 0x1E = second key with odd y
+
+            if (header < 27 || header > 34)
+                throw new ArgumentException("Header byte out of range: " + header);
+
+            var r = new BigInteger(1, signatureEncoded[1..32]);
+            var s = new BigInteger(1, signatureEncoded[33..]);
+            var sig = new ECDSASignature(r, s);
+            var compressed = false;
+
+            if (header >= 31)
+            {
+                compressed = true;
+                header -= 4;
+            }
+            int recId = header - 27;
+
+            var key = ECKey.RecoverFromSignature(recId, sig, hash, compressed);
+            return PublicKeyFromECKey(key, compressed);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <param name="sig"></param>
+        /// <returns></returns>
         public static PublicKey FromRecoverCompact(UInt256 hash, ReadOnlyByteSpan sig)
         {
             var key = new PublicKey();
-            return key.RecoverCompact(hash, sig) ? key : null;
+            return key.RecoverCompact(hash, sig);
         }
 
+        /// <summary>
+        /// Verify public key
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <param name="sig"></param>
+        /// <returns></returns>
         public bool Verify(UInt256 hash, VarType sig)
         {
             if (!IsValid || sig.Length == 0) return false;
-            return Secp256K1.PublicKeyVerify(hash.Span, sig.Span, Data);
+            return ECKey.Verify(hash, ECDSASignature.FromDER(sig));
         }
 
         /// <summary>
@@ -299,6 +317,14 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         #region Helpers
 
         private ECKey ECKey => _ecKey ??= new ECKey(_keyData, false);
+
+        private static PublicKey PublicKeyFromECKey(ECKey ecKey, bool isCompressed)
+        {
+            var q = ecKey.GetPublicKeyParameters().Q;
+            //Pub key (q) is composed into X and Y, the compressed form only include X, which can derive Y along with 02 or 03 prepent depending on whether Y in even or odd.
+            var result = ecKey.Secp256k1.Curve.CreatePoint(q.X.ToBigInteger(), q.Y.ToBigInteger(), isCompressed).GetEncoded();
+            return new PublicKey(result);
+        }
 
         #endregion
     }

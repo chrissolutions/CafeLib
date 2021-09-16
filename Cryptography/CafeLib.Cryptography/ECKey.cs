@@ -68,7 +68,7 @@ namespace CafeLib.Cryptography
 				throw new InvalidOperationException("This key should be a private key for such operation");
 		}
 
-		internal bool Verify(UInt256 hash, ECDSASignature sig)
+		public bool Verify(UInt256 hash, ECDSASignature sig)
 		{
 			var signer = new ECDsaSigner();
 			signer.Init(false, GetPublicKeyParameters());
