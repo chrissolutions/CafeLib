@@ -109,11 +109,11 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             if (nChild >> 31 == 0)
             {
                 var pubKey = this.CreatePublicKey().ToArray();
-                l = cc.Bip32Hash(nChild, pubKey[0], pubKey[1..]);
+                l = HashExtensions.Bip32Hash(cc, nChild, pubKey[0], pubKey[1..]);
             }
             else
             {
-                l = cc.Bip32Hash(nChild, 0, ToArray());
+                l = HashExtensions.Bip32Hash(cc, nChild, 0, ToArray());
             }
 
             Buffer.BlockCopy(l, 0, ll, 0, 32);

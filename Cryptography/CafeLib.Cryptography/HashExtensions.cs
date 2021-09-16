@@ -141,7 +141,7 @@ namespace CafeLib.Cryptography
         /// <param name="header"></param>
         /// <param name="data"></param>
         /// <returns>512 bit, 64 byte hash</returns>
-        public static byte[] Bip32Hash(this UInt256 chainCode, uint nChild, byte header, byte[] data)
+        public static byte[] Bip32Hash(byte[] chainCode, uint nChild, byte header, byte[] data)
         {
             byte[] num = new byte[4];
             num[0] = (byte)((nChild >> 24) & 0xFF);

@@ -23,13 +23,15 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
     /// </summary>
     public class PublicKey
     {
+        private ECKey _ecKey;
+
         /// <summary>
         /// A KzPubKey is fundamentally an array of bytes in one of these states:
         /// null: Key is invalid.
         /// byte[33]: Key is compressed.
         /// byte[65]: Key is uncompressed.
         /// </summary>
-        private byte[] _bytes;
+        private byte[] _keyData;
 
         /// <summary>
         /// HardenedBit.
@@ -66,7 +68,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         public PublicKey(bool compressed)
             : this()
         {
-            _bytes = new byte[compressed ? CompressedLength : UncompressedLength];
+            _keyData = new byte[compressed ? CompressedLength : UncompressedLength];
         }
 
         /// <summary>
@@ -78,8 +80,8 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         {
             if (bytes.Length > 0 && bytes.Length == PredictLength(bytes[0]))
             {
-                _bytes = new byte[bytes.Length];
-                bytes.CopyTo(_bytes);
+                _keyData = new byte[bytes.Length];
+                bytes.CopyTo(_keyData);
             }
         }
 
@@ -93,8 +95,8 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             var firstByte = varType.FirstByte;
             var size = PredictLength(firstByte);
 
-            _bytes = new byte[size];
-            varType.CopyTo(_bytes);
+            _keyData = new byte[size];
+            varType.CopyTo(_keyData);
         }
 
         /// <summary>
@@ -108,7 +110,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             {
                 var vch = Encoders.Hex.Decode(hex);
                 if ((vch.Length == CompressedLength || vch.Length == UncompressedLength) && vch.Length == PredictLength(vch[0]))
-                    _bytes = vch;
+                    _keyData = vch;
             }
             catch
             {
@@ -123,8 +125,8 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         public PublicKey Clone()
         {
             var clone = new PublicKey();
-            if (_bytes != null)
-                clone._bytes = _bytes.ToArray();
+            if (_keyData != null)
+                clone._keyData = _keyData.ToArray();
             return clone;
         }
 
@@ -132,13 +134,13 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// True if key is stored in an array of 33 bytes.
         /// False if invalid or uncompressed.
         /// </summary>
-        public bool IsCompressed => _bytes?.Length == CompressedLength;
+        public bool IsCompressed => _keyData?.Length == CompressedLength;
 
         /// <summary>
         /// True if key is defined and either compressed or uncompressed.
         /// False if array of bytes is null.
         /// </summary>
-        public bool IsValid => _bytes != null;
+        public bool IsValid => _keyData != null;
 
         /// <summary>
         /// Compute the length of a pubkey with a given first byte.
@@ -152,7 +154,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             return 0;
         }
 
-        public ReadOnlyByteSpan Data => _bytes;
+        public ReadOnlyByteSpan Data => _keyData;
 
         public byte[] ToArray() => Data;
 
@@ -161,8 +163,8 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             var len = data.Length == 0 ? 0 : PredictLength(data[0]);
             if (len > 0 && len == data.Length)
             {
-                _bytes = new byte[data.Length];
-                data.CopyTo(_bytes.AsSpan());
+                _keyData = new byte[data.Length];
+                data.CopyTo(_keyData.AsSpan());
             }
             else
                 Invalidate();
@@ -170,7 +172,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 
         private void Invalidate()
         {
-            _bytes = null;
+            _keyData = null;
         }
 
         /// <summary>
@@ -186,7 +188,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             if (!ok)
                 Invalidate();
             else
-                _bytes = vch;
+                _keyData = vch;
 
             return ok;
         }
@@ -225,7 +227,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// Obtain the hex representation of the public key.
         /// </summary>
         /// <returns></returns>
-        public string ToHex() => _bytes != null ? Encoders.Hex.Encode(_bytes) : "<invalid>";
+        public string ToHex() => _keyData != null ? Encoders.Hex.Encode(_keyData) : "<invalid>";
 
         /// <summary>
         /// Obtain a public key string.
@@ -234,53 +236,69 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         public override string ToString() => ToAddress().ToString();
 
         /// <summary>
-        /// Derive a child key.
+        /// Derive a child public key.
         /// </summary>
         /// <param name="nChild"></param>
         /// <param name="cc"></param>
-        /// <returns></returns>
-        public (bool ok, PublicKey keyChild, UInt256 ccChild) Derive(uint nChild, UInt256 cc)
+        /// <returns>child public key</returns>
+        public (PublicKey, byte[] ccChild) Derive(byte[] cc, uint nChild)
         {
-            (bool ok, PublicKey keyChild, UInt256 ccChild) invalid = (false, null, UInt256.Zero);
-            if (!IsValid || !IsCompressed || nChild >= HardenedBit) return invalid;
+            byte[] lr;
+            byte[] l = new byte[32];
+            byte[] r = new byte[32];
+            if (nChild >> 31 == 0)
+            {
+                var pubKey = ToArray();
+                lr = HashExtensions.Bip32Hash(cc, nChild, pubKey[0], pubKey[1..]);
+            }
+            else
+            {
+                throw new InvalidOperationException("A public key can't derivate an hardened child");
+            }
 
-            var vout = new byte[64];
-            Hashes.Bip32Hash(cc, nChild, Data[0], Data[1..], vout);
+            Buffer.BlockCopy(lr, 0, l, 0, 32);
+            Buffer.BlockCopy(lr, 32, r, 0, 32);
+            var ccChild = r;
 
-            var ccChild = new UInt256();
-            vout[UInt256.Length..].CopyTo(ref ccChild);
 
-            var pkBytes = new byte[64];
-            if (!Secp256K1.PublicKeyParse(pkBytes.AsSpan(), Data)) return invalid;
-            if (!Secp256K1.PubKeyTweakAdd(pkBytes, vout[..UInt256.Length])) return invalid;
+            var N = ECKey.Curve.N;
+            var kPar = new BigInteger(1, _keyData);
+            var parse256LL = new BigInteger(1, l);
 
-            var dataChild = new byte[CompressedLength];
-            if (!Secp256K1.PublicKeySerialize(dataChild.AsSpan(), pkBytes, Flags.SECP256K1_EC_COMPRESSED)) return invalid;
+            if (parse256LL.CompareTo(N) >= 0)
+                throw new InvalidOperationException("You won a prize ! this should happen very rarely. Take a screenshot, and roll the dice again.");
 
-            var keyChild = new PublicKey(true);
-            dataChild.CopyTo(ref keyChild._bytes);
+            var q = ECKey.Curve.G.Multiply(parse256LL).Add(ECKey.GetPublicKeyParameters().Q);
+            if (q.IsInfinity)
+                throw new InvalidOperationException("You won the big prize ! this would happen only 1 in 2^127. Take a screenshot, and roll the dice again.");
 
-            return (true, keyChild, ccChild);
+            var p = new BouncyCastle.Math.EC.FpPoint(ECKey.Curve.Curve, q.X, q.Y, true);
+            return (new PublicKey(p.GetEncoded()), ccChild);
         }
 
+        public override int GetHashCode() => _keyData.GetHashCodeOfValues();
 
-        public override int GetHashCode() => _bytes.GetHashCodeOfValues();
-
-        public bool Equals(PublicKey o) => !(o is null) && _bytes.SequenceEqual(o._bytes);
+        public bool Equals(PublicKey o) => !(o is null) && _keyData.SequenceEqual(o._keyData);
         public override bool Equals(object obj) => obj is PublicKey key && this == key;
 
-        public static explicit operator UInt256(PublicKey rhs) => new UInt256(rhs._bytes[1..(UInt256.Length + 1)]);
+        public static explicit operator UInt256(PublicKey rhs) => new UInt256(rhs._keyData[1..(UInt256.Length + 1)]);
 
         public static explicit operator PublicKey(byte[] rhs) => new PublicKey(rhs);
-        public static implicit operator byte[](PublicKey rhs) => rhs._bytes;
+        public static implicit operator byte[](PublicKey rhs) => rhs._keyData;
 
-        public static implicit operator ByteSpan(PublicKey rhs) => rhs._bytes.AsSpan();
+        public static implicit operator ByteSpan(PublicKey rhs) => rhs._keyData.AsSpan();
         public static implicit operator PublicKey(ByteSpan rhs) => new PublicKey(rhs);
 
-        public static implicit operator ReadOnlyByteSpan(PublicKey rhs) => rhs._bytes.AsSpan();
+        public static implicit operator ReadOnlyByteSpan(PublicKey rhs) => rhs._keyData.AsSpan();
         public static implicit operator PublicKey(ReadOnlyByteSpan rhs) => new PublicKey(rhs);
 
         public static bool operator ==(PublicKey x, PublicKey y) => x?.Equals(y) ?? y is null;
         public static bool operator !=(PublicKey x, PublicKey y) => !(x == y);
+
+        #region Helpers
+
+        private ECKey ECKey => _ecKey ??= new ECKey(_keyData, false);
+
+        #endregion
     }
 }
