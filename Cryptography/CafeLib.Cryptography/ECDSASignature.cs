@@ -6,7 +6,7 @@ using CafeLib.Cryptography.BouncyCastle.Math;
 
 namespace CafeLib.Cryptography
 {
-	public class ECDSASignature
+	public struct ECDSASignature
 	{
         public BigInteger R { get; }
 

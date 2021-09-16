@@ -13,12 +13,16 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
     public class PrivateKey : IEquatable<PrivateKey>
     {
         private const int KeySize = UInt256.Length;
-        private static ECKey _ecKey;
 
         /// <summary>
         /// PrivateKey data.
         /// </summary>
         private UInt256 _keyData;
+
+        /// <summary>
+        /// Internal elliptical curve key.
+        /// </summary>
+        internal ECKey ECKey { get; set; }
 
         ///// <summary>
         ///// HardenedBit.
@@ -184,7 +188,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
                 data.CopyTo(_keyData);
                 IsCompressed = compressed;
                 IsValid = true;
-                _ecKey = new ECKey(_keyData, true);
+                ECKey = new ECKey(_keyData, true);
             }
         }
 

@@ -49,7 +49,7 @@ namespace CafeLib.Cryptography
 	 * ------------------------------------------------------------------
 	 */
 
-	internal class DeterministicECDSA
+	public class DeterministicECDSA
 	{
         private readonly IDigest _dig;
 		private readonly IMac _hmac;

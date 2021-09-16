@@ -30,9 +30,10 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// <returns></returns>
         public static byte[] CreateCompactSignature(this PrivateKey privateKey, UInt256 hash)
         {
-            if (!privateKey.IsValid) return default;
-            var (ok, sig) = Library.PrivateKeySignCompact(hash.Span, privateKey.Bytes, privateKey.IsCompressed);
-            return ok ? sig : default;
+            var signer = new DeterministicECDSA();
+            signer.SetPrivateKey(privateKey.ECKey.PrivateKey);
+            var sig = ECDSASignature.FromDER(signer.SignHash(hash)).MakeCanonical();
+            return sig.ToDER();
         }
 
         /// <summary>
@@ -43,9 +44,11 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// <returns>signature bytes</returns>
         public static byte[] CreateSignature(this PrivateKey privateKey, ReadOnlyByteSpan message)
         {
-            if (!privateKey.IsValid) return default;
-            var (ok, sig) = Library.PrivateKeySign(message, privateKey.Bytes);
-            return ok ? sig : default;
+            var signer = new DeterministicECDSA();
+            signer.SetPrivateKey(privateKey.ECKey.PrivateKey);
+            signer.Update(message);
+            var results = signer.Sign();
+            return results;
         }
     }
 }
