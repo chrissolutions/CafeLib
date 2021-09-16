@@ -1,7 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using CafeLib.Core.Buffers;
+﻿using CafeLib.Core.Buffers;
 using CafeLib.Core.Numerics;
+using CafeLib.Cryptography.BouncyCastle.Asn1.X9;
 
 // ReSharper disable InconsistentNaming
 
@@ -9,26 +8,18 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 {
     public static class KeyExtensions
     {
-        private static readonly Lazy<Secp256k1> LazySecpLibrary = new Lazy<Secp256k1>(() => {
-            var ctx = new Secp256k1(sign: true, verify: false);
-            ctx.Randomize(Randomizer.GetStrongRandBytes(32));
-            return ctx;
-        }, true);
-
-        private static readonly Secp256k1 Library = LazySecpLibrary.Value;
+        private static readonly X9ECParameters Secp256k1 = ECKey.CreateCurve();
 
         //private int SerializedPublicKeyLength => IsCompressed ? Secp256k1.SERIALIZED_COMPRESSED_PUBKEY_LENGTH : Secp256k1.SERIALIZED_UNCOMPRESSED_PUBKEY_LENGTH;
 
         public static PublicKey CreatePublicKey(this PrivateKey privateKey)
         {
-            Trace.Assert(privateKey.IsValid);
-            var pubKeySecp256k1 = new byte[Secp256k1.PUBKEY_LENGTH];
-            var ok = Library.PublicKeyCreate(pubKeySecp256k1, privateKey.Bytes);
-            Trace.Assert(ok);
-            var pubKey = new PublicKey(privateKey.IsCompressed);
-            LazySecpLibrary.Value.PublicKeySerialize((ByteSpan)pubKey, pubKeySecp256k1, privateKey.IsCompressed ? Flags.SECP256K1_EC_COMPRESSED : Flags.SECP256K1_EC_UNCOMPRESSED);
-            Trace.Assert(pubKey.IsValid);
-            return pubKey;
+            var ecKey = new ECKey(privateKey.ToArray(), true);
+            var q = ecKey.GetPublicKeyParameters().Q;
+
+            //Pub key (q) is composed into X and Y, the compressed form only include X, which can derive Y along with 02 or 03 prepent depending on whether Y in even or odd.
+            var result = Secp256k1.Curve.CreatePoint(q.X.ToBigInteger(), q.Y.ToBigInteger(), privateKey.IsCompressed).GetEncoded();
+            return new PublicKey(result);
         }
 
         /// <summary>
