@@ -6,6 +6,7 @@
 using System;
 using System.Linq;
 using CafeLib.Core.Buffers;
+using CafeLib.Core.Extensions;
 using CafeLib.Core.Numerics;
 using CafeLib.Cryptography.BouncyCastle.Math;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
@@ -126,7 +127,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         {
             var clone = new PublicKey();
             if (_keyData != null)
-                clone._keyData = _keyData.ToArray();
+                clone._keyData = _keyData;
             return clone;
         }
 
@@ -221,7 +222,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// Obtain an address.
         /// </summary>
         /// <returns></returns>
-        public Address ToAddress() => new Address(Encoders.Base58Check.Encode(UnitTest.Network.PublicKeyAddress.ToArray().Concat(ToPubKeyHash())));
+        public Address ToAddress() => new Address(Encoders.Base58Check.Encode(UnitTest.Network.PublicKeyAddress.Concat(ToPubKeyHash().ToArray())));
 
         /// <summary>
         /// Obtain the hex representation of the public key.
