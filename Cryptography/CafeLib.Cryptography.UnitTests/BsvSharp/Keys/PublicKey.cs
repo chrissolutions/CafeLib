@@ -258,17 +258,17 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// Derive a child public key.
         /// </summary>
         /// <param name="nChild"></param>
-        /// <param name="cc"></param>
+        /// <param name="chainCode"></param>
         /// <returns>child public key</returns>
-        public (PublicKey, byte[] ccChild) Derive(byte[] cc, uint nChild)
+        public (PublicKey, UInt256 ccChild) Derive(uint nChild, UInt256 chainCode)
         {
             byte[] lr;
-            byte[] l = new byte[32];
-            byte[] r = new byte[32];
+            var l = new byte[32];
+            var r = new byte[32];
             if (nChild >> 31 == 0)
             {
                 var pubKey = ToArray();
-                lr = Hashes.Bip32Hash(cc, nChild, pubKey[0], pubKey[1..]);
+                lr = Hashes.Bip32Hash(chainCode, nChild, pubKey[0], pubKey[1..]);
             }
             else
             {
@@ -292,7 +292,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
                 throw new InvalidOperationException("You won the big prize ! this would happen only 1 in 2^127. Take a screenshot, and roll the dice again.");
 
             var p = new BouncyCastle.Math.EC.FpPoint(ECKey.Curve.Curve, q.X, q.Y, true);
-            return (new PublicKey(p.GetEncoded()), ccChild);
+            return (new PublicKey(p.GetEncoded()), new UInt256(ccChild));
         }
 
         public override int GetHashCode() => _keyData.GetHashCodeOfValues();

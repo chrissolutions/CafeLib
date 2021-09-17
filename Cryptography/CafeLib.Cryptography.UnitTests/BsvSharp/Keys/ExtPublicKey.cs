@@ -6,6 +6,7 @@
 using System;
 using System.Diagnostics;
 using CafeLib.Core.Buffers;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Extensions;
 
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
@@ -74,9 +75,8 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
                 Fingerprint = BitConverter.ToInt32(PublicKey.GetId().Span.Slice(0, 4))
             };
 
-            bool ok;
-            (ok, cek.PublicKey, cek.ChainCode) = PublicKey.Derive(cek.Child, ChainCode);
-            return ok ? cek : null;
+            (cek.PublicKey, cek.ChainCode) = PublicKey.Derive(cek.Child, ChainCode);
+            return cek;
         }
 
         public override void Encode(ByteSpan code)

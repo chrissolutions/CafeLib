@@ -110,10 +110,10 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// <summary>
         /// Derive a new private key.
         /// </summary>
-        /// <param name="cc"></param>
+        /// <param name="chainCode"></param>
         /// <param name="nChild"></param>
         /// <returns></returns>
-        public (PrivateKey keyChild, UInt256 ccChild) Derive(UInt256 cc, uint nChild)
+        internal (PrivateKey keyChild, UInt256 ccChild) Derive(uint nChild, UInt256 chainCode)
         {
             byte[] l;
             var ll = new byte[32];
@@ -122,11 +122,11 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             if (nChild >> 31 == 0)
             {
                 var pubKey = this.CreatePublicKey().ToArray();
-                l = Hashes.Bip32Hash(cc, nChild, pubKey[0], pubKey[1..]);
+                l = Hashes.Bip32Hash(chainCode, nChild, pubKey[0], pubKey[1..]);
             }
             else
             {
-                l = Hashes.Bip32Hash(cc, nChild, 0, ToArray());
+                l = Hashes.Bip32Hash(chainCode, nChild, 0, ToArray());
             }
 
             Buffer.BlockCopy(l, 0, ll, 0, 32);

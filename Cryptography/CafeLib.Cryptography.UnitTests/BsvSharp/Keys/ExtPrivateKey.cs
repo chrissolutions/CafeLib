@@ -226,9 +226,8 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
                 Fingerprint = BitConverter.ToInt32(PrivateKey.CreatePublicKey().GetId().Span.Slice(0, 4))
             };
 
-            bool ok;
-            (ok, cek.PrivateKey, cek.ChainCode) = PrivateKey.Derive(cek.Child, ChainCode);
-            return ok ? cek : null;
+            (cek.PrivateKey, cek.ChainCode) = PrivateKey.Derive(cek.Child, ChainCode);
+            return cek;
         }
 
         public override void Encode(ByteSpan code)
