@@ -86,7 +86,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// <param name="hex"></param>
         /// <param name="compressed"></param>
         public PrivateKey(string hex, bool compressed = true)
-            : this(new UInt256(hex, compressed), compressed)
+            : this(new UInt256(hex, true), compressed)
         {
         }
 
