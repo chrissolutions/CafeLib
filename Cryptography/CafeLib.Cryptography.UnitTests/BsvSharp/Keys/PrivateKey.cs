@@ -194,7 +194,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             else
             {
                 _keyData = new UInt256();
-                data.CopyTo(_keyData);
+                data.CopyTo(_keyData.Span);
                 IsCompressed = compressed;
                 IsValid = true;
                 ECKey = new ECKey(_keyData, true);
