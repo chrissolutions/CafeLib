@@ -6,7 +6,7 @@ using CafeLib.Cryptography.BouncyCastle.Hash;
 
 namespace CafeLib.Cryptography
 {
-    public static class HashExtensions
+    public static class Hashes
     {
         public static void Ripemd160(this ReadOnlyByteSpan data, ByteSpan hash)
         {

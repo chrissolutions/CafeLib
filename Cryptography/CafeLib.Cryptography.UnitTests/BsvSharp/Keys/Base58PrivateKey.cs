@@ -14,7 +14,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         public void SetKey(PrivateKey privateKey)
         {
             Debug.Assert(privateKey.IsValid);
-            SetData(UnitTest.Network.SecretKey, privateKey.Bytes, privateKey.IsCompressed);
+            SetData(UnitTest.Network.SecretKey, privateKey.ToArray(), privateKey.IsCompressed);
         }
 
         public PrivateKey GetKey()

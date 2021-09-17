@@ -268,7 +268,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             if (nChild >> 31 == 0)
             {
                 var pubKey = ToArray();
-                lr = HashExtensions.Bip32Hash(cc, nChild, pubKey[0], pubKey[1..]);
+                lr = Hashes.Bip32Hash(cc, nChild, pubKey[0], pubKey[1..]);
             }
             else
             {

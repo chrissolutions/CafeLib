@@ -7,9 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Numerics;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Extensions;
+
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
@@ -47,12 +48,12 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// Master private key will be set to the first 256 bits.
         /// Chaincode will be set from the last 256 bits.
         /// </summary>
-        /// <param name="vout">Master private key will be set to the first 256 bits. Chaincode will be set from the last 256 bits.</param>
+        /// <param name="vOut">Master private key will be set to the first 256 bits. Chaincode will be set from the last 256 bits.</param>
         /// <param name="required">if not null, each key path will be verified as valid on the specified key or returns null.</param>
         /// <returns>Returns this key unless required key paths aren't valid for specified key.</returns>
-        public ExtPrivateKey SetMaster(UInt512 vout, IEnumerable<KeyPath> required = null)
+        public ExtPrivateKey SetMaster(UInt512 vOut, IEnumerable<KeyPath> required = null)
         {
-            return SetMaster((UInt256)vout.Span.Slice(0, 32), (UInt256)vout.Span.Slice(32, 32), required);
+            return SetMaster((UInt256)vOut.Span.Slice(0, 32), (UInt256)vOut.Span.Slice(32, 32), required);
         }
 
         /// <summary>
@@ -66,8 +67,8 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         public ExtPrivateKey SetMasterBip32(byte[] hmacData, IEnumerable<KeyPath> required = null, string hmacKey = null)
         {
             hmacKey ??= MasterBip32Key;
-            var vout = Hashes.HmacSha512(hmacKey.Utf8NormalizedToBytes(), hmacData);
-            return SetMaster(vout, required);
+            var vOut = Hashes.HmacSha512(hmacKey.Utf8NormalizedToBytes(), hmacData);
+            return SetMaster(vOut, required);
         }
 
 #if false
@@ -241,7 +242,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             code[8] = (byte)(Child & 0xFF);
             ChainCode.Span.CopyTo(code.Slice(9, UInt256.Length));
             code[41] = 0;
-            var key = PrivateKey.Bytes;
+            var key = PrivateKey.ToArray();
             Debug.Assert(key.Length == UInt256.Length);
             key.CopyTo(code.Slice(42, UInt256.Length));
         }
@@ -252,7 +253,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             Fingerprint = BitConverter.ToInt32(code[1..5]);
             Child = (uint)code[5] << 24 | (uint)code[6] << 16 | (uint)code[7] << 8 | code[8];
             ChainCode = new UInt256(code.Slice(9, UInt256.Length));
-            PrivateKey.Set(code.Slice(42, UInt256.Length));
+            PrivateKey.SetData(code.Slice(42, UInt256.Length));
         }
 
         public Base58ExtPrivateKey ToBase58() => new Base58ExtPrivateKey(this);

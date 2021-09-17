@@ -4,7 +4,6 @@ using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.Numerics;
 using CafeLib.Cryptography.BouncyCastle.Math;
-using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Extensions;
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
@@ -67,8 +66,18 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// <param name="keyData"></param>
         /// <param name="compressed"></param>
         private PrivateKey(UInt256 keyData, bool compressed)
+            : this(keyData.Span, compressed)
         {
-            SetData(keyData, compressed);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="span"></param>
+        /// <param name="compressed"></param>
+        public PrivateKey(ReadOnlyByteSpan span, bool compressed = true)
+        {
+            SetData(span, compressed);
         }
 
         /// <summary>
@@ -113,11 +122,11 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             if (nChild >> 31 == 0)
             {
                 var pubKey = this.CreatePublicKey().ToArray();
-                l = HashExtensions.Bip32Hash(cc, nChild, pubKey[0], pubKey[1..]);
+                l = Hashes.Bip32Hash(cc, nChild, pubKey[0], pubKey[1..]);
             }
             else
             {
-                l = HashExtensions.Bip32Hash(cc, nChild, 0, ToArray());
+                l = Hashes.Bip32Hash(cc, nChild, 0, ToArray());
             }
 
             Buffer.BlockCopy(l, 0, ll, 0, 32);
@@ -155,7 +164,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             var rnd = Randomizer.GetStrongRandBytes(8).ToArray();
             const string str = "Bitcoin key verification\n";
 
-            var hash = Encoders.Ascii.Decode(str).Concat(rnd).Hash256();
+            var hash = str.AsciiToBytes().Concat(rnd).Hash256();
 
             var sig = this.CreateSignature(hash);
             return sig != null && publicKey.Verify(hash, sig);
@@ -176,7 +185,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 
         #region Helpers
 
-        private void SetData(ReadOnlyByteSpan data, bool compressed = true)
+        internal void SetData(ReadOnlyByteSpan data, bool compressed = true)
         {
             if (data.Length != UInt256.Length || !VerifyData(data))
             {

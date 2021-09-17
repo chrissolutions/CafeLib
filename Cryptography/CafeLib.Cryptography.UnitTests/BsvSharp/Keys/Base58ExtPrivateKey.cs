@@ -26,7 +26,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             var prefix = UnitTest.Network.ExtSecretKey;
             var data = new byte[prefix.Length + ExtKey.Bip32KeySize];
             prefix.CopyTo(data, 0);
-            privateKey.Encode(data.Slice(prefix.Length));
+            privateKey.Encode(data[prefix.Length..]);
             SetData(data, prefix.Length);
         }
 
