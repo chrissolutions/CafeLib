@@ -37,6 +37,7 @@ namespace CafeLib.Cryptography.UnitTests
             var pubKey2 = key2.CreatePublicKey();
 
             Assert.Equal(pubHex, pubKey1.ToHex());
+            Assert.Equal(pubHex, pubKey2.ToHex());
 
             Assert.Equal(pubKey1, pubKey2);
             Assert.Equal(publicKey, pubKey1.ToString());
