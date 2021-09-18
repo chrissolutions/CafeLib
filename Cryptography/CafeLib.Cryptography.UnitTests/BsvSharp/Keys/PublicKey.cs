@@ -13,6 +13,7 @@ using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Extensions;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Numeric;
 // ReSharper disable NonReadonlyMemberInGetHashCode
+// ReSharper disable InconsistentNaming
 
 namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 {
@@ -272,7 +273,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             }
             else
             {
-                throw new InvalidOperationException("A public key can't derivate an hardened child");
+                throw new InvalidOperationException("A public key can't derive an hardened child");
             }
 
             Buffer.BlockCopy(lr, 0, l, 0, 32);

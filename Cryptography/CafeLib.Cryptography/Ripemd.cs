@@ -29,9 +29,11 @@ namespace CafeLib.Cryptography
 
         public static void Ripemd160(ReadOnlyByteSpan data, ByteSpan hash)
         {
+            var bytes = new byte[UInt160.Length];
             var d = new RipeMD160Digest();
             d.BlockUpdate(data, 0, data.Length);
-            d.DoFinal(hash, 0);
+            d.DoFinal(bytes, 0);
+            bytes.CopyTo(hash);
         }
 
         public static void Ripemd160(ReadOnlyByteSequence data, ByteSpan hash)

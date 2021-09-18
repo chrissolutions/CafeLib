@@ -8,15 +8,10 @@ namespace CafeLib.Cryptography
 {
     public static class Hashes
     {
-        public static void Ripemd160(this ReadOnlyByteSpan data, ByteSpan hash)
-        {
-            Ripemd.Ripemd160(data, hash);
-        }
-
         public static UInt160 Ripemd160(this ReadOnlyByteSpan data)
         {
             var hash = new UInt160();
-            Ripemd160(data, hash.Span);
+            Ripemd.Ripemd160(data, hash.Span);
             return hash;
         }
 
@@ -86,17 +81,6 @@ namespace CafeLib.Cryptography
         /// Computes RIPEMD160 of SHA256 of data: RIPEMD160(SHA256(data))
         /// </summary>
         /// <param name="data">Input: bytes to be hashed.</param>
-        /// <param name="hash">Output: RIPEMD160 of SHA256 of data.</param>
-        public static void Hash160(this ReadOnlyByteSpan data, ByteSpan hash)
-        {
-            var x = data.Sha256();
-            Ripemd160(x.Span, hash);
-        }
-
-        /// <summary>
-        /// Computes RIPEMD160 of SHA256 of data: RIPEMD160(SHA256(data))
-        /// </summary>
-        /// <param name="data">Input: bytes to be hashed.</param>
         /// <returns>KzHash160 RIPEMD160 of SHA256 of data.</returns>
         public static UInt160 Hash160(this ReadOnlyByteSpan data)
         {
@@ -143,14 +127,14 @@ namespace CafeLib.Cryptography
         /// <returns>512 bit, 64 byte hash</returns>
         public static byte[] Bip32Hash(byte[] chainCode, uint nChild, byte header, byte[] data)
         {
-            byte[] num = new byte[4];
+            var num = new byte[4];
             num[0] = (byte)((nChild >> 24) & 0xFF);
             num[1] = (byte)((nChild >> 16) & 0xFF);
             num[2] = (byte)((nChild >> 8) & 0xFF);
             num[3] = (byte)((nChild >> 0) & 0xFF);
 
             return HmacSha512(chainCode,
-                new byte[] { header }
+                new[] { header }
                 .Concat(data)
                 .Concat(num));
         }
