@@ -19,14 +19,14 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
         public static UInt160 Hash160(this byte[] data)
         {
             var hash = new UInt160();
-            new ReadOnlyByteSpan(data).Sha1(hash);
+            new ReadOnlyByteSpan(data).Sha1(hash.Span);
             return hash;
         }
 
         public static UInt256 Hash256(this byte[] data)
         {
             var hash = new UInt256();
-            new ReadOnlyByteSpan(data).Sha256(hash);
+            new ReadOnlyByteSpan(data).Sha256(hash.Span);
             return hash;
         }
     }
