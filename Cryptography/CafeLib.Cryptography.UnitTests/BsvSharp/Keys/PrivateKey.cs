@@ -166,7 +166,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 
             var hash = str.AsciiToBytes().Concat(rnd).Hash256();
 
-            var sig = this.CreateSignature(hash);
+            var sig = this.CreateCompactSignature(hash);
             return sig != null && publicKey.Verify(hash, sig);
         }
 
