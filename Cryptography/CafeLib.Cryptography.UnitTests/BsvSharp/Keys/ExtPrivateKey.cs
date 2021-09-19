@@ -71,6 +71,17 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             return SetMaster(vOut, required);
         }
 
+        /// <summary>
+        /// Returns a new Bip32 private key.
+        /// Uses a single invocation of HMACSHA512 to generate 512 bits of entropy with which to set master private key and chaincode.
+        /// </summary>
+        /// <param name="hmacData">Sequence of bytes passed as hmacData to HMACSHA512 along with byte encoding of hmacKey.</param>
+        /// <param name="required">if not null, each key path will be verified as valid on the generated key or returns null.</param>
+        /// <param name="hmacKey">Default is current global Kz.MasterBip32Key which may default to "Bitcoin seed".</param>
+        /// <returns>Returns new key unless required key paths aren't valid for specified key in which case null is returned.</returns>
+        public static ExtPrivateKey MasterBip32(byte[] hmacData, IEnumerable<KeyPath> required = null, string hmacKey = null)
+            => new ExtPrivateKey().SetMasterBip32(hmacData, required, hmacKey);
+
 #if false
         /// <summary>
         /// Sets hybrid Bip32 / Bip39 private key.
@@ -137,17 +148,6 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// <returns>Returns new key unless required key paths aren't valid for specified key in which case null is returned.</returns>
         public static ExtPrivateKey Master(UInt512 vout, IEnumerable<KeyPath> required = null)
             => new ExtPrivateKey().SetMaster(vout, required);
-
-        /// <summary>
-        /// Returns a new Bip32 private key.
-        /// Uses a single invocation of HMACSHA512 to generate 512 bits of entropy with which to set master private key and chaincode.
-        /// </summary>
-        /// <param name="hmacData">Sequence of bytes passed as hmacData to HMACSHA512 along with byte encoding of hmacKey.</param>
-        /// <param name="required">if not null, each key path will be verified as valid on the generated key or returns null.</param>
-        /// <param name="hmacKey">Default is current global Kz.MasterBip32Key which may default to "Bitcoin seed".</param>
-        /// <returns>Returns new key unless required key paths aren't valid for specified key in which case null is returned.</returns>
-        public static ExtPrivateKey MasterBip32(byte[] hmacData, IEnumerable<KeyPath> required = null, string hmacKey = null)
-            => new ExtPrivateKey().SetMasterBip32(hmacData, required, hmacKey);
 
         /// <summary>
         /// Returns a new hybrid Bip32 / Bip39 private key.
