@@ -141,6 +141,8 @@ namespace CafeLib.BsvSharp.UnitTests.Keys
                 var seed = tv.MasterSeed.HexToBytes();
                 var m = ExtPrivateKey.MasterBip32(seed);
 
+                var str = m.ToString();
+
                 foreach (var d in tv.Derivations)
                 {
                     var path = new KeyPath(d.Path);

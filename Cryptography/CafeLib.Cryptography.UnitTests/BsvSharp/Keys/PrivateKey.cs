@@ -32,7 +32,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// PrivateKey default constructor.
         /// </summary>
         public PrivateKey()
-            : this(true)
+            : this(false)
         {
         }
 

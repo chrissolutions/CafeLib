@@ -3,6 +3,8 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using CafeLib.Cryptography.UnitTests.BsvSharp.Extensions;
+
 namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 {
     public class Base58ExtPrivateKey : Base58Data
@@ -26,7 +28,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             var prefix = UnitTest.Network.ExtSecretKey;
             var data = new byte[prefix.Length + ExtKey.Bip32KeySize];
             prefix.CopyTo(data, 0);
-            privateKey.Encode(data[prefix.Length..]);
+            privateKey.Encode(data.Slice(prefix.Length));
             SetData(data, prefix.Length);
         }
 
