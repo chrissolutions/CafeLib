@@ -1,20 +1,22 @@
 ﻿using System;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
 
 namespace CafeLib.Cryptography.UnitTests.BsvSharp.Signatures
 {
     public struct Signature : IEquatable<Signature>
     {
-        private byte[] _signature;
+        private byte[] _data;
         private readonly uint _hashType;
+        private readonly ECDSASignature _signature;
 
         private const int SignatureSize = 64;
         
         /// <summary>
         /// Signature data.
         /// </summary>
-        internal ReadOnlyByteSpan Data => _signature ??= Array.Empty<byte>();
+        internal ReadOnlyByteSpan Data => _data ??= Array.Empty<byte>();
 
         /// <summary>
         /// Null signature.
@@ -28,8 +30,9 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Signatures
         /// <param name="hashType"></param>
         public Signature(byte[] signature, SignatureHashType hashType = null)
         {
-            _signature = signature;
+            _data = signature;
             _hashType = hashType?.RawSigHashType ?? 0;
+            _signature = ECDSASignature.FromDER(_data);
         }
 
         /// <summary>
@@ -41,9 +44,26 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Signatures
         {
         }
 
-        public bool IsLowS() => IsLowS(Data);
+        /// <summary>
+        /// Determine whether a signature is normalized (lower-S).
+        /// </summary>
+        /// <returns></returns>
+        public bool IsLowS() => _signature.IsLowS;
+        
+        /// <summary>
+        /// Determine whether the transaction data is encoded.
+        /// </summary>
+        /// <returns></returns>
+        
         public bool IsTxDerEncoding() => IsTxDerEncoding(Data);
 
+        /// <summary>
+        /// Determine whether a signature is normalized (lower-S).
+        /// </summary>
+        /// <param name="signature"></param>
+        /// <returns></returns>
+        public static bool IsLowS(ReadOnlyByteSpan signature) => ECDSASignature.FromDER(signature).IsLowS;
+        
         /// <summary>
         /// Convert to transaction signature format.
         /// </summary>
@@ -51,22 +71,10 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Signatures
         /// <remarks>Appends the hash type to the DER formatted signature.</remarks>
         public Signature ToTxFormat()
         {
-            return _hashType == 0 ? this : new Signature(_signature.Concat(new[] { (byte)_hashType }));
+            return _hashType == 0 ? this : new Signature(_data.Concat(new[] { (byte)_hashType }));
         }
 
-        /// <summary>
-        /// Determine whether a signature is normalized (lower-S).
-        /// </summary>
-        /// <param name="signature"></param>
-        /// <returns></returns>
-        public static bool IsLowS(ReadOnlyByteSpan signature)
-        {
-            var sigOut = new byte[SignatureSize];
-            using var library = new Secp256k1();
-            if (!library.SignatureParseDerLax(sigOut, signature)) return false;
-            return !library.SignatureNormalize(sigOut, signature);
-        }
-        
+       
         /// <summary>
         /// Return transaction formatted signature
         /// </summary>

@@ -63,6 +63,8 @@ namespace CafeLib.Cryptography
                 ? new ECDSASignature(R, ECKey.CreateCurve().N.Subtract(S))
                 : this;
         }
+		
+		public bool IsLowS => S.CompareTo(ECKey.HalfCurveOrder) <= 0;
 
 		public static bool IsValidDER(byte[] bytes)
 		{
