@@ -11,6 +11,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="BsvSharp\Passphrase\Cultures\ChineseSimplified.words" />
+    <None Remove="BsvSharp\Passphrase\Cultures\ChineseTraditional.words" />
+    <None Remove="BsvSharp\Passphrase\Cultures\English.words" />
+    <None Remove="BsvSharp\Passphrase\Cultures\French.words" />
+    <None Remove="BsvSharp\Passphrase\Cultures\Italian.words" />
+    <None Remove="BsvSharp\Passphrase\Cultures\Japanese.words" />
+    <None Remove="BsvSharp\Passphrase\Cultures\PortugueseBrazil.words" />
+    <None Remove="BsvSharp\Passphrase\Cultures\Spanish.words" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="BsvSharp\Passphrase\Cultures\ChineseSimplified.words" />
+    <EmbeddedResource Include="BsvSharp\Passphrase\Cultures\ChineseTraditional.words" />
+    <EmbeddedResource Include="BsvSharp\Passphrase\Cultures\English.words" />
+    <EmbeddedResource Include="BsvSharp\Passphrase\Cultures\French.words" />
+    <EmbeddedResource Include="BsvSharp\Passphrase\Cultures\Italian.words" />
+    <EmbeddedResource Include="BsvSharp\Passphrase\Cultures\Japanese.words" />
+    <EmbeddedResource Include="BsvSharp\Passphrase\Cultures\PortugueseBrazil.words" />
+    <EmbeddedResource Include="BsvSharp\Passphrase\Cultures\Spanish.words" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CafeLib.Core.Numerics" Version="1.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="xunit" Version="2.4.1" />

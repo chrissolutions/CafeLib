@@ -41,6 +41,18 @@ namespace CafeLib.Cryptography
             return hash;
         }
 
+        public static void Sha256(this ReadOnlyByteSequence data, ByteSpan hash)
+        {
+            new Sha256().ComputeHash(data.ToSpan()).CopyTo(hash);
+        }
+
+        public static UInt256 Sha256(this ReadOnlyByteSequence data)
+        {
+            var hash = new UInt256();
+            data.Sha256(hash.Span);
+            return hash;
+        }
+
         public static void Sha512(this ReadOnlyByteSpan data, ByteSpan hash)
         {
             var computed = ComputeSha512(data);
@@ -118,7 +130,7 @@ namespace CafeLib.Cryptography
         public static byte[] ComputeSha512(byte[] data) => new Sha512().ComputeHash(data);
 
         /// <summary>
-        /// 
+        /// Obtain BIP32 hash
         /// </summary>
         /// <param name="chainCode"></param>
         /// <param name="nChild"></param>
@@ -131,7 +143,7 @@ namespace CafeLib.Cryptography
             num[0] = (byte)((nChild >> 24) & 0xFF);
             num[1] = (byte)((nChild >> 16) & 0xFF);
             num[2] = (byte)((nChild >> 8) & 0xFF);
-            num[3] = (byte)((nChild >> 0) & 0xFF);
+            num[3] = (byte)(nChild & 0xFF);
 
             return HmacSha512(chainCode,
                 new[] { header }

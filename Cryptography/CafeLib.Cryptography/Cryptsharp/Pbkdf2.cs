@@ -106,7 +106,7 @@ namespace CafeLib.Cryptography.Cryptsharp
 		/// <param name="iterations">The number of iterations to apply.</param>
 		/// <param name="derivedKeyLength">The desired length of the derived key.</param>
 		/// <returns>The derived key.</returns>
-		internal static byte[] ComputeDerivedKey(IMac hmacAlgorithm, byte[] salt, int iterations,
+		public static byte[] ComputeDerivedKey(IMac hmacAlgorithm, byte[] salt, int iterations,
 											   int derivedKeyLength)
 		{
 			Check.Range("derivedKeyLength", derivedKeyLength, 0, int.MaxValue);

@@ -9,6 +9,10 @@ using System.Diagnostics;
 using System.Linq;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Numerics;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Digests;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Macs;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Parameters;
+using CafeLib.Cryptography.Cryptsharp;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Extensions;
 
 // ReSharper disable NonReadonlyMemberInGetHashCode
@@ -82,6 +86,49 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         public static ExtPrivateKey MasterBip32(byte[] hmacData, IEnumerable<KeyPath> required = null, string hmacKey = null)
             => new ExtPrivateKey().SetMasterBip32(hmacData, required, hmacKey);
 
+        /// <summary>
+        /// Computes 512 bit Bip39 seed.
+        /// passphrase, password, and passwordPrefix are converted to bytes using UTF8 KD normal form encoding.
+        /// </summary>
+        /// <param name="mnemonic">arbitrary passphrase (typically mnemonic words with checksum but not necessarily)</param>
+        /// <param name="passphrase">password and passwordPrefix are combined to generate salt bytes.</param>
+        /// <param name="passwordPrefix">password and passwordPrefix are combined to generate salt bytes. Default is "mnemonic".</param>
+        /// <returns>Computes 512 bit Bip39 seed.</returns>
+        public static UInt512 Bip39Seed(string mnemonic, string passphrase = null, string passwordPrefix = "mnemonic")
+        {
+            var salt = $"{passwordPrefix}{passphrase}".Utf8NormalizedToBytes();
+            var bytes = mnemonic.Utf8NormalizedToBytes();
+
+            var mac = new HMac(new Sha512Digest());
+            mac.Init(new KeyParameter(bytes));
+            var key = Pbkdf2.ComputeDerivedKey(mac, salt, 2048, 64);
+            return new UInt512(key);
+        }
+
+        /// <summary>
+        /// Returns a new extended private key per Bip39.
+        /// passphrase, password, and passwordPrefix are converted to bytes using UTF8 KD normal form encoding.
+        /// </summary>
+        /// <param name="passphrase">arbitrary passphrase (typically mnemonic words with checksum but not necessarily)</param>
+        /// <param name="password">password and passwordPrefix are combined to generate salt bytes.</param>
+        /// <param name="required">if not null, each key path will be verified as valid on the generated key or returns null.</param>
+        /// <param name="passwordPrefix">password and passwordPrefix are combined to generate salt bytes. Default is "mnemonic".</param>
+        /// <returns>Returns new key unless required key paths aren't valid for specified key in which case null is returned.</returns>
+        public static ExtPrivateKey MasterBip39(string passphrase, string password = null, IEnumerable<KeyPath> required = null, string passwordPrefix = "mnemonic")
+            => new ExtPrivateKey().SetMasterBip39(passphrase, password, required, passwordPrefix);
+
+        /// <summary>
+        /// Sets this extended private key per Bip39.
+        /// passphrase, password, and passwordPrefix are converted to bytes using UTF8 KD normal form encoding.
+        /// </summary>
+        /// <param name="passphrase">arbitrary passphrase (typically mnemonic words with checksum but not necessarily)</param>
+        /// <param name="password">password and passwordPrefix are combined to generate salt bytes.</param>
+        /// <param name="required">if not null, each key path will be verified as valid on the generated key or returns null.</param>
+        /// <param name="passwordPrefix">password and passwordPrefix are combined to generate salt bytes. Default is "mnemonic".</param>
+        /// <returns>Returns this key unless required key paths aren't valid for generated key.</returns>
+        public ExtPrivateKey SetMasterBip39(string passphrase, string password = null, IEnumerable<KeyPath> required = null, string passwordPrefix = "mnemonic")
+            => SetMasterBip32(Bip39Seed(passphrase, password, passwordPrefix), required);
+
 #if false
         /// <summary>
         /// Sets hybrid Bip32 / Bip39 private key.
@@ -102,31 +149,6 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             };
         }
 
-        /// <summary>
-        /// Computes 512 bit Bip39 seed.
-        /// passphrase, password, and passwordPrefix are converted to bytes using UTF8 KD normal form encoding.
-        /// </summary>
-        /// <param name="passphrase">arbitrary passphrase (typically mnemonic words with checksum but not necessarily)</param>
-        /// <param name="password">password and passwordPrefix are combined to generate salt bytes.</param>
-        /// <param name="passwordPrefix">password and passwordPrefix are combined to generate salt bytes. Default is "mnemonic".</param>
-        /// <returns>Computes 512 bit Bip39 seed.</returns>
-        public static UInt512 Bip39Seed(string passphrase, string password = null, string passwordPrefix = "mnemonic")
-        {
-            return Hashes.Bip39Seed(passphrase, password);
-            //return Hashes.PbKdf2HmacSha512(passphrase.Utf8NormalizedToBytes(), $"{passwordPrefix}{password}".Utf8NormalizedToBytes(), 2048);
-        }
-
-        /// <summary>
-        /// Sets this extended private key per Bip39.
-        /// passphrase, password, and passwordPrefix are converted to bytes using UTF8 KD normal form encoding.
-        /// </summary>
-        /// <param name="passphrase">arbitrary passphrase (typically mnemonic words with checksum but not necessarily)</param>
-        /// <param name="password">password and passwordPrefix are combined to generate salt bytes.</param>
-        /// <param name="required">if not null, each key path will be verified as valid on the generated key or returns null.</param>
-        /// <param name="passwordPrefix">password and passwordPrefix are combined to generate salt bytes. Default is "mnemonic".</param>
-        /// <returns>Returns this key unless required key paths aren't valid for generated key.</returns>
-        public ExtPrivateKey SetMasterBip39(string passphrase, string password = null, IEnumerable<KeyPath> required = null, string passwordPrefix = "mnemonic")
-            => SetMasterBip32(Bip39Seed(passphrase, password, passwordPrefix), required);
 
         /// <summary>
         /// Returns a new extended private key to be a master (depth 0) with the given private key and chaincode and verifies required key paths.
@@ -159,18 +181,6 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// <returns>Returns new key unless required key paths aren't valid for specified key in which case null is returned.</returns>
         public static ExtPrivateKey MasterBip32(string mnemonicWords, IEnumerable<KeyPath> required = null, string hmacKey = null)
             => new ExtPrivateKey().SetMasterBip32(mnemonicWords, required, hmacKey);
-
-        /// <summary>
-        /// Returns a new extended private key per Bip39.
-        /// passphrase, password, and passwordPrefix are converted to bytes using UTF8 KD normal form encoding.
-        /// </summary>
-        /// <param name="passphrase">arbitrary passphrase (typically mnemonic words with checksum but not necessarily)</param>
-        /// <param name="password">password and passwordPrefix are combined to generate salt bytes.</param>
-        /// <param name="required">if not null, each key path will be verified as valid on the generated key or returns null.</param>
-        /// <param name="passwordPrefix">password and passwordPrefix are combined to generate salt bytes. Default is "mnemonic".</param>
-        /// <returns>Returns new key unless required key paths aren't valid for specified key in which case null is returned.</returns>
-        public static ExtPrivateKey MasterBip39(string passphrase, string password = null, IEnumerable<KeyPath> required = null, string passwordPrefix = "mnemonic")
-            => new ExtPrivateKey().SetMasterBip39(passphrase, password, required, passwordPrefix);
 
 #endif
 
