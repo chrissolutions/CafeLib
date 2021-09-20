@@ -1,13 +1,13 @@
 ﻿using CafeLib.Core.Buffers;
 using CafeLib.Core.Numerics;
 using CafeLib.Cryptography.BouncyCastle.Asn1.X9;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Keys;
 
-// ReSharper disable InconsistentNaming
-
-namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
+namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
 {
     public static class KeyExtensions
     {
+        // ReSharper disable once InconsistentNaming
         private static readonly X9ECParameters Secp256k1 = ECKey.CreateCurve();
 
         //private int SerializedPublicKeyLength => IsCompressed ? Secp256k1.SERIALIZED_COMPRESSED_PUBKEY_LENGTH : Secp256k1.SERIALIZED_UNCOMPRESSED_PUBKEY_LENGTH;

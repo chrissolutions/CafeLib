@@ -3,6 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using CafeLib.Cryptography.UnitTests.BsvSharp.Extensions;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Keys;
 using Xunit;
 
