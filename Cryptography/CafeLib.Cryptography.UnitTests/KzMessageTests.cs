@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Extensions;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Keys;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Signatures;
 using Xunit;
 
 namespace CafeLib.Cryptography.UnitTests
@@ -20,8 +22,18 @@ namespace CafeLib.Cryptography.UnitTests
         {
             var addr = new Address(address);
 
-            var base58 = Encoders.Base58.Decode(privateKey);
-            var privKey = new PrivateKey(base58);
+            var privKey = PrivateKey.FromBase58(privateKey);
+
+            var sign = privKey.SignMessage(message);
+            var result = new Signature(sign);
+
+            var pubKey = privKey.CreatePublicKey();
+            var b= pubKey.VerifyMessage(message, signature);
+
+            var g = result.ToString();
+
+            var f = 0;
+
             //var privKey.SetData()
 
             //    var signature = secret.PrivateKey.SignMessage(test.Message);
