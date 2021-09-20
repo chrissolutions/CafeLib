@@ -1,4 +1,5 @@
-﻿using CafeLib.Cryptography.UnitTests.BsvSharp.Keys;
+﻿using CafeLib.Cryptography.UnitTests.BsvSharp.Extensions;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Keys;
 using Xunit;
 
 namespace CafeLib.Cryptography.UnitTests
