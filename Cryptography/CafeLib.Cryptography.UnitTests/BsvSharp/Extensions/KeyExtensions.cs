@@ -1,7 +1,10 @@
 ﻿using CafeLib.Core.Buffers;
+using CafeLib.Core.Extensions;
 using CafeLib.Core.Numerics;
 using CafeLib.Cryptography.BouncyCastle.Asn1.X9;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Keys;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Numeric;
 
 namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
 {
@@ -49,6 +52,23 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
             signer.Update(message);
             var results = signer.Sign();
             return results;
+        }
+
+        //Thanks bitcoinj source code
+        //http://bitcoinj.googlecode.com/git-history/keychain/core/src/main/java/com/google/bitcoin/core/Utils.java
+        public static PublicKey RecoverPublicKeyFromMessage(string messageText, string signatureText)
+        {
+            var signatureBytes = Encoders.Base64.Decode(signatureText);
+            var hash = GetMessageHash(messageText.Utf8ToBytes());
+            return PublicKey.FromRecoverCompact(hash, signatureBytes);
+        }
+
+        private static UInt256 GetMessageHash(ReadOnlyByteSpan message)
+        {
+            const string bitcoinSignedMessageHeader = "Bitcoin Signed Message:\n";
+            var bitcoinSignedMessageHeaderBytes = Encoders.Utf8.Decode(bitcoinSignedMessageHeader);
+            var msgBytes = new [] {(byte)bitcoinSignedMessageHeaderBytes.Length}.Concat(bitcoinSignedMessageHeaderBytes, new VarInt((ulong)message.Length).ToArray(), message);
+            return Hashes.Hash256(msgBytes);
         }
     }
 }

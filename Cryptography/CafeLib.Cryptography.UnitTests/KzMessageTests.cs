@@ -11,6 +11,21 @@ namespace CafeLib.Cryptography.UnitTests
 {
     public class KzMessageTests
     {
+        [Fact]
+        public void VerifyMessageSignatureTest()
+        {
+            const string message = "This is an example of a signed message.";
+            const string signature = "H6sliOnVrD9r+J8boZAKHZwBIW2zLiD72IfTIF94bfZhBI0JdMu9AM9rrF7P6eH+866YvM4H9xWGVN4jMJZycFU=";
+
+            var publicKey = KeyExtensions.RecoverPublicKeyFromMessage(message, signature);
+            var pubHex = publicKey.ToHex();
+
+            var hash = publicKey.ToPubKeyHash();
+
+            var ok = publicKey.VerifyMessage(message, signature);
+            Assert.True(ok);
+        }
+
         [Theory]
         [InlineData(
             "15jZVzLc9cXz5PUFFda5A4Z7kZDYPg2NnL",

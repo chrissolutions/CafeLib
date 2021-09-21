@@ -185,7 +185,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             if (header < 27 || header > 34)
                 throw new ArgumentException("Header byte out of range: " + header);
 
-            var r = new BigInteger(1, signatureEncoded[1..32]);
+            var r = new BigInteger(1, signatureEncoded[1..33]);
             var s = new BigInteger(1, signatureEncoded[33..]);
             var sig = new ECDSASignature(r, s);
             var compressed = false;
