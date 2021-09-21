@@ -25,8 +25,6 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
     /// </summary>
     public class PublicKey
     {
-        private ECKey _ecKey;
-
         /// <summary>
         /// A KzPubKey is fundamentally an array of bytes in one of these states:
         /// null: Key is invalid.
@@ -34,6 +32,12 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// byte[65]: Key is uncompressed.
         /// </summary>
         private byte[] _keyData;
+
+        /// <summary>
+        /// Elliptical curve key.
+        /// </summary>
+        private ECKey _ecKey;
+        private ECKey ECKey => _ecKey ??= new ECKey(_keyData, false);
 
         /// <summary>
         /// HardenedBit.
@@ -202,15 +206,32 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         }
 
         /// <summary>
-        /// 
+        /// Recover public key from message and signature.
+        /// </summary>
+        /// <param name="message">message text</param>
+        /// <param name="signature">signature text</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Thanks bitcoinj source code
+        /// http://bitcoinj.googlecode.com/git-history/keychain/core/src/main/java/com/google/bitcoin/core/Utils.java
+        /// </remarks>
+        public static PublicKey FromMessage(string message, string signature)
+        {
+            var signatureBytes = Encoders.Base64.Decode(signature);
+            var hash = KeyExtensions.GetMessageHash(message.Utf8ToBytes());
+            return FromRecoverCompact(hash, signatureBytes);
+        }
+
+        /// <summary>
+        /// Recover public key from signature and hash.
         /// </summary>
         /// <param name="hash"></param>
-        /// <param name="sig"></param>
+        /// <param name="signature"></param>
         /// <returns></returns>
-        public static PublicKey FromRecoverCompact(UInt256 hash, ReadOnlyByteSpan sig)
+        public static PublicKey FromRecoverCompact(UInt256 hash, ReadOnlyByteSpan signature)
         {
             var key = new PublicKey();
-            return key.RecoverCompact(hash, sig);
+            return key.RecoverCompact(hash, signature);
         }
 
         /// <summary>
@@ -317,8 +338,12 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 
         #region Helpers
 
-        private ECKey ECKey => _ecKey ??= new ECKey(_keyData, false);
-
+        /// <summary>
+        /// Get the public key from the elliptical curve key.
+        /// </summary>
+        /// <param name="ecKey"></param>
+        /// <param name="isCompressed"></param>
+        /// <returns></returns>
         private static PublicKey PublicKeyFromECKey(ECKey ecKey, bool isCompressed)
         {
             var q = ecKey.GetPublicKeyParameters().Q;

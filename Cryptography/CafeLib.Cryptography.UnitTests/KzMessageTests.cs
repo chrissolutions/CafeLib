@@ -17,12 +17,12 @@ namespace CafeLib.Cryptography.UnitTests
             const string message = "This is an example of a signed message.";
             const string signature = "H6sliOnVrD9r+J8boZAKHZwBIW2zLiD72IfTIF94bfZhBI0JdMu9AM9rrF7P6eH+866YvM4H9xWGVN4jMJZycFU=";
 
-            var publicKey = KeyExtensions.RecoverPublicKeyFromMessage(message, signature);
+            var publicKey = PublicKey.FromMessage(message, signature);
             var pubHex = publicKey.ToHex();
 
             var hash = publicKey.ToPubKeyHash();
 
-            var rkey = KeyExtensions.RecoverPublicKeyFromMessage(message, signature);
+            var rkey = PublicKey.FromMessage(message, signature);
             var okeyDokey= rkey != null && rkey == publicKey;
 
             var ok = publicKey.VerifyMessage(message, signature);

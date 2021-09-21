@@ -54,21 +54,50 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
             return results;
         }
 
-        //Thanks bitcoinj source code
-        //http://bitcoinj.googlecode.com/git-history/keychain/core/src/main/java/com/google/bitcoin/core/Utils.java
-        public static PublicKey RecoverPublicKeyFromMessage(string messageText, string signatureText)
+        public static byte[] SignMessage(this PrivateKey key, string message)
+            => SignMessage(key, message.Utf8ToBytes());
+
+        public static byte[] SignMessage(this PrivateKey key, ReadOnlyByteSpan message)
+            => key.CreateSignature(message);
+
+        public static byte[] SignMessageCompact(this PrivateKey key, UInt256 hash)
+            => key.CreateCompactSignature(hash);
+
+        public static string SignMessageToBase64(this PrivateKey key, ReadOnlyByteSpan message)
         {
-            var signatureBytes = Encoders.Base64.Decode(signatureText);
-            var hash = GetMessageHash(messageText.Utf8ToBytes());
-            return PublicKey.FromRecoverCompact(hash, signatureBytes);
+            var sigBytes = key.SignMessageCompact(GetMessageHash(message));
+            return sigBytes == null ? null : Encoders.Base64.Encode(sigBytes);
         }
 
-        private static UInt256 GetMessageHash(ReadOnlyByteSpan message)
+        public static string SignMessageToBase64(this PrivateKey key, string message)
+            => SignMessageToBase64(key, message.Utf8ToBytes());
+
+
+        public static bool VerifyMessage(this PublicKey key, string message, string signature)
+        {
+            var rkey = PublicKey.FromMessage(message, signature);
+            return rkey != null && rkey == key;
+        }
+
+        public static bool VerifyMessage(this UInt160 keyId, UInt256 message, string signature)
+        {
+            var rkey = PublicKey.FromRecoverCompact(GetMessageHash(message.Span), Encoders.Base64.Decode(signature));
+            return rkey != null && rkey.GetId() == keyId;
+        }
+
+        public static bool VerifyMessage(this UInt160 keyId, string message, string signature)
+            => VerifyMessage(keyId, (UInt256)message.Utf8ToBytes(), signature);
+
+        #region Helpers
+
+        internal static UInt256 GetMessageHash(ReadOnlyByteSpan message)
         {
             const string bitcoinSignedMessageHeader = "Bitcoin Signed Message:\n";
             var bitcoinSignedMessageHeaderBytes = Encoders.Utf8.Decode(bitcoinSignedMessageHeader);
             var msgBytes = new [] {(byte)bitcoinSignedMessageHeaderBytes.Length}.Concat(bitcoinSignedMessageHeaderBytes, new VarInt((ulong)message.Length).ToArray(), message);
             return Hashes.Hash256(msgBytes);
         }
+
+        #endregion
     }
 }
