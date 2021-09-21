@@ -22,6 +22,9 @@ namespace CafeLib.Cryptography.UnitTests
 
             var hash = publicKey.ToPubKeyHash();
 
+            var rkey = KeyExtensions.RecoverPublicKeyFromMessage(message, signature);
+            var okeyDokey= rkey != null && rkey == publicKey;
+
             var ok = publicKey.VerifyMessage(message, signature);
             Assert.True(ok);
         }
