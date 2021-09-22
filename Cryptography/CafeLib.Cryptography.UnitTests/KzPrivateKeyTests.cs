@@ -44,5 +44,27 @@ namespace CafeLib.Cryptography.UnitTests
             Assert.Equal(publicKey, pubKey1.ToString());
             Assert.Equal(publicKey, pubKey2.ToString());
         }
+
+        [Fact]
+        public void PrivateKey_From_Wif_Tests()
+        {
+            var hex = "96c132224121b509b7d0a16245e957d9192609c5637c6228311287b1be21627a";
+            var wifLivenet = "L2Gkw3kKJ6N24QcDuH4XDqt9cTqsKTVNDGz1CRZhk9cq4auDUbJy";
+
+            var privKey = new PrivateKey(hex);
+            var privKey2 = PrivateKey.FromWif(wifLivenet);
+            Assert.Equal(privKey, privKey2);
+        }
+
+        [Fact]
+        public void PrivateKey_From_Wif_To_Hex_Test()
+        {
+            const string wifKeySource = "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ";
+            const string privateKeyHex = "0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D";
+
+            var privKey = PrivateKey.FromWif(wifKeySource);
+            var decodedPrivKey = privKey.ToHex().ToUpper();
+            Assert.Equal(privateKeyHex, decodedPrivKey);
+        }
     }
 }
