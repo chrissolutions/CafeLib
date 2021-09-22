@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Extensions;
@@ -29,30 +30,39 @@ namespace CafeLib.Cryptography.UnitTests
             "This is an example of a signed message.",
             "H6sliOnVrD9r+J8boZAKHZwBIW2zLiD72IfTIF94bfZhBI0JdMu9AM9rrF7P6eH+866YvM4H9xWGVN4jMJZycFU="
         )]
+        [InlineData(
+            "1QFqqMUD55ZV3PJEJZtaKCsQmjLT6JkjvJ",
+            "5HxWvvfubhXpYYpS3tJkw6fq9jE9j18THftkZjHHfmFiWtmAbrj",
+            "hello world",
+            "G+dnSEywl3v1ijlWXvpY6zpu+AKNNXJcVmrdE35m0mMlzwFzXDiNg+uZrG9k8mpQL6sjHKrlBoDNSA+yaPW7PEA="
+        )]
+        [InlineData(
+            "1GvPJp7H8UYsYDvE4GFoV4f2gSCNZzGF48",
+            "5JEeah4w29axvf5Yg9v9PKv86zcCN9qVbizJDMHmiSUxBqDFoUT",
+            "This is an example of a signed message2",
+            "G8YNwlo+I36Ct+hZKGSBFl3q8Kbx1pxPpwQmwdsG85io76+DUOHXqh/DfBq+Cn2R3C3dI//g3koSjxy7yNxJ9m8="
+        )]
+        [InlineData(
+            "1GvPJp7H8UYsYDvE4GFoV4f2gSCNZzGF48",
+            "5JEeah4w29axvf5Yg9v9PKv86zcCN9qVbizJDMHmiSUxBqDFoUT",
+            "this is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long messagethis is a very long message",
+            "HFKBHewleUsotk6fWG0OvWS/E2pP4o5hixdD6ui60in/x4376FBI4DvtJYrljXLNJTG1pBOZG+qRT/7S9WiIBfQ="
+        )]
+        //[InlineData(
+        //    "1Q1wVsNNiUo68caU7BfyFFQ8fVBqxC2DSc",
+        //    null,
+        //    "Localbitcoins.com will change the world",
+        //    "IJ/17TjGGUqmEppAliYBUesKHoHzfY4gR4DW0Yg7QzrHUB5FwX1uTJ/H21CF8ncY8HHNB5/lh8kPAOeD5QxV8Xc="
+        //)]
         public void VerifyMessage_Test(string address, string privateKey, string message, string signature)
         {
             var addr = new Address(address);
-
             var privKey = PrivateKey.FromBase58(privateKey);
-
-            var sign = privKey.SignMessage(message);
-            var result = new Signature(sign);
+            var sign = new Signature(Encoders.Base64.Decode(signature));
 
             var pubKey = privKey.CreatePublicKey();
-            var b= pubKey.VerifyMessage(message, signature);
-
-            var g = result.ToString();
-
-            var f = 0;
-
-            //var privKey.SetData()
-
-            //    var signature = secret.PrivateKey.SignMessage(test.Message);
-            //    Assert.True(pkh.VerifyMessage(test.Message, signature));
-            //    Assert.True(secret.PubKey.VerifyMessage(test.Message, signature));
-            //}
-            //Assert.True(pkh.VerifyMessage(test.Message, test.Signature));
-            //Assert.True(!pkh.VerifyMessage("bad message", test.Signature));
+            Assert.Equal(addr.PubKeyHash, pubKey.GetId());
+            Assert.True( pubKey.VerifyMessage(message, sign));
         }
     }
 }

@@ -6,7 +6,7 @@ using CafeLib.Core.Numerics;
 
 namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
 {
-    public static class ByteExtensions
+    public static class BytesExtensions
     {
         public static ByteSpan Slice(this byte[] a, int start) => a.AsSpan().Slice(start);
         public static ByteSpan Slice(this byte[] a, int start, int length) => a.AsSpan().Slice(start, length);

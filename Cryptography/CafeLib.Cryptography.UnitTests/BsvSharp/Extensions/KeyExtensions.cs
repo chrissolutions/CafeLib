@@ -5,6 +5,7 @@ using CafeLib.Cryptography.BouncyCastle.Asn1.X9;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Keys;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Numeric;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Signatures;
 
 namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
 {
@@ -72,6 +73,11 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
         public static string SignMessageToBase64(this PrivateKey key, string message)
             => SignMessageToBase64(key, message.Utf8ToBytes());
 
+        public static bool VerifyMessage(this PublicKey key, string message, Signature signature)
+        {
+            var rkey = PublicKey.FromMessage(message, signature.ToString());
+            return rkey != null && rkey == key;
+        }
 
         public static bool VerifyMessage(this PublicKey key, string message, string signature)
         {

@@ -9,9 +9,8 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Signatures
     {
         private byte[] _data;
         private readonly uint _hashType;
-        private readonly ECDSASignature _signature;
 
-        private const int SignatureSize = 64;
+        //private const int SignatureSize = 64;
         
         /// <summary>
         /// Signature data.
@@ -32,7 +31,6 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Signatures
         {
             _data = signature;
             _hashType = hashType?.RawSigHashType ?? 0;
-            _signature = ECDSASignature.FromDER(_data);
         }
 
         /// <summary>
@@ -48,14 +46,28 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Signatures
         /// Determine whether a signature is normalized (lower-S).
         /// </summary>
         /// <returns></returns>
-        public bool IsLowS() => _signature.IsLowS;
-        
+        public bool IsLowS()
+        {
+            try
+            {
+                return ECDSASignature.FromDER(_data).IsLowS;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Determine whether the transaction data is encoded.
         /// </summary>
         /// <returns></returns>
         
         public bool IsTxDerEncoding() => IsTxDerEncoding(Data);
+
+        public static Signature FromHex(string hex) => new Signature(Encoders.Hex.Decode(hex));
+
+        public static Signature FromBase64(string hex) => new Signature(Encoders.Base64.Decode(hex));
 
         /// <summary>
         /// Determine whether a signature is normalized (lower-S).
@@ -179,6 +191,11 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Signatures
         public override int GetHashCode()
         {
             return _hashType.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return Encoders.Base64.Encode(_data);
         }
     }
 }
