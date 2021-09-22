@@ -30,43 +30,51 @@ namespace CafeLib.Core.Encodings
 
         public bool TryDecode(string encoded, out byte[] bytes)
         {
-            bytes = Array.Empty<byte>();
-            if (encoded.Length == 0) return true;
-
-            // Convert the base58-encoded ASCII chars to a base58 byte sequence (base58 digits).
-            var source58 = new byte[encoded.Length];
-            for (var i = 0; i < encoded.Length; ++i)
+            try
             {
-                var c = encoded[i];
-                var digit = c < (char)128 ? Indexes[c] : -1;
-                if (digit < 0) return false;
-                source58[i] = (byte)digit;
-            }
+                bytes = Array.Empty<byte>();
+                if (encoded.Length == 0) return true;
 
-            // Count leading zeros.
-            var zeros = source58.TakeWhile(x => x == 0).Count();
-
-            // Convert base-58 digits to base-256 digits.
-            var decoded = new byte[encoded.Length];
-            var outputStart = decoded.Length;
-            for (var sourceStart = zeros; sourceStart < source58.Length;)
-            {
-                decoded[--outputStart] = DivMod(source58, sourceStart, 58, 256);
-                if (source58[sourceStart] == 0)
+                // Convert the base58-encoded ASCII chars to a base58 byte sequence (base58 digits).
+                var source58 = new byte[encoded.Length];
+                for (var i = 0; i < encoded.Length; ++i)
                 {
-                    ++sourceStart; // optimization - skip leading zeros
+                    var c = encoded[i];
+                    var digit = c < (char)128 ? Indexes[c] : -1;
+                    if (digit < 0) return false;
+                    source58[i] = (byte)digit;
                 }
-            }
 
-            // Ignore extra leading zeroes that were added during the calculation.
-            while (outputStart < decoded.Length && decoded[outputStart] == 0)
+                // Count leading zeros.
+                var zeros = source58.TakeWhile(x => x == 0).Count();
+
+                // Convert base-58 digits to base-256 digits.
+                var decoded = new byte[encoded.Length];
+                var outputStart = decoded.Length;
+                for (var sourceStart = zeros; sourceStart < source58.Length;)
+                {
+                    decoded[--outputStart] = DivMod(source58, sourceStart, 58, 256);
+                    if (source58[sourceStart] == 0)
+                    {
+                        ++sourceStart; // optimization - skip leading zeros
+                    }
+                }
+
+                // Ignore extra leading zeroes that were added during the calculation.
+                while (outputStart < decoded.Length && decoded[outputStart] == 0)
+                {
+                    ++outputStart;
+                }
+
+                // Return decoded data (including original number of leading zeros).
+                bytes = decoded[(outputStart - zeros)..decoded.Length];
+                return true;
+            }
+            catch
             {
-                ++outputStart;
+                bytes = null;
+                return false;
             }
-
-            // Return decoded data (including original number of leading zeros).
-            bytes = decoded[(outputStart - zeros)..decoded.Length];
-            return true;
         }
 
         public string Encode(byte[] source)
