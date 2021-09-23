@@ -669,13 +669,11 @@ namespace CafeLib.BsvSharp.Scripting
                                             break;
 
                                         case Opcode.OP_SHA256:
-                                            data = new byte[32];
-                                            vch.Span.Sha256(data);
+                                            data = vch.Span.Sha256().ToArray();
                                             break;
 
                                         case Opcode.OP_HASH256:
-                                            data = new byte[32];
-                                            vch.Span.Hash256(data);
+                                            data = vch.Span.Hash256().ToArray();
                                             break;
 
                                         default:

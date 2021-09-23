@@ -19,6 +19,7 @@ using CafeLib.BsvSharp.Services;
 using CafeLib.BsvSharp.Transactions;
 using CafeLib.BsvSharp.Units;
 using CafeLib.Core.Extensions;
+using CafeLib.Core.Numerics;
 using Newtonsoft.Json.Linq;
 using Xunit;
 

@@ -1,4 +1,5 @@
-﻿using CafeLib.BsvSharp.Keys;
+﻿using CafeLib.BsvSharp.Extensions;
+using CafeLib.BsvSharp.Keys;
 using Xunit;
 
 namespace CafeLib.BsvSharp.UnitTests.Keys

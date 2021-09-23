@@ -33,16 +33,17 @@ namespace CafeLib.BsvSharp.Extensions
 
         public static UInt160 Hash160(this byte[] data)
         {
-            var hash = new UInt160();
-            new ReadOnlyByteSequence(data).Sha1(hash);
-            return hash;
+            return ((ReadOnlyByteSpan)data).Sha1();
         }
 
         public static UInt256 Hash256(this byte[] data)
         {
-            var hash = new UInt256();
-            new ReadOnlyByteSequence(data).Sha256(hash);
-            return hash;
+            return ((ReadOnlyByteSpan)data).Sha256();
+        }
+
+        public static UInt512 Hash512(this byte[] data)
+        {
+            return ((ReadOnlyByteSpan)data).Sha512();
         }
     }
 }

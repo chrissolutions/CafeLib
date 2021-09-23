@@ -28,28 +28,18 @@ namespace CafeLib.Cryptography
             return hash;
         }
 
-        public static void Sha256(this ReadOnlyByteSpan data, ByteSpan hash)
-        {
-            var computed = ComputeSha256(data);
-            computed.CopyTo(hash);
-        }
-
         public static UInt256 Sha256(this ReadOnlyByteSpan data)
         {
             var hash = new UInt256();
-            Sha256(data, hash.Span);
+            var computed = ComputeSha256(data);
+            computed.CopyTo(hash.Span);
             return hash;
-        }
-
-        public static void Sha256(this ReadOnlyByteSequence data, ByteSpan hash)
-        {
-            new Sha256().ComputeHash(data.ToSpan()).CopyTo(hash);
         }
 
         public static UInt256 Sha256(this ReadOnlyByteSequence data)
         {
             var hash = new UInt256();
-            data.Sha256(hash.Span);
+            new Sha256().ComputeHash(data.ToSpan()).CopyTo(hash.Span);
             return hash;
         }
 
@@ -62,19 +52,9 @@ namespace CafeLib.Cryptography
         public static UInt512 Sha512(this ReadOnlyByteSpan data)
         {
             var hash = new UInt512();
-            Sha512(data, hash.Span);
+            var computed = ComputeSha512(data);
+            computed.CopyTo(hash.Span);
             return hash;
-        }
-
-        /// <summary>
-        /// Computes double SHA256 of data: SHA256(SHA256(data))
-        /// </summary>
-        /// <param name="data">Input: bytes to be hashed.</param>
-        /// <param name="hash">Output: SHA256 of SHA256 of data.</param>
-        public static void Hash256(this ReadOnlyByteSpan data, ByteSpan hash)
-        {
-            var computed = ComputeSha256(ComputeSha256(data));
-            computed.CopyTo(hash);
         }
 
         /// <summary>
@@ -85,7 +65,8 @@ namespace CafeLib.Cryptography
         public static UInt256 Hash256(this ReadOnlyByteSpan data)
         {
             var hash = new UInt256();
-            data.Hash256(hash.Span);
+            var computed = ComputeSha256(ComputeSha256(data));
+            computed.CopyTo(hash.Span);
             return hash;
         }
 
