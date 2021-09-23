@@ -4,6 +4,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Numerics;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
@@ -36,7 +37,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Crypto
             set
             {
                 _privateKey = value;
-                UpdatekEkM();
+                UpdateInternal();
             }
         }
 
@@ -46,7 +47,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Crypto
             set
             {
                 _publicKey = value;
-                UpdatekEkM();
+                UpdateInternal();
             }
         }
 
@@ -60,26 +61,33 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Crypto
         /// _kE is used as the encryption / decryption key.
         /// _kM is used to sign the encrypted data to verify that what is received is what was sent.
         /// </summary>
-        private void UpdatekEkM()
+        private void UpdateInternal()
         {
-            if (_privateKey != null && _publicKey != null && _publicKey.IsValid)
-            {
-                using var secp = new Secp256k1();
-                var k = _publicKey.Clone();
-                // Multiply the public key as an elliptic curve point by the private key a big number: 
-                var bn = _privateKey.BigInteger;
-                var pkbs = new byte[64];
-                if (!secp.PublicKeyParse(pkbs.AsSpan(), _publicKey.Data)) goto fail;
-                if (!secp.PubKeyTweakMul(pkbs.AsSpan(), _privateKey.Bytes)) goto fail;
-                // Hash the X coordinate of the resulting elliptic curve point.
-                var x = pkbs.Slice(0, 32);
-                x.Reverse();
-                var h = Hashes.Sha512(x).Span;
-                _kE = new UInt256(h.Slice(0, 32));
-                _kM = new UInt256(h.Slice(32, 32));
-            fail:
-                ;
-            }
+            if (_privateKey == null || _publicKey == null || !_publicKey.IsValid) return;
+
+            var pubParms = _publicKey.ECKey.GetPublicKeyParameters();
+            var privParms = _privateKey.ECKey.PrivateKey;
+
+            var point = pubParms.Q.Multiply(privParms.D).Normalize();
+            var x = (ByteSpan)point.X.ToBigInteger().ToByteArray();
+            var h = Hashes.Sha512(x).Span;
+            _kE = new UInt256(h.Slice(0, 32));
+            _kM = new UInt256(h.Slice(32, 32));
+
+
+            //using var secp = new Secp256k1();
+            //var k = _publicKey.Clone();
+            //// Multiply the public key as an elliptic curve point by the private key a big number: 
+            //var bn = _privateKey.BigInteger;
+            //var pkbs = new byte[64];
+            //if (!secp.PublicKeyParse(pkbs.AsSpan(), _publicKey.Data)) return;
+            //if (!secp.PubKeyTweakMul(pkbs.AsSpan(), _privateKey.Bytes)) return;
+            //// Hash the X coordinate of the resulting elliptic curve point.
+            //var x = pkbs.Slice(0, 32);
+            //x.Reverse();
+            //var h = Hashes.Sha512(x).Span;
+            //_kE = new UInt256(h.Slice(0, 32));
+            //_kM = new UInt256(h.Slice(32, 32));
         }
 
         public byte[] Encrypt(string message) => Encrypt(message.Utf8ToBytes());
@@ -88,7 +96,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Crypto
 
         public byte[] Encrypt(ReadOnlyByteSpan data)
         {
-            var iv = AesEncryption.InitializationVector(_privateKey.Bytes, data);
+            var iv = AesEncryption.InitializationVector(_privateKey.ToArray(), data);
 
             var c = AesEncryption.Encrypt(data, _kE.Span, iv);
             //var c = AESCBC_Encrypt(data.ToArray(), _kE.ToBytes(), iv);

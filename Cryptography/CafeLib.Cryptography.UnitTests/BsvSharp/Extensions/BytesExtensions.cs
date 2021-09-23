@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Numerics;
+using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
 
 namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
 {
@@ -10,6 +11,9 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
     {
         public static ByteSpan Slice(this byte[] a, int start) => a.AsSpan().Slice(start);
         public static ByteSpan Slice(this byte[] a, int start, int length) => a.AsSpan().Slice(start, length);
+
+        public static string ToHex(this byte[] a) => Encoders.Hex.Encode(a);
+        public static string ToHexReverse(this byte[] a) => Encoders.HexReverse.Encode(a);
 
         public static int GetHashCodeOfValues(this IEnumerable<byte> a)
         {

@@ -37,7 +37,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// Elliptical curve key.
         /// </summary>
         private ECKey _ecKey;
-        private ECKey ECKey => _ecKey ??= new ECKey(_keyData, false);
+        internal ECKey ECKey => _ecKey ??= new ECKey(_keyData, false);
 
         /// <summary>
         /// HardenedBit.
