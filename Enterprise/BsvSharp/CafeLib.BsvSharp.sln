@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Cryptography", "..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Cryptography.BouncyCastle", "..\..\Cryptography\CafeLib.Cryptography.BouncyCastle\CafeLib.Cryptography.BouncyCastle.csproj", "{C0680629-96B6-4E61-B370-AAF936F72824}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Cryptography.UnitTests", "..\..\Cryptography\CafeLib.Cryptography.UnitTests\CafeLib.Cryptography.UnitTests.csproj", "{14EDC120-FA0C-4BD0-BE0E-FD432C8C4FD9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,10 +39,6 @@ Global
 		{C0680629-96B6-4E61-B370-AAF936F72824}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0680629-96B6-4E61-B370-AAF936F72824}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0680629-96B6-4E61-B370-AAF936F72824}.Release|Any CPU.Build.0 = Release|Any CPU
-		{14EDC120-FA0C-4BD0-BE0E-FD432C8C4FD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{14EDC120-FA0C-4BD0-BE0E-FD432C8C4FD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{14EDC120-FA0C-4BD0-BE0E-FD432C8C4FD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{14EDC120-FA0C-4BD0-BE0E-FD432C8C4FD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

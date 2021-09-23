@@ -6,7 +6,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using CafeLib.BsvSharp.Numerics;
+using CafeLib.Core.Numerics;
 
 namespace CafeLib.BsvSharp.Chain
 {

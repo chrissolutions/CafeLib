@@ -3,10 +3,10 @@ using System.Linq;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Network;
-using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Services;
 using CafeLib.Core.Extensions;
+using CafeLib.Core.Numerics;
 
 namespace CafeLib.BsvSharp.Keys
 {

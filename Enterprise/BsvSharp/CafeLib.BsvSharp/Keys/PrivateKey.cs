@@ -4,13 +4,14 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
-using CafeLib.BsvSharp.Crypto;
-using CafeLib.BsvSharp.Numerics;
+using CafeLib.BsvSharp.Extensions;
 using CafeLib.Core.Buffers;
-using Secp256k1Net;
+using CafeLib.Core.Extensions;
+using CafeLib.Core.Numerics;
+using CafeLib.Cryptography;
+using CafeLib.Cryptography.BouncyCastle.Math;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.BsvSharp.Keys
 {
@@ -19,26 +20,84 @@ namespace CafeLib.BsvSharp.Keys
     /// </summary>
     public class PrivateKey : IEquatable<PrivateKey>
     {
+        private const int KeySize = UInt256.Length;
+
         /// <summary>
         /// PrivateKey data.
         /// </summary>
-        private readonly UInt256 _keyData;
+        private UInt256 _keyData;
 
         /// <summary>
-        /// HardenedBit.
+        /// Internal elliptical curve key.
         /// </summary>
-        private const uint HardenedBit = 0x80000000;
+        internal ECKey ECKey { get; set; }
+
+        ///// <summary>
+        ///// HardenedBit.
+        ///// </summary>
+        //private const uint HardenedBit = 0x80000000;
 
         /// <summary>
-        /// Secp256K1 library.
+        /// PrivateKey default constructor.
         /// </summary>
-        private static Secp256k1 Secp256K1 => LazySecp256K1.Value;
-        private static readonly Lazy<Secp256k1> LazySecp256K1 = new Lazy<Secp256k1>(() =>
+        public PrivateKey()
+            : this(false)
         {
-            var ctx = new Secp256k1();
-            ctx.Randomize(Randomizer.GetStrongRandBytes(32));
-            return ctx;
-        }, true);
+        }
+
+        /// <summary>
+        /// PrivateKey constructor.
+        /// </summary>
+        /// <param name="compressed"></param>
+        public PrivateKey(bool compressed)
+        {
+            byte[] data;
+            do
+            {
+                data = Randomizer.GetStrongRandBytes(KeySize);
+            } while (!VerifyData(data));
+
+            SetData(data, compressed);
+        }
+
+        /// <summary>
+        /// PrivateKey constructor.
+        /// </summary>
+        /// <param name="keyData"></param>
+        public PrivateKey(UInt256 keyData)
+            : this(keyData, true)
+        {
+        }
+
+        /// <summary>
+        /// PrivateKey constructor.
+        /// </summary>
+        /// <param name="keyData"></param>
+        /// <param name="compressed"></param>
+        private PrivateKey(UInt256 keyData, bool compressed)
+            : this(keyData.Span, compressed)
+        {
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="span"></param>
+        /// <param name="compressed"></param>
+        public PrivateKey(ReadOnlyByteSpan span, bool compressed = true)
+        {
+            SetData(span, compressed);
+        }
+
+        /// <summary>
+        /// PrivateKey constructor.
+        /// </summary>
+        /// <param name="hex"></param>
+        /// <param name="compressed"></param>
+        public PrivateKey(string hex, bool compressed = true)
+            : this(new UInt256(hex, true), compressed)
+        {
+        }
 
         /// <summary>
         /// Determines validity of the private key.
@@ -50,78 +109,54 @@ namespace CafeLib.BsvSharp.Keys
         /// </summary>
         public bool IsCompressed { get; private set; }
 
-        public ReadOnlyByteSpan Bytes => _keyData.Span;
-
-        public BigInteger BigInteger => _keyData.ToBigInteger();
-
-        /// <summary>
-        /// PrivateKey default constructor.
-        /// </summary>
-        public PrivateKey()
-        {
-            do
-            {
-                Randomizer.GetStrongRandBytes(_keyData.Span);
-            }
-            while (!VerifyKeyData(_keyData));
-            IsValid = true;
-        }
-
-        public PrivateKey(UInt256 v, UInt256 keyData, bool compressed = true)
-            : this(v.Span, keyData, compressed)
-        {
-        }
-        
-        public PrivateKey(UInt256 keyData)
-        {
-            _keyData = keyData;
-            IsCompressed = true;
-            IsValid = true;
-        }
-        
-        public PrivateKey(ReadOnlyByteSpan span, bool compressed = true)
-        {
-            Set(span, compressed);
-        }
-
-        public PrivateKey(ReadOnlyByteSpan span, UInt256 keyData, bool compressed = true)
-        {
-            _keyData = keyData;
-            Set(span, compressed);
-        }
-
-
-        private PrivateKey(UInt256 v, bool compressed)
-        {
-            Set(v.Span, compressed);
-        }
-
-
-        public PrivateKey(string hex, bool compressed = true)
-            : this(new UInt256(hex, true), compressed)
-        {
-        }
-
-        public PrivateKey(string hex, UInt256 keyData, bool compressed = true)
-            : this(new UInt256(hex, true), keyData, compressed)
-        {
-        }
+        public byte[] ToArray() => _keyData;
 
         public static PrivateKey FromHex(string hex, bool compressed = true) => new PrivateKey(new UInt256(hex, true), compressed);
         public static PrivateKey FromBase58(string base58) => new Base58PrivateKey(base58).GetKey();
         public static PrivateKey FromWif(string wif) => new Base58PrivateKey(wif).GetKey();
         public static PrivateKey FromRandom() => new PrivateKey();
 
-        internal void Set(ReadOnlyByteSpan data, bool compressed = true)
+        /// <summary>
+        /// Derive a new private key.
+        /// </summary>
+        /// <param name="chainCode"></param>
+        /// <param name="nChild"></param>
+        /// <returns></returns>
+        internal (PrivateKey keyChild, UInt256 ccChild) Derive(uint nChild, UInt256 chainCode)
         {
-            if (data.Length != UInt256.Length || !VerifyKeyData(data))
-                IsValid = false;
+            byte[] l;
+            var ll = new byte[32];
+            var lr = new byte[32];
+
+            if (nChild >> 31 == 0)
+            {
+                var pubKey = this.CreatePublicKey().ToArray();
+                l = Hashes.Bip32Hash(chainCode, nChild, pubKey[0], pubKey[1..]);
+            }
             else
             {
-                data.CopyTo(_keyData.Span);
-                IsCompressed = compressed;
-                IsValid = true;
+                l = Hashes.Bip32Hash(chainCode, nChild, 0, ToArray());
             }
+
+            Buffer.BlockCopy(l, 0, ll, 0, 32);
+            Buffer.BlockCopy(l, 32, lr, 0, 32);
+            var ccChild = lr;
+
+            var parse256LL = new BigInteger(1, ll);
+            var kPar = new BigInteger(1, _keyData);
+            var N = ECKey.Curve.N;
+
+            if (parse256LL.CompareTo(N) >= 0)
+                throw new InvalidOperationException("You won a prize ! this should happen very rarely. Take a screenshot, and roll the dice again.");
+            var key = parse256LL.Add(kPar).Mod(N);
+            if (Equals(key, BigInteger.Zero))
+                throw new InvalidOperationException("You won the big prize ! this would happen only 1 in 2^127. Take a screenshot, and roll the dice again.");
+
+            var keyBytes = key.ToByteArrayUnsigned();
+            if (keyBytes.Length < 32)
+                keyBytes = new byte[32 - keyBytes.Length].Concat(keyBytes);
+
+            return (new PrivateKey(new UInt256(keyBytes)), new UInt256(ccChild));
         }
 
         /// <summary>
@@ -138,41 +173,10 @@ namespace CafeLib.BsvSharp.Keys
             var rnd = Randomizer.GetStrongRandBytes(8).ToArray();
             const string str = "Bitcoin key verification\n";
 
-            var hash = Hashes.Hash256(System.Text.Encoding.ASCII.GetBytes(str).Concat(rnd).ToArray());
+            var hash = str.AsciiToBytes().Concat(rnd).Hash256();
 
-            var sig = this.CreateSignature(hash);
+            var sig = this.CreateCompactSignature(hash);
             return sig != null && publicKey.Verify(hash, sig);
-        }
-
-        internal (bool ok, PrivateKey keyChild, UInt256 ccChild) Derive(uint nChild, UInt256 chainCode)
-        {
-            (bool, PrivateKey, UInt256) invalid = (false, null, UInt256.Zero);
-            if (!IsValid || !IsCompressed) return invalid;
-
-            var vout = new byte[64];
-
-            if (nChild < HardenedBit) 
-            {
-                // Not hardened.
-                var pubkey = this.CreatePublicKey();
-                Debug.Assert(pubkey.Data.Length == PublicKey.CompressedLength);
-                Hashes.Bip32Hash(chainCode, nChild, pubkey.Data[0], pubkey.Data[1..], vout);
-            } 
-            else
-            {
-                // Hardened.
-                Debug.Assert(_keyData.Span.Length == UInt256.Length);
-                Hashes.Bip32Hash(chainCode, nChild, 0, _keyData.Span, vout);
-            }
-
-            var output = vout.AsSpan();
-            var ccChild = new UInt256();
-            output.Slice(UInt256.Length, UInt256.Length).CopyTo(ccChild.Span);
-
-            var dataChild = new UInt256(_keyData);
-            return Secp256K1.PrivKeyTweakAdd(dataChild.Span, output[..UInt256.Length])
-                ? (true, new PrivateKey(dataChild), ccChild)
-                : invalid;
         }
 
         public string ToHex() => _keyData.ToStringFirstByteFirst();
@@ -185,19 +189,53 @@ namespace CafeLib.BsvSharp.Keys
 
         public static bool operator ==(PrivateKey x, PrivateKey y) => x?.Equals(y) ?? y is null;
         public static bool operator !=(PrivateKey x, PrivateKey y) => !(x == y);
-        
+
+        public static implicit operator ReadOnlyByteSpan(PrivateKey rhs) => rhs._keyData.Span;
+
         #region Helpers
-        
-        /// <summary>
-        /// Verify key data.
-        /// </summary>
-        /// <param name="vch"></param>
-        /// <returns></returns>
-        private static bool VerifyKeyData(ReadOnlyByteSpan vch)
+
+        internal void SetData(ReadOnlyByteSpan data, bool compressed = true)
         {
-            return Secp256K1.SecretKeyVerify(vch);
+            if (data.Length != UInt256.Length || !VerifyData(data))
+            {
+                IsValid = false;
+            }
+            else
+            {
+                _keyData = new UInt256();
+                data.CopyTo(_keyData.Span);
+                IsCompressed = compressed;
+                IsValid = true;
+                ECKey = new ECKey(_keyData, true);
+            }
         }
-        
+
+        private static bool VerifyData(ReadOnlyByteSpan data)
+        {
+            // Do not convert to OpenSSL's data structures for range-checking keys,
+            // it's easy enough to do directly.
+            byte[] vchMax = {
+                0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+                0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFE,
+                0xBA,0xAE,0xDC,0xE6,0xAF,0x48,0xA0,0x3B,
+                0xBF,0xD2,0x5E,0x8C,0xD0,0x36,0x41,0x40
+            };
+            bool fIsZero = true;
+            for (int i = 0; i < KeySize && fIsZero; i++)
+                if (data[i] != 0)
+                    fIsZero = false;
+            if (fIsZero)
+                return false;
+            for (int i = 0; i < KeySize; i++)
+            {
+                if (data[i] < vchMax[i])
+                    return true;
+                if (data[i] > vchMax[i])
+                    return false;
+            }
+            return true;
+        }
+
         #endregion
     }
 }

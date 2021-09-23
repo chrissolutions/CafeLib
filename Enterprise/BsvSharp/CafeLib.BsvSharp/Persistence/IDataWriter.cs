@@ -1,4 +1,4 @@
-﻿using CafeLib.BsvSharp.Numerics;
+﻿using CafeLib.Core.Numerics;
 
 namespace CafeLib.BsvSharp.Persistence
 {

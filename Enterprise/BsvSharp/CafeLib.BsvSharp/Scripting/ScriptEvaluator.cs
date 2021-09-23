@@ -4,12 +4,12 @@
 #endregion
 
 using System.Runtime.CompilerServices;
-using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Services;
 using CafeLib.BsvSharp.Signatures;
 using CafeLib.Core.Buffers;
+using CafeLib.Cryptography;
 
 namespace CafeLib.BsvSharp.Scripting
 {

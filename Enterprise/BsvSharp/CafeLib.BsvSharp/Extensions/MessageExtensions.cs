@@ -4,11 +4,11 @@
 #endregion
 
 using System;
-using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Keys;
-using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Persistence;
 using CafeLib.Core.Buffers;
+using CafeLib.Core.Numerics;
+using CafeLib.Cryptography;
 
 namespace CafeLib.BsvSharp.Extensions
 {

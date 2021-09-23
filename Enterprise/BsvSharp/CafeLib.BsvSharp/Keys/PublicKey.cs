@@ -5,14 +5,15 @@
 
 using System;
 using System.Linq;
-using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Services;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
-using Secp256k1Net;
+using CafeLib.Core.Numerics;
+using CafeLib.Cryptography;
+
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.BsvSharp.Keys

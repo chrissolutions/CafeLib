@@ -26,6 +26,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Crypto\Hashes.cs" />
+    <Compile Remove="Crypto\Hashes.ReadOnlyByteSequence.cs" />
+    <Compile Remove="Crypto\Hashes.ReadOnlyByteSpan.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Passphrase\Cultures\ChineseSimplified.words" />
     <EmbeddedResource Include="Passphrase\Cultures\ChineseTraditional.words" />
     <EmbeddedResource Include="Passphrase\Cultures\English.words" />
@@ -39,6 +45,7 @@
   <ItemGroup>
     <PackageReference Include="CafeLib.Core" Version="$(Version)" />
     <PackageReference Include="CafeLib.Core.Buffers" Version="$(Version)" />
+    <PackageReference Include="CafeLib.Core.Numerics" Version="1.2.0" />
     <!--<PackageReference Include="CafeLib.Cryptography.BouncyCastle" Version="$(Version)" />-->
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -56,6 +63,10 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Cryptography\CafeLib.Cryptography\CafeLib.Cryptography.csproj" />
   </ItemGroup>
 
 </Project>

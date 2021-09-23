@@ -5,8 +5,8 @@
 
 using System;
 using System.Diagnostics;
-using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Services;
+using CafeLib.Core.Numerics;
 
 namespace CafeLib.BsvSharp.Keys
 {
@@ -15,7 +15,7 @@ namespace CafeLib.BsvSharp.Keys
         public void SetKey(PrivateKey privateKey)
         {
             Debug.Assert(privateKey.IsValid);
-            SetData(RootService.Network.SecretKey, privateKey.Bytes, privateKey.IsCompressed);
+            SetData(RootService.Network.SecretKey, privateKey.ToArray(), privateKey.IsCompressed);
         }
 
         public PrivateKey GetKey()

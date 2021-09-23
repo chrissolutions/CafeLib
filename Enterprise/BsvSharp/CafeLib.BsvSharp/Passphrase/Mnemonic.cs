@@ -14,6 +14,7 @@ using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
+using CafeLib.Cryptography;
 
 namespace CafeLib.BsvSharp.Passphrase
 {
