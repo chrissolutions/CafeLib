@@ -1,4 +1,5 @@
-﻿using CafeLib.BsvSharp.Keys;
+﻿using CafeLib.BsvSharp.Encoding;
+using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Signatures;
 using CafeLib.Core.Buffers;
