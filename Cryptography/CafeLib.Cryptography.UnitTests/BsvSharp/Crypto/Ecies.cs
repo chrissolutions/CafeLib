@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using System.Linq;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Numerics;
 using CafeLib.Cryptography.UnitTests.BsvSharp.Encoding;
@@ -73,21 +72,6 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Crypto
             var h = Hashes.Sha512(x).Span;
             _kE = new UInt256(h[..32]);
             _kM = new UInt256(h[32..]);
-
-
-            //using var secp = new Secp256k1();
-            //var k = _publicKey.Clone();
-            //// Multiply the public key as an elliptic curve point by the private key a big number: 
-            //var bn = _privateKey.BigInteger;
-            //var pkbs = new byte[64];
-            //if (!secp.PublicKeyParse(pkbs.AsSpan(), _publicKey.Data)) return;
-            //if (!secp.PubKeyTweakMul(pkbs.AsSpan(), _privateKey.Bytes)) return;
-            //// Hash the X coordinate of the resulting elliptic curve point.
-            //var x = pkbs.Slice(0, 32);
-            //x.Reverse();
-            //var h = Hashes.Sha512(x).Span;
-            //_kE = new UInt256(h.Slice(0, 32));
-            //_kM = new UInt256(h.Slice(32, 32));
         }
 
         public byte[] Encrypt(string message) => Encrypt(message.Utf8ToBytes());
