@@ -69,10 +69,10 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Crypto
             var privParms = _privateKey.ECKey.PrivateKey;
 
             var point = pubParms.Q.Multiply(privParms.D).Normalize();
-            var x = (ByteSpan)point.X.ToBigInteger().ToByteArray();
+            var x = (ByteSpan)point.X.ToBigInteger().ToByteArrayUnsigned();
             var h = Hashes.Sha512(x).Span;
-            _kE = new UInt256(h.Slice(0, 32));
-            _kM = new UInt256(h.Slice(32, 32));
+            _kE = new UInt256(h[..32]);
+            _kM = new UInt256(h[32..]);
 
 
             //using var secp = new Secp256k1();
