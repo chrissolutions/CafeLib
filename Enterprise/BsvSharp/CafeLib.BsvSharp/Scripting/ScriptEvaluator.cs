@@ -656,24 +656,23 @@ namespace CafeLib.BsvSharp.Scripting
                                     switch (op.Code)
                                     {
                                         case Opcode.OP_SHA1:
-                                            data = new byte[20];
-                                            vch.Span.Sha1(data);
+                                            data = vch.Span.Sha1();
                                             break;
 
                                         case Opcode.OP_RIPEMD160:
-                                            data = vch.Span.Ripemd160().ToArray();
+                                            data = vch.Span.Ripemd160();
                                             break;
 
                                         case Opcode.OP_HASH160:
-                                            data = vch.Span.Hash160().ToArray();
+                                            data = vch.Span.Hash160();
                                             break;
 
                                         case Opcode.OP_SHA256:
-                                            data = vch.Span.Sha256().ToArray();
+                                            data = vch.Span.Sha256();
                                             break;
 
                                         case Opcode.OP_HASH256:
-                                            data = vch.Span.Hash256().ToArray();
+                                            data = vch.Span.Hash256();
                                             break;
 
                                         default:
