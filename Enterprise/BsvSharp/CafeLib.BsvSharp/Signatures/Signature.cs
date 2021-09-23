@@ -2,21 +2,21 @@
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
-using Secp256k1Net;
+using CafeLib.Cryptography;
 
 namespace CafeLib.BsvSharp.Signatures
 {
     public struct Signature : IEquatable<Signature>
     {
-        private byte[] _signature;
+        private byte[] _data;
         private readonly uint _hashType;
 
-        private const int SignatureSize = 64;
-        
+        //private const int SignatureSize = 64;
+
         /// <summary>
         /// Signature data.
         /// </summary>
-        internal ReadOnlyByteSpan Data => _signature ??= Array.Empty<byte>();
+        internal ReadOnlyByteSpan Data => _data ??= Array.Empty<byte>();
 
         /// <summary>
         /// Null signature.
@@ -30,7 +30,7 @@ namespace CafeLib.BsvSharp.Signatures
         /// <param name="hashType"></param>
         public Signature(byte[] signature, SignatureHashType hashType = null)
         {
-            _signature = signature;
+            _data = signature;
             _hashType = hashType?.RawSigHashType ?? 0;
         }
 
@@ -43,8 +43,39 @@ namespace CafeLib.BsvSharp.Signatures
         {
         }
 
-        public bool IsLowS() => IsLowS(Data);
+        /// <summary>
+        /// Determine whether a signature is normalized (lower-S).
+        /// </summary>
+        /// <returns></returns>
+        public bool IsLowS()
+        {
+            try
+            {
+                return ECDSASignature.FromDER(_data).IsLowS;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Determine whether the transaction data is encoded.
+        /// </summary>
+        /// <returns></returns>
+
         public bool IsTxDerEncoding() => IsTxDerEncoding(Data);
+
+        public static Signature FromHex(string hex) => new Signature(Encoders.Hex.Decode(hex));
+
+        public static Signature FromBase64(string hex) => new Signature(Encoders.Base64.Decode(hex));
+
+        /// <summary>
+        /// Determine whether a signature is normalized (lower-S).
+        /// </summary>
+        /// <param name="signature"></param>
+        /// <returns></returns>
+        public static bool IsLowS(ReadOnlyByteSpan signature) => ECDSASignature.FromDER(signature).IsLowS;
 
         /// <summary>
         /// Convert to transaction signature format.
@@ -53,22 +84,10 @@ namespace CafeLib.BsvSharp.Signatures
         /// <remarks>Appends the hash type to the DER formatted signature.</remarks>
         public Signature ToTxFormat()
         {
-            return _hashType == 0 ? this : new Signature(_signature.Concat(new[] { (byte)_hashType }));
+            return _hashType == 0 ? this : new Signature(_data.Concat(new[] { (byte)_hashType }));
         }
 
-        /// <summary>
-        /// Determine whether a signature is normalized (lower-S).
-        /// </summary>
-        /// <param name="signature"></param>
-        /// <returns></returns>
-        public static bool IsLowS(ReadOnlyByteSpan signature)
-        {
-            var sigOut = new byte[SignatureSize];
-            using var library = new Secp256k1();
-            if (!library.SignatureParseDerLax(sigOut, signature)) return false;
-            return !library.SignatureNormalize(sigOut, signature);
-        }
-        
+
         /// <summary>
         /// Return transaction formatted signature
         /// </summary>
@@ -77,7 +96,7 @@ namespace CafeLib.BsvSharp.Signatures
         /// <returns></returns>
         public static Signature ToTxFormat(ReadOnlyByteSpan signature, uint hashType)
         {
-            return new Signature(signature.ToArray().Concat( new[] {(byte)hashType}));
+            return new Signature(signature.ToArray().Concat(new[] { (byte)hashType }));
         }
 
         /// <summary>
@@ -173,6 +192,11 @@ namespace CafeLib.BsvSharp.Signatures
         public override int GetHashCode()
         {
             return _hashType.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return Encoders.Base64.Encode(_data);
         }
     }
 }
