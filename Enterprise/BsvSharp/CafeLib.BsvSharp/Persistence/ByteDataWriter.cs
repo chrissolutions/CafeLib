@@ -5,9 +5,9 @@
 
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
-using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Buffers.Arrays;
+using CafeLib.Core.Numerics;
 
 namespace CafeLib.BsvSharp.Persistence
 {

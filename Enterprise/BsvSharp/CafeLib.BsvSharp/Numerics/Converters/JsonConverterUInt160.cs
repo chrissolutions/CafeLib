@@ -1,4 +1,5 @@
 ﻿using System;
+using CafeLib.Core.Numerics;
 using Newtonsoft.Json;
 
 namespace CafeLib.BsvSharp.Numerics.Converters
