@@ -5,8 +5,10 @@ using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Network;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Services;
+using CafeLib.Core.Encodings;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.Numerics;
+using CafeLib.Cryptography;
 
 namespace CafeLib.BsvSharp.Keys
 {

@@ -9,6 +9,7 @@ using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Numerics;
+using CafeLib.Cryptography;
 
 namespace CafeLib.BsvSharp.Crypto
 {

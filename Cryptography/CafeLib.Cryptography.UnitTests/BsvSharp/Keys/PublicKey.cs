@@ -39,11 +39,6 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         private ECKey _ecKey;
         internal ECKey ECKey => _ecKey ??= new ECKey(_keyData, false);
 
-        /// <summary>
-        /// HardenedBit.
-        /// </summary>
-        private const uint HardenedBit = 0x80000000;
-
         // Constants.                        
         internal const int CompressedLength = 33;
         internal const int UncompressedLength = 65;
@@ -121,7 +116,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         {
             var clone = new PublicKey();
             if (_keyData != null)
-                clone._keyData = _keyData;
+                clone._keyData = _keyData.ToArray();
             return clone;
         }
 
@@ -303,7 +298,6 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
 
 
             var N = ECKey.Curve.N;
-            var kPar = new BigInteger(1, _keyData);
             var parse256LL = new BigInteger(1, l);
 
             if (parse256LL.CompareTo(N) >= 0)

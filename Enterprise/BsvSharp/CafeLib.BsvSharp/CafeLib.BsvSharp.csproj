@@ -29,6 +29,14 @@
     <Compile Remove="Crypto\Hashes.cs" />
     <Compile Remove="Crypto\Hashes.ReadOnlyByteSequence.cs" />
     <Compile Remove="Crypto\Hashes.ReadOnlyByteSpan.cs" />
+    <Compile Remove="Encoding\Base58CheckEncoder.cs" />
+    <Compile Remove="Encoding\Base58Encoder.cs" />
+    <Compile Remove="Encoding\Base64Encoder.cs" />
+    <Compile Remove="Encoding\EndianEncoder.cs" />
+    <Compile Remove="Encoding\HexEncoder.cs" />
+    <Compile Remove="Encoding\HexReverseEncoder.cs" />
+    <Compile Remove="Encoding\IEncoder.cs" />
+    <Compile Remove="Encoding\Utf8Encoder.cs" />
   </ItemGroup>
 
   <ItemGroup>

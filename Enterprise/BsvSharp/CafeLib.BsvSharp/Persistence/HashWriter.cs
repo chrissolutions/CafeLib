@@ -7,6 +7,7 @@ using System;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
+using CafeLib.Core.Numerics;
 using CafeLib.Cryptography.BouncyCastle.Crypto.Digests;
 
 namespace CafeLib.BsvSharp.Persistence

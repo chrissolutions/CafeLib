@@ -10,6 +10,8 @@ using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
+using CafeLib.Core.Numerics;
+using CafeLib.Cryptography;
 
 namespace CafeLib.BsvSharp.Chain
 {
