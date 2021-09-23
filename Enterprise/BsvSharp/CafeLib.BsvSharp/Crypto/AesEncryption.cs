@@ -4,6 +4,7 @@ using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Support;
+using CafeLib.Cryptography;
 using CafeLib.Cryptography.BouncyCastle.Crypto;
 using CafeLib.Cryptography.BouncyCastle.Crypto.Digests;
 using CafeLib.Cryptography.BouncyCastle.Crypto.Parameters;

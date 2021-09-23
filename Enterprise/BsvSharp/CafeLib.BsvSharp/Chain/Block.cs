@@ -10,6 +10,7 @@ using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Transactions;
 using CafeLib.Core.Buffers;
+using CafeLib.Core.Numerics;
 
 namespace CafeLib.BsvSharp.Chain
 {
