@@ -8,19 +8,12 @@ using CafeLib.Core.Buffers;
 
 namespace CafeLib.BsvSharp.Extensions
 {
-    public static class ByteExtensions
+    public static class BytesExtensions
     {
         public static int AggregateHashCode(this IEnumerable<byte> bytes) => bytes?.Aggregate(17, (current, b) => current * 31 + b) ?? 0;
 
         public static ByteSpan Slice(this byte[] a, int start) => a.AsSpan().Slice(start);
         public static ByteSpan Slice(this byte[] a, int start, int length) => a.AsSpan().Slice(start, length);
-
-        public static byte[] Duplicate(this byte[] source)
-        {
-            var dup = new byte[source.Length];
-            Buffer.BlockCopy(source, 0, dup, 0, source.Length);
-            return dup;
-        }
 
         /// <summary>
         /// Copy to byte array from another byte array.
