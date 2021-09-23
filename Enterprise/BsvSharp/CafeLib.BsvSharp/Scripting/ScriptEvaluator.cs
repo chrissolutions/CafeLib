@@ -661,13 +661,11 @@ namespace CafeLib.BsvSharp.Scripting
                                             break;
 
                                         case Opcode.OP_RIPEMD160:
-                                            data = new byte[20];
-                                            vch.Span.Ripemd160(data);
+                                            data = vch.Span.Ripemd160().ToArray();
                                             break;
 
                                         case Opcode.OP_HASH160:
-                                            data = new byte[20];
-                                            vch.Span.Hash160(data);
+                                            data = vch.Span.Hash160().ToArray();
                                             break;
 
                                         case Opcode.OP_SHA256:
