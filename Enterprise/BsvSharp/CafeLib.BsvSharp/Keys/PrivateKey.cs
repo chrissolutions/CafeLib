@@ -12,6 +12,7 @@ using CafeLib.Core.Numerics;
 using CafeLib.Cryptography;
 using CafeLib.Cryptography.BouncyCastle.Math;
 // ReSharper disable NonReadonlyMemberInGetHashCode
+// ReSharper disable InconsistentNaming
 
 namespace CafeLib.BsvSharp.Keys
 {
@@ -184,7 +185,7 @@ namespace CafeLib.BsvSharp.Keys
         public override string ToString() => ToBase58().ToString();
 
         public override int GetHashCode() => _keyData.GetHashCode();
-        public bool Equals(PrivateKey o) => !(o is null) && IsCompressed.Equals(o.IsCompressed) && _keyData.Equals(o._keyData);
+        public bool Equals(PrivateKey o) => o is not null && IsCompressed.Equals(o.IsCompressed) && _keyData.Equals(o._keyData);
         public override bool Equals(object obj) => obj is PrivateKey key && this == key;
 
         public static bool operator ==(PrivateKey x, PrivateKey y) => x?.Equals(y) ?? y is null;
