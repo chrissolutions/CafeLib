@@ -65,10 +65,10 @@ namespace CafeLib.BsvSharp.Crypto
         {
             if (_privateKey == null || _publicKey == null || !_publicKey.IsValid) return;
 
-            var pubParms = _publicKey.ECKey.GetPublicKeyParameters();
-            var privParms = _privateKey.ECKey.PrivateKey;
+            var pubParams = _publicKey.ECKey.GetPublicKeyParameters();
+            var privParams = _privateKey.ECKey.PrivateKey;
 
-            var point = pubParms.Q.Multiply(privParms.D).Normalize();
+            var point = pubParams.Q.Multiply(privParams.D).Normalize();
             var x = (ByteSpan)point.X.ToBigInteger().ToByteArrayUnsigned();
             var h = Hashes.Sha512(x).Span;
             _kE = new UInt256(h[..32]);
