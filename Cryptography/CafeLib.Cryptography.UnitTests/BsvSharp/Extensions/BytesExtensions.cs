@@ -29,9 +29,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
 
         public static UInt256 Hash256(this byte[] data)
         {
-            var hash = new UInt256();
-            new ReadOnlyByteSpan(data).Sha256(hash.Span);
-            return hash;
+            return ((ReadOnlyByteSpan)data).Sha256();
         }
     }
 }

@@ -3,7 +3,6 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
@@ -149,49 +148,11 @@ namespace CafeLib.BsvSharp.Transactions
             return writer;
         }
 
-        internal bool Sign(Transaction tx, PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
-            => Sign2(tx, privateKey, sighashType);
-
-        internal bool Sign(Transaction tx, PrivateKey privateKey, bool confirmExistingSignatures, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
-        {
-            var signedOk = true;
-            var sigHash = new SignatureHashType(SignatureHashEnum.All | SignatureHashEnum.ForkId);
-            var scriptSig = new ScriptBuilder(UtxoScript);
-
-            if (scriptSig.Ops.Count == 2)
-            {
-                var publicKey = new PublicKey();
-                publicKey.Set(scriptSig.Ops[1].Operand.Data);
-                if (privateKey == null || !publicKey.IsValid) return false;
-
-                Amount = Amount >= Amount.Zero 
-                    ? Amount 
-                    : tx.Outputs[PrevOut.Index].Amount >= Amount.Zero 
-                        ? tx.Outputs[PrevOut.Index].Amount
-                        : Amount.Zero;
-
-                var signatureHash = TransactionSignatureChecker.ComputeSignatureHash(_scriptBuilder, tx, tx.Inputs.IndexOf(this), sigHash, Amount);
-                var signature = privateKey.CreateSignature(signatureHash);
-                if (signature == null) return false;
-    
-                var sigWithType = new byte[signature.Length + 1];
-                signature.CopyTo(sigWithType.AsSpan());
-                sigWithType[^1] = (byte)sigHash.RawSigHashType;
-                var op = Operand.Push(sigWithType.AsSpan());
-                if (confirmExistingSignatures)
-                    signedOk &= op == scriptSig.Ops[0].Operand;
-                else
-                    scriptSig.Ops[0] = op;
-            }
-
-            return signedOk;
-        }
-
-        internal bool Sign2(Transaction tx, PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
+       internal bool Sign(Transaction tx, PrivateKey privateKey, SignatureHashEnum sighashType = SignatureHashEnum.All | SignatureHashEnum.ForkId)
         {
             var sigHash = new SignatureHashType(sighashType);
             var signatureHash = TransactionSignatureChecker.ComputeSignatureHash(UtxoScript, tx, tx.Inputs.IndexOf(this), sigHash, Amount);
-            var signature = new Signature(privateKey.CreateSignature(signatureHash), sigHash);
+            var signature = new Signature(privateKey.CreateCompactSignature(signatureHash), sigHash);
 
             if (_scriptBuilder is SignedUnlockBuilder builder)
             {
@@ -200,12 +161,9 @@ namespace CafeLib.BsvSharp.Transactions
                 IsFullySigned = true;
                 return true;
             }
-            else
-            {
-                IsFullySigned = false;
-                return false;
-                //throw new TransactionException("Trying to sign a Transaction Input that is missing a SignedUnlockBuilder");
-            }
+
+            IsFullySigned = false;
+            return false;
         }
 
         public bool TryReadTxIn(ref ByteSequenceReader r)
