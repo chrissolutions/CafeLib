@@ -238,7 +238,10 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         public bool Verify(UInt256 hash, VarType sig)
         {
             if (!IsValid || sig.Length == 0) return false;
-            return ECKey.Verify(hash, ECDSASignature.FromDER(sig));
+            var rkey = FromRecoverCompact(hash, sig);
+            return rkey != null && rkey == this;
+
+            //return ECKey.Verify(hash, ECDSASignature.FromDER(sig));
         }
 
         /// <summary>
