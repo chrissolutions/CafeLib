@@ -23,6 +23,19 @@ namespace CafeLib.Cryptography.UnitTests
             Assert.True(ok);
         }
 
+        [Fact]
+        public void SignatureTest()
+        {
+            //var pk = await new KzPaymailClient().GetPublicKey("147@moneybutton.com");
+            var pub = new PublicKey("02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef");
+
+            var message = "147@moneybutton.com02019-06-07T20:55:57.562ZPayment with Money Button";
+            var signature = "H4Q8tvj632hXiirmiiDJkuUN9Z20zDu3KaFuwY8cInZiLhgVJKJdKrZx1RZN06E/AARnFX7Fn618OUBQigCis4M=";
+            var ok = pub.VerifyMessage(message, signature);
+
+            Assert.True(ok);
+        }
+
         [Theory]
         [InlineData(
             "15jZVzLc9cXz5PUFFda5A4Z7kZDYPg2NnL",
