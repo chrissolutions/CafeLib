@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using CafeLib.BsvSharp.Encoding;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Numerics;
 using CafeLib.Cryptography;
@@ -14,6 +15,9 @@ namespace CafeLib.BsvSharp.Extensions
 
         public static ByteSpan Slice(this byte[] a, int start) => a.AsSpan().Slice(start);
         public static ByteSpan Slice(this byte[] a, int start, int length) => a.AsSpan().Slice(start, length);
+
+        public static string ToHex(this byte[] a) => Encoders.Hex.Encode(a);
+        public static string ToHexReverse(this byte[] a) => Encoders.HexReverse.Encode(a);
 
         /// <summary>
         /// Copy to byte array from another byte array.

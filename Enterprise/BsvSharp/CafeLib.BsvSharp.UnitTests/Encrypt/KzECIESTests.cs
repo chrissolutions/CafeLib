@@ -7,7 +7,6 @@ using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
-using CafeLib.BsvSharp.UnitTests.Extensions;
 using Xunit;
 
 namespace CafeLib.BsvSharp.UnitTests.Encrypt

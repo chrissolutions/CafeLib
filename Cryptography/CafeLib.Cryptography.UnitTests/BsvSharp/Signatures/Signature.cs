@@ -34,15 +34,6 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Signatures
         }
 
         /// <summary>
-        /// Signature constructor.
-        /// </summary>
-        /// <param name="hex">signature as hex string</param>
-        public Signature(string hex)
-            : this(Encoders.Hex.Decode(hex))
-        {
-        }
-
-        /// <summary>
         /// Determine whether a signature is normalized (lower-S).
         /// </summary>
         /// <returns></returns>

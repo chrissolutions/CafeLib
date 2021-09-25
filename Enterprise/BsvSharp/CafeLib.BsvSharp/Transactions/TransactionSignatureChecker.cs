@@ -297,7 +297,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             var hashType = new SignatureHashType(signature.LastByte);
             var sigHash = ComputeSignatureHash(subScript, _tx, _txInIndex, hashType, amount, flags);
-            return publicKey.Verify(sigHash, signature);
+            return publicKey.VerifyTxSig(sigHash, signature);
         }
 
         private static UInt256 GetPrevOutHash(Transaction txTo)

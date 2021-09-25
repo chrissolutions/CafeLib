@@ -35,10 +35,12 @@ namespace CafeLib.BsvSharp.Extensions
         /// <returns></returns>
         public static byte[] CreateCompactSignature(this PrivateKey privateKey, UInt256 hash)
         {
-            var signer = new DeterministicECDSA();
-            signer.SetPrivateKey(privateKey.ECKey.PrivateKey);
-            var sig = ECDSASignature.FromDER(signer.SignHash(hash)).MakeCanonical();
-            return sig.ToDER();
+            //var signer = new DeterministicECDSA();
+            //signer.SetPrivateKey(privateKey.ECKey.PrivateKey);
+            //var sig = ECDSASignature.FromDER(signer.SignHash(hash)).MakeCanonical();
+            //return sig.ToDER();
+
+            return privateKey.SignCompact(hash);
         }
 
         /// <summary>
@@ -51,9 +53,18 @@ namespace CafeLib.BsvSharp.Extensions
         {
             var signer = new DeterministicECDSA();
             signer.SetPrivateKey(privateKey.ECKey.PrivateKey);
-            signer.Update(message);
-            var results = signer.Sign();
-            return results;
+            var hash = message;
+            var sig = ECDSASignature.FromDER(signer.SignHash(hash)).MakeCanonical();
+            return sig.ToDER();
+
+
+            //var signer = new DeterministicECDSA();
+            //signer.SetPrivateKey(privateKey.ECKey.PrivateKey);
+            //signer.Update(message);
+            //var results = signer.Sign();
+            //return results;
+
+            //return privateKey.CreateCompactSignature(GetMessageHash(message));
         }
 
         public static byte[] SignMessage(this PrivateKey key, string message)
@@ -77,6 +88,12 @@ namespace CafeLib.BsvSharp.Extensions
         public static bool VerifyMessage(this PublicKey key, string message, Signature signature)
         {
             var rkey = PublicKey.FromMessage(message, signature.ToString());
+            return rkey != null && rkey == key;
+        }
+
+        public static bool VerifyMessage(this PublicKey key, UInt256 hash, ReadOnlyByteSpan signature)
+        {
+            var rkey = PublicKey.FromRecoverCompact(hash, signature);
             return rkey != null && rkey == key;
         }
 

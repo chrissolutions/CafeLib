@@ -31,7 +31,7 @@ namespace CafeLib.Cryptography.UnitTests
         [InlineData("3046022100876045be6f9eca28ff1ec606b833d0b87e70b2a630f5e3a496b110967a40f90a0221008fffd599910eefe00bc803c688c2eca1d2ba7f6b180620eaa03488e6585db6ba01")]
         public void CanonicalSignatureTest_Instance(string hex)
         {
-            var signature = new Signature(hex);
+            var signature = Signature.FromHex(hex);
             Assert.True(signature.IsTxDerEncoding());
         }
 

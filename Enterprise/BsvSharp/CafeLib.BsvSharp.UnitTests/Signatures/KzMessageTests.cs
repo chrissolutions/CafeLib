@@ -16,11 +16,9 @@ namespace CafeLib.BsvSharp.UnitTests.Signatures
 
             var privateKey = PrivateKey.FromWif("L3nrwRssVKMkScjejmmu6kmq4hSuUApJnFdW1hGvBP69jnQuKYCh");
             var sig = privateKey.SignMessageToBase64(message);
+            Assert.Equal(signature, sig);
 
-            //var sig = privateKey.SignMessageCompact(KeyExtensions.GetMessageHash(message.Utf8ToBytes()));
-            //Assert.Equal(signature, Encoders.Base64.Encode(sig));
-
-            var ok = privateKey.CreatePublicKey().VerifyMessage(message, new Signature(sig));
+            var ok = privateKey.CreatePublicKey().VerifyMessage(message, Signature.FromBase64(sig));
             Assert.True(ok);
         }
 

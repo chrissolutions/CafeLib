@@ -71,9 +71,11 @@ namespace CafeLib.BsvSharp.Keys
         public PublicKey(ReadOnlyByteSpan bytes)
             : this()
         {
-            if (bytes.Length <= 0 || bytes.Length != PredictLength(bytes[0])) return;
-            _keyData = new byte[bytes.Length];
-            bytes.CopyTo(_keyData);
+            if (bytes.Length > 0 && bytes.Length == PredictLength(bytes[0]))
+            {
+                _keyData = new byte[bytes.Length];
+                bytes.CopyTo(_keyData);
+            }
         }
 
         /// <summary>
@@ -239,8 +241,21 @@ namespace CafeLib.BsvSharp.Keys
         public bool Verify(UInt256 hash, VarType sig)
         {
             if (!IsValid || sig.Length == 0) return false;
+            var rkey = FromRecoverCompact(hash, sig);
+            return rkey != null && rkey == this;
+        }
+
+        /// <summary>
+        /// Verify public key
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <param name="sig"></param>
+        /// <returns></returns>
+        public bool VerifyTxSig(UInt256 hash, VarType sig)
+        {
             return ECKey.Verify(hash, ECDSASignature.FromDER(sig));
         }
+
 
         /// <summary>
         /// RIPEMD160 applied to SHA256 of the 33 or 65 public key bytes.
@@ -299,7 +314,6 @@ namespace CafeLib.BsvSharp.Keys
 
 
             var N = ECKey.Curve.N;
-            //var kPar = new BigInteger(1, _keyData);
             var parse256LL = new BigInteger(1, l);
 
             if (parse256LL.CompareTo(N) >= 0)
