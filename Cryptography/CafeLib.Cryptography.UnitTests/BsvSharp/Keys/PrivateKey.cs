@@ -187,7 +187,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             var hash = str.AsciiToBytes().Concat(rnd).Hash256();
 
             var sig = this.CreateCompactSignature(hash);
-            return sig != null && publicKey.Verify(hash, sig);
+            return sig != null && publicKey.VerifyMessage(hash, sig);
         }
 
         public byte[] SignCompact(UInt256 hash)
@@ -215,7 +215,9 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             {
                 [0] = (byte)headerByte
             };
-            
+
+            sig.R.ToByteArrayUnsigned().CopyTo(sigData[1..33]);
+            sig.S.ToByteArrayUnsigned().CopyTo(sigData[33..]);    
             return sigData;
         }
 

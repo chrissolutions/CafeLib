@@ -13,6 +13,20 @@ namespace CafeLib.Cryptography.UnitTests
     public class KzMessageTests
     {
         [Fact]
+        public void SignMessageTest()
+        {
+            const string message = "147@moneybutton.com02019-06-07T20:55:57.562ZPayment with Money Button";
+            const string signature = "HxjyaWDKtUXXN78HOpVwK9xTuIjtP2AZeOTKrbo/PnBJMa4qVhDiyhzulBL89zJnp0sxqq4hpt6mUmGrd/Q/R2U=";
+
+            var privateKey = PrivateKey.FromWif("L3nrwRssVKMkScjejmmu6kmq4hSuUApJnFdW1hGvBP69jnQuKYCh");
+            var sig = privateKey.SignMessageToBase64(message);
+            Assert.Equal(signature, sig);
+
+            var ok = privateKey.CreatePublicKey().VerifyMessage(message, Signature.FromBase64(sig));
+            Assert.True(ok);
+        }
+
+        [Fact]
         public void VerifyMessageSignatureTest()
         {
             const string message = "This is an example of a signed message.";
@@ -20,19 +34,6 @@ namespace CafeLib.Cryptography.UnitTests
 
             var publicKey = PublicKey.FromMessage(message, signature);
             var ok = publicKey.VerifyMessage(message, signature);
-            Assert.True(ok);
-        }
-
-        [Fact]
-        public void SignatureTest()
-        {
-            //var pk = await new KzPaymailClient().GetPublicKey("147@moneybutton.com");
-            var pub = new PublicKey("02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef");
-
-            var message = "147@moneybutton.com02019-06-07T20:55:57.562ZPayment with Money Button";
-            var signature = "H4Q8tvj632hXiirmiiDJkuUN9Z20zDu3KaFuwY8cInZiLhgVJKJdKrZx1RZN06E/AARnFX7Fn618OUBQigCis4M=";
-            var ok = pub.VerifyMessage(message, signature);
-
             Assert.True(ok);
         }
 

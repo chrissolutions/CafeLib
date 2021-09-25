@@ -67,7 +67,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Signatures
 
         public static Signature FromHex(string hex) => new Signature(Encoders.Hex.Decode(hex));
 
-        public static Signature FromBase64(string hex) => new Signature(Encoders.Base64.Decode(hex));
+        public static Signature FromBase64(string base64) => new Signature(Encoders.Base64.Decode(base64));
 
         /// <summary>
         /// Determine whether a signature is normalized (lower-S).
