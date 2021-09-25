@@ -50,11 +50,13 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
         /// <returns>signature bytes</returns>
         public static byte[] CreateSignature(this PrivateKey privateKey, ReadOnlyByteSpan message)
         {
-            var signer = new DeterministicECDSA();
-            signer.SetPrivateKey(privateKey.ECKey.PrivateKey);
-            signer.Update(message);
-            var results = signer.Sign();
-            return results;
+            //var signer = new DeterministicECDSA();
+            //signer.SetPrivateKey(privateKey.ECKey.PrivateKey);
+            //signer.Update(message);
+            //var results = signer.Sign();
+            //return results;
+
+            return privateKey.CreateCompactSignature(GetMessageHash(message));
         }
 
         public static byte[] SignMessage(this PrivateKey key, string message)
