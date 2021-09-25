@@ -9,6 +9,22 @@ namespace CafeLib.BsvSharp.UnitTests.Signatures
     public class KzMessageTests
     {
         [Fact]
+        public void SignMessageTest()
+        {
+            const string message = "147@moneybutton.com02019-06-07T20:55:57.562ZPayment with Money Button";
+            const string signature = "HxjyaWDKtUXXN78HOpVwK9xTuIjtP2AZeOTKrbo/PnBJMa4qVhDiyhzulBL89zJnp0sxqq4hpt6mUmGrd/Q/R2U=";
+
+            var privateKey = PrivateKey.FromWif("L3nrwRssVKMkScjejmmu6kmq4hSuUApJnFdW1hGvBP69jnQuKYCh");
+            var sig = privateKey.SignMessageToBase64(message);
+
+            //var sig = privateKey.SignMessageCompact(KeyExtensions.GetMessageHash(message.Utf8ToBytes()));
+            //Assert.Equal(signature, Encoders.Base64.Encode(sig));
+
+            var ok = privateKey.CreatePublicKey().VerifyMessage(message, new Signature(sig));
+            Assert.True(ok);
+        }
+
+        [Fact]
         public void VerifyMessageSignatureTest()
         {
             const string message = "This is an example of a signed message.";
