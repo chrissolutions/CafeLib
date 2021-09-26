@@ -27,6 +27,28 @@ namespace CafeLib.Cryptography.UnitTests
         }
 
         [Fact]
+        public void SignMessage_With_PublicKey_Test()
+        {
+            const string pubKeyHex = "02e36811b6a8db1593aa5cf97f91dd2211af1c38b9890567e58367945137dca8ef";
+
+            const string message = "147@moneybutton.com02019-06-07T20:55:57.562ZPayment with Money Button";
+            const string signature = "HxjyaWDKtUXXN78HOpVwK9xTuIjtP2AZeOTKrbo/PnBJMa4qVhDiyhzulBL89zJnp0sxqq4hpt6mUmGrd/Q/R2U=";
+            const string sign = "H4Q8tvj632hXiirmiiDJkuUN9Z20zDu3KaFuwY8cInZiLhgVJKJdKrZx1RZN06E/AARnFX7Fn618OUBQigCis4M=";
+
+            var privateKey = PrivateKey.FromWif("L3nrwRssVKMkScjejmmu6kmq4hSuUApJnFdW1hGvBP69jnQuKYCh");
+            var sig = privateKey.SignMessageToBase64(message);
+            Assert.Equal(signature, sig);
+
+            var publicKey = privateKey.CreatePublicKey();
+            var ok = publicKey.VerifyMessage(message, Signature.FromBase64(sig));
+            Assert.True(ok);
+
+            var pubKey = PublicKey.FromHex(pubKeyHex);
+            ok = pubKey.VerifyMessage(message, sign);
+        }
+
+
+        [Fact]
         public void VerifyMessageSignatureTest()
         {
             const string message = "This is an example of a signed message.";
