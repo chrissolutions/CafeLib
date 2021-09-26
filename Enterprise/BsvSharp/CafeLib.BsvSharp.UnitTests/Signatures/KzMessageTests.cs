@@ -20,10 +20,10 @@ namespace CafeLib.BsvSharp.UnitTests.Signatures
             const string signature = "HxjyaWDKtUXXN78HOpVwK9xTuIjtP2AZeOTKrbo/PnBJMa4qVhDiyhzulBL89zJnp0sxqq4hpt6mUmGrd/Q/R2U=";
 
             var privateKey = PrivateKey.FromWif("L3nrwRssVKMkScjejmmu6kmq4hSuUApJnFdW1hGvBP69jnQuKYCh");
-            var sig = privateKey.SignMessageToBase64(message);
-            Assert.Equal(signature, sig);
+            var sig = privateKey.SignMessage(message);
+            Assert.Equal(signature, sig.ToString());
 
-            var ok = privateKey.CreatePublicKey().VerifyMessage(message, Signature.FromBase64(sig));
+            var ok = privateKey.CreatePublicKey().VerifyMessage(message, sig);
             Assert.True(ok);
         }
 

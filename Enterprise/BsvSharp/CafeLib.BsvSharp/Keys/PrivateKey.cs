@@ -197,37 +197,6 @@ namespace CafeLib.BsvSharp.Keys
             return sig != null && publicKey.Verify(hash, sig);
         }
 
-        public byte[] SignCompact(UInt256 hash)
-        {
-            var sig = ECKey.Sign(hash);
-            // Now we have to work backwards to figure out the recId needed to recover the signature.
-            var recId = -1;
-            for (var i = 0; i < 4; i++)
-            {
-                var k = ECKey.RecoverFromSignature(i, sig, hash, IsCompressed);
-                if (k != null && k.GetPublicKeyPoint(IsCompressed).ToHex() == PublicKey.ToHex())
-                {
-                    recId = i;
-                    break;
-                }
-            }
-
-            if (recId == -1)
-                throw new InvalidOperationException("Could not construct a recoverable key. This should never happen.");
-
-            var headerByte = recId + 27 + (IsCompressed ? 4 : 0);
-
-            // 1 header + 32 bytes for R + 32 bytes for S
-            var sigData = new ByteSpan(new byte[65])
-            {
-                [0] = (byte)headerByte
-            };
-
-            sig.R.ToByteArrayUnsigned().CopyTo(sigData[1..33]);
-            sig.S.ToByteArrayUnsigned().CopyTo(sigData[33..]);    
-            return sigData;
-        }
-
         public string ToHex() => _keyData.ToStringFirstByteFirst();
         public Base58PrivateKey ToBase58() => new Base58PrivateKey(this);
         public override string ToString() => ToBase58().ToString();
@@ -257,6 +226,37 @@ namespace CafeLib.BsvSharp.Keys
                 IsValid = true;
                 ECKey = new ECKey(_keyData, true);
             }
+        }
+
+        internal byte[] SignCompact(UInt256 hash)
+        {
+            var sig = ECKey.Sign(hash);
+            // Now we have to work backwards to figure out the recId needed to recover the signature.
+            var recId = -1;
+            for (var i = 0; i < 4; i++)
+            {
+                var k = ECKey.RecoverFromSignature(i, sig, hash, IsCompressed);
+                if (k != null && k.GetPublicKeyPoint(IsCompressed).ToHex() == PublicKey.ToHex())
+                {
+                    recId = i;
+                    break;
+                }
+            }
+
+            if (recId == -1)
+                throw new InvalidOperationException("Could not construct a recoverable key. This should never happen.");
+
+            var headerByte = recId + 27 + (IsCompressed ? 4 : 0);
+
+            // 1 header + 32 bytes for R + 32 bytes for S
+            var sigData = new ByteSpan(new byte[65])
+            {
+                [0] = (byte)headerByte
+            };
+
+            sig.R.ToByteArrayUnsigned().CopyTo(sigData[1..33]);
+            sig.S.ToByteArrayUnsigned().CopyTo(sigData[33..]);
+            return sigData;
         }
 
         private static bool VerifyData(ReadOnlyByteSpan data)

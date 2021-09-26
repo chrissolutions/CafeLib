@@ -152,7 +152,7 @@ namespace CafeLib.BsvSharp.Transactions
         {
             var sigHash = new SignatureHashType(sighashType);
             var signatureHash = TransactionSignatureChecker.ComputeSignatureHash(UtxoScript, tx, tx.Inputs.IndexOf(this), sigHash, Amount);
-            var signature = new Signature(privateKey.CreateTxSignature(signatureHash), sigHash);
+            var signature = privateKey.CreateTxSignature(signatureHash, sigHash);
 
             if (_scriptBuilder is SignedUnlockBuilder builder)
             {

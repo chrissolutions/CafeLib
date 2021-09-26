@@ -31,7 +31,7 @@ namespace CafeLib.BsvSharp.Signatures
         public Signature(byte[] signature, SignatureHashType hashType = null)
         {
             _data = signature;
-            _hashType = hashType?.RawSigHashType ?? 0;
+            _hashType = hashType?.RawSigHashType ?? (uint)SignatureHashEnum.Unsupported;
         }
 
         /// <summary>
@@ -69,25 +69,21 @@ namespace CafeLib.BsvSharp.Signatures
         public static bool IsLowS(ReadOnlyByteSpan signature) => ECDSASignature.FromDER(signature).IsLowS;
 
         /// <summary>
+        /// Returns the signature data.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] ToArray() => Data;
+
+        /// <summary>
         /// Convert to transaction signature format.
         /// </summary>
         /// <returns></returns>
         /// <remarks>Appends the hash type to the DER formatted signature.</remarks>
         public Signature ToTxFormat()
         {
-            return _hashType == 0 ? this : new Signature(_data.Concat(new[] { (byte)_hashType }));
-        }
-
-
-        /// <summary>
-        /// Return transaction formatted signature
-        /// </summary>
-        /// <param name="signature">signature</param>
-        /// <param name="hashType">hash type</param>
-        /// <returns></returns>
-        public static Signature ToTxFormat(ReadOnlyByteSpan signature, uint hashType)
-        {
-            return new Signature(signature.ToArray().Concat(new[] { (byte)hashType }));
+            return _hashType == (uint)SignatureHashEnum.Unsupported 
+                ? this 
+                : new Signature(_data.Concat(new[] { (byte)_hashType }));
         }
 
         /// <summary>
