@@ -28,7 +28,7 @@ namespace CafeLib.BsvSharp.UnitTests.Signatures
             const string message = "This is an example of a signed message.";
             const string signature = "H6sliOnVrD9r+J8boZAKHZwBIW2zLiD72IfTIF94bfZhBI0JdMu9AM9rrF7P6eH+866YvM4H9xWGVN4jMJZycFU=";
 
-            var publicKey = PublicKey.FromMessage(message, signature);
+            var publicKey = PublicKey.FromSignedMessage(message, signature);
             var ok = publicKey.VerifyMessage(message, signature);
             Assert.True(ok);
         }

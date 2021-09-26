@@ -169,12 +169,12 @@ namespace CafeLib.BsvSharp.Keys
         }
 
         /// <summary>
-        /// The complement function is PrivateKey CreateCompatSignature.
+        /// The complement function is PrivateKey CreateSignature.
         /// </summary>
         /// <param name="hash"></param>
         /// <param name="signatureEncoded"></param>
         /// <returns></returns>
-        public PublicKey RecoverCompact(UInt256 hash, ReadOnlyByteSpan signatureEncoded)
+        public PublicKey RecoverKey(UInt256 hash, ReadOnlyByteSpan signatureEncoded)
         {
             if (signatureEncoded.Length < 65)
                 throw new ArgumentException("Signature truncated, expected 65 bytes and got " + signatureEncoded.Length);
@@ -213,11 +213,11 @@ namespace CafeLib.BsvSharp.Keys
         /// Thanks bitcoinj source code
         /// http://bitcoinj.googlecode.com/git-history/keychain/core/src/main/java/com/google/bitcoin/core/Utils.java
         /// </remarks>
-        public static PublicKey FromMessage(string message, string signature)
+        public static PublicKey FromSignedMessage(string message, string signature)
         {
             var signatureBytes = Encoders.Base64.Decode(signature);
             var hash = KeyExtensions.GetMessageHash(message.Utf8ToBytes());
-            return FromRecoverCompact(hash, signatureBytes);
+            return FromSignedHash(hash, signatureBytes);
         }
 
         /// <summary>
@@ -226,10 +226,10 @@ namespace CafeLib.BsvSharp.Keys
         /// <param name="hash"></param>
         /// <param name="signature"></param>
         /// <returns></returns>
-        public static PublicKey FromRecoverCompact(UInt256 hash, ReadOnlyByteSpan signature)
+        public static PublicKey FromSignedHash(UInt256 hash, ReadOnlyByteSpan signature)
         {
             var key = new PublicKey();
-            return key.RecoverCompact(hash, signature);
+            return key.RecoverKey(hash, signature);
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace CafeLib.BsvSharp.Keys
         public bool Verify(UInt256 hash, VarType sig)
         {
             if (!IsValid || sig.Length == 0) return false;
-            var rkey = FromRecoverCompact(hash, sig);
+            var rkey = FromSignedHash(hash, sig);
             return rkey != null && rkey == this;
         }
 
