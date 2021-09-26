@@ -5,7 +5,6 @@
 
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
-using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Passphrase;
 using CafeLib.Core.Numerics;
 using Xunit;

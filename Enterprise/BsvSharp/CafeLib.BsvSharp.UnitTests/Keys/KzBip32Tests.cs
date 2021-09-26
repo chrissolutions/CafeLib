@@ -7,7 +7,6 @@ using System.Linq;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using Xunit;
-
 // ReSharper disable StringLiteralTypo
 
 namespace CafeLib.BsvSharp.UnitTests.Keys
@@ -140,8 +139,6 @@ namespace CafeLib.BsvSharp.UnitTests.Keys
 
                 var seed = tv.MasterSeed.HexToBytes();
                 var m = ExtPrivateKey.MasterBip32(seed);
-
-                var str = m.ToString();
 
                 foreach (var d in tv.Derivations)
                 {
