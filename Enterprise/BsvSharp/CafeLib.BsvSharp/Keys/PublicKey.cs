@@ -204,6 +204,15 @@ namespace CafeLib.BsvSharp.Keys
         }
 
         /// <summary>
+        /// Create public key from hex string.
+        /// </summary>
+        /// <param name="hex">hex string</param>
+        /// <returns></returns>
+        public static PublicKey FromHex(string hex) => new PublicKey(hex);
+
+        public static PublicKey FromBase58(string base58) => new PublicKey(Encoders.Hex.Encode(Encoders.Base58.Decode(base58)));
+
+        /// <summary>
         /// Recover public key from message and signature.
         /// </summary>
         /// <param name="message">message text</param>
