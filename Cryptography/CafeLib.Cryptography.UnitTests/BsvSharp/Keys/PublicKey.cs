@@ -200,6 +200,16 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             return PublicKeyFromECKey(key, compressed);
         }
 
+        public static PublicKey FromHex(string hex)
+        {
+            return new PublicKey(hex);
+        }
+
+        public static PublicKey FromBase58(string base58)
+        {
+            return new PublicKey(Encoders.Hex.Encode(base58.Base58ToBytes()));
+        }
+
         /// <summary>
         /// Recover public key from message and signature.
         /// </summary>
