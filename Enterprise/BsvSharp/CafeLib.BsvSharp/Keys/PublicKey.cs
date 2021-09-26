@@ -240,22 +240,10 @@ namespace CafeLib.BsvSharp.Keys
         /// <returns></returns>
         public bool Verify(UInt256 hash, VarType sig)
         {
-            if (!IsValid || sig.Length == 0) return false;
-            var rkey = FromSignedHash(hash, sig);
-            return rkey != null && rkey == this;
+            return sig.Length == 65
+                ? VerifyCompact(hash, sig)
+                : VerifyTxSig(hash, sig);
         }
-
-        /// <summary>
-        /// Verify public key
-        /// </summary>
-        /// <param name="hash"></param>
-        /// <param name="sig"></param>
-        /// <returns></returns>
-        public bool VerifyTxSig(UInt256 hash, VarType sig)
-        {
-            return ECKey.Verify(hash, ECDSASignature.FromDER(sig));
-        }
-
 
         /// <summary>
         /// RIPEMD160 applied to SHA256 of the 33 or 65 public key bytes.
@@ -360,6 +348,30 @@ namespace CafeLib.BsvSharp.Keys
             //Pub key (q) is composed into X and Y, the compressed form only include X, which can derive Y along with 02 or 03 prepent depending on whether Y in even or odd.
             var result = ecKey.Secp256k1.Curve.CreatePoint(q.X.ToBigInteger(), q.Y.ToBigInteger(), isCompressed).GetEncoded();
             return new PublicKey(result);
+        }
+
+        /// <summary>
+        /// Verify compact signature
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <param name="sig"></param>
+        /// <returns></returns>
+        private bool VerifyCompact(UInt256 hash, VarType sig)
+        {
+            if (!IsValid || sig.Length == 0) return false;
+            var rkey = FromSignedHash(hash, sig);
+            return rkey != null && rkey == this;
+        }
+
+        /// <summary>
+        /// Verify transaction signature.
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <param name="sig"></param>
+        /// <returns></returns>
+        private bool VerifyTxSig(UInt256 hash, VarType sig)
+        {
+            return ECKey.Verify(hash, ECDSASignature.FromDER(sig));
         }
 
         #endregion

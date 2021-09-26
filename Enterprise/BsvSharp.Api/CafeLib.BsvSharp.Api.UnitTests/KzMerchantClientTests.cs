@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Numerics;
+using CafeLib.Core.Numerics;
 using Xunit;
 
 namespace CafeLib.BsvSharp.Api.UnitTests {

@@ -14,6 +14,7 @@ using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Units;
+using CafeLib.Cryptography;
 using Newtonsoft.Json;
 
 namespace CafeLib.BsvSharp.Api.UnitTests
