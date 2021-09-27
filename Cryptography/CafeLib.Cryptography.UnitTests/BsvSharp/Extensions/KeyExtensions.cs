@@ -32,60 +32,37 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
         /// <param name="privateKey"></param>
         /// <param name="hash"></param>
         /// <returns></returns>
-        public static byte[] CreateCompactSignature(this PrivateKey privateKey, UInt256 hash)
+        public static Signature CreateSignature(this PrivateKey privateKey, UInt256 hash)
         {
-            //var signer = new DeterministicECDSA();
-            //signer.SetPrivateKey(privateKey.ECKey.PrivateKey);
-            //var sig = ECDSASignature.FromDER(signer.SignHash(hash)).MakeCanonical();
-            //return sig.ToDER();
-
-            return privateKey.SignCompact(hash);
+            return new Signature(privateKey.SignCompact(hash));
         }
 
         /// <summary>
         /// Create a signature from private key
         /// </summary>
         /// <param name="privateKey">private key</param>
-        /// <param name="message">message to sign</param>
+        /// <param name="hash">hash to sign</param>
+        /// <param name="hashType"></param>
         /// <returns>signature bytes</returns>
-        public static byte[] CreateSignature(this PrivateKey privateKey, ReadOnlyByteSpan message)
+        public static Signature CreateTxSignature(this PrivateKey privateKey, UInt256 hash, SignatureHashType hashType = null)
         {
-            //var signer = new DeterministicECDSA();
-            //signer.SetPrivateKey(privateKey.ECKey.PrivateKey);
-            //signer.Update(message);
-            //var results = signer.Sign();
-            //return results;
-
-            return privateKey.CreateCompactSignature(GetMessageHash(message));
+            var signer = new DeterministicECDSA();
+            signer.SetPrivateKey(privateKey.ECKey.PrivateKey);
+            var sig = ECDSASignature.FromDER(signer.SignHash(hash)).MakeCanonical();
+            return new Signature(sig.ToDER(), hashType);
         }
 
-        public static byte[] SignMessage(this PrivateKey key, string message)
-            => SignMessage(key, message.Utf8ToBytes());
-
-        public static byte[] SignMessage(this PrivateKey key, ReadOnlyByteSpan message)
-            => key.CreateSignature(message);
-
-        public static byte[] SignMessageCompact(this PrivateKey key, UInt256 hash)
-            => key.CreateCompactSignature(hash);
-
-        public static string SignMessageToBase64(this PrivateKey key, ReadOnlyByteSpan message)
+        public static Signature SignMessage(this PrivateKey key, string message)
         {
-            var sigBytes = key.SignMessageCompact(GetMessageHash(message));
-            return sigBytes == null ? null : Encoders.Base64.Encode(sigBytes);
+            return key.SignMessageCompact(GetMessageHash(message.Utf8ToBytes()));
         }
 
-        public static string SignMessageToBase64(this PrivateKey key, string message)
-            => SignMessageToBase64(key, message.Utf8ToBytes());
+        public static Signature SignMessageCompact(this PrivateKey key, UInt256 hash)
+            => key.CreateSignature(hash);
 
         public static bool VerifyMessage(this PublicKey key, string message, Signature signature)
         {
             var rkey = PublicKey.FromMessage(message, signature.ToString());
-            return rkey != null && rkey == key;
-        }
-
-        public static bool VerifyMessage(this PublicKey key, UInt256 hash, ReadOnlyByteSpan signature)
-        {
-            var rkey = PublicKey.FromRecoverCompact(hash, signature);
             return rkey != null && rkey == key;
         }
 

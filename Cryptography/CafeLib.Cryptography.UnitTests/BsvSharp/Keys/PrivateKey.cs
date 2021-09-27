@@ -190,7 +190,22 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             return sig != null && publicKey.Verify(hash, sig);
         }
 
-        public byte[] SignCompact(UInt256 hash)
+        public string ToHex() => _keyData.ToStringFirstByteFirst();
+        public Base58PrivateKey ToBase58() => new Base58PrivateKey(this);
+        public override string ToString() => ToBase58().ToString();
+
+        public override int GetHashCode() => _keyData.GetHashCode();
+        public bool Equals(PrivateKey o) => !(o is null) && IsCompressed.Equals(o.IsCompressed) && _keyData.Equals(o._keyData);
+        public override bool Equals(object obj) => obj is PrivateKey key && this == key;
+
+        public static bool operator ==(PrivateKey x, PrivateKey y) => x?.Equals(y) ?? y is null;
+        public static bool operator !=(PrivateKey x, PrivateKey y) => !(x == y);
+
+        public static implicit operator ReadOnlyByteSpan(PrivateKey rhs) => rhs._keyData.Span;
+
+        #region Helpers
+
+        internal byte[] SignCompact(UInt256 hash)
         {
             var sig = ECKey.Sign(hash);
             // Now we have to work backwards to figure out the recId needed to recover the signature.
@@ -198,7 +213,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             for (var i = 0; i < 4; i++)
             {
                 var k = ECKey.RecoverFromSignature(i, sig, hash, IsCompressed);
-                if (k != null && k.GetPublicKeyPoint(IsCompressed).ToHex() == PublicKey.ToHex())
+                if (k != null && k.GetPublicKeyPoint(IsCompressed).AsSpan().SequenceEqual(PublicKey.Data))
                 {
                     recId = i;
                     break;
@@ -217,24 +232,10 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             };
 
             sig.R.ToByteArrayUnsigned().CopyTo(sigData[1..33]);
-            sig.S.ToByteArrayUnsigned().CopyTo(sigData[33..]);    
+            sig.S.ToByteArrayUnsigned().CopyTo(sigData[33..]);
             return sigData;
         }
 
-        public string ToHex() => _keyData.ToStringFirstByteFirst();
-        public Base58PrivateKey ToBase58() => new Base58PrivateKey(this);
-        public override string ToString() => ToBase58().ToString();
-
-        public override int GetHashCode() => _keyData.GetHashCode();
-        public bool Equals(PrivateKey o) => !(o is null) && IsCompressed.Equals(o.IsCompressed) && _keyData.Equals(o._keyData);
-        public override bool Equals(object obj) => obj is PrivateKey key && this == key;
-
-        public static bool operator ==(PrivateKey x, PrivateKey y) => x?.Equals(y) ?? y is null;
-        public static bool operator !=(PrivateKey x, PrivateKey y) => !(x == y);
-
-        public static implicit operator ReadOnlyByteSpan(PrivateKey rhs) => rhs._keyData.Span;
-
-        #region Helpers
 
         internal void SetData(ReadOnlyByteSpan data, bool compressed = true)
         {
