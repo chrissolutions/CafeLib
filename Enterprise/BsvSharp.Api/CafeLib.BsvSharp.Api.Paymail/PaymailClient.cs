@@ -107,7 +107,7 @@ namespace CafeLib.BsvSharp.Api.Paymail
             amount ??= Amount.Zero;
             var dt = DateTime.UtcNow.ToString("o");
             var message = $"{senderHandle}{amount.Value.Satoshis}{dt}{purpose}";
-            var signature = key?.SignMessageToBase64(message) ?? "";
+            var signature = key?.SignMessage(message).ToString() ?? "";
 
             // var ok = key.GetPubKey().VerifyMessage(message, signature);
 

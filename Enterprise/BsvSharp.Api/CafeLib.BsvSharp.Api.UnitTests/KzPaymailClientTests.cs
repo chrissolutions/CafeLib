@@ -100,7 +100,7 @@ namespace CafeLib.BsvSharp.Api.UnitTests {
             var message = $"{paymail}{amount}{when}{purpose}";
 
             var privkey = PrivateKey.FromBase58("KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR");
-            var signature = privkey.SignMessageToBase64(message);
+            var signature = privkey.SignMessage(message).ToString();
             Assert.Equal("H7mUf95shi5aTyzDnI7DQWSoGAI2nbPG+56IsSkINJdtAYvhr5ivp2ZdQr91vASAwlm62pAhzoEJ0lcS2ja7llI=", signature);
 
             var pub = privkey.CreatePublicKey();

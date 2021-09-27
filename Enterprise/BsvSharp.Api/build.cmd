@@ -1,6 +1,6 @@
 @echo off
 setlocal
-if '%root%' == '' set root=..
+if '%root%' == '' set root=..\..
 
 :: Type
 :: Type
@@ -14,8 +14,6 @@ set solution=CafeLib.%type%
 set sourcepath=%root%\%location%
 
 :: Setup libraries.
-set libs=%solution%
-set libs=%libs% %solution%.
 set libs=%libs% %solution%.CoinGecko
 set libs=%libs% %solution%.CoinMarketCap
 set libs=%libs% %solution%.Paymail

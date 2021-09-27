@@ -27,24 +27,13 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
         }
 
         /// <summary>
-        /// The complement function is KzPubKey's RecoverCompact or KzPubKey.FromRecoverCompact.
-        /// </summary>
-        /// <param name="privateKey"></param>
-        /// <param name="hash"></param>
-        /// <returns></returns>
-        public static Signature CreateSignature(this PrivateKey privateKey, UInt256 hash)
-        {
-            return new Signature(privateKey.SignCompact(hash));
-        }
-
-        /// <summary>
         /// Create a signature from private key
         /// </summary>
         /// <param name="privateKey">private key</param>
         /// <param name="hash">hash to sign</param>
         /// <param name="hashType"></param>
         /// <returns>signature bytes</returns>
-        public static Signature CreateTxSignature(this PrivateKey privateKey, UInt256 hash, SignatureHashType hashType = null)
+        public static Signature SignTxSignature(this PrivateKey privateKey, UInt256 hash, SignatureHashType hashType = null)
         {
             var signer = new DeterministicECDSA();
             signer.SetPrivateKey(privateKey.ECKey.PrivateKey);
@@ -52,13 +41,27 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Extensions
             return new Signature(sig.ToDER(), hashType);
         }
 
+        /// <summary>
+        /// Sign the message.
+        /// </summary>
+        /// <param name="key">private key</param>
+        /// <param name="message">message to sign</param>
+        /// <returns>signature</returns>
         public static Signature SignMessage(this PrivateKey key, string message)
         {
-            return key.SignMessageCompact(GetMessageHash(message.Utf8ToBytes()));
+            return key.SignMessageHash(GetMessageHash(message.Utf8ToBytes()));
         }
 
-        public static Signature SignMessageCompact(this PrivateKey key, UInt256 hash)
-            => key.CreateSignature(hash);
+        /// <summary>
+        /// Sign message hash
+        /// </summary>
+        /// <param name="key">private key</param>
+        /// <param name="hash">message hash</param>
+        /// <returns>signature</returns>
+        public static Signature SignMessageHash(this PrivateKey key, UInt256 hash)
+        {
+            return new Signature(key.SignCompact(hash));
+        }
 
         public static bool VerifyMessage(this PublicKey key, string message, Signature signature)
         {
