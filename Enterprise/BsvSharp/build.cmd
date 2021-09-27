@@ -21,15 +21,15 @@ call %root%\build\buildlibs
 if ERRORLEVEL 1 goto error
 
 :: Package Secp256k1 to Nuget.
-set solution=CafeLib.Secp256k1
-set sourcepath=%root%\%location%\libs\%solution%
+rem set solution=CafeLib.Secp256k1
+rem set sourcepath=%root%\%location%\libs\%solution%
 
-echo %nugetpack% %sourcepath%\%solution%.nuspec -Version %version% -Properties Configuration=%configuration% -OutputDirectory %sourcepath%\%libPath%
-%nugetpack% %sourcepath%\%solution%.nuspec -Version %version% -Properties Configuration=%configuration% -OutputDirectory %sourcepath%\%libPath%
+rem echo %nugetpack% %sourcepath%\%solution%.nuspec -Version %version% -Properties Configuration=%configuration% -OutputDirectory %sourcepath%\%libPath%
+rem %nugetpack% %sourcepath%\%solution%.nuspec -Version %version% -Properties Configuration=%configuration% -OutputDirectory %sourcepath%\%libPath%
 
-echo %nuget% push %sourcepath%\%libPath%\%solution%.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
-if '%debug%' == '' %nuget% push %sourcepath%\%libPath%\%solution%.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
-if ERRORLEVEL 1 goto error
+rem echo %nuget% push %sourcepath%\%libPath%\%solution%.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
+rem if '%debug%' == '' %nuget% push %sourcepath%\%libPath%\%solution%.%version%.nupkg %apiswitch% -s %nugetServer% %skipdup%
+rem if ERRORLEVEL 1 goto error
 
 :exit
 endlocal
