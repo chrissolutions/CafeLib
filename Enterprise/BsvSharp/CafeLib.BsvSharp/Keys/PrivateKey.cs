@@ -236,7 +236,7 @@ namespace CafeLib.BsvSharp.Keys
             for (var i = 0; i < 4; i++)
             {
                 var k = ECKey.RecoverFromSignature(i, sig, hash, IsCompressed);
-                if (k != null && k.GetPublicKeyPoint(IsCompressed).ToHex() == PublicKey.ToHex())
+                if (k != null && k.GetPublicKeyPoint(IsCompressed).AsSpan().SequenceEqual(PublicKey.Data))
                 {
                     recId = i;
                     break;
