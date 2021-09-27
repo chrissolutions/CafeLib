@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace CafeLib.BsvSharp.Api.UnitTests {
-    public class CoinGeckoApiTests
+    public class KzApiCoinGeckoApiTests
     {
         [Fact]
         public async Task GetSupportedCoins_Test() 

@@ -5,7 +5,6 @@
 
 using System.Threading.Tasks;
 using CafeLib.BsvSharp.Api.Paymail;
-using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using Xunit;
 

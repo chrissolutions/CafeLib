@@ -20,9 +20,8 @@ namespace CafeLib.BsvSharp.Api.Paymail
     public class PaymailClient : BasicApiRequest, IPaymail
     {
         private const string HandleRegexPattern = @"^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
-        private static readonly Lazy<Regex> HandleRegex = new Lazy<Regex>(() => new Regex(HandleRegexPattern), true);
-
         private readonly IDictionary<string, CapabilitiesResponse> _cache;
+        private static readonly Lazy<Regex> HandleRegex = new Lazy<Regex>(() => new Regex(HandleRegexPattern), true);
 
         /// <summary>
         /// Paymail api default constructor.
@@ -72,8 +71,8 @@ namespace CafeLib.BsvSharp.Api.Paymail
             var url = await GetIdentityUrl(paymailAddress);
             var json = await GetAsync(url);
             var response = JsonConvert.DeserializeObject<GetPublicKeyResponse>(json);
-            var pubkey = new PublicKey(response.PubKey);
-            return pubkey.IsCompressed && new[] { 2, 3 }.ToArray().Contains(pubkey.Data[0])
+            var pubkey = response != null ? new PublicKey(response.PubKey) : null;
+            return pubkey != null && pubkey.IsCompressed && new[] { 2, 3 }.ToArray().Contains(pubkey.Data[0])
                 ? pubkey
                 : null;
         }
@@ -90,7 +89,7 @@ namespace CafeLib.BsvSharp.Api.Paymail
 
             var json = await GetAsync(url);
             var response = JsonConvert.DeserializeObject<VerifyPublicKeyResponse>(json);
-            return response.PublicKey == pubKey.ToHex() && response.Match;
+            return response != null && response.PublicKey == pubKey.ToHex() && response.Match;
         }
 
         /// <summary>
@@ -128,7 +127,7 @@ namespace CafeLib.BsvSharp.Api.Paymail
             var response = await PostAsync(url, json);
             // e.g. {"output":"76a914bdfbe8a16162ba467746e382a081a1857831811088ac"} 
             var outputScript = JsonConvert.DeserializeObject<GetOutputScriptResponse>(response);
-            return new Script(outputScript.Output);
+            return outputScript != null ? new Script(outputScript.Output) : Script.None;
         }
 
         /// <summary>
@@ -231,9 +230,9 @@ namespace CafeLib.BsvSharp.Api.Paymail
             await EnsureCapability(domain, capability);
             var ba = await GetApiDescriptionFor(domain);
             var url = ba.Capabilities[ToBrfcId(capability)].Value<string>();
-            url = url.Replace("{alias}", alias).Replace("{domain.tld}", domain);
+            url = url?.Replace("{alias}", alias).Replace("{domain.tld}", domain);
             if (pubkey != null)
-                url = url.Replace("{pubkey}", pubkey);
+                url = url?.Replace("{pubkey}", pubkey);
             return url;
         }
 
