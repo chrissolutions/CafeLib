@@ -18,6 +18,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\..\cafelib.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\BsvSharp\LICENSE" >
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CafeLib.BsvSharp" Version="$(Version)" />
     <PackageReference Include="CafeLib.Web.Request" Version="$(Version)" />
   </ItemGroup>
