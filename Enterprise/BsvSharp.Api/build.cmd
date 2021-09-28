@@ -3,7 +3,6 @@ setlocal
 if '%root%' == '' set root=..\..
 
 :: Type
-:: Type
 set type=BsvSharp.Api
 set location=Enterprise\%type%
 
@@ -14,7 +13,7 @@ set solution=CafeLib.%type%
 set sourcepath=%root%\%location%
 
 :: Setup libraries.
-set libs=%libs% %solution%.CoinGecko
+set libs=%solution%.CoinGecko
 set libs=%libs% %solution%.CoinMarketCap
 set libs=%libs% %solution%.Paymail
 set libs=%libs% %solution%.WhatsOnChain
