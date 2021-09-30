@@ -29,13 +29,13 @@ namespace CafeLib.BsvSharp.UnitTests.Passphrase
             Assert.Equal(128, valid.Count);
         }
 
-        [Fact]
-        public void ElectrumStandardMnemonic() 
-        {
-            var words = "sword victory much blossom cradle sense boy float soda render arrive arrive";
-            var h = Hashes.HmacSha512("Seed version".Utf8ToBytes(), words.Utf8NormalizedToBytes());
-            var hb = h.Span;
-        }
+        //[Fact]
+        //public void ElectrumStandardMnemonic() 
+        //{
+        //    var words = "sword victory much blossom cradle sense boy float soda render arrive arrive";
+        //    var h = Hashes.HmacSha512("Seed version".Utf8ToBytes(), words.Utf8NormalizedToBytes());
+        //    var hb = h.Span;
+        //}
 
         [Fact]
         public void Base6AndBase10()
@@ -120,8 +120,20 @@ namespace CafeLib.BsvSharp.UnitTests.Passphrase
         [Fact]
         public void ToStringIsWords()
         {
-            var m = new Mnemonic();
-            Assert.Equal(m.Words, m.ToString());
+            var m1 = new Mnemonic();
+            Assert.Equal(m1.Words, m1.ToString());
+        }
+
+        [Fact]
+        public void MnemonicsAreDifferent()
+        {
+            var m1 = new Mnemonic();
+            Assert.Equal(m1.Words, m1.ToString());
+
+            var m2 = new Mnemonic();
+            Assert.Equal(m2.Words, m2.ToString());
+
+            Assert.NotEqual(m1.ToHex(), m2.ToHex());
         }
 
         [Fact]

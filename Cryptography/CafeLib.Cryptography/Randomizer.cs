@@ -4,9 +4,11 @@
 #endregion
 
 using System;
+using System.Threading;
 using CafeLib.Core.Buffers;
 using CafeLib.Cryptography.BouncyCastle.Crypto.Digests;
 using CafeLib.Cryptography.BouncyCastle.Crypto.Prng;
+using CafeLib.Cryptography.BouncyCastle.Util;
 
 namespace CafeLib.Cryptography
 {
@@ -14,6 +16,7 @@ namespace CafeLib.Cryptography
     {
         private static readonly object Mutex = new object();
         private static readonly Random Random = new Random();
+        private static long _counter = Times.NanoTime();
 
         /// <summary>
         /// Centralized source of a cryptographic strong random entropy.
@@ -32,6 +35,8 @@ namespace CafeLib.Cryptography
         {
             var buf = new byte[length];
             var rng = new DigestRandomGenerator(new Sha256Digest());
+            rng.AddSeedMaterial(NextCounterValue());
+            rng.AddSeedMaterial(new Guid().ToByteArray());
             rng.NextBytes(buf);
             return buf;
         }
@@ -62,5 +67,14 @@ namespace CafeLib.Cryptography
                 return Random.Next(low, high);
             }
         }
+
+        #region Helpers
+
+        private static long NextCounterValue()
+        {
+            return Interlocked.Increment(ref _counter);
+        }
+
+        #endregion
     }
 }
