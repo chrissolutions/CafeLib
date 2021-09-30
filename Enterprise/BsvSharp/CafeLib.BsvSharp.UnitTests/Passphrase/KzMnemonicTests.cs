@@ -5,10 +5,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Passphrase;
-using CafeLib.Cryptography;
 using Xunit;
 
 namespace CafeLib.BsvSharp.UnitTests.Passphrase
