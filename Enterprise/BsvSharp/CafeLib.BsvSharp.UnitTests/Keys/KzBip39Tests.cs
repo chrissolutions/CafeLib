@@ -3,6 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using System.Linq;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Passphrase;
@@ -160,9 +161,10 @@ namespace CafeLib.BsvSharp.UnitTests.Keys
         )]
         public void Bip39_Mnemonic_Test(string entropy, string words, string seed, string b58PrivateKey)
         {
-            entropy.HexToBytes();
+            var bytes = entropy.HexToBytes();
             var mnemonic = new Mnemonic(words, Languages.English);
             Assert.NotNull(mnemonic); // If checksum doesn't match returns null.
+            Assert.True(mnemonic.Entropy.SequenceEqual(bytes));
             var seed512 = new UInt512(seed, true);
             var seedBip39 = ExtPrivateKey.Bip39Seed(words, "TREZOR");
             Assert.Equal(seed512, seedBip39);
