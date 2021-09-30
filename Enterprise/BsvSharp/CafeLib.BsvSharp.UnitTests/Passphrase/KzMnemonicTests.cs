@@ -15,15 +15,11 @@ namespace CafeLib.BsvSharp.UnitTests.Passphrase
     {
         [Fact]
         public void RecoverLastWord() {
-            var valid = new List<string>();
             const string words = "sword victory much blossom cradle sense boy float soda render arrive";
-            foreach (var word in WordLists.GetWords(Languages.English))
-            {
-                var t = $"{words} {word}";
-                if (Mnemonic.IsValid(t)) {
-                    valid.Add(t);
-                }
-            }
+            var valid = WordLists.GetWords(Languages.English)
+                .Select(word => $"{words} {word}")
+                .Where(t => Mnemonic.IsValid(t))
+                .ToList();
             Assert.Equal(128, valid.Count);
         }
 
