@@ -38,12 +38,6 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             var json = await GetAsync(url);
             var tx = JsonConvert.DeserializeObject<Transaction>(json);
             return tx;
-
-            //var tx = new KzTransaction();
-            //var ros = new ReadOnlySequence<byte>(woctx.Hex.HexToBytes());
-            //if (!tx.TryReadTransaction(ref ros))
-            //    tx = null;
-            //return tx;
         }
 
         public async Task<decimal> GetExchangeRate()
@@ -51,10 +45,16 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/exchangerate";
             var json = await GetAsync(url);
 
-            // json == {"currency":"USD","rate":"174.04999999999998"}
-
             var er = JsonConvert.DeserializeObject<ExchangeRate>(json);
             return er.Rate;
+        }
+
+        public async Task<Balance> GetAddressBalance(string address)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/main/address/{address}/balance";
+            var json = await GetAsync(url);
+            var balance = JsonConvert.DeserializeObject<Balance>(json);
+            return balance;
         }
     }
 }
