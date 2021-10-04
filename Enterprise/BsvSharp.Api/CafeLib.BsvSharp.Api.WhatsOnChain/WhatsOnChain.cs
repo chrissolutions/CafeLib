@@ -24,20 +24,20 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             Headers.Add("User-Agent", "KzApiWhatsOnChain");
         }
 
-        public async Task<List<ByAddressUnspent>> GetUnspentTransactionsByAddress(string address)
+        public async Task<Balance> GetAddressBalance(string address)
         {
-            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/address/{address}/unspent";
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/address/{address}/balance";
             var json = await GetAsync(url);
-            var unspent = JsonConvert.DeserializeObject<List<ByAddressUnspent>>(json);
-            return unspent;
+            var balance = JsonConvert.DeserializeObject<Balance>(json);
+            return balance;
         }
 
-        public async Task<Transaction> GetTransactionsByHash(string txid)
+        public async Task<AddressInfo> GetAddressInfo(string address)
         {
-            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/tx/hash/{txid}";
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/address/{address}/info";
             var json = await GetAsync(url);
-            var tx = JsonConvert.DeserializeObject<Transaction>(json);
-            return tx;
+            var addressInfo = JsonConvert.DeserializeObject<AddressInfo>(json);
+            return addressInfo;
         }
 
         public async Task<decimal> GetExchangeRate()
@@ -49,12 +49,34 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             return er.Rate;
         }
 
-        public async Task<Balance> GetAddressBalance(string address)
+        public async Task<Health> GetHealth()
         {
-            var url = $"https://api.whatsonchain.com/v1/bsv/main/address/{address}/balance";
+            try
+            {
+                var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/woc";
+                var _ = await GetAsync(url);
+                return new Health();
+            }
+            catch (WebRequestException e)
+            {
+                return new Health(e);
+            }
+        }
+
+        public async Task<Transaction> GetTransactionsByHash(string txid)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/tx/hash/{txid}";
             var json = await GetAsync(url);
-            var balance = JsonConvert.DeserializeObject<Balance>(json);
-            return balance;
+            var tx = JsonConvert.DeserializeObject<Transaction>(json);
+            return tx;
+        }
+
+        public async Task<List<ByAddressUnspent>> GetUnspentTransactionsByAddress(string address)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/address/{address}/unspent";
+            var json = await GetAsync(url);
+            var unspent = JsonConvert.DeserializeObject<List<ByAddressUnspent>>(json);
+            return unspent;
         }
     }
 }
