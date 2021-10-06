@@ -30,6 +30,16 @@ namespace CafeLib.BsvSharp.Api.UnitTests
         }
 
         [Theory]
+        [InlineData("16ZqP5Tb22KJuvSAbjNkoiZs13mmRmexZA", "6b22c47e7956e5404e05c3dc87dc9f46e929acfd46c8dd7813a34e1218d2f9d1", 563052)]
+        public async Task GetAddressHistory_Test(string address, string firstTxHash, long firstHeight)
+        {
+            var addressHistory = await Api.GetAddressHistory(address);
+            Assert.NotEmpty(addressHistory);
+            Assert.Equal(firstTxHash, addressHistory.First().TxHash);
+            Assert.Equal(firstHeight, addressHistory.First().Height);
+        }
+
+        [Theory]
         [InlineData("1PgZT1K9gKVtoAjCFnmQsviThu7oYDSCTR", true)]
         public async Task GetAddressInfo_Test(string address, bool isValid)
         {
