@@ -13,10 +13,19 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models.Mapi
         [JsonProperty("quote")]
         public Quote Quote { get; set; }
 
-        [JsonProperty("encoding")]
-        public string Encoding { get; set; }
+        [JsonProperty("payload")]
+        public Payload Payload { get; set; }
 
-        [JsonProperty("mimetype")]
-        public string MimeType { get; set; }
+        [JsonProperty("signature")]
+        public string Signature { get; set; }
+
+        [JsonProperty("publicKey")]
+        public string PublicKey { get; set; }
+
+        [JsonProperty("txSubmissionUrl")]
+        public string TxSubmissionUrl { get; set; }
+
+        [JsonProperty("txStatusUrl")]
+        public string TxStatusUrl { get; set; }
     }
 }
