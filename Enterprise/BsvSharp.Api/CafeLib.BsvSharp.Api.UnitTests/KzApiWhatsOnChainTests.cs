@@ -56,6 +56,16 @@ namespace CafeLib.BsvSharp.Api.UnitTests
         }
 
         [Theory]
+        [InlineData("995ea8d0f752f41cdd99bb9d54cb004709e04c7dc4088bcbbbb9ea5c390a43c3", "52dfceb815ad129a0fd946e3d665f44fa61f068135b9f38b05d3c697e11bad48", 620539)]
+        public async Task GetScriptHistory_Test(string scriptHash, string firstTxHash, long firstHeight)
+        {
+            var addressHistory = await Api.GetScriptHistory(scriptHash);
+            Assert.NotEmpty(addressHistory);
+            Assert.Equal(firstTxHash, addressHistory.First().TxHash);
+            Assert.Equal(firstHeight, addressHistory.First().Height);
+        }
+
+        [Theory]
         [InlineData("c1d32f28baa27a376ba977f6a8de6ce0a87041157cef0274b20bfda2b0d8df96")]
         public async Task GetTransactionByHash_Test(string hash)
         {

@@ -32,12 +32,11 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             return balance;
         }
 
-        public async Task<List<AddressHistory>> GetAddressHistory(string address)
+        public async Task<List<History>> GetAddressHistory(string address)
         {
             var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/address/{address}/history";
             var json = await GetAsync(url);
-            var addressHistory = JsonConvert.DeserializeObject<List<AddressHistory>>(json);
-            return addressHistory;
+            return JsonConvert.DeserializeObject<List<History>>(json);
         }
 
         public async Task<AddressInfo> GetAddressInfo(string address)
@@ -69,6 +68,13 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             {
                 return new Health(e);
             }
+        }
+
+        public async Task<List<History>> GetScriptHistory(string scriptHash)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/script/{scriptHash}/history";
+            var json = await GetAsync(url);
+            return JsonConvert.DeserializeObject<List<History>>(json);
         }
 
         public async Task<Transaction> GetTransactionsByHash(string txid)
