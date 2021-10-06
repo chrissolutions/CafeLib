@@ -14,9 +14,9 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models.Mapi
         public string FeeType { get; set; }
 
         [JsonProperty("miningFee")]
-        public string MiningFee { get; set; }
+        public FeeInfo MiningFee { get; set; }
 
         [JsonProperty("relayFee")]
-        public string RelayFee { get; set; }
+        public FeeInfo RelayFee { get; set; }
     }
 }

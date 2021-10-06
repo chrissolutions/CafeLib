@@ -55,6 +55,13 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             Assert.True(rate > 0 && rate < 1000000);
         }
 
+        [Fact]
+        public async Task GetFeeQuotes_Test()
+        {
+            var quotes = await Api.GetFeeQuotes();
+            Assert.NotEmpty(quotes.ProviderQuotes);
+        }
+
         [Theory]
         [InlineData("995ea8d0f752f41cdd99bb9d54cb004709e04c7dc4088bcbbbb9ea5c390a43c3", "52dfceb815ad129a0fd946e3d665f44fa61f068135b9f38b05d3c697e11bad48", 620539)]
         public async Task GetScriptHistory_Test(string scriptHash, string firstTxHash, long firstHeight)

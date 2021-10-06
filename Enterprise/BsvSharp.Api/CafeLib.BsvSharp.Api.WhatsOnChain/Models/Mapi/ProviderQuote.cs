@@ -14,7 +14,7 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models.Mapi
         public Quote Quote { get; set; }
 
         [JsonProperty("payload")]
-        public Payload Payload { get; set; }
+        public string Payload { get; set; }
 
         [JsonProperty("signature")]
         public string Signature { get; set; }

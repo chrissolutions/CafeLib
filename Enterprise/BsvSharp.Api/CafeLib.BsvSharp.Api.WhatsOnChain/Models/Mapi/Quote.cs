@@ -28,5 +28,7 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models.Mapi
         [JsonProperty("minerReputation")]
         public string MinerReputation { get; set; }
 
+        [JsonProperty("fees")]
+        public Fee[] Fees { get; set; }
     }
 }

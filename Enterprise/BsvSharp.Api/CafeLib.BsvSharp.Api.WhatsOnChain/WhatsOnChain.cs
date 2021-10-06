@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CafeLib.BsvSharp.Api.WhatsOnChain.Models;
+using CafeLib.BsvSharp.Api.WhatsOnChain.Models.Mapi;
 using CafeLib.BsvSharp.Network;
 using CafeLib.Core.Extensions;
 using CafeLib.Web.Request;
@@ -84,12 +85,12 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
 
         #region Mapi
 
-        public async Task<Transaction> GetFeeQuote(string txid)
+        public async Task<Quotes> GetFeeQuotes()
         {
-            var url = "https://api.whatsonchain.com/v1/bsv/main/mapi/feeQuotes";
+            const string url = "https://api.whatsonchain.com/v1/bsv/main/mapi/feeQuotes";
             var json = await GetAsync(url);
-            var tx = JsonConvert.DeserializeObject<Transaction>(json);
-            return tx;
+            var quotes = JsonConvert.DeserializeObject<Quotes>(json);
+            return quotes;
         }
 
         #endregion
