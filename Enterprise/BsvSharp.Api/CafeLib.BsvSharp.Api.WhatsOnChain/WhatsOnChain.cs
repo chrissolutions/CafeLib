@@ -93,6 +93,14 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             return quotes;
         }
 
+        public async Task<TxStatus> GetTxStatus(string txHash)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/main/mapi/ab398390/tx/{txHash}";
+            var json = await GetAsync(url);
+            var status = JsonConvert.DeserializeObject<TxStatus>(json);
+            return status;
+        }
+
         #endregion
 
         #region Script
