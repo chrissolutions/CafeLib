@@ -24,6 +24,8 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             Headers.Add("User-Agent", "KzApiWhatsOnChain");
         }
 
+        #region Address
+
         public async Task<Balance> GetAddressBalance(string address)
         {
             var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/address/{address}/balance";
@@ -47,6 +49,10 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             return addressInfo;
         }
 
+        #endregion
+
+        #region Exchange
+
         public async Task<decimal> GetExchangeRate()
         {
             var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/exchangerate";
@@ -55,6 +61,10 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             var er = JsonConvert.DeserializeObject<ExchangeRate>(json);
             return er.Rate;
         }
+
+        #endregion
+
+        #region Health
 
         public async Task<Health> GetHealth()
         {
@@ -70,12 +80,32 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             }
         }
 
+        #endregion
+
+        #region Mapi
+
+        public async Task<Transaction> GetFeeQuote(string txid)
+        {
+            var url = "https://api.whatsonchain.com/v1/bsv/main/mapi/feeQuotes";
+            var json = await GetAsync(url);
+            var tx = JsonConvert.DeserializeObject<Transaction>(json);
+            return tx;
+        }
+
+        #endregion
+
+        #region Script
+
         public async Task<List<History>> GetScriptHistory(string scriptHash)
         {
             var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/script/{scriptHash}/history";
             var json = await GetAsync(url);
             return JsonConvert.DeserializeObject<List<History>>(json);
         }
+
+        #endregion
+
+        #region Transaction
 
         public async Task<Transaction> GetTransactionsByHash(string txid)
         {
@@ -92,5 +122,7 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             var unspent = JsonConvert.DeserializeObject<List<ByAddressUnspent>>(json);
             return unspent;
         }
+
+        #endregion
     }
 }
