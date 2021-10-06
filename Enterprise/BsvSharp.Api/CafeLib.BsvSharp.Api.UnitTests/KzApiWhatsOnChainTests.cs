@@ -60,6 +60,7 @@ namespace CafeLib.BsvSharp.Api.UnitTests
         {
             var quotes = await Api.GetFeeQuotes();
             Assert.NotEmpty(quotes.ProviderQuotes);
+            Assert.Contains(quotes.ProviderQuotes, quote => quote.ProviderName == "taal");
         }
 
         [Theory]
