@@ -11,6 +11,7 @@ using CafeLib.BsvSharp.Network;
 using CafeLib.Core.Extensions;
 using CafeLib.Web.Request;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CafeLib.BsvSharp.Api.WhatsOnChain 
 {
@@ -33,6 +34,16 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             var json = await GetAsync(url);
             var balance = JsonConvert.DeserializeObject<Balance>(json);
             return balance;
+        }
+
+        public async Task<AddressBalance[]> GetBulkAddressBalances(IEnumerable<string> addresses)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/addresses/balance";
+            var jsonText = $@"{{""addresses"": {JsonConvert.SerializeObject(addresses)}}}";
+            var jsonBody = JToken.Parse(jsonText);
+            var json = await PostAsync(url, jsonBody);
+            var balances = JsonConvert.DeserializeObject<AddressBalance[]>(json);
+            return balances;
         }
 
         public async Task<History[]> GetAddressHistory(string address)

@@ -5,7 +5,6 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using CafeLib.BsvSharp.Transactions;
 using Xunit;
 
 namespace CafeLib.BsvSharp.Api.UnitTests 
@@ -34,6 +33,21 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             var balance = await Api.GetAddressBalance(address);
             Assert.Equal(confirm, balance.Confirmed);
             Assert.Equal(unconfirmed, balance.Unconfirmed);
+        }
+
+        [Fact]
+        public async Task GetBulkAddressBalances_Test()
+        {
+            var addresses = new[]
+            {
+                "16ZBEb7pp6mx5EAGrdeKivztd5eRJFuvYP",
+                "1KGHhLTQaPr4LErrvbAuGE62yPpDoRwrob"
+            };
+
+            var balances = await Api.GetBulkAddressBalances(addresses);
+            Assert.NotEmpty(balances);
+            Assert.Equal(2, balances.Length);
+            Assert.Equal(addresses[0], balances.First().Address);
         }
 
         [Theory]
