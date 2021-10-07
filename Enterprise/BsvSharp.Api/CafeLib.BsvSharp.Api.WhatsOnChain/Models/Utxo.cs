@@ -2,7 +2,7 @@
 
 namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models
 {
-    public class ByAddressUnspent
+    public class Utxo
     {
         [JsonProperty("height")]
         public int Height;

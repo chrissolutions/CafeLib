@@ -99,7 +99,7 @@ namespace CafeLib.BsvSharp.Api.UnitTests
         [InlineData("1PgZT1K9gKVtoAjCFnmQsviThu7oYDSCTR", 107297900, 0)]
         public async Task GetUnspentTransactionsByAddress_Test(string address, long value, int position)
         {
-            var unspentTransactions = await Api.GetUnspentTransactionsByAddress(address);
+            var unspentTransactions = await Api.GetUtxosByAddress(address);
             Assert.NotEmpty(unspentTransactions);
             Assert.Equal(value, unspentTransactions.First().Value );
             Assert.Equal(position, unspentTransactions.First().TransactionPosition);

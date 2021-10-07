@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CafeLib.BsvSharp.Api.WhatsOnChain.Models;
+using CafeLib.BsvSharp.Api.WhatsOnChain.Models.Blocks;
 using CafeLib.BsvSharp.Api.WhatsOnChain.Models.Mapi;
 using CafeLib.BsvSharp.Network;
 using CafeLib.Core.Extensions;
@@ -48,6 +49,17 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             var json = await GetAsync(url);
             var addressInfo = JsonConvert.DeserializeObject<AddressInfo>(json);
             return addressInfo;
+        }
+
+        #endregion
+
+        #region Block
+        public async Task<Block> GetBlockByHash(string blockHash)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/block/hash/{blockHash}";
+            var json = await GetAsync(url);
+            var block = JsonConvert.DeserializeObject<Block>(json);
+            return block;
         }
 
         #endregion
@@ -124,11 +136,11 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             return tx;
         }
 
-        public async Task<List<ByAddressUnspent>> GetUnspentTransactionsByAddress(string address)
+        public async Task<List<Utxo>> GetUtxosByAddress(string address)
         {
             var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/address/{address}/unspent";
             var json = await GetAsync(url);
-            var unspent = JsonConvert.DeserializeObject<List<ByAddressUnspent>>(json);
+            var unspent = JsonConvert.DeserializeObject<List<Utxo>>(json);
             return unspent;
         }
 
