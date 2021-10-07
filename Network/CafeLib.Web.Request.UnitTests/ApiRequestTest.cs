@@ -19,6 +19,16 @@ namespace CafeLib.Web.Request.UnitTests
         }
 
         [Fact]
+        public async void ApiRequest_GetBinaryRequestTest()
+        {
+            const string endpoint = "https://httpbin.org/anything";
+            var request = new ApiRequest<byte[], JToken>();
+            var response = await request.GetAsync(endpoint);
+            Assert.NotNull(response);
+            Assert.NotEmpty(response);
+        }
+
+        [Fact]
         public async void ApiRequest_PostRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
