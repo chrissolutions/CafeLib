@@ -71,12 +71,28 @@ namespace CafeLib.BsvSharp.Api.UnitTests
 
         [Theory]
         [InlineData("1PgZT1K9gKVtoAjCFnmQsviThu7oYDSCTR", 107297900, 0)]
-        public async Task GetUnspentTransactionsByAddress_Test(string address, long value, int position)
+        public async Task GetAddressUtxos_Test(string address, long value, int position)
         {
             var unspentTransactions = await Api.GetUtxosByAddress(address);
             Assert.NotEmpty(unspentTransactions);
             Assert.Equal(value, unspentTransactions.First().Value);
             Assert.Equal(position, unspentTransactions.First().TransactionPosition);
+        }
+
+        [Fact]
+        public async Task GetBulkAddressUtxos_Test()
+        {
+            var addresses = new[]
+            {
+                "1PgZT1K9gKVtoAjCFnmQsviThu7oYDSCTR",
+                "1KGHhLTQaPr4LErrvbAuGE62yPpDoRwrob"
+            };
+
+            var utxos = await Api.GetBulkAddressUtxos(addresses);
+            Assert.NotEmpty(utxos);
+            Assert.Equal(2, utxos.Length);
+            Assert.Equal(addresses[0], utxos.First().Address);
+            Assert.Equal(107297900, utxos.First().Utxos.First().Value);
         }
 
         #endregion

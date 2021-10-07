@@ -61,6 +61,24 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             return addressInfo;
         }
 
+        public async Task<List<Utxo>> GetUtxosByAddress(string address)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/address/{address}/unspent";
+            var json = await GetAsync(url);
+            var unspent = JsonConvert.DeserializeObject<List<Utxo>>(json);
+            return unspent;
+        }
+
+        public async Task<AddressUtxo[]> GetBulkAddressUtxos(IEnumerable<string> addresses)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/addresses/unspent";
+            var jsonText = $@"{{""addresses"": {JsonConvert.SerializeObject(addresses)}}}";
+            var jsonBody = JToken.Parse(jsonText);
+            var json = await PostAsync(url, jsonBody);
+            var utxos = JsonConvert.DeserializeObject<AddressUtxo[]>(json);
+            return utxos;
+        }
+
         #endregion
 
         #region Block
@@ -144,14 +162,6 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             var json = await GetAsync(url);
             var tx = JsonConvert.DeserializeObject<Transaction>(json);
             return tx;
-        }
-
-        public async Task<List<Utxo>> GetUtxosByAddress(string address)
-        {
-            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/address/{address}/unspent";
-            var json = await GetAsync(url);
-            var unspent = JsonConvert.DeserializeObject<List<Utxo>>(json);
-            return unspent;
         }
 
         #endregion
