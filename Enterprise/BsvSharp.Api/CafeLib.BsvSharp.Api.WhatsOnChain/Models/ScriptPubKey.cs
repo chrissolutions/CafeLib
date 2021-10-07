@@ -5,13 +5,13 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models
     public class ScriptPubKey
     {
         [JsonProperty("asm")]
-        public string Asm { get; set; }
+        public string Assembly { get; set; }
 
         [JsonProperty("hex")]
         public string Hex { get; set; }
 
         [JsonProperty("reqSigs")]
-        public int ReqSigs { get; set; }
+        public int RequiredSignatureCount { get; set; }
 
         [JsonProperty("type")]
         public string Type { get; set; }

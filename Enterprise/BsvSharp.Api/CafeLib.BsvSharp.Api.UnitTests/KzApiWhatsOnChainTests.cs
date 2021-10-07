@@ -14,12 +14,18 @@ namespace CafeLib.BsvSharp.Api.UnitTests
     {
         private WhatsOnChain.WhatsOnChain Api { get; } = new WhatsOnChain.WhatsOnChain();
 
+        #region Health
+
         [Fact]
         public async Task GetHealth_Test()
         {
             var health = await Api.GetHealth();
             Assert.True(health.IsSuccessful);
         }
+
+        #endregion
+
+        #region Address
 
         [Theory]
         [InlineData("1PgZT1K9gKVtoAjCFnmQsviThu7oYDSCTR", 107297900, 0)]
@@ -49,12 +55,40 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             Assert.Equal(isValid, addressInfo.IsValid);
         }
 
+        [Theory]
+        [InlineData("1PgZT1K9gKVtoAjCFnmQsviThu7oYDSCTR", 107297900, 0)]
+        public async Task GetUnspentTransactionsByAddress_Test(string address, long value, int position)
+        {
+            var unspentTransactions = await Api.GetUtxosByAddress(address);
+            Assert.NotEmpty(unspentTransactions);
+            Assert.Equal(value, unspentTransactions.First().Value);
+            Assert.Equal(position, unspentTransactions.First().TransactionPosition);
+        }
+
+        #endregion
+
+        #region Block
+
+        [Theory]
+        [InlineData("000000000000000009322213dd454961301f2126b7e73bd01c0bf042641df24c")]
+        public async Task GetBlockByHash_Test(string blockHash)
+        {
+            var block = await Api.GetBlockByHash(blockHash);
+            Assert.Equal(blockHash, block.Hash);
+        }
+
+        #endregion
+
+        #region Exchange
+
         [Fact]
         public async Task GetExchangeRate_Test()
         {
             var rate = await Api.GetExchangeRate();
             Assert.True(rate > 0 && rate < 1000000);
         }
+
+        #endregion
 
         #region Mapi
 
@@ -77,6 +111,8 @@ namespace CafeLib.BsvSharp.Api.UnitTests
 
         #endregion
 
+        #region Script
+
         [Theory]
         [InlineData("995ea8d0f752f41cdd99bb9d54cb004709e04c7dc4088bcbbbb9ea5c390a43c3", "52dfceb815ad129a0fd946e3d665f44fa61f068135b9f38b05d3c697e11bad48", 620539)]
         public async Task GetScriptHistory_Test(string scriptHash, string firstTxHash, long firstHeight)
@@ -87,6 +123,10 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             Assert.Equal(firstHeight, addressHistory.First().Height);
         }
 
+        #endregion
+
+        #region Transaction
+
         [Theory]
         [InlineData("c1d32f28baa27a376ba977f6a8de6ce0a87041157cef0274b20bfda2b0d8df96")]
         public async Task GetTransactionByHash_Test(string hash)
@@ -95,14 +135,6 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             Assert.Equal(hash, tx.Hash);
         }
 
-        [Theory]
-        [InlineData("1PgZT1K9gKVtoAjCFnmQsviThu7oYDSCTR", 107297900, 0)]
-        public async Task GetUnspentTransactionsByAddress_Test(string address, long value, int position)
-        {
-            var unspentTransactions = await Api.GetUtxosByAddress(address);
-            Assert.NotEmpty(unspentTransactions);
-            Assert.Equal(value, unspentTransactions.First().Value );
-            Assert.Equal(position, unspentTransactions.First().TransactionPosition);
-        }
+        #endregion
     }
 }
