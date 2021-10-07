@@ -311,7 +311,7 @@ namespace CafeLib.Web.Request
                 case var _ when contentStream == null:
                     return default;
 
-                case var x when x == typeof(bool):
+                case var x when x == typeof(byte[]):
                     return (T)(object)await contentStream.ToByteArrayAsync();
             }
 
