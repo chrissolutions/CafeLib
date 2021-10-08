@@ -73,7 +73,7 @@ namespace CafeLib.BsvSharp.Api.UnitTests
         [InlineData("1PgZT1K9gKVtoAjCFnmQsviThu7oYDSCTR", 107297900, 0)]
         public async Task GetAddressUtxos_Test(string address, long value, int position)
         {
-            var unspentTransactions = await Api.GetUtxosByAddress(address);
+            var unspentTransactions = await Api.GetAddressUtxos(address);
             Assert.NotEmpty(unspentTransactions);
             Assert.Equal(value, unspentTransactions.First().Value);
             Assert.Equal(position, unspentTransactions.First().TransactionPosition);
@@ -181,6 +181,28 @@ namespace CafeLib.BsvSharp.Api.UnitTests
 
         [Theory]
         [InlineData("995ea8d0f752f41cdd99bb9d54cb004709e04c7dc4088bcbbbb9ea5c390a43c3")]
+        public async Task GetScriptUtxos_Test(string scriptHash)
+        {
+            var unspentTransactions = await Api.GetScriptUtxos(scriptHash);
+            Assert.Empty(unspentTransactions);
+        }
+
+        [Fact]
+        public async Task GetBulkScriptUtxos_Test()
+        {
+            var hashes = new[]
+            {
+                "f814a7c3a40164aacc440871e8b7b14eb6a45f0ca7dcbeaea709edc83274c5e7",
+                "995ea8d0f752f41cdd99bb9d54cb004709e04c7dc4088bcbbbb9ea5c390a43c3"
+            };
+
+            var utxos = await Api.GetBulkScriptUtxos(hashes);
+            Assert.NotEmpty(utxos);
+            Assert.Equal(2, utxos.Length);
+        }
+
+        [Theory]
+        [InlineData("995ea8d0f752f41cdd99bb9d54cb004709e04c7dc4088bcbbbb9ea5c390a43c3")]
         public async Task GetScriptHistory_Test(string scriptHash)
         {
             var scriptHistory = await Api.GetScriptHistory(scriptHash);
@@ -188,7 +210,6 @@ namespace CafeLib.BsvSharp.Api.UnitTests
         }
 
         #endregion
-
 
         #region Transaction
 

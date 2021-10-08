@@ -61,11 +61,11 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             return addressInfo;
         }
 
-        public async Task<List<Utxo>> GetUtxosByAddress(string address)
+        public async Task<Utxo[]> GetAddressUtxos(string address)
         {
             var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/address/{address}/unspent";
             var json = await GetAsync(url);
-            var unspent = JsonConvert.DeserializeObject<List<Utxo>>(json);
+            var unspent = JsonConvert.DeserializeObject<Utxo[]>(json);
             return unspent;
         }
 
@@ -164,6 +164,24 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
         #endregion
 
         #region Script
+
+        public async Task<Utxo[]> GetScriptUtxos(string scriptHash)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/script/{scriptHash}/unspent";
+            var json = await GetAsync(url);
+            var unspent = JsonConvert.DeserializeObject<Utxo[]>(json);
+            return unspent;
+        }
+
+        public async Task<ScriptUtxo[]> GetBulkScriptUtxos(IEnumerable<string> hashes)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/scripts/unspent";
+            var jsonText = $@"{{""scripts"": {JsonConvert.SerializeObject(hashes)}}}";
+            var jsonBody = JToken.Parse(jsonText);
+            var json = await PostAsync(url, jsonBody);
+            var utxos = JsonConvert.DeserializeObject<ScriptUtxo[]>(json);
+            return utxos;
+        }
 
         public async Task<History[]> GetScriptHistory(string scriptHash)
         {
