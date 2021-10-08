@@ -396,23 +396,14 @@ namespace CafeLib.Web.SignalR
 
         private SignalRChannelState GetConnectionState()
         {
-            switch (Connection.State)
+            return Connection.State switch
             {
-                case HubConnectionState.Connected:
-                    return SignalRChannelState.Connected;
-
-                case HubConnectionState.Disconnected:
-                    return SignalRChannelState.Disconnected;
-
-                case HubConnectionState.Connecting:
-                    return SignalRChannelState.Connecting;
-
-                case HubConnectionState.Reconnecting:
-                    return SignalRChannelState.Reconnecting;
-
-                default:
-                    return SignalRChannelState.Off;
-            }
+                HubConnectionState.Connected => SignalRChannelState.Connected,
+                HubConnectionState.Disconnected => SignalRChannelState.Disconnected,
+                HubConnectionState.Connecting => SignalRChannelState.Connecting,
+                HubConnectionState.Reconnecting => SignalRChannelState.Reconnecting,
+                _ => SignalRChannelState.Off
+            };
         }
 
         /// <summary>
