@@ -141,6 +141,26 @@ namespace CafeLib.BsvSharp.Api.UnitTests
 
         #endregion
 
+        #region Mempool
+
+        [Fact]
+        public async Task GetMempoolInfo_Test()
+        {
+            var mempool = await Api.GetMempoolInfo();
+            Assert.NotNull(mempool);
+            Assert.True(mempool.Bytes > 0);
+        }
+
+        [Fact]
+        public async Task GetMempoolTransactions_Test()
+        {
+            var transactions = await Api.GetMempoolTransactions();
+            Assert.NotNull(transactions);
+            Assert.NotEmpty(transactions);
+        }
+
+        #endregion
+
         #region Script
 
         [Theory]
