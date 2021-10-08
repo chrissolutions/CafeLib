@@ -100,7 +100,7 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             var json = await GetAsync(url);
 
             var er = JsonConvert.DeserializeObject<ExchangeRate>(json);
-            return er.Rate;
+            return er?.Rate ?? decimal.Zero;
         }
 
         #endregion

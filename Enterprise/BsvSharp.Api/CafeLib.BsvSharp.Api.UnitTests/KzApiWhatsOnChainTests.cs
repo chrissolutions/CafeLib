@@ -177,6 +177,19 @@ namespace CafeLib.BsvSharp.Api.UnitTests
 
         #endregion
 
+        #region Script
+
+        [Theory]
+        [InlineData("995ea8d0f752f41cdd99bb9d54cb004709e04c7dc4088bcbbbb9ea5c390a43c3")]
+        public async Task GetScriptHistory_Test(string scriptHash)
+        {
+            var scriptHistory = await Api.GetScriptHistory(scriptHash);
+            Assert.NotEmpty(scriptHistory);
+        }
+
+        #endregion
+
+
         #region Transaction
 
         [Theory]
