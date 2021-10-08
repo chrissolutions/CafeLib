@@ -35,6 +35,15 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             Assert.Equal(unconfirmed, balance.Unconfirmed);
         }
 
+        [Theory]
+        [InlineData("c3671f44709a750bcd05e15a8d3283174443ff7d9c3241885003209d971e8f0f", 0, 0)]
+        public async Task GetAddressBalanceByHash_Test(string hash, long confirm, long unconfirmed)
+        {
+            var balance = await Api.GetAddressBalanceByHash(hash);
+            Assert.Equal(confirm, balance.Confirmed);
+            Assert.Equal(unconfirmed, balance.Unconfirmed);
+        }
+
         [Fact]
         public async Task GetBulkAddressBalances_Test()
         {
