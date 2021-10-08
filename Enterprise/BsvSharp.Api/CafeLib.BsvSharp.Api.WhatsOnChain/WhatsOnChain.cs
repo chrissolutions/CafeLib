@@ -36,14 +36,6 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             return balance;
         }
 
-        public async Task<Balance> GetAddressBalanceByHash(string addressHash)
-        {
-            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/address/hash/{addressHash}/balance";
-            var json = await GetAsync(url);
-            var balance = JsonConvert.DeserializeObject<Balance>(json);
-            return balance;
-        }
-
         public async Task<AddressBalance[]> GetBulkAddressBalances(IEnumerable<string> addresses)
         {
             var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/addresses/balance";
