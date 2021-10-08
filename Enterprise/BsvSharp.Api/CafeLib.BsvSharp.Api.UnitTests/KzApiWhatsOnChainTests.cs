@@ -161,17 +161,19 @@ namespace CafeLib.BsvSharp.Api.UnitTests
 
         #endregion
 
-        #region Script
+        #region Search
 
         [Theory]
-        [InlineData("995ea8d0f752f41cdd99bb9d54cb004709e04c7dc4088bcbbbb9ea5c390a43c3", "52dfceb815ad129a0fd946e3d665f44fa61f068135b9f38b05d3c697e11bad48", 620539)]
-        public async Task GetScriptHistory_Test(string scriptHash, string firstTxHash, long firstHeight)
+        [InlineData("1GJ3x5bcEnKMnzNFPPELDfXUCwKEaLHM5H")]
+        public async Task GetExplorerLinks(string address)
         {
-            var addressHistory = await Api.GetScriptHistory(scriptHash);
-            Assert.NotEmpty(addressHistory);
-            Assert.Equal(firstTxHash, addressHistory.First().TxHash);
-            Assert.Equal(firstHeight, addressHistory.First().Height);
+            var searchResult = await Api.GetExplorerLinks(address);
+            Assert.NotNull(searchResult);
+            Assert.NotEmpty(searchResult.Links);
+            Assert.Equal("address", searchResult.Links.First().Type);
+            Assert.Contains(address, searchResult.Links.First().Url);
         }
+
 
         #endregion
 

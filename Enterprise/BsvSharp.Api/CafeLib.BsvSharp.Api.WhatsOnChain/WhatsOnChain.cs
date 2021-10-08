@@ -174,6 +174,20 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
 
         #endregion
 
+        #region Search
+
+        public async Task<SearchResults> GetExplorerLinks(string address)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/search/links";
+            var jsonText = $@"{{""query"": ""{address}""}}";
+            var jsonBody = JToken.Parse(jsonText);
+            var json = await PostAsync(url, jsonBody);
+            var results = JsonConvert.DeserializeObject<SearchResults>(json);
+            return results;
+        }
+
+        #endregion
+
         #region Transaction
 
         public async Task<Transaction> GetTransactionsByHash(string txid)
