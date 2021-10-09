@@ -209,21 +209,21 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
 
         #region Transaction
 
-        //public async Task<Response> BroadcastTransaction(string txRaw)
-        //{
-        //    try
-        //    {
-        //        var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/tx/raw";
-        //        var jsonText = $@"{{""txHex"": ""{txRaw}""}}";
-        //        var jsonBody = JToken.Parse(jsonText);
-        //        await PostAsync(url, jsonBody);
-        //        return new Response();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return new Response(ex);
-        //    }
-        //}
+        public async Task<Response> BroadcastTransaction(string txRaw)
+        {
+            try
+            {
+                var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/tx/raw";
+                var jsonText = $@"{{""txHex"": ""{txRaw}""}}";
+                var jsonBody = JToken.Parse(jsonText);
+                await PostAsync(url, jsonBody);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                return new Response(ex);
+            }
+        }
 
         public async Task<Transaction> DecodeTransaction(string txRaw)
         {
