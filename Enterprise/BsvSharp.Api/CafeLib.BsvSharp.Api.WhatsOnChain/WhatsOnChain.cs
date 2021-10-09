@@ -3,6 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CafeLib.BsvSharp.Api.WhatsOnChain.Models;
@@ -207,6 +208,32 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
         #endregion
 
         #region Transaction
+
+        //public async Task<Response> BroadcastTransaction(string txRaw)
+        //{
+        //    try
+        //    {
+        //        var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/tx/raw";
+        //        var jsonText = $@"{{""txHex"": ""{txRaw}""}}";
+        //        var jsonBody = JToken.Parse(jsonText);
+        //        await PostAsync(url, jsonBody);
+        //        return new Response();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new Response(ex);
+        //    }
+        //}
+
+        public async Task<Transaction> DecodeTransaction(string txRaw)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/tx/decode";
+            var jsonContent = JsonConvert.SerializeObject(new { txHex = txRaw });
+            var jsonBody = JToken.Parse(jsonContent);
+            var json = await PostAsync(url, jsonBody);
+            var tx = JsonConvert.DeserializeObject<Transaction>(json);
+            return tx;
+        }
 
         public async Task<Transaction> GetTransactionsByHash(string txid)
         {

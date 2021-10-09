@@ -8,7 +8,7 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models
         public string Hex { get; set; }
 
         [JsonProperty("txid")]
-        public string Txid { get; set; }
+        public string TxId { get; set; }
 
         [JsonProperty("hash")]
         public string Hash { get; set; }

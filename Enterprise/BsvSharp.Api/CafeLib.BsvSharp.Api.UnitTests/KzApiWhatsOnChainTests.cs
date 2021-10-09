@@ -221,6 +221,17 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             Assert.Equal(hash, tx.Hash);
         }
 
+        [Theory]
+        [InlineData("01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff1c030f47092f7376706f6f6c2e636f6d2f7051963bec2a64968d340100ffffffff01daa9944a0000000017a9141314c7eace4d4da3f65a1341197bb58038aa9dbc8700000000",
+            "7c1a5ab633302d2299948420fafe55d0a784fd41588c2b692ffd2a339bf143b1"
+        )]
+        public async Task GetTransactionDecoded_Test(string txRaw, string txHash)
+        {
+            var tx = await Api.DecodeTransaction(txRaw);
+            Assert.Equal(txHash, tx.TxId);
+            Assert.Equal(txHash, tx.Hash);
+        }
+
         #endregion
     }
 }
