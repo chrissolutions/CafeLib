@@ -35,7 +35,7 @@ namespace CafeLib.Web.Request
             var uri = CombineUri(endpoint, parameters);
             using var httpResponse = await SendRequest(client, uri, HttpMethod.Get, headers, null);
             var response = new WebResponse(httpResponse);
-            response.EnsureSuccessStatusCode(httpResponse);
+            await EnsureSuccessStatusCode(httpResponse);
             return await ConvertContent<T>(response, await httpResponse.Content.ReadAsStreamAsync());
         }
 
@@ -53,7 +53,7 @@ namespace CafeLib.Web.Request
             var uri = CombineUri(endpoint, parameters);
             using var httpResponse = await SendRequest(client, uri, HttpMethod.Post, headers, body);
             var response = new WebResponse(httpResponse);
-            response.EnsureSuccessStatusCode(httpResponse);
+            await EnsureSuccessStatusCode(httpResponse);
             return await ConvertContent<T>(response, await httpResponse.Content.ReadAsStreamAsync());
         }
 
@@ -71,7 +71,7 @@ namespace CafeLib.Web.Request
             var uri = CombineUri(endpoint, parameters);
             using var httpResponse = await SendRequest(client, uri, HttpMethod.Put, headers, body);
             var response = new WebResponse(httpResponse);
-            response.EnsureSuccessStatusCode(httpResponse);
+            await EnsureSuccessStatusCode(httpResponse);
             return await ConvertContent<T>(response, await httpResponse.Content.ReadAsStreamAsync());
         }
 
@@ -89,7 +89,7 @@ namespace CafeLib.Web.Request
             var uri = CombineUri(endpoint, parameters);
             using var httpResponse = await SendRequest(client, uri, HttpMethod.Delete, headers, body);
             var response = new WebResponse(httpResponse);
-            response.EnsureSuccessStatusCode(httpResponse);
+            await EnsureSuccessStatusCode(httpResponse);
             return await ConvertContent<bool>(response, await httpResponse.Content.ReadAsStreamAsync());
         }
 
@@ -339,6 +339,15 @@ namespace CafeLib.Web.Request
                 default:
                     return (T)(object)content;
             }
+        }
+
+        private static async Task EnsureSuccessStatusCode(HttpResponseMessage httpResponse)
+        {
+            if (httpResponse.IsSuccessStatusCode) return;
+
+            var webResponse = new WebResponse(httpResponse);
+            webResponse.Content = await ConvertContent<string>(webResponse, await httpResponse.Content.ReadAsStreamAsync());
+            throw new WebRequestException(webResponse);
         }
 
         #endregion
