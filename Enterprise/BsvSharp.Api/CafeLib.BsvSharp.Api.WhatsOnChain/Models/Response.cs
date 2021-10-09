@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models
 {
@@ -20,5 +18,7 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models
             IsSuccessful = false;
             Exception = exception;
         }
+
+        public T GetException<T>() where T : Exception => (T) Exception;
     }
 }
