@@ -1,12 +1,5 @@
-﻿#region Copyright
-// Copyright (c) 2020 TonesNotes
-// Distributed under the Open BSV software license, see the accompanying file LICENSE.
-#endregion
-
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CafeLib.BsvSharp.Mapi.MatterPool;
-using CafeLib.Web.Request;
 using Xunit;
 
 namespace CafeLib.BsvSharp.Api.UnitTests 
@@ -22,16 +15,16 @@ namespace CafeLib.BsvSharp.Api.UnitTests
         {
             var response = await _matterPool.GetFeeQuote();
             Assert.NotNull(response);
-            Assert.Equal("matterpool", response.ProviderName);
+            Assert.Equal("matterpool", response.Result.ProviderName);
         }
 
         [Theory]
-        [InlineData("995ea8d0f752f41cdd99bb9d54cb004709e04c7dc4088bcbbbb9ea5c390a43c3")]
+        [InlineData("3ea6bb35923dbff216aa11084280e0d6d477d78ed8010edac92c3253b3d79024")]
         public async Task GetTransactionStatus_Test(string txHash)
         {
-            var status = await _matterPool.GetTransactionStatus(txHash);
-            Assert.NotNull(status.Payload);
-            //Assert.Equal("mempool", status.ProviderName);
+            var response = await _matterPool.GetTransactionStatus(txHash);
+            Assert.NotNull(response.Result.Payload);
+            Assert.Equal("failure", response.Result.ReturnResult);
         }
 
         //[Theory]

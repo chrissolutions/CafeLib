@@ -1,22 +1,36 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace CafeLib.BsvSharp.Mapi.Models
 {
-    public class TransactionStatus
+    public class TransactionStatus : Envelope
     {
-        [JsonProperty("providerName")]
-        public string ProviderName { get; set; }
+        [JsonProperty("apiVersion")]
+        public string ApiVersion { get; set; }
 
-        [JsonProperty("providerId")]
-        public string ProviderId { get; set; }
+        [JsonProperty("timestamp")]
+        public DateTime Timestamp { get; set; }
 
-        [JsonProperty("payload")]
-        public string Payload { get; set; }
+        [JsonProperty("returnResult")]
+        public string ReturnResult { get; set; }
 
-        [JsonProperty("signature")]
-        public string Signature { get; set; }
+        [JsonProperty("resultDescription")]
+        public string ResultDescription { get; set; }
 
-        [JsonProperty("publicKey")]
-        public string PublicKey { get; set; }
+        [JsonProperty("blockHash")]
+        public string BlockHash { get; set; }
+
+        [JsonProperty("blockHeight")]
+        public int? BlockHeight { get; set; }
+
+        [JsonProperty("confirmations")]
+        public int Confirmations { get; set; }
+
+        [JsonProperty("minerId")]
+        public string MinerId { get; set; }
+
+        [JsonProperty("txSecondMempoolExpiry")]
+        public int TxSecondMempoolExpiry { get; set; }
     }
+
 }

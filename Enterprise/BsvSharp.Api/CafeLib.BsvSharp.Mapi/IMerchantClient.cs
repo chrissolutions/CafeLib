@@ -6,9 +6,9 @@ namespace CafeLib.BsvSharp.Mapi
 {
     public interface IMerchantClient
     {
-        Task<ProviderQuote> GetFeeQuote();
+        Task<ApiResponse<ProviderQuote>> GetFeeQuote();
 
-        Task<Envelope> GetTransactionStatus(string txHash);
+        Task<ApiResponse<TransactionStatus>> GetTransactionStatus(string txHash);
 
         Task<ApiResponse<TransactionResponse>> SubmitTransaction(string txHash);
     }
