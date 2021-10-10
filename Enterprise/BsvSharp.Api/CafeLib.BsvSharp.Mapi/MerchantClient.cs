@@ -28,66 +28,82 @@ namespace CafeLib.BsvSharp.Mapi
 
         #region Mapi
 
+        /// <summary>
+        /// Get fee quote.
+        /// </summary>
+        /// <returns>request response</returns>
         public virtual async Task<ApiResponse<FeeQuoteResponse>> GetFeeQuote()
         {
-            try
-            {
-                var url = $"{Url}/mapi/feeQuote";
-                var json = await GetAsync(url);
-                var response = JsonConvert.DeserializeObject<FeeQuoteResponse>(json);
-                if (response == null) throw new MerchantClientException<FeeQuoteResponse>("null response");
-
-                response.ProviderName = Name;
-                response.Cargo = JsonConvert.DeserializeObject<Quote>(response.Payload);
-                if (response.Cargo == null) throw new MerchantClientException<FeeQuoteResponse>(response, "missing payload");
-                response.ProviderId = response.Cargo.MinerId;
-                return new ApiResponse<FeeQuoteResponse>(response);
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponse<FeeQuoteResponse>(ex);
-            }
+            var url = $"{Url}/mapi/feeQuote";
+            return await GetRequest<ApiResponse<FeeQuoteResponse>, FeeQuoteResponse, Quote>(url);
         }
 
+        /// <summary>
+        /// Get transaction status
+        /// </summary>
+        /// <param name="txHash">transaction hash</param>
+        /// <returns>request response</returns>
         public virtual async Task<ApiResponse<TransactionStatusResponse>> GetTransactionStatus(string txHash)
         {
-            try
-            {
-                var url = $"{Url}/mapi/tx/{txHash}";
-                var json = await GetAsync(url);
-                var response = JsonConvert.DeserializeObject<TransactionStatusResponse>(json);
-                if (response == null) throw new MerchantClientException<TransactionStatus>("null response");
-
-                response.ProviderName = Name;
-                response.Cargo = JsonConvert.DeserializeObject<TransactionStatus>(response.Payload);
-                if (response.Cargo == null) throw new MerchantClientException<TransactionStatusResponse>(response, "missing payload");
-                response.ProviderId = response.Cargo.MinerId;
-                return new ApiResponse<TransactionStatusResponse>(response);
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponse<TransactionStatusResponse>(ex);
-            }
+            var url = $"{Url}/mapi/tx/{txHash}";
+            return await GetRequest<ApiResponse<TransactionStatusResponse>, TransactionStatusResponse, TransactionStatus>(url);
         }
 
+        /// <summary>
+        /// Submit transaction
+        /// </summary>
+        /// <param name="txRaw">raw transaction as hex string</param>
+        /// <returns>request response</returns>
         public virtual async Task<ApiResponse<TransactionSubmitResponse>> SubmitTransaction(string txRaw)
+        {
+            var url = $"{Url}/mapi/tx";
+            var jsonBody = JToken.FromObject(new { rawtx = txRaw });
+            return await PostRequest<ApiResponse<TransactionSubmitResponse>, TransactionSubmitResponse, TransactionSubmit>(url, jsonBody);
+        }
+
+        #endregion
+
+        #region Helpers
+
+        private async Task<TApiResponse> GetRequest<TApiResponse, TMerchantResponse, TCargo>(string url)
+            where TApiResponse : ApiResponse<TMerchantResponse> where TMerchantResponse : MerchantResponse<TCargo> where TCargo : Cargo
         {
             try
             {
-                var url = $"{Url}/mapi/tx";
-                var jsonBody = JToken.FromObject(new { rawtx = txRaw });
-                var json = await PostAsync(url, jsonBody);
-                var response = JsonConvert.DeserializeObject<TransactionSubmitResponse>(json);
-                if (response == null) throw new MerchantClientException<TransactionStatus>("null response");
+                var json = await GetAsync(url);
+                var response = JsonConvert.DeserializeObject<TMerchantResponse>(json);
+                if (response == null) throw new MerchantClientException<TMerchantResponse>("null response");
 
                 response.ProviderName = Name;
-                response.Cargo = JsonConvert.DeserializeObject<TransactionSubmit>(response.Payload);
-                if (response.Cargo == null) throw new MerchantClientException<TransactionSubmitResponse>(response, "missing payload");
-                return new ApiResponse<TransactionSubmitResponse>(response);
-            }   
+                response.Cargo = JsonConvert.DeserializeObject<TCargo>(response.Payload);
+                if (response.Cargo == null) throw new MerchantClientException<TMerchantResponse>(response, "missing payload");
+                response.ProviderId = response.Cargo.MinerId;
+                return GetType().CreateInstance<TApiResponse>(response);
+            }
             catch (Exception ex)
             {
-                return new ApiResponse<TransactionSubmitResponse>(ex);
+                return GetType().CreateInstance<TApiResponse>(ex);
+            }
+        }
+
+        private async Task<TApiResponse> PostRequest<TApiResponse, TMerchantResponse, TCargo>(string url, JToken body)
+            where TApiResponse : ApiResponse<TMerchantResponse> where TMerchantResponse : MerchantResponse<TCargo> where TCargo : Cargo
+        {
+            try
+            {
+                var json = await PostAsync(url, body);
+                var response = JsonConvert.DeserializeObject<TMerchantResponse>(json);
+                if (response == null) throw new MerchantClientException<TMerchantResponse>("null response");
+
+                response.ProviderName = Name;
+                response.Cargo = JsonConvert.DeserializeObject<TCargo>(response.Payload);
+                if (response.Cargo == null) throw new MerchantClientException<TMerchantResponse>(response, "missing payload");
+                response.ProviderId = response.Cargo.MinerId;
+                return GetType().CreateInstance<TApiResponse>(response);
+            }
+            catch (Exception ex)
+            {
+                return GetType().CreateInstance<TApiResponse>(ex);
             }
         }
 

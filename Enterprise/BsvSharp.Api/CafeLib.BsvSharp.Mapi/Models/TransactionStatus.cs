@@ -3,14 +3,8 @@ using Newtonsoft.Json;
 
 namespace CafeLib.BsvSharp.Mapi.Models
 {
-    public class TransactionStatus : Envelope
+    public class TransactionStatus : Cargo
     {
-        [JsonProperty("apiVersion")]
-        public string ApiVersion { get; set; }
-
-        [JsonProperty("timestamp")]
-        public DateTime Timestamp { get; set; }
-
         [JsonProperty("returnResult")]
         public string ReturnResult { get; set; }
 
@@ -25,9 +19,6 @@ namespace CafeLib.BsvSharp.Mapi.Models
 
         [JsonProperty("confirmations")]
         public int Confirmations { get; set; }
-
-        [JsonProperty("minerId")]
-        public string MinerId { get; set; }
 
         [JsonProperty("txSecondMempoolExpiry")]
         public int TxSecondMempoolExpiry { get; set; }
