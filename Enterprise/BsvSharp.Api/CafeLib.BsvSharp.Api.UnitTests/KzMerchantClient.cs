@@ -14,6 +14,7 @@ using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using CafeLib.BsvSharp.Units;
 using CafeLib.Cryptography;
+using CafeLib.Web.Request;
 using Newtonsoft.Json;
 
 namespace CafeLib.BsvSharp.Api.UnitTests
@@ -304,7 +305,7 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             //var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
             // Both MatterPool and Taal don't handle the encoding header (charset=utf-8), returning http request status of 400.
             // So for now, don't include an encoding header.
-            var httpContent = new StringContent(jsonContent);
+            var httpContent = new StringContent(jsonContent, System.Text.Encoding.UTF8, WebContentType.Json);
             httpContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
             var rm = await _httpClient.PostAsync(url, httpContent);

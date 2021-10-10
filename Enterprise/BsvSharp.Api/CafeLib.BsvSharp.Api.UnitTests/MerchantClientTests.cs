@@ -24,17 +24,16 @@ namespace CafeLib.BsvSharp.Api.UnitTests
         {
             var response = await _matterPool.GetTransactionStatus(txHash);
             Assert.NotNull(response.Result.Payload);
-            Assert.Equal("failure", response.Result.ReturnResult);
+            Assert.Equal("failure", response.Result.Cargo.ReturnResult);
         }
 
-        //[Theory]
-        //[InlineData("010000000200010000000000000000000000000000000000000000000000000000000000000000000049483045022100d180fd2eb9140aeb4210c9204d3f358766eb53842b2a9473db687fa24b12a3cc022079781799cd4f038b85135bbe49ec2b57f306b2bb17101b17f71f000fcab2b6fb01ffffffff0002000000000000000000000000000000000000000000000000000000000000000000004847304402205f7530653eea9b38699e476320ab135b74771e1c48b81a5d041e2ca84b9be7a802200ac8d1f40fb026674fe5a5edd3dea715c27baa9baca51ed45ea750ac9dc0a55e81ffffffff010100000000000000015100000000")]
-        //public async Task Broadcast_Test(string txRaw)
-        //{
-        //    var response = await Api.BroadcastTransaction(txRaw);
-        //    Assert.False(response.IsSuccessful);
-        //    Assert.Contains("dust", response.GetException<WebRequestException>().Response.Content);
-        //}
+        [Theory]
+        [InlineData("0100000001747623f8e6f9b684c2c72d81245d1f1532043088e76ba63805339823e5b16389000000006a47304402204c108078b91ef1f6d2ce154b11bca8c31f6d37dac451a28c07edd7e737efef3802201ecfb09763d64d3ad293eec1c4ecaf0fd45b91dbdf428e422d282b98483300de4121036166800571f944768676842e4d2f8f96825c0f030139b6b78d6c9830de082828ffffffff09f9e15100000000001976a9143e0ea504169d4ef931e913cbbecb3f07b1d4b6f088acf9e15100000000001976a914229db1b4735321f46165ae5837e47dabd064f16e88acf9e15100000000001976a9144a5b03c7eea7b8e6e611559627a56963d514d1ea88ac6e6e5700000000001976a914c042299061557b60e0e5085bee8fadc8d7e5483388acf9e15100000000001976a914633d58a958c54d9858887b0f3aa65be4eb37f07488acf9e15100000000001976a9148d3cf51026f94d03fda5709160c7171b855ba22488ac50c84c00000000001976a9142a03a8943e47cdbd9ba448994e61d237e8d1ac4b88acf9e15100000000001976a914359f98091121e785e6663f10251832d9ae556f8588acf9e15100000000001976a91415a8feff23bfce20f837956c82e1eb1f2457f93488ac00000000")]
+        public async Task SubmitTransaction_Test(string txRaw)
+        {
+            var response = await _matterPool.SubmitTransaction(txRaw);
+            Assert.NotNull(response.Result.Payload);
+        }
 
         #endregion
     }

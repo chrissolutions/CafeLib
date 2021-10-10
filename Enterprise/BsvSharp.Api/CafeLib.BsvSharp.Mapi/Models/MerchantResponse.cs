@@ -2,7 +2,7 @@
 
 namespace CafeLib.BsvSharp.Mapi.Models
 {
-    public class ProviderQuote : Envelope
+    public class MerchantResponse<T> : Envelope
     {
         [JsonProperty("providerName")]
         public string ProviderName { get; set; }
@@ -10,7 +10,6 @@ namespace CafeLib.BsvSharp.Mapi.Models
         [JsonProperty("providerId")]
         public string ProviderId { get; set; }
 
-        [JsonProperty("quote")]
-        public Quote Quote { get; set; }
+        public T Cargo { get; set; }
     }
 }

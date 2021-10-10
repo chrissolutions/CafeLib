@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CafeLib.BsvSharp.Mapi.Models;
+using CafeLib.BsvSharp.Mapi.Responses;
 using CafeLib.BsvSharp.Network;
 using CafeLib.Core.Extensions;
 using CafeLib.Web.Request;
@@ -27,65 +28,66 @@ namespace CafeLib.BsvSharp.Mapi
 
         #region Mapi
 
-        public virtual async Task<ApiResponse<ProviderQuote>> GetFeeQuote()
+        public virtual async Task<ApiResponse<FeeQuoteResponse>> GetFeeQuote()
         {
             try
             {
                 var url = $"{Url}/mapi/feeQuote";
                 var json = await GetAsync(url);
-                var response = JsonConvert.DeserializeObject<ProviderQuote>(json);
-                if (response == null) throw new MerchantClientException<ProviderQuote>("null response");
+                var response = JsonConvert.DeserializeObject<FeeQuoteResponse>(json);
+                if (response == null) throw new MerchantClientException<FeeQuoteResponse>("null response");
+
                 response.ProviderName = Name;
-                response.Quote = JsonConvert.DeserializeObject<Quote>(response.Payload);
-                if (response.Quote == null) throw new MerchantClientException<ProviderQuote>(response, "missing payload");
-                response.ProviderId = response.Quote.MinerId;
-                return new ApiResponse<ProviderQuote>(response);
+                response.Cargo = JsonConvert.DeserializeObject<Quote>(response.Payload);
+                if (response.Cargo == null) throw new MerchantClientException<FeeQuoteResponse>(response, "missing payload");
+                response.ProviderId = response.Cargo.MinerId;
+                return new ApiResponse<FeeQuoteResponse>(response);
             }
             catch (Exception ex)
             {
-                return new ApiResponse<ProviderQuote>(ex);
+                return new ApiResponse<FeeQuoteResponse>(ex);
             }
         }
 
-        public virtual async Task<ApiResponse<TransactionStatus>> GetTransactionStatus(string txHash)
+        public virtual async Task<ApiResponse<TransactionStatusResponse>> GetTransactionStatus(string txHash)
         {
             try
             {
                 var url = $"{Url}/mapi/tx/{txHash}";
                 var json = await GetAsync(url);
-                var response = JsonConvert.DeserializeObject<TransactionStatus>(json);
+                var response = JsonConvert.DeserializeObject<TransactionStatusResponse>(json);
                 if (response == null) throw new MerchantClientException<TransactionStatus>("null response");
-                var status = JsonConvert.DeserializeObject<TransactionStatus>(response.Payload);
-                if (status == null) throw new MerchantClientException<TransactionStatus>(response, "missing payload");
-                status.Payload = response.Payload;
-                status.PublicKey = response.PublicKey;
-                status.Signature = response.Signature;
-                status.Encoding = response.Encoding;
-                status.MimeType = response.MimeType;
-                return new ApiResponse<TransactionStatus>(status);
+
+                response.ProviderName = Name;
+                response.Cargo = JsonConvert.DeserializeObject<TransactionStatus>(response.Payload);
+                if (response.Cargo == null) throw new MerchantClientException<TransactionStatusResponse>(response, "missing payload");
+                response.ProviderId = response.Cargo.MinerId;
+                return new ApiResponse<TransactionStatusResponse>(response);
             }
             catch (Exception ex)
             {
-                return new ApiResponse<TransactionStatus>(ex);
+                return new ApiResponse<TransactionStatusResponse>(ex);
             }
         }
 
-        public virtual async Task<ApiResponse<TransactionResponse>> SubmitTransaction(string txHash)
+        public virtual async Task<ApiResponse<TransactionSubmitResponse>> SubmitTransaction(string txRaw)
         {
             try
             {
                 var url = $"{Url}/mapi/tx";
-                var jsonBody = JToken.FromObject(new { rawTx = txHash });
+                var jsonBody = JToken.FromObject(new { rawtx = txRaw });
                 var json = await PostAsync(url, jsonBody);
-                var response = JsonConvert.DeserializeObject<TransactionResponse>(json);
+                var response = JsonConvert.DeserializeObject<TransactionSubmitResponse>(json);
                 if (response == null) throw new MerchantClientException<TransactionStatus>("null response");
-                //var status = JsonConvert.DeserializeObject<TransactionResponse>(response.Payload);
-                //if (status == null) throw new MerchantClientException<TransactionStatus>(response, "missing payload");
-                return new ApiResponse<TransactionResponse>(response);
+
+                response.ProviderName = Name;
+                response.Cargo = JsonConvert.DeserializeObject<TransactionSubmit>(response.Payload);
+                if (response.Cargo == null) throw new MerchantClientException<TransactionSubmitResponse>(response, "missing payload");
+                return new ApiResponse<TransactionSubmitResponse>(response);
             }   
             catch (Exception ex)
             {
-                return new ApiResponse<TransactionResponse>(ex);
+                return new ApiResponse<TransactionSubmitResponse>(ex);
             }
         }
 
