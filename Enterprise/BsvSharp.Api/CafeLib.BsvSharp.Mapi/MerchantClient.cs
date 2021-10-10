@@ -78,6 +78,9 @@ namespace CafeLib.BsvSharp.Mapi
                 var jsonBody = JToken.FromObject(new { rawTx = txHash });
                 var json = await PostAsync(url, jsonBody);
                 var response = JsonConvert.DeserializeObject<TransactionResponse>(json);
+                if (response == null) throw new MerchantClientException<TransactionStatus>("null response");
+                //var status = JsonConvert.DeserializeObject<TransactionResponse>(response.Payload);
+                //if (status == null) throw new MerchantClientException<TransactionStatus>(response, "missing payload");
                 return new ApiResponse<TransactionResponse>(response);
             }   
             catch (Exception ex)
