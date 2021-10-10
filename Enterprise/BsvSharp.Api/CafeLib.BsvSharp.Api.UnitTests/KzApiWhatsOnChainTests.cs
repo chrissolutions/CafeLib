@@ -108,6 +108,24 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             Assert.Equal(blockHash, block.Hash);
         }
 
+        [Theory]
+        [InlineData(577267)]
+        public async Task GetBlockByHeight_Test(long blockHeight)
+        {
+            var block = await Api.GetBlockByHeight(blockHeight);
+            Assert.Equal(blockHeight, block.Height);
+        }
+
+        [Theory]
+        [InlineData("000000000000000009322213dd454961301f2126b7e73bd01c0bf042641df24c")]
+        public async Task GetBlockPage_Test(string blockHash)
+        {
+            var transactions = await Api.GetBlockPage(blockHash, 1);
+            Assert.NotNull(transactions);
+            Assert.NotEmpty(transactions);
+            Assert.Equal(2063, transactions.Length);
+        }
+
         #endregion
 
         #region Exchange

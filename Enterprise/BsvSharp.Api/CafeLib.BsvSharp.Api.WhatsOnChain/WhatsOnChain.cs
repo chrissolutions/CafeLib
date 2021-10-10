@@ -83,12 +83,29 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
         #endregion
 
         #region Block
+
         public async Task<Block> GetBlockByHash(string blockHash)
         {
             var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/block/hash/{blockHash}";
             var json = await GetAsync(url);
             var block = JsonConvert.DeserializeObject<Block>(json);
             return block;
+        }
+
+        public async Task<Block> GetBlockByHeight(long blockHeight)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/block/height/{blockHeight}";
+            var json = await GetAsync(url);
+            var block = JsonConvert.DeserializeObject<Block>(json);
+            return block;
+        }
+
+        public async Task<string[]> GetBlockPage(string blockHash, long pageNumber)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/block/hash/{blockHash}/page/{pageNumber}";
+            var json = await GetAsync(url);
+            var transactions = JsonConvert.DeserializeObject<string[]>(json);
+            return transactions;
         }
 
         #endregion
