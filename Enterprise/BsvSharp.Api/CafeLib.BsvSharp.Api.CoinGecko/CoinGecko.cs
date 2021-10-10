@@ -13,6 +13,7 @@ namespace CafeLib.BsvSharp.Api.CoinGecko
         public CoinGecko()
         {
             Headers.Add("Accept", WebContentType.Json);
+            Headers.Add("User-Agent", typeof(CoinGecko).Namespace);
         }
 
         public async Task<IEnumerable<Coin>> GetCoinList()

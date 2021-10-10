@@ -24,7 +24,7 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
         {
             Network = networkType.GetDescriptor();
             Headers.Add("Content-Type", WebContentType.Json);
-            Headers.Add("User-Agent", "KzApiWhatsOnChain");
+            Headers.Add("User-Agent", typeof(WhatsOnChain).Namespace);
         }
 
         #region Address
