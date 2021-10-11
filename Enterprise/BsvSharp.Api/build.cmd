@@ -5,6 +5,7 @@ if '%root%' == '' set root=..\..
 :: Type
 set type=BsvSharp.Api
 set location=Enterprise\%type%
+set mapi=CafeLib.BsvSharp.Mapi
 
 :: Settings
 call %root%\build\buildenv %*
@@ -17,8 +18,8 @@ set libs=%solution%.CoinGecko
 set libs=%libs% %solution%.CoinMarketCap
 set libs=%libs% %solution%.Paymail
 set libs=%libs% %solution%.WhatsOnChain
-set libs=%libs% %solution%.Mapi
-set libs=%libs% %solution%.Mapi.MatterPool
+set libs=%libs% %mapi%
+set libs=%libs% %mapi%.MatterPool
 ::
 
 :: Run script to build the libraries
