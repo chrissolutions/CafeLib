@@ -20,7 +20,7 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models
         public string[] Addresses { get; set; }
 
         [JsonProperty("opReturn")]
-        public string OpReturn { get; set; }
+        public OpReturn OpReturn { get; set; }
 
         [JsonProperty("isTruncated")]
         public bool IsTruncated { get; set; }

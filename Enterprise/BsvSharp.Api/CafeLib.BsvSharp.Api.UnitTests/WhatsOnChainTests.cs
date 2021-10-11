@@ -3,8 +3,11 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using CafeLib.BsvSharp.Network;
+using CafeLib.Core.Extensions;
 using CafeLib.Web.Request;
 using Xunit;
 
@@ -106,6 +109,44 @@ namespace CafeLib.BsvSharp.Api.UnitTests
         {
             var block = await Api.GetBlockByHash(blockHash);
             Assert.Equal(blockHash, block.Hash);
+        }
+
+        [Theory]
+        [InlineData(577267)]
+        public async Task GetBlockByHeight_Test(long blockHeight)
+        {
+            var block = await Api.GetBlockByHeight(blockHeight);
+            Assert.Equal(blockHeight, block.Height);
+        }
+
+        [Theory]
+        [InlineData("000000000000000009322213dd454961301f2126b7e73bd01c0bf042641df24c")]
+        public async Task GetBlockPage_Test(string blockHash)
+        {
+            var transactions = await Api.GetBlockPage(blockHash, 1);
+            Assert.NotNull(transactions);
+            Assert.NotEmpty(transactions);
+            Assert.Equal(2063, transactions.Length);
+        }
+
+
+        #endregion
+
+        #region Chain
+
+        [Fact]
+        public async Task GetChainInfo_Test()
+        {
+            var chainInfo = await Api.GetChainInfo();
+            Assert.NotNull(chainInfo);
+            Assert.Equal(NetworkType.Main.GetDescriptor(), chainInfo.Chain);
+        }
+
+        [Fact]
+        public async Task GetCirculatingSupply_Test()
+        {
+            var supply = await Api.GetCirculatingSupply();
+            Assert.True(Math.Round(supply, 2) > 18865981.25);
         }
 
         #endregion
@@ -240,6 +281,21 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             var tx = await Api.DecodeTransaction(txRaw);
             Assert.Equal(txHash, tx.TxId);
             Assert.Equal(txHash, tx.Hash);
+        }
+
+        [Fact]
+        public async Task GetBulkTransactionDetails_Test()
+        {
+            var txIds = new[]
+            {
+                "294cd1ebd5689fdee03509f92c32184c0f52f037d4046af250229b97e0c8f1aa",
+                "91f68c2c598bc73812dd32d60ab67005eac498bef5f0c45b822b3c9468ba3258"
+            };
+
+
+            var txs = await Api.GetBulkTransactionDetails(txIds);
+            Assert.NotEmpty(txs);
+            Assert.Equal(2, txs.Length);
         }
 
         #endregion

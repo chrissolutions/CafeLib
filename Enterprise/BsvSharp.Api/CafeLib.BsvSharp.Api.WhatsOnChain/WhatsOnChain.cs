@@ -279,6 +279,15 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             return tx;
         }
 
+        public async Task<Transaction[]> GetBulkTransactionDetails(IEnumerable<string> txIds)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/txs";
+            var jsonBody = JToken.FromObject(new { txids = txIds });
+            var json = await PostAsync(url, jsonBody);
+            var utxos = JsonConvert.DeserializeObject<Transaction[]>(json);
+            return utxos;
+        }
+
         #endregion
     }
 }
