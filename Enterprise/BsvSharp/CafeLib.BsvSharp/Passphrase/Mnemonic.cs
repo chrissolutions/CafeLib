@@ -9,9 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Encoding;
-using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
 using CafeLib.Cryptography;
@@ -57,7 +55,7 @@ namespace CafeLib.BsvSharp.Passphrase
 		/// <summary>
 		/// Create a new KzMnemonic from a sequence of words.
 		/// </summary>
-		/// <param name="words">Space serparated words that encode Entropy and checksum.</param>
+		/// <param name="words">Space separated words that encode Entropy and checksum.</param>
 		/// <param name="language">Optional language key to use in WordLists.</param>
 		public static Mnemonic FromWords(string words, Languages language = Languages.Unknown) => new Mnemonic(words, language);
 		public static Mnemonic FromWords(string words, string[] wordList, Languages language = Languages.Unknown) => new Mnemonic(words, wordList, language);
