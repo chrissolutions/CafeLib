@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using CafeLib.Core.Support;
 using Microsoft.JSInterop;
 
-namespace BlazorWallet.Support
+namespace CafeLib.Blazor.Interop
 {
     public class JsObjectProxy
     {

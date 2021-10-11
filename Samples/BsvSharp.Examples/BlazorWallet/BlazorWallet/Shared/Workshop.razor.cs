@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using BlazorWallet.Interop;
-using BlazorWallet.Support;
+using CafeLib.Blazor.Interop;
 using CafeLib.BsvSharp.Api.WhatsOnChain;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;

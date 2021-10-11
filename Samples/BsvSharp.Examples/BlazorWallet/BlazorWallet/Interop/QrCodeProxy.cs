@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using BlazorWallet.Support;
+using CafeLib.Blazor.Interop;
 using Microsoft.JSInterop;
 
 namespace BlazorWallet.Interop

@@ -13,6 +13,7 @@ set libs=%libs% Cryptography
 set libs=%libs% Data
 set libs=%libs% Authorization
 set libs=%libs% Network
+set libs=%libs% Blazor
 set libs=%libs% Mobile
 set libs=%libs% Enterprise\BsvSharp
 set libs=%libs% Enterprise\BsvSharp.Api
