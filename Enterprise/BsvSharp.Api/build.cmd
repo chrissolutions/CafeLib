@@ -17,6 +17,8 @@ set libs=%solution%.CoinGecko
 set libs=%libs% %solution%.CoinMarketCap
 set libs=%libs% %solution%.Paymail
 set libs=%libs% %solution%.WhatsOnChain
+set libs=%libs% %solution%.Mapi
+set libs=%libs% %solution%.Mapi.MatterPool
 ::
 
 :: Run script to build the libraries
