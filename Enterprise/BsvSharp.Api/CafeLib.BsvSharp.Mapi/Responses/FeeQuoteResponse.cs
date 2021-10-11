@@ -2,7 +2,7 @@
 
 namespace CafeLib.BsvSharp.Mapi.Responses
 {
-    public class FeeQuoteResponse : MerchantResponse<Quote>
+    public class FeeQuoteResponse : MerchantResponse<FeeQuote>
     {
     }
 }

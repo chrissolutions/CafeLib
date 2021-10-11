@@ -35,7 +35,7 @@ namespace CafeLib.BsvSharp.Mapi
         public virtual async Task<ApiResponse<FeeQuoteResponse>> GetFeeQuote()
         {
             var url = $"{Url}/mapi/feeQuote";
-            return await GetRequest<ApiResponse<FeeQuoteResponse>, FeeQuoteResponse, Quote>(url);
+            return await GetRequest<ApiResponse<FeeQuoteResponse>, FeeQuoteResponse, FeeQuote>(url);
         }
 
         /// <summary>

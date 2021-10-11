@@ -1,5 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using CafeLib.BsvSharp.Keys;
+using CafeLib.BsvSharp.Mapi.Extensions;
 using CafeLib.BsvSharp.Mapi.MatterPool;
+using CafeLib.Core.Numerics;
 using Xunit;
 
 namespace CafeLib.BsvSharp.Api.UnitTests 
@@ -16,6 +20,18 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             var response = await _matterPool.GetFeeQuote();
             Assert.NotNull(response);
             Assert.Equal("matterpool", response.Result.ProviderName);
+
+            var feeQuote = response.Result.Cargo;
+            Assert.True(feeQuote.Expiry > DateTime.UtcNow);
+            Assert.True(Math.Abs((feeQuote.Timestamp - DateTime.UtcNow).TotalMinutes) < 1);
+            Assert.True(feeQuote.CurrentHighestBlockHeight > 630000);
+            Assert.True(new UInt256(feeQuote.CurrentHighestBlockHash).ToBigInteger() > 0);
+            Assert.Equal(2, feeQuote.Fees.Length);
+            Assert.True(new PublicKey(feeQuote.MinerId).IsValid);
+            Assert.True(feeQuote.GetStandardMiningFee().Bytes > 0);
+            Assert.True(feeQuote.GetStandardMiningFee().Satoshis >= 0);
+            Assert.True(feeQuote.GetStandardRelayFee().Bytes > 0);
+            Assert.True(feeQuote.GetStandardRelayFee().Satoshis >= 0);
         }
 
         [Theory]
@@ -23,8 +39,18 @@ namespace CafeLib.BsvSharp.Api.UnitTests
         public async Task GetTransactionStatus_Test(string txHash)
         {
             var response = await _matterPool.GetTransactionStatus(txHash);
+            Assert.NotNull(response);
+            Assert.Equal("matterpool", response.Result.ProviderName);
             Assert.NotNull(response.Result.Payload);
-            Assert.Equal("failure", response.Result.Cargo.ReturnResult);
+
+            var status = response.Result.Cargo;
+            Assert.NotNull(status);
+            Assert.Equal("failure", status.ReturnResult);
+            Assert.True(status.ResultDescription.Length > 0);
+            Assert.True(Math.Abs((status.Timestamp - DateTime.UtcNow).TotalMinutes) < 1);
+            Assert.True(new PublicKey(status.MinerId).IsValid);
+            Assert.Null(status.BlockHash);
+            Assert.True(status.Confirmations == 0);
         }
 
         [Theory]
@@ -32,7 +58,19 @@ namespace CafeLib.BsvSharp.Api.UnitTests
         public async Task SubmitTransaction_Test(string txRaw)
         {
             var response = await _matterPool.SubmitTransaction(txRaw);
+            Assert.NotNull(response);
+            Assert.Equal("matterpool", response.Result.ProviderName);
             Assert.NotNull(response.Result.Payload);
+
+            var submit = response.Result.Cargo;
+            Assert.True(submit.CurrentHighestBlockHeight > 630000);
+            Assert.True(new UInt256(submit.CurrentHighestBlockHash) > UInt256.Zero);
+            Assert.True(Math.Abs((submit.Timestamp - DateTime.UtcNow).TotalMinutes) < 1);
+            Assert.True(new PublicKey(submit.MinerId).IsValid);
+            Assert.Equal("failure", submit.ReturnResult);
+            Assert.True(submit.ResultDescription.Length > 0); // e.g. Not enough fees
+            Assert.Equal("", submit.TxId); // e.g. Not enough fees
+            Assert.Equal(0, submit.TxSecondMempoolExpiry); // e.g. Not enough fees
         }
 
         #endregion

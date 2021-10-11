@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models.Mapi
 {
-    public class FeeInfo
+    public class FeeRates
     {
         [JsonProperty("satoshis")]
         public long Satoshis { get; set; }

@@ -2,7 +2,7 @@
 
 namespace CafeLib.BsvSharp.Mapi.Models
 {
-    public class FeeInfo
+    public class FeeRate
     {
         [JsonProperty("satoshis")]
         public long Satoshis { get; set; }

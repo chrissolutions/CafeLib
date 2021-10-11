@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace CafeLib.BsvSharp.Mapi.Models
 {
-    public class Quote : Cargo
+    public class FeeQuote : Cargo
     {
         [JsonProperty("expiryTime")]
         public DateTime Expiry { get; set; }
@@ -12,7 +12,7 @@ namespace CafeLib.BsvSharp.Mapi.Models
         public string CurrentHighestBlockHash { get; set; }
 
         [JsonProperty("currentHighestBlockHeight")]
-        public string CurrentHighestBlockHeight { get; set; }
+        public long CurrentHighestBlockHeight { get; set; }
 
         [JsonProperty("minerReputation")]
         public string MinerReputation { get; set; }
