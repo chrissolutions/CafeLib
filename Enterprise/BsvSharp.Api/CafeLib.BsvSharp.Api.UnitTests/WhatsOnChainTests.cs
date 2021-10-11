@@ -135,7 +135,7 @@ namespace CafeLib.BsvSharp.Api.UnitTests
         [InlineData("995ea8d0f752f41cdd99bb9d54cb004709e04c7dc4088bcbbbb9ea5c390a43c3")]
         public async Task GetTxStatus_Test(string txHash)
         {
-            var status = await Api.GetTxStatus(txHash);
+            var status = await Api.GetTranactionStatus(txHash);
             Assert.NotNull(status.Payload);
             Assert.Equal("mempool", status.ProviderName);
         }

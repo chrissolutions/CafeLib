@@ -2,7 +2,7 @@
 
 namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models.Mapi
 {
-    public class TxStatus
+    public class TransactionStatus
     {
         [JsonProperty("providerName")]
         public string ProviderName { get; set; }
