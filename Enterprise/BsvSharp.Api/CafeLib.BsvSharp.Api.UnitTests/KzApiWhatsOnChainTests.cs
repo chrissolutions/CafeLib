@@ -6,6 +6,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using CafeLib.BsvSharp.Network;
+using CafeLib.Core.Extensions;
 using CafeLib.Web.Request;
 using Xunit;
 
@@ -130,6 +132,14 @@ namespace CafeLib.BsvSharp.Api.UnitTests
         #endregion
 
         #region Chain
+
+        [Fact]
+        public async Task GetChainInfo_Test()
+        {
+            var chainInfo = await Api.GetChainInfo();
+            Assert.NotNull(chainInfo);
+            Assert.Equal(NetworkType.Main.GetDescriptor(), chainInfo.Chain);
+        }
 
         [Fact]
         public async Task GetCirculatingSupply_Test()

@@ -112,6 +112,14 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
 
         #region Chain
 
+        public async Task<ChainInfo> GetChainInfo()
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/chain/info";
+            var json = await GetAsync(url);
+            var chainInfo = JsonConvert.DeserializeObject<ChainInfo>(json);
+            return chainInfo;
+        }
+
         public async Task<double> GetCirculatingSupply()
         {
             var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/circulatingsupply";
