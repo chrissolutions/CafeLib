@@ -3,6 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CafeLib.Web.Request;
@@ -124,6 +125,17 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             Assert.NotNull(transactions);
             Assert.NotEmpty(transactions);
             Assert.Equal(2063, transactions.Length);
+        }
+
+        #endregion
+
+        #region Chain
+
+        [Fact]
+        public async Task GetCirculatingSupply_Test()
+        {
+            var supply = await Api.GetCirculatingSupply();
+            Assert.True(Math.Round(supply, 2) > 18865981.25);
         }
 
         #endregion

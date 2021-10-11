@@ -110,6 +110,17 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
 
         #endregion
 
+        #region Chain
+
+        public async Task<double> GetCirculatingSupply()
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/circulatingsupply";
+            var json = await GetAsync(url);
+            return Convert.ToDouble(json);
+        }
+
+        #endregion
+
         #region Exchange
 
         public async Task<decimal> GetExchangeRate()
