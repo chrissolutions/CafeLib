@@ -4,7 +4,7 @@ using Xunit;
 
 namespace CafeLib.BsvSharp.Api.UnitTests 
 {
-    public class MerchantClientTests
+    public class MatterPoolClientTests
     {
         private readonly MatterPoolClient _matterPool = new MatterPoolClient();
 
