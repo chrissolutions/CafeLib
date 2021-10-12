@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Effects\**" />
+    <EmbeddedResource Remove="Effects\**" />
+    <None Remove="Effects\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Common\ObservableBase.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2019.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Xamarin.Forms" Version="4.0.0.425677" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CafeLib.Core">
+      <HintPath>..\..\..\CafeLib\Core\CafeLib.Core.Mobile\bin\Debug\netstandard2.0\CafeLib.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="CafeLib.Core.IoC">
+      <HintPath>..\..\..\CafeLib\Core\CafeLib.Core.Mobile\bin\Debug\netstandard2.0\CafeLib.Core.IoC.dll</HintPath>
+    </Reference>
+    <Reference Include="CafeLib.Core.Mobile">
+      <HintPath>..\..\..\CafeLib\Core\CafeLib.Core.Mobile\bin\Debug\netstandard2.0\CafeLib.Core.Mobile.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
