@@ -1,6 +1,6 @@
 ﻿using CafeLib.BsvSharp.Keys;
-using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
+using CafeLib.Core.Numerics;
 
 namespace CafeLib.BsvSharp.Builders
 {

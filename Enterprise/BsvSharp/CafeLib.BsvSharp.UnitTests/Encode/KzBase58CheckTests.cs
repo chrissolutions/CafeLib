@@ -68,7 +68,7 @@ namespace CafeLib.BsvSharp.UnitTests.Encode
             var decodeBytes = Array.Empty<byte>();
 
            Assert.Throws<FormatException>(() => decodeBytes = Encoders.Base58Check.Decode(base58));
-            Assert.True(Array.Empty<byte>().SequenceEqual(decodeBytes));
+           Assert.True(Array.Empty<byte>().SequenceEqual(decodeBytes));
         }
     }
 }

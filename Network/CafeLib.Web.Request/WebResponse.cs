@@ -6,6 +6,8 @@ namespace CafeLib.Web.Request
 {
     public class WebResponse
     {
+        public bool IsSuccessStatusCode { get; }
+
         public int StatusCode { get; }
 
         public string ReasonPhrase { get; }
@@ -20,10 +22,13 @@ namespace CafeLib.Web.Request
 
         public WebHeaders ResponseHeaders { get; }
 
+        public string Content { get; internal set; }
+
         internal string ContentType { get; }
 
         internal WebResponse(HttpResponseMessage response)
         {
+            IsSuccessStatusCode = response.IsSuccessStatusCode;
             StatusCode = (int)response.StatusCode;
             ReasonPhrase = response.ReasonPhrase;
             RequestMethod = response.RequestMessage.Method.ToString();
@@ -53,16 +58,6 @@ namespace CafeLib.Web.Request
             }
 
             return WebContentType.Text;
-        }
-
-        internal WebResponse EnsureSuccessStatusCode(HttpResponseMessage response)
-        {
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new WebRequestException(this);
-            }
-
-            return this;
         }
     }
 }

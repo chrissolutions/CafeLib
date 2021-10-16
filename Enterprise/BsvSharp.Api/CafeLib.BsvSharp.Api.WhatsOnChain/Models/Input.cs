@@ -11,7 +11,7 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models
         public string Txid { get; set; }
 
         [JsonProperty("vout")]
-        public int VectorOutput { get; set; }
+        public int OutIndex { get; set; }
 
         [JsonProperty("scriptSig")]
         public ScriptSig ScriptSig { get; set; }

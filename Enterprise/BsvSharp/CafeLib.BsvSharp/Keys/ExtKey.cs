@@ -3,8 +3,8 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
+using CafeLib.Core.Numerics;
 
 namespace CafeLib.BsvSharp.Keys
 {

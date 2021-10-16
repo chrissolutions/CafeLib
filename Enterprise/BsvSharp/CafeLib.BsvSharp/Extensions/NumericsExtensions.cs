@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
+using CafeLib.Core.Numerics;
 
 namespace CafeLib.BsvSharp.Extensions
 {
@@ -150,7 +151,7 @@ namespace CafeLib.BsvSharp.Extensions
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public static ReadOnlySpan<byte> AsReadOnlySpan(this ref ulong i) => i.AsSpan();
+        public static ReadOnlyByteSpan AsReadOnlySpan(this ref ulong i) => i.AsSpan();
 
         /// <summary>
         /// 

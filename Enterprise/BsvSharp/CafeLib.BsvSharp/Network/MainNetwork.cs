@@ -1,6 +1,7 @@
 ﻿using System;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics;
+using CafeLib.Core.Numerics;
 
 namespace CafeLib.BsvSharp.Network
 {

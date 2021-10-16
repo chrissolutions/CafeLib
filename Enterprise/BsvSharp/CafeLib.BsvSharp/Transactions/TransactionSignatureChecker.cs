@@ -10,6 +10,7 @@ using CafeLib.BsvSharp.Persistence;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Signatures;
 using CafeLib.BsvSharp.Units;
+using CafeLib.Core.Numerics;
 
 namespace CafeLib.BsvSharp.Transactions
 {

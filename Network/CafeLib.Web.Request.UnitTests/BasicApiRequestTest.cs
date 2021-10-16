@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -20,17 +22,17 @@ namespace CafeLib.Web.Request.UnitTests
         }
 
         [Fact]
-        public async void ApiRequest_PostRequestTest()
+        public async void BasicApiRequest_PostRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
-            const string jsonText = @"{ 
-                    ""CaseID"": ""Unique File Name"",
-                    ""Content"": ""StreamValue""
-                    }";
 
             var request = new BasicApiRequest();
 
-            var jsonBody = JToken.Parse(jsonText);
+            var jsonBody = JToken.FromObject(
+                new {
+                    CaseID = "Unique File Name", 
+                    Content = "StreamValue"
+                });
 
             var json = await request.PostAsync(endpoint, jsonBody);
             Assert.NotNull(json);
@@ -44,7 +46,7 @@ namespace CafeLib.Web.Request.UnitTests
         }
 
         [Fact]
-        public async void ApiRequest_PutRequestTest()
+        public async void BasicApiRequest_PutRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
             const string jsonText = @"{ 
@@ -68,7 +70,7 @@ namespace CafeLib.Web.Request.UnitTests
         }
 
         [Fact]
-        public async void ApiRequest_DeleteRequestTest()
+        public async void BasicApiRequest_DeleteRequestTest()
         {
             const string endpoint = "https://httpbin.org/anything";
             const string jsonText = @"{ 
@@ -80,6 +82,24 @@ namespace CafeLib.Web.Request.UnitTests
             var jsonBody = JToken.Parse(jsonText);
             var result = await request.DeleteAsync(endpoint, jsonBody);
             Assert.True(result);
+        }
+
+        [Fact]
+        public async Task BasicApiRequest_BadRequest()
+        {
+            try
+            {
+                const string badUrl = "https://httpbin.org/badrequest";
+                var request = new BasicApiRequest();
+                await Assert.ThrowsAsync<WebRequestException>(async () => await request.GetAsync(badUrl));
+
+                await request.GetAsync(badUrl);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsType<WebRequestException>(ex);
+                Assert.Contains("Not Found", (ex as WebRequestException)?.Response?.Content ?? "");
+            }
         }
     }
 }

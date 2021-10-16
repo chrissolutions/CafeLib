@@ -3,10 +3,13 @@ using System.Linq;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Network;
-using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Scripting;
 using CafeLib.BsvSharp.Services;
+using CafeLib.Core.Encodings;
 using CafeLib.Core.Extensions;
+using CafeLib.Core.Numerics;
+using CafeLib.Cryptography;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace CafeLib.BsvSharp.Keys
 {
@@ -165,7 +168,7 @@ namespace CafeLib.BsvSharp.Keys
         
         public override int GetHashCode() => _bytes.GetHashCodeOfValues();
 
-        public bool Equals(Address o) => !(o is null) && _bytes.SequenceEqual(o._bytes);
+        public bool Equals(Address o) => o is not null && _bytes.SequenceEqual(o._bytes);
         public override bool Equals(object obj) => Equals((Address)obj);
 
         public static implicit operator UInt160(Address rhs) => new UInt160(rhs._bytes[1..]);

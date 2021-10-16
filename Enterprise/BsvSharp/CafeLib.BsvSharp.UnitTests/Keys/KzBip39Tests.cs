@@ -3,10 +3,11 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using System.Linq;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
-using CafeLib.BsvSharp.Numerics;
-using CafeLib.BsvSharp.Wallet;
+using CafeLib.BsvSharp.Passphrase;
+using CafeLib.Core.Numerics;
 using Xunit;
 
 namespace CafeLib.BsvSharp.UnitTests.Keys 
@@ -160,15 +161,37 @@ namespace CafeLib.BsvSharp.UnitTests.Keys
         )]
         public void Bip39_Mnemonic_Test(string entropy, string words, string seed, string b58PrivateKey)
         {
-            entropy.HexToBytes();
+            var bytes = entropy.HexToBytes();
             var mnemonic = new Mnemonic(words, Languages.English);
             Assert.NotNull(mnemonic); // If checksum doesn't match returns null.
+            Assert.True(mnemonic.Entropy.SequenceEqual(bytes));
             var seed512 = new UInt512(seed, true);
             var seedBip39 = ExtPrivateKey.Bip39Seed(words, "TREZOR");
             Assert.Equal(seed512, seedBip39);
-            var privkeyFromWords = ExtPrivateKey.MasterBip39(words, "TREZOR");
+            var privkeyFromWords = ExtPrivateKey.FromWords(words, "TREZOR");
             var privkeyFromB58 = new Base58ExtPrivateKey(b58PrivateKey).GetKey();
             Assert.Equal(privkeyFromB58, privkeyFromWords);
+        }
+
+        [Theory]
+        [InlineData(
+            "TREZOR",
+            "00000000000000000000000000000000",
+            "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+            "c55257c360c07c72029aebc1b53c05ed0362ada38ead3e3e9efa3708e53495531f09a6987599d18264c1e1c92f2cf141630c7a3c4ab7c81b2f001698e7463b04"
+        )]
+        //[InlineData(
+        //    "メートルガバヴァぱばぐゞちぢ十人十色",
+        //    "00000000000000000000000000000000",
+        //    "あいこくしん　あいこくしん　あいこくしん　あいこくしん　あいこくしん　あいこくしん　あいこくしん　あいこくしん　あいこくしん　あいこくしん　あいこくしん　あおぞら",
+        //    "a262d6fb6122ecf45be09c50492b31f92e9beb7d9a845987a02cefda57a15f9c467a17872029a9e92299b5cbdf306e3a0ee620245cbd508959b6cb7ca637bd55"
+        //)]
+        public void Mnemonic_Test(string password, string entropy, string words, string seed)
+        {
+            var _ = entropy;
+            var seed512 = new UInt512(seed, true);
+            var seedBip39 = ExtPrivateKey.Bip39Seed(words, password);
+            Assert.Equal(seed512, seedBip39);
         }
     }
 }

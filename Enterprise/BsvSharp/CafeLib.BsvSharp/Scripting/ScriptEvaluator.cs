@@ -4,12 +4,12 @@
 #endregion
 
 using System.Runtime.CompilerServices;
-using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.BsvSharp.Services;
 using CafeLib.BsvSharp.Signatures;
 using CafeLib.Core.Buffers;
+using CafeLib.Cryptography;
 
 namespace CafeLib.BsvSharp.Scripting
 {
@@ -656,28 +656,23 @@ namespace CafeLib.BsvSharp.Scripting
                                     switch (op.Code)
                                     {
                                         case Opcode.OP_SHA1:
-                                            data = new byte[20];
-                                            vch.Span.Sha1(data);
+                                            data = vch.Span.Sha1();
                                             break;
 
                                         case Opcode.OP_RIPEMD160:
-                                            data = new byte[20];
-                                            vch.Span.Ripemd160(data);
+                                            data = vch.Span.Ripemd160();
                                             break;
 
                                         case Opcode.OP_HASH160:
-                                            data = new byte[20];
-                                            vch.Span.Hash160(data);
+                                            data = vch.Span.Hash160();
                                             break;
 
                                         case Opcode.OP_SHA256:
-                                            data = new byte[32];
-                                            vch.Span.Sha256(data);
+                                            data = vch.Span.Sha256();
                                             break;
 
                                         case Opcode.OP_HASH256:
-                                            data = new byte[32];
-                                            vch.Span.Hash256(data);
+                                            data = vch.Span.Hash256();
                                             break;
 
                                         default:

@@ -5,7 +5,6 @@
 
 using System.Threading.Tasks;
 using CafeLib.BsvSharp.Api.Paymail;
-using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using Xunit;
 
@@ -64,6 +63,24 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             Assert.Equal(expectedResult, result);
         }
 
+        [Fact]
+        public async Task GetOutputScript_Test()
+        {
+            // Paymail server configuration for testpaymail@kizmet.org:
+            // testpaymail@kizmet.org
+            // Generate public addresses beneath this derivation path: M/0
+            // Master public key for derivations (M): xpub661MyMwAqRbcEaJYm4GjL9XnYrwbTR7Rug3oZ66juJHMXYwCYD4Z3RVgyoPhhpU97Ls9fACV3Y7kYqMPxGAA8XWFdPpaXAj3qb8VHnRMU8c
+            // Public key returned by GetPublicKey("testpaymail@kizmet.org"): M/0/{int.MaxValue}
+            // Private key for that public key: m/0/{int.MaxValue}
+            // var key = KzElectrumSv.GetMasterPrivKey("<replace with actual wallet seed>").Derive($"0/{int.MaxValue}").PrivKey;
+            var key = PrivateKey.FromBase58("KxXvocKqZtdHvZP5HHNShrwDQVz2muNPisrzoyeyhXc4tZhBj1nM");
+
+            var r = new PaymailClient();
+            var s = await r.GetOutputScript(key, "tonesnotes@moneybutton.com", "testpaymail@kizmet.org");
+            Assert.True(s.Length > 0);
+        }
+
+#if false
         [Theory]
         [InlineData("tonesnotes@moneybutton.com", "147@moneybutton.com02019-06-07T20:55:57.562ZPayment with Money Button", "H4Q8tvj632hXiirmiiDJkuUN9Z20zDu3KaFuwY8cInZiLhgVJKJdKrZx1RZN06E/AARnFX7Fn618OUBQigCis4M=", true)]
         [InlineData("tone@simply.cash", "tone@simply.cash02019-07-11T12:24:04.260Z", "IJ1C3gXhnUxKpU8JOIjGHC8talwIgfIXKMmRZ5mjysb0eHjLPQP5Tlx29Xi5KNDZuOsOPk8HiVtwKAefq1pJVDs=", true)]
@@ -83,23 +100,6 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             var pubKey = await Paymail.GetPublicKey(paymail);
             Assert.True(pubKey.IsValid);
             Assert.Equal(expectedResult, pubKey.VerifyMessage(message, signature));
-        }
-
-        [Fact]
-        public async Task GetOutputScript_Test()
-        {
-            // Paymail server configuration for testpaymail@kizmet.org:
-            // testpaymail@kizmet.org
-            // Generate public addresses beneath this derivation path: M/0
-            // Master public key for derivations (M): xpub661MyMwAqRbcEaJYm4GjL9XnYrwbTR7Rug3oZ66juJHMXYwCYD4Z3RVgyoPhhpU97Ls9fACV3Y7kYqMPxGAA8XWFdPpaXAj3qb8VHnRMU8c
-            // Public key returned by GetPublicKey("testpaymail@kizmet.org"): M/0/{int.MaxValue}
-            // Private key for that public key: m/0/{int.MaxValue}
-            // var key = KzElectrumSv.GetMasterPrivKey("<replace with actual wallet seed>").Derive($"0/{int.MaxValue}").PrivKey;
-            var key = PrivateKey.FromBase58("KxXvocKqZtdHvZP5HHNShrwDQVz2muNPisrzoyeyhXc4tZhBj1nM");
-
-            var r = new PaymailClient();
-            var s = await r.GetOutputScript(key, "tonesnotes@moneybutton.com", "testpaymail@kizmet.org");
-            Assert.True(s.Length > 0);
         }
 
         [Fact]
@@ -153,5 +153,7 @@ namespace CafeLib.BsvSharp.Api.UnitTests
             var ok = pub.VerifyMessage(message, signature);
             Assert.True(ok);
         }
+
+#endif
     }
 }

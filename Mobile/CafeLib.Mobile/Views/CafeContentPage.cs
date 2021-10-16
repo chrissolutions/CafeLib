@@ -107,8 +107,7 @@ namespace CafeLib.Mobile.Views
         public T ViewModel => GetViewModel<T>();
 
         /// <summary>
-        /// Default constructor to allow creation of simple fakes for unit testing.
-        /// This constructor should never be used in production code.
+        /// CafeContentPage constructor.
         /// </summary>
         protected CafeContentPage()
         {

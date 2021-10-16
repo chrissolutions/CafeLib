@@ -1,5 +1,5 @@
-﻿using CafeLib.BsvSharp.Crypto;
-using CafeLib.BsvSharp.Numerics;
+﻿using CafeLib.Core.Numerics;
+using CafeLib.Cryptography;
 
 namespace CafeLib.BsvSharp.Chain
 {

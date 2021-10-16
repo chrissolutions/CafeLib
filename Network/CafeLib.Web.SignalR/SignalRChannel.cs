@@ -39,8 +39,8 @@ namespace CafeLib.Web.SignalR
 
         public int ConnectionAttempts => _connectionAttempts;
 
-        public event Action<SignalRChangedMessage> Changed = x => { };
-        public new event Action<SignalRAdviseMessage> Advised = x => { };
+        public event Action<SignalRChangedMessage> Changed = _ => { };
+        public new event Action<SignalRAdviseMessage> Advised = _ => { };
 
         #endregion
 
@@ -57,7 +57,7 @@ namespace CafeLib.Web.SignalR
         {
             Url = new Uri(url);
             Bridge = bridge;
-            Logger = logger ?? new LogEventWriter<SignalRChannel>(x => { });
+            Logger = logger ?? new LogEventWriter<SignalRChannel>(_ => { });
 
             base.Advised += x =>
             {
@@ -295,13 +295,13 @@ namespace CafeLib.Web.SignalR
 
             Connection = new HubConnection(connectionFactory, protocol, new UriEndPoint(Url), this, loggerFactory);
 
-            Connection.Reconnected += x =>
+            Connection.Reconnected += _ =>
             {
                 ConnectionState = SignalRChannelState.Connected;
                 return Task.CompletedTask;
             };
 
-            Connection.Closed += ex =>
+            Connection.Closed += _ =>
             {
                 ConnectionState = SignalRChannelState.Disconnected;
                 return Task.CompletedTask;
@@ -396,23 +396,14 @@ namespace CafeLib.Web.SignalR
 
         private SignalRChannelState GetConnectionState()
         {
-            switch (Connection.State)
+            return Connection.State switch
             {
-                case HubConnectionState.Connected:
-                    return SignalRChannelState.Connected;
-
-                case HubConnectionState.Disconnected:
-                    return SignalRChannelState.Disconnected;
-
-                case HubConnectionState.Connecting:
-                    return SignalRChannelState.Connecting;
-
-                case HubConnectionState.Reconnecting:
-                    return SignalRChannelState.Reconnecting;
-
-                default:
-                    return SignalRChannelState.Off;
-            }
+                HubConnectionState.Connected => SignalRChannelState.Connected,
+                HubConnectionState.Disconnected => SignalRChannelState.Disconnected,
+                HubConnectionState.Connecting => SignalRChannelState.Connecting,
+                HubConnectionState.Reconnecting => SignalRChannelState.Reconnecting,
+                _ => SignalRChannelState.Off
+            };
         }
 
         /// <summary>

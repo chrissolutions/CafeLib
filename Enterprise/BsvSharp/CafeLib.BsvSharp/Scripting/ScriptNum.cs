@@ -9,6 +9,7 @@ using System.Diagnostics;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
+using CafeLib.Core.Encodings;
 
 namespace CafeLib.BsvSharp.Scripting
 {

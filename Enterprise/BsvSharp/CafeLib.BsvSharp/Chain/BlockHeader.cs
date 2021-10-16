@@ -5,11 +5,13 @@
 
 using System;
 using System.Buffers;
-using System.Security.Cryptography;
+using CafeLib.BsvSharp.Crypto;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Numerics;
 using CafeLib.Core.Buffers;
+using CafeLib.Core.Numerics;
+using CafeLib.Cryptography;
 
 namespace CafeLib.BsvSharp.Chain
 {
@@ -125,9 +127,8 @@ namespace CafeLib.BsvSharp.Chain
             var end = r.Data.Position;
 
             var blockBytes = r.Data.Sequence.Slice(start, end).ToArray();
-            using var sha256 = SHA256.Create();
-            var hash1 = sha256.ComputeHash(blockBytes);
-            var hash2 = sha256.ComputeHash(hash1);
+            var hash1 = Hashes.ComputeSha256(blockBytes);
+            var hash2 = Hashes.ComputeSha256(hash1);
             hash2.CopyTo(_hash.Span);
             return true;
         }

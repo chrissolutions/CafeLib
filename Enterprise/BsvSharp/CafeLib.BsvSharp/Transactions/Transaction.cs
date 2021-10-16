@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Buffers;
 using System.Linq;
-using System.Security.Cryptography;
 using CafeLib.BsvSharp.Builders;
 using CafeLib.BsvSharp.Encoding;
 using CafeLib.BsvSharp.Exceptions;
@@ -14,6 +13,8 @@ using CafeLib.BsvSharp.Signatures;
 using CafeLib.BsvSharp.Units;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
+using CafeLib.Core.Numerics;
+using CafeLib.Cryptography;
 
 namespace CafeLib.BsvSharp.Transactions
 {
@@ -482,9 +483,8 @@ namespace CafeLib.BsvSharp.Transactions
 
             // Compute the transaction hash.
             var txBytes = r.Data.Sequence.Slice(start, end).ToArray();
-            using var sha256 = SHA256.Create();
-            var hash1 = sha256.ComputeHash(txBytes);
-            var hash2 = sha256.ComputeHash(hash1);
+            var hash1 = Hashes.ComputeSha256(txBytes);
+            var hash2 = Hashes.ComputeSha256(hash1);
             TxHash = new UInt256(hash2);
             return true;
         }

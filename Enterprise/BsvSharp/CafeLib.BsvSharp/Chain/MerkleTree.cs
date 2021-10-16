@@ -3,12 +3,10 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Security.Cryptography;
-using CafeLib.BsvSharp.Numerics;
+using CafeLib.Core.Numerics;
 
 namespace CafeLib.BsvSharp.Chain
 {
@@ -20,18 +18,10 @@ namespace CafeLib.BsvSharp.Chain
     /// There is no protection currently from CVE-2012-2459 vulnerability (duplicated pairs of transactions).
     ///
     /// </summary>
-    public class MerkleTree : IDisposable
+    public class MerkleTree
     {
-        private bool _disposed;
-
         private long _count;
         private readonly List<MerkleTreeNode> _nodes = new List<MerkleTreeNode>();
-        private readonly SHA256 _sha256;
-
-        public MerkleTree()
-        {
-            _sha256 = SHA256.Create();
-        }
 
         /// <summary>
         /// Compute the full merkle tree root hash from the incremental state.
@@ -151,32 +141,5 @@ namespace CafeLib.BsvSharp.Chain
                 }
             }
         }
-
-        #region IDisposable
-
-        /// <summary>
-        /// Dispose.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(!_disposed);
-            _disposed = true;
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing) return;
-            try
-            {
-                _sha256.Dispose();
-            }
-            catch
-            {
-                // ignore
-            }
-        }
-
-        #endregion
     }
 }

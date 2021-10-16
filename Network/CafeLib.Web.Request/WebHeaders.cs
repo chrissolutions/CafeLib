@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using CafeLib.Core.Extensions;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Web.Request
@@ -20,6 +19,8 @@ namespace CafeLib.Web.Request
 
         public bool IsReadOnly => false;
 
+        #region Constructors
+
         /// <summary>
         /// WebRequestHeaders constructor.
         /// </summary>
@@ -33,6 +34,20 @@ namespace CafeLib.Web.Request
         {
             headers.ForEach(x => Add(x.Key, x.Value));
         }
+
+        #endregion
+
+        #region Properties
+
+        public string ContentType
+        {
+            get => TryGetValue("Content-Type", out var entries) ? entries.Last() : null;
+            set => Add("Content-Type", value);
+        }
+
+        #endregion
+
+        #region Methods
 
         public IEnumerator<KeyValuePair<string, IEnumerable<string>>> GetEnumerator()
         {
@@ -103,5 +118,7 @@ namespace CafeLib.Web.Request
         public ICollection<string> Keys => Headers.Keys;
 
         public ICollection<IEnumerable<string>> Values => Headers.Values;
+
+        #endregion
     }
 }

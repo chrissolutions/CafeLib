@@ -57,13 +57,13 @@ namespace CafeLib.BsvSharp.Keys
         /// <summary>
         /// Creates a path based on its formatted string representation.
         /// </summary>
-        /// <param name="path">The KzHDKeyPath formated like a/b/c'/d. Appostrophe indicates hardened/private. a,b,c,d must convert to 0..2^31.
+        /// <param name="path">The KzHDKeyPath formatted like a/b/c'/d. Apostrophe indicates hardened/private. a,b,c,d must convert to 0..2^31.
         /// Optionally the path can start with "m/" for private extended master key derivations or "M/" for public extended master key derivations.
         /// </param>
         /// <returns></returns>
         public KeyPath(string path)
         {
-            _fromPrivateKey = path.StartsWith('m') ? true : path.StartsWith('M') ? false : (bool?)null;
+            _fromPrivateKey = path.StartsWith('m') ? true : path.StartsWith('M') ? false : null;
             _indices = ParseIndices(path);
         }
 
@@ -113,7 +113,7 @@ namespace CafeLib.BsvSharp.Keys
         /// <summary>
         /// Parse a KzHDKeyPath
         /// </summary>
-        /// <param name="path">The KzHDKeyPath formatted like a/b/c'/d. Appostrophe indicates hardened/private. a,b,c,d must convert to 0..2^31.
+        /// <param name="path">The KzHDKeyPath formatted like a/b/c'/d. Apostrophe indicates hardened/private. a,b,c,d must convert to 0..2^31.
         /// Optionally the path can start with "m/" for private extended master key derivations or "M/" for public extended master key derivations.
         /// </param>
         /// <returns></returns>

@@ -8,7 +8,7 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models
         public string Hex { get; set; }
 
         [JsonProperty("txid")]
-        public string Txid { get; set; }
+        public string TxId { get; set; }
 
         [JsonProperty("hash")]
         public string Hash { get; set; }
@@ -23,7 +23,7 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain.Models
         public uint LockTime { get; set; }
 
         [JsonProperty("vin")]
-        public Input[] VectorInput { get; set; }
+        public VectorInput VectorInput { get; set; }
 
         [JsonProperty("vout")]
         public VectorOutput VectorOutput { get; set; }

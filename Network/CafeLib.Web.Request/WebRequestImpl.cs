@@ -35,7 +35,7 @@ namespace CafeLib.Web.Request
             var uri = CombineUri(endpoint, parameters);
             using var httpResponse = await SendRequest(client, uri, HttpMethod.Get, headers, null);
             var response = new WebResponse(httpResponse);
-            response.EnsureSuccessStatusCode(httpResponse);
+            await EnsureSuccessStatusCode(httpResponse);
             return await ConvertContent<T>(response, await httpResponse.Content.ReadAsStreamAsync());
         }
 
@@ -53,7 +53,7 @@ namespace CafeLib.Web.Request
             var uri = CombineUri(endpoint, parameters);
             using var httpResponse = await SendRequest(client, uri, HttpMethod.Post, headers, body);
             var response = new WebResponse(httpResponse);
-            response.EnsureSuccessStatusCode(httpResponse);
+            await EnsureSuccessStatusCode(httpResponse);
             return await ConvertContent<T>(response, await httpResponse.Content.ReadAsStreamAsync());
         }
 
@@ -71,7 +71,7 @@ namespace CafeLib.Web.Request
             var uri = CombineUri(endpoint, parameters);
             using var httpResponse = await SendRequest(client, uri, HttpMethod.Put, headers, body);
             var response = new WebResponse(httpResponse);
-            response.EnsureSuccessStatusCode(httpResponse);
+            await EnsureSuccessStatusCode(httpResponse);
             return await ConvertContent<T>(response, await httpResponse.Content.ReadAsStreamAsync());
         }
 
@@ -89,7 +89,7 @@ namespace CafeLib.Web.Request
             var uri = CombineUri(endpoint, parameters);
             using var httpResponse = await SendRequest(client, uri, HttpMethod.Delete, headers, body);
             var response = new WebResponse(httpResponse);
-            response.EnsureSuccessStatusCode(httpResponse);
+            await EnsureSuccessStatusCode(httpResponse);
             return await ConvertContent<bool>(response, await httpResponse.Content.ReadAsStreamAsync());
         }
 
@@ -267,23 +267,13 @@ namespace CafeLib.Web.Request
 
                 case var x when x == HttpMethod.Post.Method:
                 {
-                    var content = body != null
-                        ? body is byte[] bytes
-                            ? new ByteArrayContent(bytes)
-                            : new StringContent(body.ToString(), Encoding.UTF8, WebContentType.Json)
-                        : null;
-
+                    var content = GetContent(body, headers.ContentType);
                     return await client.PostAsync(uri, content);
                 }
 
                 case var x when x == HttpMethod.Put.Method:
                 {
-                    var content = body != null
-                        ? body is byte[] bytes
-                            ? new ByteArrayContent(bytes)
-                            : new StringContent(body.ToString(), Encoding.UTF8, WebContentType.Json)
-                        : null;
-
+                    var content = GetContent(body, headers.ContentType);
                     return await client.PutAsync(uri, content);
                 }
 
@@ -295,12 +285,37 @@ namespace CafeLib.Web.Request
         }
 
         /// <summary>
-        /// 
+        /// Get the body content.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="response"></param>
-        /// <param name="contentStream"></param>
-        /// <returns></returns>
+        /// <param name="body">body object</param>
+        /// <param name="contentType">content type</param>
+        /// <returns>body content for send request</returns>
+        private static ByteArrayContent GetContent(object body, string contentType)
+        {
+            ByteArrayContent content = null;
+            switch (body)
+            {
+                case byte[] bytes:
+                    content = new ByteArrayContent(bytes);
+                    content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType ?? WebContentType.Octet);
+                    break;
+
+                case string s:
+                    content = new StringContent(s);
+                    content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType ?? WebContentType.Json);
+                    break;
+            }
+
+            return content;
+        }
+
+        /// <summary>
+        /// Convert web response content from stream to object.
+        /// </summary>
+        /// <typeparam name="T">object type</typeparam>
+        /// <param name="response">web response</param>
+        /// <param name="contentStream">content stream</param>
+        /// <returns>object</returns>
         private static async Task<T> ConvertContent<T>(WebResponse response, Stream contentStream)
         {
             switch (typeof(T))
@@ -311,7 +326,7 @@ namespace CafeLib.Web.Request
                 case var _ when contentStream == null:
                     return default;
 
-                case var x when x == typeof(bool):
+                case var x when x == typeof(byte[]):
                     return (T)(object)await contentStream.ToByteArrayAsync();
             }
 
@@ -339,6 +354,15 @@ namespace CafeLib.Web.Request
                 default:
                     return (T)(object)content;
             }
+        }
+
+        private static async Task EnsureSuccessStatusCode(HttpResponseMessage httpResponse)
+        {
+            if (httpResponse.IsSuccessStatusCode) return;
+
+            var webResponse = new WebResponse(httpResponse);
+            webResponse.Content = await ConvertContent<string>(webResponse, await httpResponse.Content.ReadAsStreamAsync());
+            throw new WebRequestException(webResponse);
         }
 
         #endregion

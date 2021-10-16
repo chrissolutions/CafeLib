@@ -1,10 +1,7 @@
-﻿using System;
-using CafeLib.BsvSharp.Numerics;
-
-namespace CafeLib.BsvSharp.Signatures
+﻿namespace CafeLib.BsvSharp.Signatures
 {
     /// <summary>
-    /// 
+    /// Signature hash type.
     /// </summary>
     public class SignatureHashType
     {
@@ -25,13 +22,6 @@ namespace CafeLib.BsvSharp.Signatures
             RawSigHashType = sigHash;
         }
 
-        public SignatureHashType(VarType vchSig)
-        {
-            RawSigHashType = vchSig.Length == 0
-                ? (uint) SignatureHashEnum.Unsupported
-                : (uint) (SignatureHashEnum) vchSig.LastByte;
-        }
-
         public bool IsDefined 
         {
             get
@@ -45,7 +35,7 @@ namespace CafeLib.BsvSharp.Signatures
 
         public bool HasAnyoneCanPay => (SignatureHash & SignatureHashEnum.AnyoneCanPay) != 0;
 
-        public UInt32 RawSigHashType { get; }
+        public uint RawSigHashType { get; }
 
         public SignatureHashType WithBaseType(BaseSignatureHashEnum baseSigHashType)
         {

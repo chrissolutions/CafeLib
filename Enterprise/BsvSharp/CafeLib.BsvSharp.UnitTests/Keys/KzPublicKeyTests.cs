@@ -3,6 +3,7 @@
 // Distributed under the Open BSV software license, see the accompanying file LICENSE.
 #endregion
 
+using CafeLib.BsvSharp.Extensions;
 using CafeLib.BsvSharp.Keys;
 using Xunit;
 
@@ -56,11 +57,6 @@ namespace CafeLib.BsvSharp.UnitTests.Keys
             var publicKey = new PublicKey(publicKeyHex);
             var result = publicKey.ToHex();
             Assert.Equal(publicKeyHex, result);
-
-            
-
-
-            var r = publicKey.ToAddress();
         }
     }
 }

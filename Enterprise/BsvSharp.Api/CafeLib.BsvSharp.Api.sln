@@ -13,6 +13,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.BsvSharp.Api.CoinMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.BsvSharp.Api.UnitTests", "CafeLib.BsvSharp.Api.UnitTests\CafeLib.BsvSharp.Api.UnitTests.csproj", "{44B7B84E-8665-4FBC-BE40-74B71D079C4E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.BsvSharp.Mapi", "CafeLib.BsvSharp.Mapi\CafeLib.BsvSharp.Mapi.csproj", "{7D13DC60-52A1-43E9-985C-19F131439143}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.BsvSharp.Mapi.MatterPool", "CafeLib.BsvSharp.Mapi.MatterPool\CafeLib.BsvSharp.Mapi.MatterPool.csproj", "{3DB94D7F-8AE5-455F-92E1-8BDC035070DB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.BsvSharp.Mapi.Taal", "CafeLib.BsvSharp.Mapi.Taal\CafeLib.BsvSharp.Mapi.Taal.csproj", "{551C2799-E8B2-4D02-875A-C2A6212735AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +45,18 @@ Global
 		{44B7B84E-8665-4FBC-BE40-74B71D079C4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44B7B84E-8665-4FBC-BE40-74B71D079C4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44B7B84E-8665-4FBC-BE40-74B71D079C4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D13DC60-52A1-43E9-985C-19F131439143}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D13DC60-52A1-43E9-985C-19F131439143}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D13DC60-52A1-43E9-985C-19F131439143}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D13DC60-52A1-43E9-985C-19F131439143}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DB94D7F-8AE5-455F-92E1-8BDC035070DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DB94D7F-8AE5-455F-92E1-8BDC035070DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DB94D7F-8AE5-455F-92E1-8BDC035070DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DB94D7F-8AE5-455F-92E1-8BDC035070DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{551C2799-E8B2-4D02-875A-C2A6212735AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{551C2799-E8B2-4D02-875A-C2A6212735AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{551C2799-E8B2-4D02-875A-C2A6212735AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{551C2799-E8B2-4D02-875A-C2A6212735AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
