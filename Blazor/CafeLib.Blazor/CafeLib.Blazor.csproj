@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net50</TargetFramework>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Description>Blazor helper library.</Description>
+    <Version Condition=" '$(Version)' == '' ">1.5.0</Version>
+    <Copyright>© 2021 Chris Solutions</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageIcon>cafelib.png</PackageIcon>
+    <AssemblyVersion>$(Version).0</AssemblyVersion>
+    <FileVersion>$(Version).0</FileVersion>
+    <PackageIconUrl />
+    <Authors>Chris Solutions</Authors>
+    <Company>Chris Solutions</Company>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\cafelib.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CafeLib.Core" Version="$(Version)" />
+    <PackageReference Include="Microsoft.JSInterop.WebAssembly" Version="5.0.10" />
+  </ItemGroup>
+
+</Project>

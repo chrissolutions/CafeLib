@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	<Description>Cafelib Signal/R support package supporting method binding.</Description>
+    <Version Condition=" '$(Version)' == '' ">1.1.0</Version>
+    <Copyright>© 2021 Chris Solutions</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageIcon>cafelib.png</PackageIcon>
+    <AssemblyVersion>$(Version).0</AssemblyVersion>
+    <FileVersion>$(Version).0</FileVersion>
+    <PackageIconUrl />
+    <Authors>Chris Solutions</Authors>
+    <Company>Chris Solutions</Company>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CafeLib.Core" Version="$(Version)" />
+    <PackageReference Include="CafeLib.Core.Logging" Version="$(Version)" />
+    <PackageReference Include="CafeLib.Core.MethodBinding" Version="$(Version)" />
+    <PackageReference Include="CafeLib.Core.Runnable" Version="$(Version)" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.9" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="..\..\cafelib.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+  
+</Project>

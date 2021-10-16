@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.9" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CafeLib.Core.Caching\CafeLib.Core.Caching.csproj" />
+    <ProjectReference Include="..\CafeLib.Core.Collections\CafeLib.Core.Collections.csproj" />
+    <ProjectReference Include="..\CafeLib.Core.Dynamic\CafeLib.Core.Dynamic.csproj" />
+    <ProjectReference Include="..\CafeLib.Core.Encodings\CafeLib.Core.Encodings.csproj" />
+    <ProjectReference Include="..\CafeLib.Core.IoC\CafeLib.Core.IoC.csproj" />
+    <ProjectReference Include="..\CafeLib.Core.Logging\CafeLib.Core.Logging.csproj" />
+    <ProjectReference Include="..\CafeLib.Core.Numerics\CafeLib.Core.Numerics.csproj" />
+    <ProjectReference Include="..\CafeLib.Core.Queueing\CafeLib.Core.Queueing.csproj" />
+    <ProjectReference Include="..\CafeLib.Core.Runnable\CafeLib.Core.Runnable.csproj" />
+    <ProjectReference Include="..\CafeLib.Core.Security\CafeLib.Core.Security.csproj" />
+    <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />
+  </ItemGroup>
+
+</Project>

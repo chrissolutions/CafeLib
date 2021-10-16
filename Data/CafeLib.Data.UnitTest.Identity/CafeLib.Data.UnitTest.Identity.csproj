@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="IdentityDb.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="IdentityDb.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CafeLib.Data\CafeLib.Data.csproj" />
+  </ItemGroup>
+
+</Project>
