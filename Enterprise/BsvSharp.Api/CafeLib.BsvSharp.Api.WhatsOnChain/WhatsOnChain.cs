@@ -271,7 +271,7 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             return tx;
         }
 
-        public async Task<Transaction> GetTransactionsByHash(string txid)
+        public async Task<Transaction> GetTransactionByHash(string txid)
         {
             var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/tx/hash/{txid}";
             var json = await GetAsync(url);
@@ -286,6 +286,14 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             var json = await PostAsync(url, jsonBody);
             var utxos = JsonConvert.DeserializeObject<Transaction[]>(json);
             return utxos;
+        }
+
+        public async Task<MerkleTree> GetTransactionMerkleProof(string txId)
+        {
+            var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/tx/{txId}/proof";
+            var json = await GetAsync(url);
+            var proof = JsonConvert.DeserializeObject<MerkleNode[]>(json);
+            return new MerkleTree {Nodes = proof};
         }
 
         #endregion

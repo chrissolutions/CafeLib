@@ -268,15 +268,25 @@ namespace CafeLib.BsvSharp.Api.UnitTests
         [InlineData("c1d32f28baa27a376ba977f6a8de6ce0a87041157cef0274b20bfda2b0d8df96")]
         public async Task GetTransactionByHash_Test(string hash)
         {
-            var tx = await Api.GetTransactionsByHash(hash);
+            var tx = await Api.GetTransactionByHash(hash);
             Assert.Equal(hash, tx.Hash);
+        }
+
+        [Theory]
+        [InlineData("c1d32f28baa27a376ba977f6a8de6ce0a87041157cef0274b20bfda2b0d8df96", 2)]
+        [InlineData("4c9e510077f5e5a961211100c0ed20173fdeae0e3575551e44b74581f74e7719", 16)]
+        public async Task GetTransactionMerkleProof_Test(string hash, int count)
+        {
+            var tree = await Api.GetTransactionMerkleProof(hash);
+            Assert.NotNull(tree);
+            Assert.Equal(count, tree.Nodes.First().Branches.Length);
         }
 
         [Theory]
         [InlineData("01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff1c030f47092f7376706f6f6c2e636f6d2f7051963bec2a64968d340100ffffffff01daa9944a0000000017a9141314c7eace4d4da3f65a1341197bb58038aa9dbc8700000000",
             "7c1a5ab633302d2299948420fafe55d0a784fd41588c2b692ffd2a339bf143b1"
         )]
-        public async Task GetTransactionDecoded_Test(string txRaw, string txHash)
+        public async Task GetTransactionDecode_Test(string txRaw, string txHash)
         {
             var tx = await Api.DecodeTransaction(txRaw);
             Assert.Equal(txHash, tx.TxId);
@@ -291,7 +301,6 @@ namespace CafeLib.BsvSharp.Api.UnitTests
                 "294cd1ebd5689fdee03509f92c32184c0f52f037d4046af250229b97e0c8f1aa",
                 "91f68c2c598bc73812dd32d60ab67005eac498bef5f0c45b822b3c9468ba3258"
             };
-
 
             var txs = await Api.GetBulkTransactionDetails(txIds);
             Assert.NotEmpty(txs);
