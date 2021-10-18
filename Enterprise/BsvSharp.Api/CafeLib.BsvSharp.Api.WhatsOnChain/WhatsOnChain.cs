@@ -288,12 +288,12 @@ namespace CafeLib.BsvSharp.Api.WhatsOnChain
             return utxos;
         }
 
-        public async Task<MerkleTree> GetTransactionMerkleProof(string txId)
+        public async Task<MerkleProof> GetTransactionMerkleProof(string txId)
         {
             var url = $"https://api.whatsonchain.com/v1/bsv/{Network}/tx/{txId}/proof";
             var json = await GetAsync(url);
             var proof = JsonConvert.DeserializeObject<MerkleNode[]>(json);
-            return new MerkleTree {Nodes = proof};
+            return new MerkleProof {Nodes = proof};
         }
 
         #endregion
