@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using CafeLib.Core.Extensions;
 using Newtonsoft.Json;
-// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Web.Request
 {
@@ -129,27 +128,31 @@ namespace CafeLib.Web.Request
         {
             var objectMap = new Dictionary<string, object>();
 
-            if (parameters != null)
+            switch (parameters)
             {
-                if (parameters.GetType().IsAnonymousType())
-                {
+                case null:
+                    break;
+
+                case var _ when parameters.GetType().IsAnonymousType():
                     TypeDescriptor.GetProperties(parameters)
                         .OfType<PropertyDescriptor>()
                         .ToList()
                         .ForEach(x => objectMap.Add(x.Name, ConvertValueToStringParameter(x.GetValue(parameters))));
-                }
-                else if (parameters is string)
-                {
-                    foreach (var param in parameters.ToString().Split('&'))
+                    break;
+
+                case string query:
+                    foreach (var param in query.Split('&'))
                     {
                         var assignment = param.Split('=');
-                        objectMap.Add(assignment[0], assignment.Length > 1 ? Uri.UnescapeDataString(assignment[1]) : null);
+                        objectMap.Add(assignment[0],
+                            assignment.Length > 1 ? Uri.UnescapeDataString(assignment[1]) : null);
                     }
-                }
-                else
-                {
+
+                    break;
+
+                default:
                     objectMap = (Dictionary<string, object>)parameters;
-                }
+                    break;
             }
 
             return objectMap;
@@ -216,12 +219,12 @@ namespace CafeLib.Web.Request
             {
                 switch (body)
                 {
-                    case byte[] _:
+                    case byte[]:
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(WebContentType.Octet));
                         break;
 
-                    case string _:
-                        var data = body.ToString().TrimStart();
+                    case string:
+                        var data = body.ToString()?.TrimStart() ?? "";
                         switch (data[0])
                         {
                             case '{':
@@ -335,9 +338,6 @@ namespace CafeLib.Web.Request
 
             switch (content)
             {
-                case null:
-                    return default;
-
                 case var _ when typeof(T) == typeof(string):
                     return (T) (object) content;
 
