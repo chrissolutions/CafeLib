@@ -26,16 +26,18 @@ namespace CafeLib.Core.Encodings
 
         public override bool TryDecodeSpan(string hex, ByteSpan bytes)
         {
-            if (hex.Length % 2 == 1)
+            ReadOnlyCharSpan chars = hex.StartsWith("0x") ? hex[2..] : hex;
+
+            if (chars.Length % 2 == 1)
                 throw new ArgumentException("Invalid hex bytes string.", nameof(hex));
 
-            if (hex.Length != bytes.Length * 2)
+            if (chars.Length != bytes.Length * 2)
                 throw new ArgumentException("Length mismatch.", nameof(bytes));
 
-            for (int i = 0, j = bytes.Length; i < hex.Length;)
+            for (int i = 0, j = bytes.Length; i < chars.Length;)
             {
-                var a = CharToNibble(hex[i++]);
-                var b = CharToNibble(hex[i++]);
+                var a = CharToNibble(chars[i++]);
+                var b = CharToNibble(chars[i++]);
 
                 if (a == -1 || b == -1) return false;
                 bytes[--j] = (byte)((a << 4) | b);
