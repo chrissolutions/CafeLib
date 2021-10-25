@@ -15,7 +15,7 @@ namespace CafeLib.Mobile.Commands
         /// </summary>
         /// <param name="action">The action to run when the command executes.</param>
         public XamCommand(Action action)
-            : base(p => action())
+            : base(_ => action())
         {
         }
 
@@ -25,7 +25,7 @@ namespace CafeLib.Mobile.Commands
         /// <param name="action">The action to run when the command executes.</param>
         /// <param name="canExecute">The routine determining the execution state of the command.</param>
         public XamCommand(Action action, Func<bool> canExecute)
-            : base(p => action(), p => canExecute())
+            : base(_ => action(), _ => canExecute())
         {
         }
     }
@@ -36,7 +36,7 @@ namespace CafeLib.Mobile.Commands
     public class XamCommand<T> : IXamCommand<T>
     {
         private readonly Command<T> _command;
-        private readonly ThreadSafeBool _isLocked = new ThreadSafeBool();
+        private readonly ThreadSafeBool _isLocked = new();
 
         /// <summary>
         /// XamCommand constructor.
@@ -108,7 +108,7 @@ namespace CafeLib.Mobile.Commands
     {
         private readonly Func<TParameter, TResult> _command;
         private readonly Func<TParameter, bool> _canExecute;
-        private readonly ThreadSafeBool _isLocked = new ThreadSafeBool();
+        private readonly ThreadSafeBool _isLocked = new();
 
         /// <summary>
         /// XamCommand constructor.
@@ -117,7 +117,7 @@ namespace CafeLib.Mobile.Commands
         public XamCommand(Func<TParameter, TResult> command)
         {
             _command = command ?? throw new ArgumentNullException(nameof(command));
-            _canExecute = x => true;
+            _canExecute = _ => true;
         }
 
         /// <summary>

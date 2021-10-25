@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using CafeLib.Core.IoC;
 using CafeLib.Mobile.Extensions;
 using CafeLib.Mobile.Services;
 using Xamarin.Forms;
-// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.Startup
 {
     /// <summary>
     /// Base class of CafeLib mobile application.
     /// </summary>
+    [SuppressMessage("ReSharper", "AsyncVoidLambda")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public abstract class CafeApplication : Application, IAlertService, IDisposable
     {
         protected IServiceRegistry Registry { get; }

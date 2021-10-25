@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using CafeLib.Core.Eventing;
 using CafeLib.Core.IoC;
 using CafeLib.Mobile.Extensions;
@@ -7,10 +8,10 @@ using CafeLib.Mobile.Services;
 using CafeLib.Mobile.Test.Core.Fakes;
 using Moq;
 using Xamarin.Forms;
-// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.Test.Core
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public abstract class MobileUnitTest
     {
         protected List<Guid> Subscribers;
@@ -90,9 +91,9 @@ namespace CafeLib.Mobile.Test.Core
 
             Registry
                 .AddSingleton<IDeviceService, FakeDeviceService>()
-                .AddSingleton(x => AlertService.Object)
-                .AddSingleton(x => NavigationService.Object)
-                .AddSingleton(x => PageService.Object);
+                .AddSingleton(_ => AlertService.Object)
+                .AddSingleton(_ => NavigationService.Object)
+                .AddSingleton(_ => PageService.Object);
         }
 
         /// <summary>

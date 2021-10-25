@@ -12,14 +12,14 @@ namespace CafeLib.Mobile.Commands
     /// </summary>
     public class XamAsyncCommand : XamAsyncCommand<object>, IXamAsyncCommand
     {
-        private static readonly object _parameter = new object();
+        private static readonly object Parameter = new();
 
         /// <summary>
         /// XamAsyncCommand constructor.
         /// </summary>
         /// <param name="action">The action to run when the command executes.</param>
         public XamAsyncCommand(Action action)
-            : base(async x => { action(); await Task.CompletedTask; })
+            : base(async _ => { action(); await Task.CompletedTask; })
         {
         }
 
@@ -37,7 +37,7 @@ namespace CafeLib.Mobile.Commands
         /// </summary>
         /// <param name="action">The action to run when the command executes.</param>
         public XamAsyncCommand(Func<Task> action)
-            : base(p => action())
+            : base(_ => action())
         {
         }
 
@@ -47,18 +47,18 @@ namespace CafeLib.Mobile.Commands
         /// <param name="action">The action to run when the command executes.</param>
         /// <param name="canExecute">The routine determining the execution state of the command.</param>
         public XamAsyncCommand(Func<Task> action, Func<bool> canExecute)
-            : base(p => action(), p => canExecute())
+            : base(_ => action(), _ => canExecute())
         {
         }
 
         public Task ExecuteAsync()
         {
-            return ExecuteAsync(_parameter);
+            return ExecuteAsync(Parameter);
         }
 
         public bool CanExecute()
         {
-            return CanExecute(_parameter);
+            return CanExecute(Parameter);
         }
     }
 
@@ -70,7 +70,7 @@ namespace CafeLib.Mobile.Commands
         private bool _isBusy;
         private readonly Func<T, Task> _action;
         private readonly Func<T, bool> _canExecute;
-        private readonly ThreadSafeBool _isLocked = new ThreadSafeBool();
+        private readonly ThreadSafeBool _isLocked = new();
 
         /// <summary>
         /// XamAsyncCommand constructor.
@@ -158,7 +158,7 @@ namespace CafeLib.Mobile.Commands
     {
         private readonly Func<TParameter, Task<TResult>> _command;
         private readonly Func<TParameter, bool> _canExecute;
-        private readonly ThreadSafeBool _isLocked = new ThreadSafeBool();
+        private readonly ThreadSafeBool _isLocked = new();
 
         /// <summary>
         /// XamAsyncCommand constructor.
@@ -176,7 +176,7 @@ namespace CafeLib.Mobile.Commands
         public XamAsyncCommand(Func<TParameter, Task<TResult>> command)
         {
             _command = command ?? throw new ArgumentNullException(nameof(command));
-            _canExecute = x => true;
+            _canExecute = _ => true;
         }
 
         /// <summary>

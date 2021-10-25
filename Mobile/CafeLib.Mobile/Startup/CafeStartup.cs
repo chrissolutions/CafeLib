@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using CafeLib.Core.Support;
-// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.Startup
 {
     /// <summary>
     /// Base class of CafeLib mobile application.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public class CafeStartup<T> where T : CafeApplication
     {
         private readonly ICafeStartup _cafeStartup;

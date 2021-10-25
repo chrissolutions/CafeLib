@@ -1,7 +1,5 @@
 ﻿using System;
 using CafeLib.Core.Eventing;
-using CafeLib.Mobile.Extensions;
-using CafeLib.Mobile.Services;
 using Xamarin.Forms;
 // ReSharper disable UnusedMember.Global
 

@@ -19,11 +19,11 @@ namespace CafeLib.Mobile.Startup
             _serviceRegistry = IocFactory.CreateRegistry()
                 .AddEventService()
                 .AddDictionaryService()
-                .AddSingleton(x => mobileService.Value as IServiceResolver)
-                .AddSingleton(x => mobileService.Value as IPageService)
-                .AddSingleton(x => mobileService.Value as INavigationService)
-                .AddSingleton(x => mobileService.Value as IDeviceService)
-                .AddSingleton(x => mobileService.Value as IAlertService);
+                .AddSingleton(_ => mobileService.Value as IServiceResolver)
+                .AddSingleton(_ => mobileService.Value as IPageService)
+                .AddSingleton(_ => mobileService.Value as INavigationService)
+                .AddSingleton(_ => mobileService.Value as IDeviceService)
+                .AddSingleton(_ => mobileService.Value as IAlertService);
         }
 
         /// <summary>

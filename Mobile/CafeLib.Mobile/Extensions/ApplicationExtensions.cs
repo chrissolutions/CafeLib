@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using CafeLib.Core.Eventing;
 using CafeLib.Mobile.Messages;
@@ -11,6 +12,7 @@ using Xamarin.Forms;
 
 namespace CafeLib.Mobile.Extensions
 {
+    [SuppressMessage("ReSharper", "AsyncVoidLambda")]
     public static class ApplicationExtensions
     {
         /// <summary>

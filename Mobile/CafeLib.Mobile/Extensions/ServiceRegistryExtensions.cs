@@ -17,7 +17,7 @@ namespace CafeLib.Mobile.Extensions
         /// <returns></returns>
         public static IServiceRegistry AddDictionaryService(this IServiceRegistry serviceRegistry)
         {
-            serviceRegistry.AddSingleton<IDictionaryService>(x => DictionaryService.Current);
+            serviceRegistry.AddSingleton<IDictionaryService>(_ => DictionaryService.Current);
             return serviceRegistry;
         }
 

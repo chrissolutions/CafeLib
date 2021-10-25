@@ -100,7 +100,7 @@ namespace CafeLib.Mobile.Views
                 case null:
                     return GetViewModel<BaseViewModel>();
 
-                case Page _:
+                case not null:
                     return Detail.GetViewModel<BaseViewModel>();
             }
         }
