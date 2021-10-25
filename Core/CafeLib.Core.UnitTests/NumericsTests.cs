@@ -1,24 +1,178 @@
-﻿using CafeLib.Core.Encodings;
-using CafeLib.Core.Numerics;
+﻿using CafeLib.Core.Numerics;
+using System.Linq;
+using CafeLib.Core.Buffers;
+using CafeLib.Core.Encodings;
 using Xunit;
 
 namespace CafeLib.Core.UnitTests
 {
     public class NumericsTests
     {
-        private readonly Base58Encoder _base58Encoder = new Base58Encoder();
-        private readonly HexEncoder _hexEncoder = new HexEncoder();
+        private static readonly HexEncoder Hex = new();
+
+        #region UInt160 Tests
 
         [Fact]
-        public void UInt256_Creation_Test()
+        public void UInt160_ByteAccess_Test()
         {
-            const string hex = "988119d6cca702beb1748f4eb497e316467f69580ffa125aa8bcb6fb63dce237";
-
-            var uint256 = new UInt256(hex);
-            var uint256Reverse = new UInt256(hex, true);
-
-            Assert.Equal(hex, uint256.ToString());
-            Assert.Equal(hex, uint256Reverse.ToStringFirstByteFirst());
+            var i = new UInt160
+            {
+                [0] = 0x21,
+                [UInt160.Length-1] = 0xfe
+            };
+            var str = i.ToString();
+            Assert.Equal("fe00000000000000000000000000000000000021", str);
         }
+
+        [Theory]
+        [InlineData("c2eaba3b9c29575322c6e24fdc1b49bdfe405bad")]
+        [InlineData("0xc2eaba3b9c29575322c6e24fdc1b49bdfe405bad")]
+        public void UInt160_FromHex_Test(string hex)
+        {
+            var uint160 = UInt160.FromHex(hex);
+            var uint160Reverse = UInt160.FromHex(hex, true);
+
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint160}" : $"{uint160}");
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint160Reverse}" : $"{uint160Reverse}");
+        }
+
+        [Theory]
+        [InlineData("c2eaba3b9c29575322c6e24fdc1b49bdfe405bad")]
+        public void UInt160_Create_From_ReadonlyByteSpan(string hex)
+        {
+            var bytes = Hex.Decode(hex);
+            var readonlyByteSpan = new ReadOnlyByteSpan(bytes);
+
+            var uint160 = new UInt160(readonlyByteSpan);
+            var new160 = new UInt160();
+            uint160.CopyTo(new160.Span);
+
+            Assert.Equal(bytes, uint160.ToArray());
+            Assert.Equal(bytes, new160.ToArray());
+            Assert.Equal(bytes, new160[..UInt160.Length]);
+        }
+
+        #endregion
+
+        #region UInt256 Tests
+
+        [Fact]
+        public void UInt256_ByteAccess_Test()
+        {
+            var i = new UInt256
+            {
+                [0] = 0x21,
+                [UInt256.Length-1] = 0xfe
+            };
+            var str = i.ToString();
+            Assert.Equal("fe00000000000000000000000000000000000000000000000000000000000021", str);
+        }
+
+        [Theory]
+        [InlineData("0xfedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210")]
+        public void UInt256_Create_From_ReadonlyByteSpan(string hex)
+        {
+            var bytes = Hex.Decode(hex);
+            var readonlyByteSpan = new ReadOnlyByteSpan(bytes);
+
+            var uint256 = new UInt256(readonlyByteSpan);
+            var new256 = new UInt256();
+            uint256.CopyTo(new256.Span);
+
+            Assert.Equal(bytes, uint256.ToArray());
+            Assert.Equal(bytes, new256.ToArray());
+            Assert.Equal(bytes, new256[..UInt256.Length]);
+        }
+
+        [Fact]
+        public void UInt256_Create_From_UInt256()
+        {
+            var fbf = new byte[] { 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10 };
+            var readonlyByteSpan = new ReadOnlyByteSpan(fbf);
+
+            var uint256 = new UInt256(readonlyByteSpan);
+            var new256 = new UInt256(uint256);
+
+            Assert.Equal(fbf, uint256.ToArray());
+            Assert.Equal(fbf, new256.ToArray());
+        }
+
+        [Theory]
+        [InlineData("fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210")]
+        public void UInt256_HexByteOrder_Test(string hex)
+        {
+            var fbf = Hex.Decode(hex);
+            var fbl = fbf.Reverse().ToArray();
+
+            var ifbl = UInt256.FromHex(hex);
+            var ifbf = UInt256.FromHex(hex, true);
+            Assert.Equal(ifbl.ToArray(), fbl);
+            Assert.Equal(ifbf.ToArray(), fbf);
+
+            Assert.Equal(hex, ifbl.ToString());
+            Assert.Equal(hex, ifbf.ToString());
+        }
+
+        [Fact]
+        public void UInt256_LeftShift_Test()
+        {
+            var a = new UInt256(1);
+            Assert.Equal(new UInt256(1, 0, 0, 0), a);
+            Assert.Equal(new UInt256(0, 1, 0, 0), a << 64);
+            Assert.Equal(new UInt256(0, 4, 0, 0), a << 66);
+            Assert.Equal(new UInt256(0, 0, 1, 0), a << (64 + 64));
+            Assert.Equal(new UInt256(0, 0, 4, 0), a << (66 + 64));
+            Assert.Equal(new UInt256(0, 0, 0, 1), a << (64 + 64 + 64));
+            Assert.Equal(new UInt256(0, 0, 0, 4), a << (66 + 64 + 64));
+        }
+
+        [Theory]
+        [InlineData("988119d6cca702beb1748f4eb497e316467f69580ffa125aa8bcb6fb63dce237")]
+        [InlineData("fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210")]
+        [InlineData("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f")]
+        [InlineData("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b")]
+        public void UInt256_FromHex_Test(string hex)
+        {
+            var uint256 = UInt256.FromHex(hex);
+            var uint256Reverse = UInt256.FromHex(hex, true);
+
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint256}" : $"{uint256}");
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint256Reverse}" : $"{uint256Reverse}");
+        }
+
+        #endregion
+
+        #region UInt512 Tests
+
+        [Fact]
+        public void UInt512_ByteAccess_Test()
+        {
+            var i = new UInt512
+            {
+                [0] = 0x21,
+                [UInt512.Length - 1] = 0xfe
+            };
+            var str = i.ToString();
+            Assert.Equal("fe000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000021", str);
+        }
+
+        [Theory]
+        [InlineData("fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210")]
+        [InlineData("0x6a22314c74794d45366235416e4d6f70517242504c6b3446474e3855427568784b71726e0101337b2274223a32302e36322c2268223a35392c2270223a313031")]
+        public void UInt512_HexByteOrder_Test(string hex)
+        {
+            var fbf = Hex.Decode(hex);
+            var fbl = fbf.Reverse().ToArray();
+
+            var ifbl = UInt512.FromHex(hex);
+            var ifbf = UInt512.FromHex(hex, true);
+            Assert.Equal(ifbl.ToArray(), fbl);
+            Assert.Equal(ifbf.ToArray(), fbf);
+
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{ifbl}" : $"{ifbl}");
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{ifbf}" : $"{ifbf}");
+        }
+
+        #endregion
     }
 }

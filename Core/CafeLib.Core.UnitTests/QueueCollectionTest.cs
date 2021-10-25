@@ -38,6 +38,21 @@ namespace CafeLib.Core.UnitTests
         }
 
         [Fact]
+        public void PriorityQueue_Peek_Test()
+        {
+            var q = new PriorityQueue<int>();
+            for (int i = 0; i < 10; ++i)
+            {
+                q.Enqueue(i);
+            }
+
+            var peek = q.Peek();
+            Assert.Equal(0, peek);
+            Assert.Equal(10, q.Count);
+            Assert.True(q.IsFifo);
+        }
+
+        [Fact]
         public void ReaderWriterQueueTest()
         {
             var producer = new ReaderWriterQueue<string>();
