@@ -2,7 +2,6 @@
 using System.Data.SqlClient;
 using CafeLib.Data.SqlGenerator.DbObjects;
 using CafeLib.Data.SqlGenerator.DbObjects.SqlObjects;
-using RepoDb;
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.Sources.SqlServer

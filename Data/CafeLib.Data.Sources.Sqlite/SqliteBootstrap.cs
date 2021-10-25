@@ -15,7 +15,7 @@ namespace CafeLib.Data.Sources.Sqlite
     public class SqliteBootstrap : SingletonBase<SqliteBootstrap>
     {
         private bool _isInitialized;
-        private static readonly object _mutex = new object();
+        private static readonly object Mutex = new();
 
         #region Methods
 
@@ -35,15 +35,15 @@ namespace CafeLib.Data.Sources.Sqlite
         {
             if (_isInitialized) return;
 
-            lock (_mutex)
+            lock (Mutex)
             {
-                DbSettingMapper.Add(typeof(SQLiteConnection), settings, true);
+                DbSettingMapper.Add<SQLiteConnection>(settings, true);
 
                 // Map the DbHelper
-                DbHelperMapper.Add(typeof(SQLiteConnection), new SqLiteDbHelper(settings, new SdsSqLiteDbTypeNameToClientTypeResolver()), true);
+                DbHelperMapper.Add<SQLiteConnection>(new SqLiteDbHelper(settings, new SdsSqLiteDbTypeNameToClientTypeResolver()), true);
 
                 // Map the Statement Builder
-                StatementBuilderMapper.Add(typeof(SQLiteConnection), new SqLiteStatementBuilder(settings), true);
+                StatementBuilderMapper.Add<SQLiteConnection>(new SqLiteStatementBuilder(settings), true);
 
                 // Set the flag
                 _isInitialized = true;

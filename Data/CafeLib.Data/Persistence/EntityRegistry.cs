@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using CafeLib.Core.Data;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.IoC;
+using CafeLib.Core.Support;
 using CafeLib.Data.Mapping;
 
 namespace CafeLib.Data.Persistence
@@ -45,7 +46,7 @@ namespace CafeLib.Data.Persistence
         public IRepository<TEntity> Add<TEntity>(IRepository<TEntity> repository) where TEntity : class, IEntity
         {
             if (repository == null) throw new ArgumentNullException(nameof(repository));
-            _container.AddSingleton(x => repository);
+            _container.AddSingleton(_ => repository);
             return repository;
         }
 
@@ -93,12 +94,12 @@ namespace CafeLib.Data.Persistence
                 if (typeof(IMappedEntity).IsAssignableFrom(x))
                 {
                     repoType = typeof(MappedRepository<,>).MakeGenericType(x.Seek(typeof(MappedEntity<,>)).GenericTypeArguments);
-                    repo = repoType.CreateInstance(storage);
+                    repo = Creator.CreateInstance(repoType, storage);
                 }
                 else
                 {
-                    repoType = typeof(Repository<>).MakeGenericType(x);
-                    repo = repoType.CreateInstance(storage);
+                    repoType = typeof(Repository<>).MakeGenericType(x ?? throw new ArgumentNullException(nameof(x)));
+                    repo = Creator.CreateInstance(repoType, storage);
                 }
 
                 var repoInterface = typeof(IRepository<>).MakeGenericType(x);

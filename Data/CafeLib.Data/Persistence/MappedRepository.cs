@@ -32,7 +32,7 @@ namespace CafeLib.Data.Persistence
             return _repository.Value.Any();
         }
 
-        public Task<bool> Any<TU>(TU id)
+        public Task<bool> Any<TKey>(TKey id)
         {
             return _repository.Value.Any(id);
         }

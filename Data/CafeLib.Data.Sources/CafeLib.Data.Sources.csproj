@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Description>Core data source package</Description>
-    <Version Condition=" '$(Version)' == '' ">1.1.0</Version>
+    <Version Condition=" '$(Version)' == '' ">1.5.1</Version>
     <Copyright>© 2021 Chris Solutions</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReleaseNotes></PackageReleaseNotes>
@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="CafeLib.Core.Data" Version="$(Version)" />
-    <PackageReference Include="RepoDb" Version="1.12.7" />
+    <PackageReference Include="RepoDb" Version="1.12.9" />
   </ItemGroup>
 
   <ItemGroup>

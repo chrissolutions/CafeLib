@@ -1,16 +1,16 @@
 ﻿using System.IO;
 using CafeLib.Data.Sources.Sqlite;
 using CafeLib.Data.UnitTest.Identity;
-// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Data.UnitTest.IdentityAccess
 {
-    public class IdentityDatabase : IDatabase
+    public class IdentityDatabase : IDatabase<IdentityStorage>
     {
         private readonly IdentityStorage _storage;
 
         public string DatabaseName { get; }
         public string ConnectionString { get; }
+
         internal string DatabaseFilePath { get; }
 
         /// <summary>
@@ -31,12 +31,7 @@ namespace CafeLib.Data.UnitTest.IdentityAccess
             }
         }
 
-        public IdentityStorage GetIdentityStorage()
-        {
-            return (IdentityStorage) GetStorage();
-        }
-
-        public IStorage GetStorage()
+        public IdentityStorage GetStorage()
         {
             return _storage;
         }
