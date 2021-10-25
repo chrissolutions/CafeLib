@@ -14,7 +14,7 @@ namespace CafeLib.Core.Security
 		/// <summary>
 		/// Default static password hash;
 		/// </summary>
-		public static readonly PasswordHash Default = new PasswordHash();
+		public static readonly PasswordHash Default = new();
 
         /// <summary>
         /// PasswordHash constructor.

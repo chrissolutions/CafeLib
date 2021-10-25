@@ -8,22 +8,17 @@ namespace CafeLib.Core.Security
     {
         public override bool Equals(byte[] array1, byte[] array2)
         {
-            switch (array1, array2)
+            return (array1, array2) switch
             {
-				case var _ when ReferenceEquals(array1, array2):
-                    return true;
-
-				case var _ when array1?.Length != array2?.Length:
-                    return false;
-
-				default:
-                    return array1.Every((b, i) => array2 != null && b == array2[i]);
-            }
+                _ when ReferenceEquals(array1, array2) => true,
+                _ when array1?.Length != array2?.Length => false,
+                _ => array1.Every((b, i) => b == array2[i])
+            };
         }
 
 		public override int GetHashCode(byte[] obj)
 		{
-			var result = Convert.ToBase64String(obj ?? Array.Empty<byte>());
+			var result = Convert.ToBase64String(obj);
 			return result.GetHashCode();
 		}
 	}
