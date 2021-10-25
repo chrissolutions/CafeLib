@@ -1,7 +1,5 @@
 ﻿using System;
-using CafeLib.Core.Extensions;
 using CafeLib.Core.Support;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.Startup
