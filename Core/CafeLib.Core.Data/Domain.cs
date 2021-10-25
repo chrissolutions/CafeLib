@@ -10,7 +10,7 @@ namespace CafeLib.Core.Data
 {
     public abstract class Domain
     {
-        private readonly ConcurrentDictionary<Type, Domain> _domainCache = new ConcurrentDictionary<Type, Domain>();
+        private readonly ConcurrentDictionary<Type, Domain> _domainCache = new();
 
         #region Automatic Properties
 
@@ -23,7 +23,7 @@ namespace CafeLib.Core.Data
 
         protected Domain()
         {
-            InitEntityTypes().ForEach(x => _domainCache.AddOrUpdate(x, this, (k, v) => this));
+            InitEntityTypes().ForEach(x => _domainCache.AddOrUpdate(x, this, (_, _) => this));
             TableCache = new TableCache(this);
             PropertyCache = new PropertyCache(this);
         }
@@ -52,17 +52,17 @@ namespace CafeLib.Core.Data
         }
 
         /// <summary>
-        /// 
+        /// Get the domain for the entity type.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <typeparam name="T">entity type</typeparam>
+        /// <returns>domain</returns>
         internal Domain GetDomain<T>() where T : IEntity => GetDomain(typeof(T));
 
         /// <summary>
-        /// 
+        /// Get the domain for the entity type. 
         /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <param name="type">entity type</param>
+        /// <returns>domain</returns>
         internal Domain GetDomain(Type type) => _domainCache[type];
 
         #endregion

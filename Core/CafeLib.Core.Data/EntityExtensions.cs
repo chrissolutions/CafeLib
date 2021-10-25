@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 using CafeLib.Core.Extensions;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Data
