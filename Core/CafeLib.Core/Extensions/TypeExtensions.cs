@@ -12,42 +12,6 @@ namespace CafeLib.Core.Extensions
     public static class TypeExtensions
     {
         /// <summary>
-        /// Create instance of specified type.
-        /// </summary>
-        /// <typeparam name="T">type to create</typeparam>
-        /// <param name="_">type object</param>
-        /// <returns>instance object</returns>
-        public static T CreateInstance<T>(this Type _)
-        {
-            return typeof(T).CreateInstance<T>(null);
-        }
-
-        /// <summary>
-        /// Create instance of specified type.
-        /// </summary>
-        /// <typeparam name="T">type to create</typeparam>
-        /// <param name="_">type object</param>
-        /// <param name="args">constructor arguments</param>
-        /// <returns>instance object</returns>
-        public static T CreateInstance<T>(this Type _, params object[] args)
-        {
-            var activator = FindConstructor(typeof(T), args);
-            return (T)activator?.Invoke(args);
-        }
-
-        /// <summary>
-        /// Create instance of specified type.
-        /// </summary>
-        /// <param name="type">type object</param>
-        /// <param name="args">constructor arguments</param>
-        /// <returns>instance object</returns>
-        public static object CreateInstance(this Type type, params object[] args)
-        {
-            var activator = FindConstructor(type, args);
-            return activator?.Invoke(args);
-        }
-
-        /// <summary>
         /// Gets the default constructor.
         /// </summary>
         /// <param name="type"></param>
