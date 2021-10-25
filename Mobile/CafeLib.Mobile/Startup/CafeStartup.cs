@@ -1,5 +1,7 @@
 ﻿using System;
 using CafeLib.Core.Extensions;
+using CafeLib.Core.Support;
+
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.Startup
@@ -17,7 +19,7 @@ namespace CafeLib.Mobile.Startup
         {
             _cafeStartup = cafeStartup ?? throw new ArgumentNullException(nameof(cafeStartup));
             _cafeRegistry = new CafeRegistry();
-            _application = typeof(T).CreateInstance<T>(_cafeRegistry);
+            _application = Creator.CreateInstance<T>(_cafeRegistry);
         }
 
         public T Configure()
