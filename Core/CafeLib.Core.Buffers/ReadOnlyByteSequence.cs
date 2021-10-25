@@ -6,7 +6,7 @@ namespace CafeLib.Core.Buffers
 {
     public readonly struct ReadOnlyByteSequence
     {
-        public static readonly ReadOnlyByteSequence Empty = new ReadOnlyByteSequence(Array.Empty<byte>());
+        public static readonly ReadOnlyByteSequence Empty = new(Array.Empty<byte>());
 
         public ReadOnlySequence<byte> Data { get; }
 

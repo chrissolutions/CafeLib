@@ -49,14 +49,12 @@ namespace CafeLib.Core.Buffers
         public byte[] ToArray() => Data.ToArray();
 
 
-        public static implicit operator ReadOnlyByteMemory(byte[] rhs) => new ReadOnlyByteMemory(rhs);
+        public static implicit operator ReadOnlyByteMemory(byte[] rhs) => new(rhs);
         public static implicit operator byte[](ReadOnlyByteMemory rhs) => rhs.ToArray();
 
         public static implicit operator ReadOnlyMemory<byte>(ReadOnlyByteMemory rhs) => rhs.Data;
-        public static implicit operator ReadOnlyByteMemory(ReadOnlyMemory<byte> rhs) => new ReadOnlyByteMemory(rhs);
-        public static implicit operator ReadOnlyByteMemory(Memory<byte> rhs) => new ReadOnlyByteMemory(rhs);
-        public static implicit operator ReadOnlyByteMemory(ByteMemory rhs) => new ReadOnlyByteMemory(rhs);
-
-        //public static ByteMemory operator +(ByteMemory a, ByteMemory b) => a + new UInt256(b);
+        public static implicit operator ReadOnlyByteMemory(ReadOnlyMemory<byte> rhs) => new(rhs);
+        public static implicit operator ReadOnlyByteMemory(Memory<byte> rhs) => new(rhs);
+        public static implicit operator ReadOnlyByteMemory(ByteMemory rhs) => new(rhs);
     }
 }

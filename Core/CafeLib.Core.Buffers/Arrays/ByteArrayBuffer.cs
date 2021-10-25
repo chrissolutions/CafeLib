@@ -18,7 +18,7 @@
         {
         }
 
-        public static implicit operator ByteArrayBuffer(byte[] rhs) => new ByteArrayBuffer(rhs);
+        public static implicit operator ByteArrayBuffer(byte[] rhs) => new(rhs);
         public static implicit operator byte[](ByteArrayBuffer rhs) => rhs.ToArray();
         public static implicit operator ReadOnlyByteSpan(ByteArrayBuffer rhs) => rhs.Span;
     }
