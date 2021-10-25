@@ -6,21 +6,21 @@ using CafeLib.Core.Extensions;
 
 namespace CafeLib.Core.Runnable
 {
-    public class RecurrentTask : RunnerBase
+    public class RecurrentTaskUtc : RunnerBase
     {
         private readonly Func<CancellationToken, Task> _task;
         private readonly TimeSpan _interval;
-        private DateTime _triggerTime;
+        private DateTime _triggerTimeUtc;
 
         /// <summary>
         /// RecurrentTask constructor.
         /// </summary>
         /// <param name="task">runnable task</param>
         /// <param name="interval">interval in milliseconds</param>
-        /// <param name="startTime">start time</param>
+        /// <param name="startTimeUtc">start time</param>
         /// <param name="frequency">frequency in milliseconds (default is 1 second)</param>
-        public RecurrentTask(Func<CancellationToken, Task> task, int interval, DateTime startTime = default, int frequency = 1000)
-            : this(task, TimeSpan.FromMilliseconds(interval), startTime, frequency)
+        public RecurrentTaskUtc(Func<CancellationToken, Task> task, int interval, DateTime startTimeUtc = default, int frequency = 1000)
+            : this(task, TimeSpan.FromMilliseconds(interval), startTimeUtc, frequency)
         {
         }
 
@@ -29,10 +29,10 @@ namespace CafeLib.Core.Runnable
         /// </summary>
         /// <param name="task">runnable task</param>
         /// <param name="interval">interval</param>
-        /// <param name="startTime">start time</param>
+        /// <param name="startTimeUtc">start time</param>
         /// <param name="frequency"></param>
-        public RecurrentTask(Func<CancellationToken, Task> task, TimeSpan interval, DateTime startTime, TimeSpan frequency)
-            : this(task, interval, startTime, (int)frequency.TotalMilliseconds)
+        public RecurrentTaskUtc(Func<CancellationToken, Task> task, TimeSpan interval, DateTime startTimeUtc, TimeSpan frequency)
+            : this(task, interval, startTimeUtc, (int)frequency.TotalMilliseconds)
         {
         }
 
@@ -41,14 +41,14 @@ namespace CafeLib.Core.Runnable
         /// </summary>
         /// <param name="task">runnable task</param>
         /// <param name="interval">interval</param>
-        /// <param name="startTime">start time</param>
+        /// <param name="startTimeUtc">start time</param>
         /// <param name="frequency"></param>
-        public RecurrentTask(Func<CancellationToken, Task> task, TimeSpan interval, DateTime startTime = default, int frequency = 1000)
+        public RecurrentTaskUtc(Func<CancellationToken, Task> task, TimeSpan interval, DateTime startTimeUtc = default, int frequency = 1000)
             : base(frequency)
         {
             _task = task ?? (_ => Task.CompletedTask);
             _interval = interval;
-            _triggerTime = GetTriggerTime(startTime);
+            _triggerTimeUtc = GetTriggerTime(startTimeUtc);
         }
 
         /// <summary>
@@ -58,21 +58,21 @@ namespace CafeLib.Core.Runnable
         /// <returns>asynchronous task</returns>
         protected override async Task Run(CancellationToken token)
         {
-            if (DateTime.Now >= _triggerTime)
+            if (DateTime.Now >= _triggerTimeUtc)
             {
                 await _task(token).ConfigureAwait(false);
-                _triggerTime = GetTriggerTime(_triggerTime);
+                _triggerTimeUtc = GetTriggerTime(_triggerTimeUtc);
             }
         }
 
         /// <summary>
         /// Calculate new start time.
         /// </summary>
-        /// <param name="startTime"></param>
+        /// <param name="startTimeUtc"></param>
         /// <returns></returns>
-        private DateTime GetTriggerTime(DateTime startTime)
+        private DateTime GetTriggerTime(DateTime startTimeUtc)
         {
-            return startTime == default ? DateTime.Now : startTime.NextTime(_interval);
+            return startTimeUtc == default ? DateTime.UtcNow : startTimeUtc.NextTimeUtc(_interval);
         }
     }
 }
