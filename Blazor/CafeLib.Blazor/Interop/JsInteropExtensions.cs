@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using CafeLib.Core.Extensions;
+using CafeLib.Core.Support;
 using Microsoft.JSInterop;
 
 namespace CafeLib.Blazor.Interop
@@ -30,7 +30,7 @@ namespace CafeLib.Blazor.Interop
         public static T CreateObject<T>(this IJSObjectReference jsRef, params object[] args)
         {
             var parameters = new object[] { jsRef }.Concat(args).ToArray();
-            return typeof(T).CreateInstance<T>(parameters);
+            return Creator.CreateInstance<T>(parameters);
         }
     }
 }
