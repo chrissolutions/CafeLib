@@ -2,7 +2,7 @@
 
 namespace CafeLib.Core.Collections
 {
-    internal struct QueueEntry<T> : IRank<QueueEntry<T>>, IComparable<QueueEntry<T>>
+    internal readonly struct QueueEntry<T> : IRank<QueueEntry<T>>, IComparable<QueueEntry<T>>
     {
         readonly DateTime _creationTime;
         private readonly bool _fifo;

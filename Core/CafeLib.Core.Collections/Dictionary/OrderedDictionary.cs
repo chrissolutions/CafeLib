@@ -178,7 +178,7 @@ namespace CafeLib.Core.Collections
 
                 var key = List[index].Key;
                 List[index] = new KeyValuePair<TKey, TValue>(key, value);
-                Dictionary.AddOrUpdate(key, value, (k, v) => value);
+                Dictionary.AddOrUpdate(key, value, (_, _) => value);
             }
         }
 
@@ -218,15 +218,9 @@ namespace CafeLib.Core.Collections
                 throw new ArgumentNullException(nameof(key));
 
             int index = IndexOfKey(key);
-            if (index >= 0)
-            {
-                if (Dictionary.Remove(key))
-                {
-                    List.RemoveAt(index);
-                    return true;
-                }
-            }
-            return false;
+            if (index < 0 || !Dictionary.Remove(key)) return false;
+            List.RemoveAt(index);
+            return true;
         }
 
         public bool TryGetValue(TKey key, out TValue value) => Dictionary.TryGetValue(key, out value);

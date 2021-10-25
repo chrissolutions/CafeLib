@@ -39,7 +39,7 @@ namespace CafeLib.Core.Collections
         public ICollection<TKey> Keys => _itemList.Select(x => x.Key).ToArray();
 
         /// <summary>
-        /// Obtain collection of the vlaues in the dictionary.
+        /// Obtain collection of the values in the dictionary.
         /// </summary>
         public ICollection<TValue> Values => _itemList.Select(x => x.Value).ToArray();
 

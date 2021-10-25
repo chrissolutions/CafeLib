@@ -16,19 +16,19 @@ namespace CafeLib.Core.Collections
         }
 
         /// <summary>
-        /// 
+        /// Add item to queue
         /// </summary>
-        /// <param name="value"></param>
-        public void Enqueue(T value) => Enqueue(value, 0);
+        /// <param name="item">item to enqueue</param>
+        public void Enqueue(T item) => Enqueue(item, 0);
 
         /// <summary>
-        /// 
+        /// Add item and priority value to queue
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="priority"></param>
-        public void Enqueue(T value, int priority)
+        /// <param name="item">item to enqueue</param>
+        /// <param name="priority">priority value</param>
+        public void Enqueue(T item, int priority)
         {
-            _heap.Add(new QueueEntry<T>(value, priority));
+            _heap.Add(new QueueEntry<T>(item, priority));
         }
 
         /// <summary>
@@ -49,39 +49,39 @@ namespace CafeLib.Core.Collections
         }
 
         /// <summary>
-        /// 
+        /// Try dequeuing an item.
         /// </summary>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        public bool TryDequeue(out T result)
+        /// <param name="item">result item from queue</param>
+        /// <returns>true if successful; otherwise false</returns>
+        public bool TryDequeue(out T item)
         {
             try
             {
-                result = Dequeue();
+                item = Dequeue();
                 return true;
             }
             catch
             {
-                result = default;
+                item = default;
                 return false;
             }
         }
 
         /// <summary>
-        /// 
+        /// Try peeking the queue.
         /// </summary>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        public bool TryPeek(out T result)
+        /// <param name="item">result item from queue</param>
+        /// <returns>true if successful; otherwise false</returns>
+        public bool TryPeek(out T item)
         {
             try
             {
-                result = Dequeue();
+                item = Peek();
                 return true;
             }
             catch
             {
-                result = default;
+                item = default;
                 return false;
             }
         }
@@ -100,11 +100,19 @@ namespace CafeLib.Core.Collections
             return _heap.Peek().Value;
         }
 
+        /// <summary>
+        /// Get the enumerator of the priority queue.
+        /// </summary>
+        /// <returns>enumerator</returns>
         public IEnumerator<T> GetEnumerator()
         {
             return _heap.Select(x => x.Value).GetEnumerator();
         }
 
+        /// <summary>
+        /// Get the enumerator of the priority queue.
+        /// </summary>
+        /// <returns>enumerator</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

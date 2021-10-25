@@ -57,7 +57,7 @@ namespace CafeLib.Core.Collections
         /// <inheritdoc />
         public void SetEntry<T>(string key, T value)
         {
-            _dictionary.AddOrUpdate(key, value, (k, v) => value);
+            _dictionary.AddOrUpdate(key, value, (_, _) => value);
         }
 
         /// <inheritdoc />

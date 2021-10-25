@@ -7,7 +7,7 @@ namespace CafeLib.Core.Collections
         void Clear();
         void Enqueue(T item);
         T Dequeue();
-        bool TryDequeue(out T result);
-        bool TryPeek(out T result);
+        bool TryDequeue(out T item);
+        bool TryPeek(out T item);
     }
 }
