@@ -5,7 +5,7 @@ namespace CafeLib.Core.Eventing
 {
     public abstract class EventMessage : IEventMessage
     {
-        private static readonly object Empty = new object();
+        private static readonly object Empty = new();
 
         #region Automatic Properties
 
