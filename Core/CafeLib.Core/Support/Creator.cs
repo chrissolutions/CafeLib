@@ -25,8 +25,7 @@ namespace CafeLib.Core.Support
         /// <returns>instance object</returns>
         public static T CreateInstance<T>(params object[] args)
         {
-            var activator = typeof(T).FindConstructor(args);
-            return (T)activator?.Invoke(args);
+            return (T)CreateInstance(typeof(T), args);
         }
 
         /// <summary>

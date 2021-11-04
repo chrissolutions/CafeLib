@@ -1,5 +1,4 @@
-﻿using CafeLib.Core.Extensions;
-using CafeLib.Core.Support;
+﻿using CafeLib.Core.Support;
 using CafeLib.Core.UnitTests.TypeModels;
 using Xunit;
 
@@ -17,12 +16,22 @@ namespace CafeLib.Core.UnitTests
         }
 
         [Fact]
-        public void CreateInstanceOfSingleParameterType()
+        public void CreateInstanceWithSingleParameter()
         {
-            var result = Creator.CreateInstance<TypeWithSingleParameterConstructor>(100);
+            var result = Creator.CreateInstance<TypeWithParametersConstructor>(100);
             Assert.NotNull(result);
-            Assert.IsType<TypeWithSingleParameterConstructor>(result);
-            Assert.Equal(100, result.Argument);
+            Assert.IsType<TypeWithParametersConstructor>(result);
+            Assert.Equal(100, result.Argument1);
+        }
+
+        [Fact]
+        public void CreateInstanceWithTwoParameters()
+        {
+            var result = Creator.CreateInstance<TypeWithParametersConstructor>(100, 200);
+            Assert.NotNull(result);
+            Assert.IsType<TypeWithParametersConstructor>(result);
+            Assert.Equal(100, result.Argument1);
+            Assert.Equal(200, result.Argument2);
         }
     }
 }
