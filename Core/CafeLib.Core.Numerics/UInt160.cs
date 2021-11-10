@@ -68,7 +68,7 @@ namespace CafeLib.Core.Numerics
         /// <remarks>Default behavior assigns bytes from highest to lowest numeric position</remarks>
         public static UInt160 FromHex(string hex, bool littleEndian = false)
         {
-            if (string.IsNullOrWhiteSpace(hex)) return Zero;
+            if (string.IsNullOrWhiteSpace(hex)) return new UInt160();
             var result = new UInt160(littleEndian);
             (littleEndian ? Encoders.Hex : Encoders.HexReverse).TryDecodeSpan(hex, result.Span);
             return result;

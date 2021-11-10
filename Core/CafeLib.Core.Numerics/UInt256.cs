@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using CafeLib.Core.Buffers;
 
 namespace CafeLib.Core.Numerics
@@ -69,7 +68,7 @@ namespace CafeLib.Core.Numerics
         /// <remarks>Default behavior assigns bytes from highest to lowest numeric position</remarks>
         public static UInt256 FromHex(string hex, bool littleEndian = false)
         {
-            if (string.IsNullOrWhiteSpace(hex)) return Zero;
+            if (string.IsNullOrWhiteSpace(hex)) return new UInt256();
             var result = new UInt256(littleEndian);
             (littleEndian ? Encoders.Hex : Encoders.HexReverse).TryDecodeSpan(hex, result.Span);
             return result;
