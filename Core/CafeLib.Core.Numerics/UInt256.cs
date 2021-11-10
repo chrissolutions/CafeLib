@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using CafeLib.Core.Buffers;
 
 namespace CafeLib.Core.Numerics
@@ -68,6 +69,7 @@ namespace CafeLib.Core.Numerics
         /// <remarks>Default behavior assigns bytes from highest to lowest numeric position</remarks>
         public static UInt256 FromHex(string hex, bool littleEndian = false)
         {
+            if (string.IsNullOrWhiteSpace(hex)) return Zero;
             var result = new UInt256(littleEndian);
             (littleEndian ? Encoders.Hex : Encoders.HexReverse).TryDecodeSpan(hex, result.Span);
             return result;
@@ -244,7 +246,7 @@ namespace CafeLib.Core.Numerics
         }
 
         public static UInt256 operator -(UInt256 a, UInt256 b) => a + -b;
-        public static UInt256 operator +(UInt256 a, UInt64 b) => a + new UInt256(b);
+        public static UInt256 operator +(UInt256 a, ulong b) => a + new UInt256(b);
         public static UInt256 operator +(UInt256 a, UInt256 b)
         {
             const int width = 8;
