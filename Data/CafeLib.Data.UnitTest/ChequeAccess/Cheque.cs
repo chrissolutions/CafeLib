@@ -19,8 +19,8 @@ namespace CafeLib.Data.UnitTest.ChequeAccess
             Map(p => p.LastUpdateDate).Convert<DateTime>(o => o.ToString(CultureInfo.InvariantCulture));
             Map(p => p.LastUpdateDate).Convert<string, DateTime>(o => DateTime.Parse(o, CultureInfo.InvariantCulture));
 
-            Map(p => p.IsDeleted).Convert<bool>(o => o ? 1 : 0);
-            Map(p => p.IsDeleted).Convert<int, bool>(o => o > 0);
+            Map(p => p.IsDeleted).To<bool, int>(o => o ? 1 : 0);
+            Map(p => p.IsDeleted).From<int, bool>(o => o > 0);
         }
 
         public int Id { get; set; }
