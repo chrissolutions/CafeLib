@@ -28,7 +28,7 @@ namespace CafeLib.Data.Mapping
         IMapper Convert<TInput, TProperty>(Func<TInput, TProperty> func);
 
         /// <summary>
-        /// Set to property type from source converter.
+        /// Convert from input type to the property type.
         /// </summary>
         /// <typeparam name="TInput">input type</typeparam>
         /// <typeparam name="TProperty">to property type</typeparam>
@@ -38,7 +38,7 @@ namespace CafeLib.Data.Mapping
 
 
         /// <summary>
-        /// Set from property type to target converter.
+        /// Convert to output type from the property type.
         /// </summary>
         /// <typeparam name="TProperty">from property type</typeparam>
         /// <typeparam name="TOutput">to output type</typeparam>

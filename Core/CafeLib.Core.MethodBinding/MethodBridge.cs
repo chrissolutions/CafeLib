@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text.Json;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.Support;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.MethodBinding
@@ -14,7 +13,7 @@ namespace CafeLib.Core.MethodBinding
     {
         #region Private Members
 
-        private readonly Dictionary<string, Delegate> _bridgeMap = new Dictionary<string, Delegate>();
+        private readonly Dictionary<string, Delegate> _bridgeMap = new();
 
         #endregion
 
@@ -75,7 +74,7 @@ namespace CafeLib.Core.MethodBinding
 		private void MapBridgeEntry(string exportName, MethodInfo methodInfo)
 		{
 			var handler = methodInfo.CreateDelegate(this);
-			_bridgeMap.AddOrUpdate(exportName, handler, (k, v) => handler);
+			_bridgeMap.AddOrUpdate(exportName, handler, (_, _) => handler);
 		}
 
         /// <summary>

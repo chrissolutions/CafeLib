@@ -23,7 +23,7 @@ namespace CafeLib.Core.Security
         public static byte[] SaltBytes(int length = DefaultSaltLength)
         {
             var salt = new byte[length];
-            using var rngCsp = new RNGCryptoServiceProvider();
+            var rngCsp = RandomNumberGenerator.Create();
             rngCsp.GetBytes(salt);
             return salt;
         }

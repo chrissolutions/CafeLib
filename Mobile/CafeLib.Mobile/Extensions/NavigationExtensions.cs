@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using CafeLib.Mobile.Services;
 using CafeLib.Mobile.ViewModels;
 using Xamarin.Forms;
@@ -6,6 +7,7 @@ using Xamarin.Forms;
 
 namespace CafeLib.Mobile.Extensions
 {
+    [SuppressMessage("ReSharper", "AsyncVoidLambda")]
     public static class NavigationExtensions
     {
         /// <summary>

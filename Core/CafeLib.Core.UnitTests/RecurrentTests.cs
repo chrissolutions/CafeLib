@@ -27,5 +27,16 @@ namespace CafeLib.Core.UnitTests
             var _ = await _taskCompletionSource.Task;
             await recurrentTask.Stop();
         }
+
+        [Fact]
+        public async Task BasicRecurrentTestUtc()
+        {
+            _taskCompletionSource = new TaskCompletionSource<bool>();
+            _checkTime = DateTime.UtcNow;
+            using var recurrentTask = new RecurrentTaskUtc(RecurrentCallback, TimeSpan.FromSeconds(5), _checkTime);
+            await recurrentTask.Start();
+            var _ = await _taskCompletionSource.Task;
+            await recurrentTask.Stop();
+        }
     }
 }

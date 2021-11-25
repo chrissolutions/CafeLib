@@ -1,16 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CafeLib.Core.UnitTests.TypeModels
+﻿namespace CafeLib.Core.UnitTests.TypeModels
 {
-    public class TypeWithSingleParameterConstructor
+    public class TypeWithParametersConstructor
     {
-        public int Argument { get; }
+        public int Argument1 { get; }
+        public int Argument2 { get; }
 
-        public TypeWithSingleParameterConstructor(int argument)
+        public TypeWithParametersConstructor(int argument)
         {
-            Argument = argument;
+            Argument1 = argument;
+        }
+
+        public TypeWithParametersConstructor(int arg1, int arg2)
+            : this(arg1)
+        {
+            Argument2 = arg2;
         }
     }
 }

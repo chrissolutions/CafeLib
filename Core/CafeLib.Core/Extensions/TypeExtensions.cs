@@ -1,52 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Extensions
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public static class TypeExtensions
     {
-        /// <summary>
-        /// Create instance of specified type.
-        /// </summary>
-        /// <typeparam name="T">type to create</typeparam>
-        /// <param name="_">type object</param>
-        /// <returns>instance object</returns>
-        public static T CreateInstance<T>(this Type _)
-        {
-            return typeof(T).CreateInstance<T>(null);
-        }
-
-        /// <summary>
-        /// Create instance of specified type.
-        /// </summary>
-        /// <typeparam name="T">type to create</typeparam>
-        /// <param name="_">type object</param>
-        /// <param name="args">constructor arguments</param>
-        /// <returns>instance object</returns>
-        public static T CreateInstance<T>(this Type _, params object[] args)
-        {
-            var activator = FindConstructor(typeof(T), args);
-            return (T)activator?.Invoke(args);
-        }
-
-        /// <summary>
-        /// Create instance of specified type.
-        /// </summary>
-        /// <param name="type">type object</param>
-        /// <param name="args">constructor arguments</param>
-        /// <returns>instance object</returns>
-        public static object CreateInstance(this Type type, params object[] args)
-        {
-            var activator = FindConstructor(type, args);
-            return activator?.Invoke(args);
-        }
-
         /// <summary>
         /// Gets the default constructor.
         /// </summary>
@@ -64,7 +29,7 @@ namespace CafeLib.Core.Extensions
             bool MatchSignature(ConstructorInfo constructorInfo)
             {
                 var parameters = constructorInfo.GetParameters();
-                if (!parameters.Any()) return false;
+                if (!parameters.Any() || args.Length != parameters.Length) return false;
                 var match = true;
                 parameters.ForEach((p, i) => match &= i < args.Length ? p.ParameterType.IsInstanceOfType(args[i]) : p.HasDefaultValue);
                 return match;

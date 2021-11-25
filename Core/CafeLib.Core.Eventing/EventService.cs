@@ -21,7 +21,7 @@ namespace CafeLib.Core.Eventing
         /// <summary>
         /// Synchronizes access to internal tables.
         /// </summary>
-        private static readonly object Mutex = new object();
+        private static readonly object Mutex = new();
 
         /// <summary>
         /// Event broker name.

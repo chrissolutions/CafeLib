@@ -40,7 +40,7 @@ namespace CafeLib.Core.Buffers
 
         public byte[] ToArray() => Data.ToArray();
 
-        public Enumerator GetEnumerator() => new Enumerator(this);
+        public Enumerator GetEnumerator() => new(this);
 
         public ref struct Enumerator
         {
@@ -68,21 +68,21 @@ namespace CafeLib.Core.Buffers
             return destination;
         }
 
-        public static ByteSpan Empty => new ByteSpan();
+        public static ByteSpan Empty => new();
 
-        public static implicit operator ByteSpan(byte[] rhs) => new ByteSpan(rhs);
+        public static implicit operator ByteSpan(byte[] rhs) => new(rhs);
         public static implicit operator byte[](ByteSpan rhs) => rhs.Data.ToArray();
 
-        public static implicit operator ByteSpan(Span<byte> rhs) => new ByteSpan(rhs);
+        public static implicit operator ByteSpan(Span<byte> rhs) => new(rhs);
         public static implicit operator Span<byte>(ByteSpan rhs) => rhs.Data;
 
-        public static implicit operator ByteSpan(ReadOnlySpan<byte> rhs) => new ByteSpan(rhs.ToArray());
+        public static implicit operator ByteSpan(ReadOnlySpan<byte> rhs) => new(rhs.ToArray());
         public static implicit operator ReadOnlySpan<byte>(ByteSpan rhs) => rhs.Data;
 
-        public static implicit operator ByteSpan(ReadOnlyByteSpan rhs) => new ByteSpan(rhs.ToArray());
+        public static implicit operator ByteSpan(ReadOnlyByteSpan rhs) => new(rhs.ToArray());
         public static implicit operator ReadOnlyByteSpan(ByteSpan rhs) => rhs.Data;
 
-        public static implicit operator ByteSpan(ReadOnlyByteSequence rhs) => new ByteSpan(rhs.Data.ToArray());
-        public static implicit operator ReadOnlyByteSequence(ByteSpan rhs) => new ReadOnlyByteSequence(rhs);
+        public static implicit operator ByteSpan(ReadOnlyByteSequence rhs) => new(rhs.Data.ToArray());
+        public static implicit operator ReadOnlyByteSequence(ByteSpan rhs) => new(rhs);
     }
 }

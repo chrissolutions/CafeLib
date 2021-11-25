@@ -46,7 +46,7 @@ namespace CafeLib.Core.Runnable
         public RecurrentTask(Func<CancellationToken, Task> task, TimeSpan interval, DateTime startTime = default, int frequency = 1000)
             : base(frequency)
         {
-            _task = task ?? (x => Task.CompletedTask);
+            _task = task ?? (_ => Task.CompletedTask);
             _interval = interval;
             _triggerTime = GetTriggerTime(startTime);
         }

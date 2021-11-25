@@ -17,8 +17,11 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 #endregion
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace CafeLib.Cryptography.Cryptsharp
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal static class BitPacking
 	{
 		public static uint UInt24FromLEBytes(byte[] bytes, int offset)
@@ -26,7 +29,7 @@ namespace CafeLib.Cryptography.Cryptsharp
 			return
 				(uint)bytes[offset + 2] << 16 |
 				(uint)bytes[offset + 1] << 8 |
-				(uint)bytes[offset + 0];
+				bytes[offset + 0];
 		}
 
 		public static uint UInt32FromLEBytes(byte[] bytes, int offset)

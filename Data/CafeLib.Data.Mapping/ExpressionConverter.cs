@@ -43,29 +43,29 @@ namespace CafeLib.Data.Mapping
                 switch (expr)
                 {
                     case MemberExpression member:
-                        {
-                            var parameterExpression = _parameterVisitor.FindParameter(member);
-                            var constantExpression = Expression.Constant(@true);
-                            var binaryExpression = Expression.MakeBinary(ExpressionType.Equal, parameterExpression, constantExpression);
-                            expr = binaryExpression;
-                            break;
-                        }
+                    {
+                        var parameterExpression = _parameterVisitor.FindParameter(member);
+                        var constantExpression = Expression.Constant(@true);
+                        var binaryExpression = Expression.MakeBinary(ExpressionType.Equal, parameterExpression, constantExpression);
+                        expr = binaryExpression;
+                        break;
+                    }
 
                     case UnaryExpression unary:
+                    {
+                        switch (expr.NodeType)
                         {
-                            switch (expr.NodeType)
-                            {
-                                case ExpressionType.Not:
-                                    @true ^= true;
-                                    expr = unary.Operand;
-                                    break;
+                            case ExpressionType.Not:
+                                @true ^= true;
+                                expr = unary.Operand;
+                                break;
 
-                                default:
-                                    throw new NotSupportedException(nameof(expr.NodeType));
-                            }
-
-                            break;
+                            default:
+                                throw new NotSupportedException(nameof(expr.NodeType));
                         }
+
+                        break;
+                    }
 
                     case BinaryExpression binary:
                         switch (expr.NodeType)

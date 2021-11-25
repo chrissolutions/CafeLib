@@ -1,6 +1,6 @@
-﻿using CafeLib.Mobile.Commands;
+﻿using System.Diagnostics.CodeAnalysis;
+using CafeLib.Mobile.Commands;
 using CafeLib.Mobile.Views;
-// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Mobile.ViewModels
 {
@@ -8,7 +8,7 @@ namespace CafeLib.Mobile.ViewModels
     {
         protected BaseFlyoutViewModel()
         {
-            PresentedCommand = new XamCommand<bool>(x => { });
+            PresentedCommand = new XamCommand<bool>(_ => { });
         }
 
         private bool _isPresented;
@@ -33,6 +33,7 @@ namespace CafeLib.Mobile.ViewModels
         }
     }
 
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public abstract class BaseFlyoutViewModel : BaseFlyoutViewModel<object>
     {
     }

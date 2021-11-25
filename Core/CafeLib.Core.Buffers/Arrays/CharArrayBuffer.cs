@@ -18,7 +18,7 @@
         {
         }
 
-        public static implicit operator CharArrayBuffer(char[] rhs) => new CharArrayBuffer(rhs);
+        public static implicit operator CharArrayBuffer(char[] rhs) => new(rhs);
         public static implicit operator char[](CharArrayBuffer rhs) => rhs.ToArray();
         public static implicit operator ReadOnlyCharSpan(CharArrayBuffer rhs) => rhs.Span;
     }

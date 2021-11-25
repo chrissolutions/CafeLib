@@ -6,10 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Core.Logging" Version="1.5.0" />
-    <PackageReference Include="CafeLib.Core.MethodBinding" Version="1.5.0" />
-    <PackageReference Include="CafeLib.Core.Runnable" Version="1.5.0" />
-    <PackageReference Include="CafeLib.Web.SignalR" Version="1.5.0" />
+    <PackageReference Include="CafeLib.Core.Logging" Version="1.6.0" />
+    <PackageReference Include="CafeLib.Core.MethodBinding" Version="1.6.0" />
+    <PackageReference Include="CafeLib.Core.Runnable" Version="1.6.0" />
+    <PackageReference Include="CafeLib.Web.SignalR" Version="1.6.0" />
     <PackageReference Include="Microsoft.AspNet.SignalR.Client" Version="2.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.11" />
   </ItemGroup>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Extensions
@@ -12,7 +11,7 @@ namespace CafeLib.Core.Extensions
         /// </summary>
         /// <param name="b">byte array</param>
         /// <returns>hexadecimal string</returns>
-        public static string ToHexString(this byte[] b)
+        public static string ToHex(this byte[] b)
         {
             return BitConverter.ToString(b).Replace("-", string.Empty);
         }
@@ -30,12 +29,17 @@ namespace CafeLib.Core.Extensions
             foreach (var array in arrays)
             {
                 array.CopyTo(bytes[offset..]);
-                offset += array .Length;
+                offset += array.Length;
             }
 
             return bytes.ToArray();
         }
 
+        /// <summary>
+        /// Duplicate the byte array.
+        /// </summary>
+        /// <param name="source">source byte array</param>
+        /// <returns>copy of the source byte array</returns>
         public static byte[] Duplicate(this byte[] source)
         {
             var dup = new byte[source.Length];

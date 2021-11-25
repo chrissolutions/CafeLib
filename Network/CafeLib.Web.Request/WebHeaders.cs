@@ -93,13 +93,13 @@ namespace CafeLib.Web.Request
 
         public void Add(string key, string value)
         {
-            var items = (IList) Headers.GetOrAdd(key, x => new List<string>());
+            var items = (IList) Headers.GetOrAdd(key, _ => new List<string>());
             items.Add(value);
         }
 
         public void Add(string key, IEnumerable<string> value)
         {
-            var items = Headers.GetOrAdd(key, x => new List<string>());
+            var items = Headers.GetOrAdd(key, _ => new List<string>());
             ((List<string>)items).AddRange(value);
         }
 

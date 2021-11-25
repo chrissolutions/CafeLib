@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CafeLib.Data
+﻿namespace CafeLib.Data
 {
-    public interface IDatabase
+    public interface IDatabase<out T> where T : IStorage
     {
         string DatabaseName { get; }
         string ConnectionString { get; }
-        IStorage GetStorage();
+        T GetStorage();
+    }
+
+    public interface IDatabase : IDatabase<IStorage>
+    {
     }
 }

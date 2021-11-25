@@ -4,7 +4,7 @@ using CafeLib.Core.Buffers;
 
 namespace CafeLib.Core.Encodings
 {
-    public class EndianEncoder : IEncoder
+    public class EndianEncoder : IEndianEncoder
     {
         public int LittleEndianInt32(ReadOnlyByteSpan data) => BinaryPrimitives.ReadInt32LittleEndian(data);
         public int BigEndianInt32(ReadOnlyByteSpan data) => BinaryPrimitives.ReadInt32BigEndian(data);

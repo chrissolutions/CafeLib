@@ -95,16 +95,16 @@ namespace CafeLib.Core.Collections
             return item;
         }
 
-        public bool TryDequeue(out T result)
+        public bool TryDequeue(out T item)
         {
             _producer.Wait();
             _consumer.Release();
-            return _queue.TryDequeue(out result);
+            return _queue.TryDequeue(out item);
         }
 
-        public bool TryPeek(out T result)
+        public bool TryPeek(out T item)
         {
-            return _queue.TryPeek(out result);
+            return _queue.TryPeek(out item);
         }
 
         public IEnumerator<T> GetEnumerator()

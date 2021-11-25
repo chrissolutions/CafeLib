@@ -19,7 +19,7 @@ namespace CafeLib.Core.IoC
         internal ServiceRegistry()
         {
             _serviceContainer = new ServiceContainer();
-            _serviceContainer.Register<IServiceResolver>(x => this);
+            _serviceContainer.Register<IServiceResolver>(_ => this);
         }
 
         #endregion
@@ -63,7 +63,7 @@ namespace CafeLib.Core.IoC
         /// <returns>service registry</returns>
         public IServiceRegistry AddScoped<TService>(Func<IServiceResolver, TService> factory) where TService : class
         {
-            _serviceContainer.RegisterScoped(x => factory.Invoke(this));
+            _serviceContainer.RegisterScoped(_ => factory.Invoke(this));
             return this;
         }
 
@@ -98,7 +98,7 @@ namespace CafeLib.Core.IoC
         /// <returns>service registry</returns>
         public IServiceRegistry AddSingleton<TService>(Func<IServiceResolver, TService> factory) where TService : class
         {
-            _serviceContainer.RegisterSingleton(x => factory.Invoke(this));
+            _serviceContainer.RegisterSingleton(_ => factory.Invoke(this));
             return this;
         }
 
@@ -133,7 +133,7 @@ namespace CafeLib.Core.IoC
         /// <returns>service registry</returns>
         public IServiceRegistry AddTransient<TService>(Func<IServiceResolver, TService> factory) where TService : class
         {
-            _serviceContainer.Register(x => factory.Invoke(this));
+            _serviceContainer.Register(_ => factory.Invoke(this));
             return this;
         }
 

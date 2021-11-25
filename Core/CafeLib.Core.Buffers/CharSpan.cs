@@ -32,7 +32,7 @@ namespace CafeLib.Core.Buffers
 
         public CharSpan Reverse()
         {
-             Data.Reverse();
+            Data.Reverse();
             return this;
         }
 
@@ -44,7 +44,7 @@ namespace CafeLib.Core.Buffers
 
         public char[] ToArray() => Data.ToArray();
 
-        public Enumerator GetEnumerator() => new Enumerator(this);
+        public Enumerator GetEnumerator() => new(this);
 
         public ref struct Enumerator
         {
@@ -72,18 +72,18 @@ namespace CafeLib.Core.Buffers
             return destination;
         }
 
-        public static CharSpan Empty => new CharSpan();
+        public static CharSpan Empty => new();
 
-        public static implicit operator CharSpan(char[] rhs) => new CharSpan(rhs);
+        public static implicit operator CharSpan(char[] rhs) => new(rhs);
         public static implicit operator char[](CharSpan rhs) => rhs.Data.ToArray();
 
-        public static implicit operator CharSpan(Span<char> rhs) => new CharSpan(rhs);
+        public static implicit operator CharSpan(Span<char> rhs) => new(rhs);
         public static implicit operator Span<char>(CharSpan rhs) => rhs.Data;
 
-        public static implicit operator CharSpan(ReadOnlySpan<char> rhs) => new CharSpan(rhs.ToArray());
+        public static implicit operator CharSpan(ReadOnlySpan<char> rhs) => new(rhs.ToArray());
         public static implicit operator ReadOnlySpan<char>(CharSpan rhs) => rhs.Data;
 
-        public static implicit operator CharSpan(ReadOnlyCharSpan rhs) => new CharSpan(rhs.ToArray());
+        public static implicit operator CharSpan(ReadOnlyCharSpan rhs) => new(rhs.ToArray());
         public static implicit operator ReadOnlyCharSpan(CharSpan rhs) => rhs.Data;
     }
 }

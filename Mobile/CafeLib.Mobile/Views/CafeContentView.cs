@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using CafeLib.Core.Eventing;
 using CafeLib.Core.IoC;
 using CafeLib.Mobile.Extensions;
@@ -9,6 +10,7 @@ using Xamarin.Forms;
 
 namespace CafeLib.Mobile.Views
 {
+    [SuppressMessage("ReSharper", "AsyncVoidLambda")]
     public abstract class CafeContentView : ContentView
     {
         private readonly List<Guid> _subscriberHandles;

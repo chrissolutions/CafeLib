@@ -204,7 +204,7 @@ namespace CafeLib.Core.Dynamic
             }
 
             // no match - set or add to dictionary
-            Properties.AddOrUpdate(binder.Name, value, (k, v) => value);
+            Properties.AddOrUpdate(binder.Name, value, (_, _) => value);
             return true;
         }
 

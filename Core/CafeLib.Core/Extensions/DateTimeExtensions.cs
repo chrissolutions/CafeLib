@@ -27,6 +27,27 @@ namespace CafeLib.Core.Extensions
         }
 
         /// <summary>
+        /// Adds interval to datetime until greater than current utc time.
+        /// </summary>
+        /// <param name="dateTime">date time</param>
+        /// <param name="interval">interval time span</param>
+        /// <returns>datetime</returns>
+        public static DateTime NextTimeUtc(this DateTime dateTime, TimeSpan interval)
+        {
+            var timespan = dateTime < DateTime.UtcNow
+                ? interval != TimeSpan.Zero ? interval : throw new ArgumentException($"Zero {nameof(interval)} results in endless loop.")
+                : TimeSpan.Zero;
+
+            var nextTime = dateTime.Add(timespan);
+            while (nextTime < DateTime.UtcNow)
+            {
+                nextTime = nextTime.Add(timespan);
+            }
+
+            return nextTime;
+        }
+
+        /// <summary>
         /// Converts datetime to Unix time in milliseconds.
         /// </summary>
         /// <param name="dateTime">date time</param>
@@ -88,6 +109,8 @@ namespace CafeLib.Core.Extensions
             return dateTime.Truncate(TimeSpan.TicksPerSecond);
         }
 
+        #region Helpers
+
         /// <summary>
         /// Truncates a DateTime to a specified resolution.
         /// A convenient source for resolution is TimeSpan.TicksPerXXXX constants.
@@ -99,5 +122,7 @@ namespace CafeLib.Core.Extensions
         {
             return new DateTime(date.Ticks - (date.Ticks % resolution), date.Kind);
         }
+
+        #endregion
     }
 }

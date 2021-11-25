@@ -23,6 +23,7 @@ set libs=%libs% %solution%.Encodings
 set libs=%libs% %solution%.Eventing
 set libs=%libs% %solution%.FileIO
 set libs=%libs% %solution%.IoC
+set libs=%libs% %solution%.KeyValueStore
 set libs=%libs% %solution%.Logging
 set libs=%libs% %solution%.Messaging
 set libs=%libs% %solution%.MethodBinding

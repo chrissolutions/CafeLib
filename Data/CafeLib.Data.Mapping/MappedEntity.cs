@@ -11,7 +11,7 @@ namespace CafeLib.Data.Mapping
     public abstract class MappedEntity<TModel, TEntity> : IMappedEntity<TModel, TEntity> where TModel : class, IMappedEntity<TModel, TEntity> where TEntity : class, IEntity
     {
         public static readonly IPropertyMap<TModel> PropertyMap = new PropertyMap<TModel>();
-        internal static readonly PropertyDictionary<TEntity> EntityProperties = new PropertyDictionary<TEntity>();
+        internal static readonly PropertyDictionary<TEntity> EntityProperties = new();
 
         private readonly IDictionary<string, PropertyConverter> _propertyConverters;
 

@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using CafeLib.Mobile.ViewModels;
 
 namespace CafeLib.Mobile.Commands
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public class BackButtonCommand : XamCommand<NavigationSource, bool>
     {
         public BackButtonCommand(bool result = false)
-            : base(p => result)
+            : base(_ => result)
         {
         }
 

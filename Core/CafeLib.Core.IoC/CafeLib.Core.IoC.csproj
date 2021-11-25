@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\..\cafelib.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

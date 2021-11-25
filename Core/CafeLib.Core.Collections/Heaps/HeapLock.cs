@@ -2,6 +2,6 @@
 {
     internal class HeapLock
     {
-        public static readonly object Mutex = new object();
+        public static readonly object Mutex = new();
     }
 }

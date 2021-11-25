@@ -34,7 +34,7 @@ namespace CafeLib.Core.Encodings
 
         public bool TryDecode(string hex, out byte[] bytes)
         {
-            hex = hex[hex.StartsWith("0x") ? 2.. : ..];
+            hex = hex.StartsWith("0x") ? hex[2..] : hex;
             bytes = new byte[hex.Length / 2];
             var span = bytes.AsSpan();
             return TryDecodeSpan(hex, span);
@@ -55,16 +55,17 @@ namespace CafeLib.Core.Encodings
 
         public virtual bool TryDecodeSpan(string hex, ByteSpan bytes)
         {
-            if (hex.Length % 2 == 1 || hex.Length / 2 > bytes.Length)
+            ReadOnlyCharSpan chars= hex.StartsWith("0x") ? hex[2..] : hex;
+            if (chars.Length % 2 == 1 || chars.Length / 2 > bytes.Length)
                 return false;
 
-            if (hex.Length / 2 < bytes.Length)
-                bytes[(hex.Length / 2)..].Data.Fill(0);
+            if (chars.Length / 2 < bytes.Length)
+                bytes[(chars.Length / 2)..].Data.Fill(0);
 
-            for (int i = 0, j = 0; i < hex.Length;)
+            for (int i = 0, j = 0; i < chars.Length;)
             {
-                var a = CharToNibble(hex[i++]);
-                var b = CharToNibble(hex[i++]);
+                var a = CharToNibble(chars[i++]);
+                var b = CharToNibble(chars[i++]);
                 if (a == -1 || b == -1) return false;
                 bytes[j++] = (byte)((a << 4) | b);
             }

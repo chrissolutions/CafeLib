@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-// ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Web.Request
 {
@@ -11,8 +10,12 @@ namespace CafeLib.Web.Request
     /// </summary>
     public abstract class WebRequestBase : IDisposable
     {
+        #region Private Members
+
         private bool _disposed;
         private readonly HttpClient _client;
+
+        #endregion
 
         #region Automatic Properties
 

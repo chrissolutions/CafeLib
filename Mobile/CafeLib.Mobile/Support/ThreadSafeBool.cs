@@ -1,7 +1,9 @@
-﻿using System.Threading;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 
 namespace CafeLib.Mobile.Support
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     internal class ThreadSafeBool
     {
         private long _state;

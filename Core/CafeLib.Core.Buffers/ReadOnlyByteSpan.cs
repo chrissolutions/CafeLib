@@ -68,12 +68,12 @@ namespace CafeLib.Core.Buffers
         public static implicit operator ByteSpan(ReadOnlyByteSpan rhs) => rhs.Data;
 
         public static implicit operator ReadOnlySpan<byte>(ReadOnlyByteSpan rhs) => rhs.Data;
-        public static implicit operator ReadOnlyByteSpan(ReadOnlySpan<byte> rhs) => new ReadOnlyByteSpan(rhs);
+        public static implicit operator ReadOnlyByteSpan(ReadOnlySpan<byte> rhs) => new ReadOnlyByteSpan(                                                                                                                                                                                                                                    rhs);
 
-        public static implicit operator Span<byte>(ReadOnlyByteSpan rhs) => new Span<byte>(rhs.Data.ToArray());
-        public static implicit operator ReadOnlyByteSpan(Span<byte> rhs) => new ReadOnlyByteSpan(rhs);
+        public static implicit operator Span<byte>(ReadOnlyByteSpan rhs) => new(rhs.Data.ToArray());
+        public static implicit operator ReadOnlyByteSpan(Span<byte> rhs) => new(rhs);
 
         public static implicit operator byte[](ReadOnlyByteSpan rhs) => rhs.Data.ToArray();
-        public static implicit operator ReadOnlyByteSpan(byte[] rhs) => new ReadOnlyByteSpan(rhs);
+        public static implicit operator ReadOnlyByteSpan(byte[] rhs) => new(rhs);
     }
 }

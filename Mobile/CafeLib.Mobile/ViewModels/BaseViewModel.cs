@@ -47,7 +47,7 @@ namespace CafeLib.Mobile.ViewModels
             LoadCommand = new XamAsyncCommand(() => { });
             UnloadCommand = new XamAsyncCommand(() => { });
             FocusCommand = new Command(() => { });
-            BackButtonPressed = new BackButtonCommand(x => Close());
+            BackButtonPressed = new BackButtonCommand(_ => Close());
 
             ExecuteCommand = async command =>
             {

@@ -6,7 +6,7 @@ namespace CafeLib.Cryptography
 {
     public class Base58CheckEncoder : IEncoder
     {
-        private static readonly Base58Encoder Base58Encoder = new Base58Encoder();
+        private static readonly Base58Encoder Base58Encoder = new();
 
         /// <summary>
         /// Appends first 4 bytes of double SHA256 hash to bytes before standard Base58 encoding.
