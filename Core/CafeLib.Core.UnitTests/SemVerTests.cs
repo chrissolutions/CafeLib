@@ -64,5 +64,22 @@ namespace CafeLib.Core.UnitTests
             Assert.Equal(0, semVer.Patch);
             Assert.True(string.IsNullOrWhiteSpace(semVer.Prerelease));
         }
+
+        [Fact]
+        public void SemVer_Comparison_Test()
+        {
+            const string semverTest = "1.0.0-alpha.1+001";
+            var semVer1 = SemVer.Parse(semverTest);
+
+            var version = new Version(2, 2, 1000);
+            var semVer2 = new SemVer(version);
+
+            Assert.True(semVer1 < semVer2);
+
+            var semVer3 = new SemVer(new Version(2, 2, 1001));
+            Assert.True(semVer2 < semVer3);
+
+            Assert.True(semVer3.PrecedenceMatches(semVer2));
+        }
     }
 }

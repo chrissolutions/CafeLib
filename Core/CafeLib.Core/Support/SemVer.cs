@@ -9,6 +9,8 @@ namespace CafeLib.Core.Support
     /// </summary>
     public readonly struct SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
     {
+        #region Private Varaibles
+
         private static readonly Regex ParseEx =
             new(@"^(?<major>\d+)" +
                 @"(\.(?<minor>\d+))?" +
@@ -17,7 +19,56 @@ namespace CafeLib.Core.Support
                 @"(\+(?<build>[0-9A-Za-z\-\.]+))?$",
                 RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
 
-        public static SemVer Empty = new();
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Empty SemVer
+        /// </summary>
+        public static SemVer Empty = default;
+
+        /// <summary>
+        /// Gets the major version.
+        /// </summary>
+        /// <value>
+        /// The major version.
+        /// </value>
+        public int Major { get; }
+
+        /// <summary>
+        /// Gets the minor version.
+        /// </summary>
+        /// <value>
+        /// The minor version.
+        /// </value>
+        public int Minor { get; }
+
+        /// <summary>
+        /// Gets the patch version.
+        /// </summary>
+        /// <value>
+        /// The patch version.
+        /// </value>
+        public int Patch { get; }
+
+        /// <summary>
+        /// Gets the pre-release version.
+        /// </summary>
+        /// <value>
+        /// The pre-release version.
+        /// </value>
+        public string Prerelease { get; }
+
+        /// <summary>
+        /// Gets the build version.
+        /// </summary>
+        /// <value>
+        /// The build version.
+        /// </value>
+        public string Build { get; }
+
+        #endregion
 
         #region Constructors
 
@@ -57,6 +108,8 @@ namespace CafeLib.Core.Support
         }
 
         #endregion
+
+        #region Methods
 
         /// <summary>
         /// Parses the specified string to a semantic version.
@@ -167,46 +220,6 @@ namespace CafeLib.Core.Support
         }
 
         /// <summary>
-        /// Gets the major version.
-        /// </summary>
-        /// <value>
-        /// The major version.
-        /// </value>
-        public int Major { get; }
-
-        /// <summary>
-        /// Gets the minor version.
-        /// </summary>
-        /// <value>
-        /// The minor version.
-        /// </value>
-        public int Minor { get; }
-
-        /// <summary>
-        /// Gets the patch version.
-        /// </summary>
-        /// <value>
-        /// The patch version.
-        /// </value>
-        public int Patch { get; }
-
-        /// <summary>
-        /// Gets the pre-release version.
-        /// </summary>
-        /// <value>
-        /// The pre-release version.
-        /// </value>
-        public string Prerelease { get; }
-
-        /// <summary>
-        /// Gets the build version.
-        /// </summary>
-        /// <value>
-        /// The build version.
-        /// </value>
-        public string Build { get; }
-
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>
@@ -273,74 +286,6 @@ namespace CafeLib.Core.Support
             return CompareByPrecedence(other) == 0;
         }
 
-        /// <summary>
-        /// Compares to semantic versions by precedence. This does the same as a Equals, but ignores the build information.
-        /// </summary>
-        /// <param name="other">The semantic version.</param>
-        /// <returns>
-        /// A value that indicates the relative order of the objects being compared. 
-        /// The return value has these meanings: Value Meaning Less than zero 
-        ///  This instance precedes <paramref name="other" /> in the version precedence.
-        ///  Zero This instance has the same precedence as <paramref name="other" />. i
-        ///  Greater than zero This instance has creator precedence as <paramref name="other" />.
-        /// </returns>
-        public int CompareByPrecedence(SemVer other)
-        {
-            var r = Major.CompareTo(other.Major);
-            if (r != 0) return r;
-
-            r = Minor.CompareTo(other.Minor);
-            if (r != 0) return r;
-
-            r = Patch.CompareTo(other.Patch);
-            if (r != 0) return r;
-
-            r = CompareComponent(Prerelease, other.Prerelease, true);
-            return r;
-        }
-
-        private static int CompareComponent(string a, string b, bool lower = false)
-        {
-            var aEmpty = string.IsNullOrEmpty(a);
-            var bEmpty = string.IsNullOrEmpty(b);
-            if (aEmpty && bEmpty)
-                return 0;
-
-            if (aEmpty)
-                return lower ? 1 : -1;
-            if (bEmpty)
-                return lower ? -1 : 1;
-
-            var aComps = a.Split('.');
-            var bComps = b.Split('.');
-
-            var minLen = Math.Min(aComps.Length, bComps.Length);
-            for (var i = 0; i < minLen; i++)
-            {
-                var ac = aComps[i];
-                var bc = bComps[i];
-                var isanum = int.TryParse(ac, out var anum);
-                var isbnum = int.TryParse(bc, out var bnum);
-                int r;
-                if (isanum && isbnum)
-                {
-                    r = anum.CompareTo(bnum);
-                    if (r != 0) return anum.CompareTo(bnum);
-                }
-                else
-                {
-                    if (isanum)
-                        return -1;
-                    if (isbnum)
-                        return 1;
-                    r = string.CompareOrdinal(ac, bc);
-                    if (r != 0)
-                        return r;
-                }
-            }
-
-            return aComps.Length.CompareTo(bComps.Length);
-        }
 
         /// <summary>
         /// Determines whether the specified semver value is equal to this instance.
@@ -385,16 +330,12 @@ namespace CafeLib.Core.Support
         /// </returns>
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var result = Major.GetHashCode();
-                result = result * 31 + Minor.GetHashCode();
-                result = result * 31 + Patch.GetHashCode();
-                result = result * 31 + Prerelease.GetHashCode();
-                result = result * 31 + Build.GetHashCode();
-                return result;
-            }
+            return HashCode.Combine(Major, Minor, Patch, Prerelease, Build);
         }
+
+        #endregion
+
+        #region Operators
 
         /// <summary>
         /// Implicit conversion from string to SemVersion.
@@ -468,5 +409,80 @@ namespace CafeLib.Core.Support
         {
             return left == right || left < right;
         }
+
+        #endregion
+
+        #region Helpers
+
+        /// <summary>
+        /// Compares to semantic versions by precedence. This does the same as a Equals, but ignores the build information.
+        /// </summary>
+        /// <param name="other">The semantic version.</param>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. 
+        /// The return value has these meanings: Value Meaning Less than zero 
+        ///  This instance precedes <paramref name="other" /> in the version precedence.
+        ///  Zero This instance has the same precedence as <paramref name="other" />. i
+        ///  Greater than zero This instance has creator precedence as <paramref name="other" />.
+        /// </returns>
+        private int CompareByPrecedence(SemVer other)
+        {
+            var r = Major.CompareTo(other.Major);
+            if (r != 0) return r;
+
+            r = Minor.CompareTo(other.Minor);
+            if (r != 0) return r;
+
+            r = Patch.CompareTo(other.Patch);
+            if (r != 0) return r;
+
+            r = CompareComponent(Prerelease, other.Prerelease, true);
+            return r;
+        }
+
+        private static int CompareComponent(string a, string b, bool lower = false)
+        {
+            var aEmpty = string.IsNullOrEmpty(a);
+            var bEmpty = string.IsNullOrEmpty(b);
+            if (aEmpty && bEmpty)
+                return 0;
+
+            if (aEmpty)
+                return lower ? 1 : -1;
+            if (bEmpty)
+                return lower ? -1 : 1;
+
+            var aComps = a.Split('.');
+            var bComps = b.Split('.');
+
+            var minLen = Math.Min(aComps.Length, bComps.Length);
+            for (var i = 0; i < minLen; i++)
+            {
+                var ac = aComps[i];
+                var bc = bComps[i];
+                var isanum = int.TryParse(ac, out var anum);
+                var isbnum = int.TryParse(bc, out var bnum);
+                int r;
+                if (isanum && isbnum)
+                {
+                    r = anum.CompareTo(bnum);
+                    if (r != 0) return anum.CompareTo(bnum);
+                }
+                else
+                {
+                    if (isanum)
+                        return -1;
+                    if (isbnum)
+                        return 1;
+                    r = string.CompareOrdinal(ac, bc);
+                    if (r != 0)
+                        return r;
+                }
+            }
+
+            return aComps.Length.CompareTo(bComps.Length);
+        }
+
+        #endregion
     }
 }
