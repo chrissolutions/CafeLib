@@ -1,23 +1,25 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace CafeLib.Core.Versioning
+namespace CafeLib.Core.Support
 {
     /// <summary>
     /// A semantic version implementation.
     /// Conforms to v2.0.0 of http://semver.org/
     /// </summary>
-    public struct SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
+    public readonly struct SemVer : IEquatable<SemVer>, IComparable<SemVer>, IComparable
     {
         private static readonly Regex ParseEx =
-            new Regex(@"^(?<major>\d+)" +
+            new(@"^(?<major>\d+)" +
                 @"(\.(?<minor>\d+))?" +
                 @"(\.(?<patch>\d+))?" +
                 @"(\-(?<pre>[0-9A-Za-z\-\.]+))?" +
                 @"(\+(?<build>[0-9A-Za-z\-\.]+))?$",
                 RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
 
-        public static SemVer Empty = new SemVer();
+        public static SemVer Empty = new();
+
+        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SemVer" /> class.
@@ -54,6 +56,8 @@ namespace CafeLib.Core.Versioning
             Build = version.Build > 0 ? version.Build.ToString() : string.Empty;
         }
 
+        #endregion
+
         /// <summary>
         /// Parses the specified string to a semantic version.
         /// </summary>
@@ -70,7 +74,7 @@ namespace CafeLib.Core.Versioning
             var major = int.Parse(match.Groups["major"].Value);
 
             var minorMatch = match.Groups["minor"];
-            int minor = 0;
+            var minor = 0;
             if (minorMatch.Success)
             {
                 minor = int.Parse(minorMatch.Value);
@@ -115,7 +119,7 @@ namespace CafeLib.Core.Versioning
             }
             catch (Exception)
             {
-                semver = null;
+                semver = default;
                 return false;
             }
         }
@@ -278,7 +282,7 @@ namespace CafeLib.Core.Versioning
         /// The return value has these meanings: Value Meaning Less than zero 
         ///  This instance precedes <paramref name="other" /> in the version precedence.
         ///  Zero This instance has the same precedence as <paramref name="other" />. i
-        ///  Greater than zero This instance has creater precedence as <paramref name="other" />.
+        ///  Greater than zero This instance has creator precedence as <paramref name="other" />.
         /// </returns>
         public int CompareByPrecedence(SemVer other)
         {
@@ -338,6 +342,13 @@ namespace CafeLib.Core.Versioning
             return aComps.Length.CompareTo(bComps.Length);
         }
 
+        /// <summary>
+        /// Determines whether the specified semver value is equal to this instance.
+        /// </summary>
+        /// <param name="other">comparison value</param>
+        /// <returns>
+        ///   <c>true</c> if the specified value is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
         public bool Equals(SemVer other)
         {
             return Major == other.Major &&
@@ -348,17 +359,17 @@ namespace CafeLib.Core.Versioning
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+        /// Determines whether the specified value is equal to this instance.
         /// </summary>
-        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <param name="other">comparison value</param>
         /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        ///   <c>true</c> if the specified value is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object other)
         {
             try
             {
-                return obj != null && Equals((SemVer)obj);
+                return other is not null && Equals((SemVer)other);
             }
             catch
             {
