@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Description>Sqlite data source package</Description>
-    <Version Condition=" '$(Version)' == '' ">1.5.1</Version>
+    <Version Condition=" '$(Version)' == '' ">1.6.0</Version>
     <Copyright>© 2021 Chris Solutions</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReleaseNotes></PackageReleaseNotes>
