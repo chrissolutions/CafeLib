@@ -22,7 +22,7 @@ namespace CafeLib.Core.Extensions
         /// </returns>
         public static ConstructorInfo FindConstructor(this Type type, params object[] args)
         {
-            return args != null && args.Length > 0
+            return args is not null && args.Length > 0
                 ? type.GetTypeInfo().DeclaredConstructors.FirstOrDefault(MatchSignature)
                 : type.GetTypeInfo().DeclaredConstructors.FirstOrDefault(c => !c.GetParameters().Any());
 

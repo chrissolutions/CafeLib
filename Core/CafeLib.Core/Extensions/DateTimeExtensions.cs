@@ -10,15 +10,16 @@ namespace CafeLib.Core.Extensions
         /// </summary>
         /// <param name="dateTime">date time</param>
         /// <param name="interval">interval time span</param>
+        /// <param name="useUtc">use utc time flag</param>
         /// <returns>datetime</returns>
-        public static DateTime NextTime(this DateTime dateTime, TimeSpan interval)
+        public static DateTime NextTime(this DateTime dateTime, TimeSpan interval, bool useUtc = false)
         {
-            var timespan = dateTime < DateTime.Now
+            var timespan = dateTime < (useUtc ? DateTime.UtcNow : DateTime.Now)
                 ? interval != TimeSpan.Zero ? interval : throw new ArgumentException($"Zero {nameof(interval)} results in endless loop.")
                 : TimeSpan.Zero;
 
             var nextTime = dateTime.Add(timespan);
-            while (nextTime < DateTime.Now)
+            while (nextTime < (useUtc ? DateTime.UtcNow : DateTime.Now))
             {
                 nextTime = nextTime.Add(timespan);
             }
@@ -32,20 +33,9 @@ namespace CafeLib.Core.Extensions
         /// <param name="dateTime">date time</param>
         /// <param name="interval">interval time span</param>
         /// <returns>datetime</returns>
-        public static DateTime NextTimeUtc(this DateTime dateTime, TimeSpan interval)
-        {
-            var timespan = dateTime < DateTime.UtcNow
-                ? interval != TimeSpan.Zero ? interval : throw new ArgumentException($"Zero {nameof(interval)} results in endless loop.")
-                : TimeSpan.Zero;
+        public static DateTime NextTimeUtc(this DateTime dateTime, TimeSpan interval) 
+            => NextTime(dateTime, interval, true);
 
-            var nextTime = dateTime.Add(timespan);
-            while (nextTime < DateTime.UtcNow)
-            {
-                nextTime = nextTime.Add(timespan);
-            }
-
-            return nextTime;
-        }
 
         /// <summary>
         /// Converts datetime to Unix time in milliseconds.

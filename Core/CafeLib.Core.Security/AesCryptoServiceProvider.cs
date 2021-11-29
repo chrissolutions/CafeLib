@@ -63,11 +63,11 @@ namespace CafeLib.Core.Security
 
         public override ICryptoTransform CreateEncryptor()
             => _impl.CreateEncryptor();
-        public override ICryptoTransform CreateEncryptor(byte[] rgbKey, byte[]? rgbIv)
+        public override ICryptoTransform CreateEncryptor(byte[] rgbKey, byte[] rgbIv)
             => _impl.CreateEncryptor(rgbKey, rgbIv);
         public override ICryptoTransform CreateDecryptor()
             => _impl.CreateDecryptor();
-        public override ICryptoTransform CreateDecryptor(byte[] rgbKey, byte[]? rgbIv) 
+        public override ICryptoTransform CreateDecryptor(byte[] rgbKey, byte[] rgbIv) 
             => _impl.CreateDecryptor(rgbKey, rgbIv);
         public override void GenerateIV() 
             => _impl.GenerateIV();
