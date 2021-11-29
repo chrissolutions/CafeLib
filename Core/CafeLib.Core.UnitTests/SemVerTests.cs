@@ -79,7 +79,35 @@ namespace CafeLib.Core.UnitTests
             var semVer3 = new SemVer(new Version(2, 2, 1001));
             Assert.True(semVer2 < semVer3);
 
-            Assert.True(semVer3.PrecedenceMatches(semVer2));
+            Assert.True(semVer3.MatchPrecedence(semVer2));
+        }
+
+        [Fact]
+        public void SemVer_Copy_Test()
+        {
+            const string semverTest = "1.0.0-alpha.1+001";
+            var semVer1 = SemVer.Parse(semverTest);
+
+            var semVer2 = semVer1.Copy();
+            Assert.Equal(semVer1.Major, semVer2.Major);
+            Assert.Equal(semVer1.Minor, semVer2.Minor);
+            Assert.Equal(semVer1.Patch, semVer2.Patch);
+            Assert.Equal(semVer1.Prerelease, semVer2.Prerelease);
+            Assert.Equal(semVer1.Build, semVer2.Build);
+        }
+
+        [Fact]
+        public void SemVer_Copy_Change_Test()
+        {
+            const string semverTest = "1.0.0-alpha.1+001";
+            var semVer1 = SemVer.Parse(semverTest);
+
+            var semVer2 = semVer1.Copy(null, null, null, null, "002");
+            Assert.Equal(semVer1.Major, semVer2.Major);
+            Assert.Equal(semVer1.Minor, semVer2.Minor);
+            Assert.Equal(semVer1.Patch, semVer2.Patch);
+            Assert.Equal(semVer1.Prerelease, semVer2.Prerelease);
+            Assert.Equal("002", semVer2.Build);
         }
     }
 }

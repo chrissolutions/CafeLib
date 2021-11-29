@@ -209,7 +209,7 @@ namespace CafeLib.Core.Support
         /// <param name="prerelease">The prerelease text.</param>
         /// <param name="build">The build text.</param>
         /// <returns>The new version object.</returns>
-        public SemVer Change(int? major = null, int? minor = null, int? patch = null, string prerelease = null, string build = null)
+        public SemVer Copy(int? major = null, int? minor = null, int? patch = null, string prerelease = null, string build = null)
         {
             return new SemVer(
                 major ?? Major,
@@ -281,11 +281,10 @@ namespace CafeLib.Core.Support
         /// </summary>
         /// <param name="other">The semantic version.</param>
         /// <returns><c>true</c> if the version precedence matches.</returns>
-        public bool PrecedenceMatches(SemVer other)
+        public bool MatchPrecedence(SemVer other)
         {
             return CompareByPrecedence(other) == 0;
         }
-
 
         /// <summary>
         /// Determines whether the specified semver value is equal to this instance.
