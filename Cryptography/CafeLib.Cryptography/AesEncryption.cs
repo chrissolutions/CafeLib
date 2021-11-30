@@ -24,10 +24,10 @@ namespace CafeLib.Cryptography
         private const byte AesIvSize = 16;
 
         private static readonly string AesCryptoService = $"{Algorithm}/{AesTypes.CipherMode.CBC}/{AesTypes.Padding.PKCS7}";
-        private static readonly Utf8Encoder Utf8Encoder = new Utf8Encoder();
+        private static readonly Utf8Encoder Utf8Encoder = new();
 
         public static byte[] InitializationVector(ReadOnlyByteSpan key, ReadOnlySpan<byte> data, int length = DefaultVectorLength)
-            => key.HmacSha256(data).Span.Slice(0, length).ToArray();
+            => key.HmacSha256(data).Span[..length].ToArray();
 
         public static byte[] KeyFromPassword(NonNullable<string> password, byte[] salt = null, int iterations = DefaultIterations, int keyLength = DefaultKeyLength)
             => KeyFromPassword(Utf8Encoder.Decode(password.Value), salt, iterations, keyLength);
