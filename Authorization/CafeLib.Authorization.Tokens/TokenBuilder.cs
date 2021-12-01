@@ -11,7 +11,7 @@ namespace CafeLib.Authorization.Tokens
     {
         internal const string DefaultIssuer = "issuer";
         internal const string DefaultAudience = "audience";
-        private readonly SecurityTokenDescriptor _descriptor = new SecurityTokenDescriptor();
+        private readonly SecurityTokenDescriptor _descriptor = new();
 
         public TokenBuilder()
         {

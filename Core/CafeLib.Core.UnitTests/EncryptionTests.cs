@@ -1,14 +1,11 @@
 using System.Security;
-using System.Security.Cryptography;
 using System.Text;
 using CafeLib.Core.Security;
 using Xunit;
 
-// ReSharper disable ExpressionIsAlwaysNull
-
 namespace CafeLib.Core.UnitTests
 {
-    public class SecurityTests
+    public class EncryptionTests
     {
         [Fact]
         public void AesEncryptDecryptTests()

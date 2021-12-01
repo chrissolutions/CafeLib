@@ -9,7 +9,7 @@ namespace CafeLib.Authorization.Tokens
 {
     public class Token
     {
-        private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
+        private readonly JwtSecurityTokenHandler _handler = new();
         private SecurityToken _token;
         private string _tokenString;
 
