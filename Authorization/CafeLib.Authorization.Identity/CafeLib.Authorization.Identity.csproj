@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Core.Security" Version="$(Version)" />
     <PackageReference Include="CafeLib.Data" Version="$(Version)" />
   </ItemGroup>
 
