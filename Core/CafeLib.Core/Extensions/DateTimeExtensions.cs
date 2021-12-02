@@ -10,21 +10,10 @@ namespace CafeLib.Core.Extensions
         /// </summary>
         /// <param name="dateTime">date time</param>
         /// <param name="interval">interval time span</param>
-        /// <param name="useUtc">use utc time flag</param>
         /// <returns>datetime</returns>
-        public static DateTime NextTime(this DateTime dateTime, TimeSpan interval, bool useUtc = false)
+        public static DateTime NextTime(this DateTime dateTime, TimeSpan interval)
         {
-            var timespan = dateTime < (useUtc ? DateTime.UtcNow : DateTime.Now)
-                ? interval != TimeSpan.Zero ? interval : throw new ArgumentException($"Zero {nameof(interval)} results in endless loop.")
-                : TimeSpan.Zero;
-
-            var nextTime = dateTime.Add(timespan);
-            while (nextTime < (useUtc ? DateTime.UtcNow : DateTime.Now))
-            {
-                nextTime = nextTime.Add(timespan);
-            }
-
-            return nextTime;
+            return NextTimeUtc(dateTime.ToUniversalTime(), interval).ToLocalTime();
         }
 
         /// <summary>
@@ -33,8 +22,20 @@ namespace CafeLib.Core.Extensions
         /// <param name="dateTime">date time</param>
         /// <param name="interval">interval time span</param>
         /// <returns>datetime</returns>
-        public static DateTime NextTimeUtc(this DateTime dateTime, TimeSpan interval) 
-            => NextTime(dateTime, interval, true);
+        public static DateTime NextTimeUtc(this DateTime dateTime, TimeSpan interval)
+        {
+            var timespan = dateTime < DateTime.UtcNow
+                ? interval != TimeSpan.Zero ? interval : throw new ArgumentException($"Zero {nameof(interval)} results in endless loop.")
+                : TimeSpan.Zero;
+
+            var nextTime = dateTime.Add(timespan);
+            while (nextTime < DateTime.UtcNow)
+            {
+                nextTime = nextTime.Add(timespan);
+            }
+
+            return nextTime;
+        }
 
 
         /// <summary>
