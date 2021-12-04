@@ -27,10 +27,7 @@
   <ItemGroup>
     <PackageReference Include="CafeLib.Core.Encodings" Version="$(Version)" />
     <PackageReference Include="CafeLib.Core.Numerics" Version="$(Version)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\CafeLib.Cryptography.BouncyCastle\CafeLib.Cryptography.BouncyCastle.csproj" />
+    <PackageReference Include="CafeLib.Cryptography.BouncyCastle" Version="1.6.1" />
   </ItemGroup>
 
 </Project>
