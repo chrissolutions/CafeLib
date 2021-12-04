@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 
 namespace CafeLib.Authorization.Security
 {
@@ -7,6 +8,7 @@ namespace CafeLib.Authorization.Security
         private PasswordHashAlgorithm _hashAlgorithm;
 
         /// <summary>
+        /// 128-bit hash by default for MD5
         /// 160-bit hash by default for SHA1
         /// 256-bit hash by default for SHA256
         /// 384-bit hash by default for SHA384
@@ -55,6 +57,11 @@ namespace CafeLib.Authorization.Security
 
             switch (HashAlgorithm)
             {
+                case PasswordHashAlgorithm.Md5:
+                    SaltSize = saltSize ?? 8; // hashed password will contain 40 characters for saltSize = 10
+                    Iterations = iterations ?? 1024;
+                    break;
+
                 case PasswordHashAlgorithm.Sha1:
                     SaltSize = saltSize ?? 10; // hashed password will contain 40 characters for saltSize = 10
                     Iterations = iterations ?? 1024;
@@ -88,24 +95,15 @@ namespace CafeLib.Authorization.Security
                 if (_hashAlgorithm == value) return;
 
                 _hashAlgorithm = value;
-                switch (_hashAlgorithm)
+                HashSize = _hashAlgorithm switch
                 {
-                    case PasswordHashAlgorithm.Sha1:
-                        HashSize = 20;
-                        break;
-
-                    case PasswordHashAlgorithm.Sha256:
-                        HashSize = 32;
-                        break;
-
-                    case PasswordHashAlgorithm.Sha384:
-                        HashSize = 48;
-                        break;
-
-                    case PasswordHashAlgorithm.Sha512:
-                        HashSize = 64;
-                        break;
-                }
+                    PasswordHashAlgorithm.Md5 => 16,
+                    PasswordHashAlgorithm.Sha1 => 20,
+                    PasswordHashAlgorithm.Sha256 => 32,
+                    PasswordHashAlgorithm.Sha384 => 48,
+                    PasswordHashAlgorithm.Sha512 => 64,
+                    _ => HashSize
+                };
             }
         }
     }
