@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
+using System.Text;
+using CafeLib.Cryptography.BouncyCastle.Crypto;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Digests;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Generators;
+using CafeLib.Cryptography.BouncyCastle.Crypto.Parameters;
+using CafeLib.Cryptography.BouncyCastle.Security;
 using Microsoft.Extensions.Options;
 
 namespace CafeLib.Authorization.Security
@@ -9,7 +14,7 @@ namespace CafeLib.Authorization.Security
 	{
 		private readonly PasswordHashOptions _options;
 		private readonly IEqualityComparer<byte[]> _comparer;
-		private readonly HashAlgorithmName _hashName;
+        private readonly IDigest _digest;
 
 		/// <summary>
 		/// Default static password hash;
@@ -30,9 +35,17 @@ namespace CafeLib.Authorization.Security
 			if (_options.Iterations < 1)
 				throw new ArgumentOutOfRangeException(nameof(_options.Iterations));
 
-			_hashName = new HashAlgorithmName(_options.HashAlgorithm.ToString().ToUpper());
-
 			_comparer = _options.ByteArrayComparer ?? new BytesEqualityComparer();
+
+            _digest = _options.HashAlgorithm switch
+            {
+                PasswordHashAlgorithm.Md5 => new MD5Digest(),
+                PasswordHashAlgorithm.Sha1 => new Sha1Digest(),
+                PasswordHashAlgorithm.Sha256 => new Sha256Digest(),
+                PasswordHashAlgorithm.Sha384 => new Sha384Digest(),
+                PasswordHashAlgorithm.Sha512 => new Sha512Digest(),
+                _ => new Sha256Digest()
+            };
 		}
 
 		/// <summary>
@@ -42,18 +55,17 @@ namespace CafeLib.Authorization.Security
 		/// <returns>hash of the password</returns>
 		public string HashPassword(string password)
 		{
-			byte[] saltBuffer;
-			byte[] hashBuffer;
+            var random = new SecureRandom();
+			var salt = random.GenerateSeed(_options.SaltSize);
 
-			using (var keyDerivation = new Rfc2898DeriveBytes(password, _options.SaltSize, _options.Iterations, _hashName))
-			{
-				saltBuffer = keyDerivation.Salt;
-				hashBuffer = keyDerivation.GetBytes(_options.HashSize);
-			}
+            var generator = new Pkcs5S2ParametersGenerator(_digest);
+            generator.Init(Encoding.UTF8.GetBytes(password), salt, _options.Iterations);
+
+            var hash = ((KeyParameter)generator.GenerateDerivedMacParameters(8 * _options.HashSize)).GetKey();
 
 			var result = new byte[_options.HashSize + _options.SaltSize];
-			Buffer.BlockCopy(hashBuffer, 0, result, 0, _options.HashSize);
-			Buffer.BlockCopy(saltBuffer, 0, result, _options.HashSize, _options.SaltSize);
+			Buffer.BlockCopy(hash, 0, result, 0, _options.HashSize);
+			Buffer.BlockCopy(salt, 0, result, _options.HashSize, _options.SaltSize);
 			return Convert.ToBase64String(result);
 		}
 
@@ -71,15 +83,16 @@ namespace CafeLib.Authorization.Security
 				return false;
 			}
 
-			var hashBytes = new byte[_options.HashSize];
-			Buffer.BlockCopy(hashedPasswordBytes, 0, hashBytes, 0, _options.HashSize);
-			var saltBytes = new byte[_options.SaltSize];
-			Buffer.BlockCopy(hashedPasswordBytes, _options.HashSize, saltBytes, 0, _options.SaltSize);
+			var hash = new byte[_options.HashSize];
+			Buffer.BlockCopy(hashedPasswordBytes, 0, hash, 0, _options.HashSize);
+			var salt = new byte[_options.SaltSize];
+			Buffer.BlockCopy(hashedPasswordBytes, _options.HashSize, salt, 0, _options.SaltSize);
 
-			using var keyDerivation = new Rfc2898DeriveBytes(providedPassword, saltBytes, _options.Iterations, _hashName);
-			var providedHashBytes = keyDerivation.GetBytes(_options.HashSize);
+            var generator = new Pkcs5S2ParametersGenerator();
+            generator.Init(Encoding.UTF8.GetBytes(providedPassword), salt, _options.Iterations);
+            var providedHashBytes = ((KeyParameter)generator.GenerateDerivedMacParameters(8 * _options.HashSize)).GetKey();
 
-			return _comparer.Equals(hashBytes, providedHashBytes);
+			return _comparer.Equals(hash, providedHashBytes);
 		}
 	}
 }

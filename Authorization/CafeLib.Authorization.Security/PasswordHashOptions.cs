@@ -58,7 +58,7 @@ namespace CafeLib.Authorization.Security
             switch (HashAlgorithm)
             {
                 case PasswordHashAlgorithm.Md5:
-                    SaltSize = saltSize ?? 8; // hashed password will contain 40 characters for saltSize = 10
+                    SaltSize = saltSize ?? 8; // hashed password will contain 40 characters for saltSize = 8
                     Iterations = iterations ?? 1024;
                     break;
 
