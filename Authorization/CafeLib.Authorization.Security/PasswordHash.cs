@@ -88,7 +88,7 @@ namespace CafeLib.Authorization.Security
 			var salt = new byte[_options.SaltSize];
 			Buffer.BlockCopy(hashedPasswordBytes, _options.HashSize, salt, 0, _options.SaltSize);
 
-            var generator = new Pkcs5S2ParametersGenerator();
+            var generator = new Pkcs5S2ParametersGenerator(_digest);
             generator.Init(Encoding.UTF8.GetBytes(providedPassword), salt, _options.Iterations);
             var providedHashBytes = ((KeyParameter)generator.GenerateDerivedMacParameters(8 * _options.HashSize)).GetKey();
 

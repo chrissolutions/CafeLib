@@ -1,5 +1,5 @@
 ﻿using System;
-using CafeLib.Core.Security;
+using CafeLib.Authorization.Security;
 using Microsoft.Extensions.Options;
 using Xunit;
 
