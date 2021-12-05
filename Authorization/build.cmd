@@ -13,6 +13,7 @@ set sourcepath=%root%\%type%
 
 :: Setup libraries.
 set libs=%solution%.Identity
+set libs=%libs% %solution%.Security
 set libs=%libs% %solution%.Tokens
 ::
 
