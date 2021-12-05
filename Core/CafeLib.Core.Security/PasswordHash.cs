@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace CafeLib.Core.Security
 {
+    [Obsolete("Deprecated.  Use 'CafeLib.Authorization.Security' assembly instead.")]
 	public class PasswordHash : IPasswordHash
 	{
 		private readonly PasswordHashOptions _options;

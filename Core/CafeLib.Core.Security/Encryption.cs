@@ -8,6 +8,7 @@ using CafeLib.Core.Support;
 
 namespace CafeLib.Core.Security
 {
+    [Obsolete("Deprecated.  Use 'CafeLib.Authorization.Security' assembly instead.")]
     public class Encryption
     {
         private const int DefaultVectorLength = 16;

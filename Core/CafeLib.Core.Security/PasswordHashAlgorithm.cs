@@ -1,5 +1,8 @@
-﻿namespace CafeLib.Core.Security
+﻿using System;
+
+namespace CafeLib.Core.Security
 {
+    [Obsolete("Deprecated.  Use 'CafeLib.Authorization.Security' assembly instead.")]
 	public enum PasswordHashAlgorithm
 	{		
 		//MD5 = 1, Not supported

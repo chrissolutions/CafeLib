@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 
 namespace CafeLib.Core.Security
 {
+    [Obsolete("Deprecated.  Use 'CafeLib.Authorization.Security' assembly instead.")]
 	public class PasswordHashOptions : IOptions<PasswordHashOptions>
 	{
         private PasswordHashAlgorithm _hashAlgorithm;
