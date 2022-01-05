@@ -1,4 +1,4 @@
-﻿using System.Security;
+﻿using System;
 using System.Text;
 using Xunit;
 
@@ -55,7 +55,7 @@ namespace CafeLib.Cryptography.UnitTests
             const string password = "really strong password...;-)";
 
             var encrypt = AesEncryption.Encrypt(msg, password);
-            Assert.Throws<SecurityException>(() => AesEncryption.Decrypt(encrypt, "Bad password"));
+            Assert.Throws<ApplicationException>(() => AesEncryption.Decrypt(encrypt, "Bad password"));
             var decrypt = AesEncryption.Decrypt(encrypt, password);
             Assert.Equal(msg, decrypt);
         }
