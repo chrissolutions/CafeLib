@@ -31,7 +31,6 @@
     <ProjectReference Include="..\CafeLib.Core.Numerics\CafeLib.Core.Numerics.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Queueing\CafeLib.Core.Queueing.csproj" />
     <ProjectReference Include="..\CafeLib.Core.Runnable\CafeLib.Core.Runnable.csproj" />
-    <ProjectReference Include="..\CafeLib.Core.Security\CafeLib.Core.Security.csproj" />
     <ProjectReference Include="..\CafeLib.Core\CafeLib.Core.csproj" />
   </ItemGroup>
 
