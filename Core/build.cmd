@@ -30,7 +30,6 @@ set libs=%libs% %solution%.MethodBinding
 set libs=%libs% %solution%.Numerics
 set libs=%libs% %solution%.Queueing
 set libs=%libs% %solution%.Runnable
-set libs=%libs% %solution%.Security
 ::
 
 :: Run script to build the libraries

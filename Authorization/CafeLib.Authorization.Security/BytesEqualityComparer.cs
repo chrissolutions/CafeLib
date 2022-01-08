@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using CafeLib.Core.Extensions;
 
-namespace CafeLib.Core.Security
+namespace CafeLib.Authorization.Security
 {
-	internal class BytesEqualityComparer : EqualityComparer<byte[]>
+    internal class BytesEqualityComparer : EqualityComparer<byte[]>
     {
         public override bool Equals(byte[] array1, byte[] array2)
         {
@@ -16,10 +16,10 @@ namespace CafeLib.Core.Security
             };
         }
 
-		public override int GetHashCode(byte[] obj)
-		{
-			var result = Convert.ToBase64String(obj);
-			return result.GetHashCode();
-		}
-	}
+        public override int GetHashCode(byte[] obj)
+        {
+            var result = Convert.ToBase64String(obj);
+            return result.GetHashCode();
+        }
+    }
 }

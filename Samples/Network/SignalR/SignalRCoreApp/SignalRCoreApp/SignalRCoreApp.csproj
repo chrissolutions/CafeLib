@@ -2,10 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+	<Version Condition=" '$(Version)' == '' ">1.7.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CafeLib.Web.SignalR.Hubs" Version="1.6.0" />
+    <PackageReference Include="CafeLib.Web.SignalR.Hubs" Version="$(Version)" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
   </ItemGroup>
 

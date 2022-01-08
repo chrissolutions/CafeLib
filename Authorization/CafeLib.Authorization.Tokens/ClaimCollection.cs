@@ -47,7 +47,7 @@ namespace CafeLib.Authorization.Tokens
 
         public void Add(string key, string value)
         {
-            _dictionary.AddOrUpdate(key, value, (k, v) => value);
+            _dictionary.AddOrUpdate(key, value, (_, _) => value);
         }
 
         public bool ContainsKey(string key)

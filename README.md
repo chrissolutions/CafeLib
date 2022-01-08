@@ -1,6 +1,6 @@
 # CafeLib
 
-**Version 1.6.0**
+**Version 1.7.0**
 
 **Common Application Framework Extensions**
 

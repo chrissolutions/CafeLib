@@ -69,9 +69,9 @@ namespace CafeLib.Core.Extensions
         /// <param name="source"></param>
         public static void AddRange<TK, TV>(this IDictionary<TK, TV> target, NonNullable<IDictionary<TK, TV>> source)
         {
-            foreach (var item in source.Value)
+            foreach (var (key, value) in source.Value)
             {
-                target.AddOrUpdate(item.Key, item.Value, (k, v) => item.Value);
+                target.AddOrUpdate(key, value, (_, _) => value);
             }
         }
 

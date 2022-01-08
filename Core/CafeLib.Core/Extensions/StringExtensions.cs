@@ -21,20 +21,6 @@ namespace CafeLib.Core.Extensions
         #region Extensions
 
         /// <summary>
-        /// Determines whether a string is null or contain whitespaces.
-        /// </summary>
-        /// <param name="s">string value</param>
-        /// <returns>true: string is null or whitespace, false otherwise</returns>
-        public static bool IsNullOrWhiteSpace(this string s) => string.IsNullOrWhiteSpace(s);
-
-        /// <summary>
-        /// Determines whether a string is null or an empty string.
-        /// </summary>
-        /// <param name="s">string value</param>
-        /// <returns>true: string is null or empty, false otherwise</returns>
-        public static bool IsNullOrEmpty(this string s) => string.IsNullOrEmpty(s);
-
-        /// <summary>
         /// Determines whether the string only contains whitespace characters.
         /// </summary>
         /// <param name="s">string value</param>

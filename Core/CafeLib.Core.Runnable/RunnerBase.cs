@@ -21,7 +21,7 @@ namespace CafeLib.Core.Runnable
 
         #region Events
 
-        public event Action<IEventMessage> Advised = x => { };
+        public event Action<IEventMessage> Advised = _ => { };
 
         #endregion
 

@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using CafeLib.Core.Extensions;
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Runnable
 {
-    public class RecurrentTask : RunnerBase
+    public class RecurrentTask : RecurrentTaskUtc
     {
-        private readonly Func<CancellationToken, Task> _task;
-        private readonly TimeSpan _interval;
-        private DateTime _triggerTime;
-
         /// <summary>
         /// RecurrentTask constructor.
         /// </summary>
@@ -44,35 +39,8 @@ namespace CafeLib.Core.Runnable
         /// <param name="startTime">start time</param>
         /// <param name="frequency"></param>
         public RecurrentTask(Func<CancellationToken, Task> task, TimeSpan interval, DateTime startTime = default, int frequency = 1000)
-            : base(frequency)
+            : base(task, interval, startTime.ToUniversalTime(), frequency)
         {
-            _task = task ?? (_ => Task.CompletedTask);
-            _interval = interval;
-            _triggerTime = GetTriggerTime(startTime);
-        }
-
-        /// <summary>
-        /// Run the task.
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns>asynchronous task</returns>
-        protected override async Task Run(CancellationToken token)
-        {
-            if (DateTime.Now >= _triggerTime)
-            {
-                await _task(token).ConfigureAwait(false);
-                _triggerTime = GetTriggerTime(_triggerTime);
-            }
-        }
-
-        /// <summary>
-        /// Calculate new start time.
-        /// </summary>
-        /// <param name="startTime"></param>
-        /// <returns></returns>
-        private DateTime GetTriggerTime(DateTime startTime)
-        {
-            return startTime == default ? DateTime.Now : startTime.NextTime(_interval);
         }
     }
 }

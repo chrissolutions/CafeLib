@@ -13,17 +13,7 @@ namespace CafeLib.Core.Extensions
         /// <returns>datetime</returns>
         public static DateTime NextTime(this DateTime dateTime, TimeSpan interval)
         {
-            var timespan = dateTime < DateTime.Now
-                ? interval != TimeSpan.Zero ? interval : throw new ArgumentException($"Zero {nameof(interval)} results in endless loop.")
-                : TimeSpan.Zero;
-
-            var nextTime = dateTime.Add(timespan);
-            while (nextTime < DateTime.Now)
-            {
-                nextTime = nextTime.Add(timespan);
-            }
-
-            return nextTime;
+            return NextTimeUtc(dateTime.ToUniversalTime(), interval).ToLocalTime();
         }
 
         /// <summary>
@@ -46,6 +36,7 @@ namespace CafeLib.Core.Extensions
 
             return nextTime;
         }
+
 
         /// <summary>
         /// Converts datetime to Unix time in milliseconds.

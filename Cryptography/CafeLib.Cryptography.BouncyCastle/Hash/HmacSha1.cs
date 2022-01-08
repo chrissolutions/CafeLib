@@ -2,10 +2,10 @@
 
 namespace CafeLib.Cryptography.BouncyCastle.Hash
 {
-    public class HmacSha256 : HmacSha
+    public class HmacSha1 : HmacSha
     {
-        public HmacSha256(byte[] key)
-            : base(new Sha256Digest(), key)
+        public HmacSha1(byte[] key)
+            : base(new Sha1Digest(), key)
         {
         }
     }

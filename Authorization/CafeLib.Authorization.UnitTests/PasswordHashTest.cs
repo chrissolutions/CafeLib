@@ -1,5 +1,5 @@
 ﻿using System;
-using CafeLib.Core.Security;
+using CafeLib.Authorization.Security;
 using Microsoft.Extensions.Options;
 using Xunit;
 
@@ -99,12 +99,12 @@ namespace CafeLib.Authorization.UnitTests
 			Assert.Equal(expectedSize, options.HashSize);
 
 			// Arrange
-			options.HashAlgorithm = PasswordHashAlgorithm.Sha1;
 			options.SaltSize = expectedSize;
 			options.HashAlgorithm = algorithm;
 
 			// Act & assert - failure case
 			Assert.Equal(expectedSize, options.HashSize);
+            Assert.Equal(algorithm, options.HashAlgorithm);
 		}
 
 		public static IOptions<PasswordHashOptions> BuildOptions(int? saltSize = null, int? iterations = null)

@@ -1,6 +1,6 @@
 ﻿namespace CafeLib.Core.Collections
 {
-    internal class HeapLock
+    internal static class HeapLock
     {
         public static readonly object Mutex = new();
     }
