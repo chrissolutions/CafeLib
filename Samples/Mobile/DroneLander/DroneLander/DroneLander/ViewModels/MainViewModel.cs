@@ -131,7 +131,7 @@ namespace DroneLander.ViewModels
 
                 if (ActiveLandingParameters.Altitude > 0.0)
                 {
-                    Device.BeginInvokeOnMainThread(() =>
+                    DeviceService.RunOnMainThread(() =>
                     {
                         Altitude = ActiveLandingParameters.Altitude;
                         DescentRate = ActiveLandingParameters.Velocity;
@@ -148,7 +148,7 @@ namespace DroneLander.ViewModels
                     ActiveLandingParameters.Altitude = 0.0;
                     IsActive = false;
 
-                    Device.BeginInvokeOnMainThread(() =>
+                    DeviceService.RunOnMainThread(() =>
                     {
                         Altitude = ActiveLandingParameters.Altitude;
                         DescentRate = ActiveLandingParameters.Velocity;
