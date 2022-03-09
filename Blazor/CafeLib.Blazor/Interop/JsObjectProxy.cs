@@ -22,9 +22,17 @@ namespace CafeLib.Blazor.Interop
             _createMethod = !string.IsNullOrWhiteSpace(createMethod) ? createMethod : "create";
         }
 
-        public async Task<IJSObjectReference> CreateReferenceAsync(params object[] args)
+        public async Task<IJSObjectReference> CreateElementReference(string elementId) =>
+            await CreateJsReference(elementId);
+
+        public async Task<IJSObjectReference> CreateJsReference(params object[] args)
         {
             return await (await _proxy).InvokeAsync<IJSObjectReference>(_createMethod, args);
+        }
+
+        public async Task<T> CreateObject<T>(string elementId, params object[] args)
+        {
+            return (await CreateElementReference(elementId)).CreateObject<T>(args);
         }
     }
 }
