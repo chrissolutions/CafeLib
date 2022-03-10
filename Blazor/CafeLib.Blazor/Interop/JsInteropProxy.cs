@@ -5,17 +5,17 @@ using Microsoft.JSInterop;
 
 namespace CafeLib.Blazor.Interop
 {
-    public class JsObjectProxy
+    public class JsInteropProxy<T> where T : JsInteropObject
     {
         private readonly LazyAsync<IJSObjectReference> _proxy;
         private readonly string _createMethod;
 
-        public JsObjectProxy(string proxyScript, IJSRuntime jsRuntime)
+        public JsInteropProxy(string proxyScript, IJSRuntime jsRuntime)
             : this(proxyScript, null, jsRuntime)
         {
         }
 
-        public JsObjectProxy(string factoryScript, string createMethod, IJSRuntime jsRuntime)
+        public JsInteropProxy(string factoryScript, string createMethod, IJSRuntime jsRuntime)
         {
             factoryScript = !string.IsNullOrWhiteSpace(factoryScript) ? factoryScript : throw new ArgumentNullException(nameof(factoryScript));
             _proxy = new LazyAsync<IJSObjectReference>(async () => await jsRuntime.Import<IJSObjectReference>(factoryScript));
@@ -30,7 +30,7 @@ namespace CafeLib.Blazor.Interop
             return await (await _proxy).InvokeAsync<IJSObjectReference>(_createMethod, args);
         }
 
-        public async Task<T> CreateObject<T>(string elementId, params object[] args)
+        public async Task<T> CreateObject(string elementId, params object[] args)
         {
             return (await CreateElementReference(elementId)).CreateObject<T>(args);
         }
