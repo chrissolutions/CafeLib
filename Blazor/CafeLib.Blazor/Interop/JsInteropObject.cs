@@ -3,7 +3,7 @@ using Microsoft.JSInterop;
 
 namespace CafeLib.Blazor.Interop
 {
-    public class JsInteropObject
+    public abstract class JsInteropObject
     {
         /// <summary>
         /// Javascript interop object instance.
