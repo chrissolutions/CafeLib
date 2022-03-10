@@ -6,11 +6,19 @@ namespace CafeLib.Blazor.Interop
 {
     public class JsInteropObject
     {
-        protected IJSObjectReference JsInstance { get; }
+        /// <summary>
+        /// Javascript interop object instance.
+        /// </summary>
+        protected IJSObjectReference Instance { get; }
 
-        protected JsInteropObject(IJSObjectReference jsInstance)
+        /// <summary>
+        /// Javascript interop object constructor.
+        /// </summary>
+        /// <param name="instance">javascript object instance</param>
+        /// <exception cref="ArgumentNullException">thrown if instance is null</exception>
+        protected JsInteropObject(IJSObjectReference instance)
         {
-            JsInstance = jsInstance ?? throw new ArgumentNullException(nameof(jsInstance));
+            Instance = instance ?? throw new ArgumentNullException(nameof(instance));
         }
     }
 }
