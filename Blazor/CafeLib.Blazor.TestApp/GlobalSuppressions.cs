@@ -5,4 +5,4 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>", Scope = "member", Target = "~M:BlazorWallet.Interop.QrCode.#ctor(Microsoft.JSInterop.IJSObjectReference)")]
+[assembly: SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>", Scope = "member", Target = "~M:CafeLib.Blazor.TestApp.Interop.QrCode.#ctor(Microsoft.JSInterop.IJSObjectReference)")]
