@@ -18,6 +18,10 @@
                           style="cursor: pointer"
                           @onclick="GenerateQrText"
                           id="newQrText"></span>
+                    <span class="uk-margin-small-right iconRight"
+                          uk-icon="copy"
+                          @onclick="CopyQrText"
+                          style="cursor: pointer"></span>
                 </div>
             </div>
         </div>
@@ -31,10 +35,6 @@
                        id="displayQrText"
                        style="word-wrap: break-word"
                        @bind="@_displayQrText"/>
-                <span class="uk-margin-small-right iconRight"
-                      uk-icon="copy"
-                      @onclick="CopyQrText"
-                      style="cursor: pointer"></span>
             </div>
         </div>
 

@@ -16,7 +16,7 @@ namespace CafeLib.Blazor.TestApp
             builder.RootComponents.Add<App>("#app");
 
             builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-            builder.Services.AddTransient(sp => new QrCodeProxy(sp.GetService<IJSRuntime>()));
+            builder.Services.AddSingleton(sp => new QrCodeProxy(sp.GetService<IJSRuntime>()));
 
             await builder.Build().RunAsync();
         }
