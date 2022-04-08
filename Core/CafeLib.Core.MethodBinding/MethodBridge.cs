@@ -40,7 +40,7 @@ namespace CafeLib.Core.MethodBinding
             var handler = _bridgeMap[exportName];
 
             // Obtain the handler parameters; skip Closure type and convert to arguments.
-            var arguments = ConvertArguments(handler.Method.GetParameters().Skip(1).ToArray());
+            var arguments = ConvertArguments(handler.Method.GetParameters()[1..]);
 
             // invoke the handler.
             handler.DynamicInvoke(arguments);

@@ -5,6 +5,12 @@ namespace CafeLib.Core.Logging
 {
     public class LoggerProvider : ILoggerProvider
     {
+        #region Private Variables
+
+        private bool _disposed;
+
+        #endregion
+
         #region Automatic Properties
 
         public string Category { get; private protected set; }
@@ -58,11 +64,30 @@ namespace CafeLib.Core.Logging
             return new LoggerCore(category, Receiver);
         }
 
+        #endregion
+
+        #region IDisposible
+
         /// <summary>
-        /// Disposes the provider.
+        /// Dispose.
         /// </summary>
-        public void Dispose() { }
+        public void Dispose()
+        {
+            Dispose(!_disposed);
+            _disposed = true;
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose provider.
+        /// </summary>
+        /// <param name="disposing">indicate whether the queue is disposing</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing) return;
+        }
 
         #endregion
+
     }
 }
