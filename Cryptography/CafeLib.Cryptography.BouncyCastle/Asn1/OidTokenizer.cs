@@ -8,37 +8,36 @@ namespace CafeLib.Cryptography.BouncyCastle.Asn1
      */
     public class OidTokenizer
     {
-        private string  oid;
-        private int     index;
+        private readonly string _oid;
+        private int _index;
 
-		public OidTokenizer(
-            string oid)
+		public OidTokenizer(string oid)
         {
-            this.oid = oid;
+            _oid = oid;
         }
 
 		public bool HasMoreTokens
         {
-			get { return index != -1; }
+			get { return _index != -1; }
         }
 
 		public string NextToken()
         {
-            if (index == -1)
+            if (_index == -1)
             {
                 return null;
             }
 
-            int end = oid.IndexOf('.', index);
+            int end = _oid.IndexOf('.', _index);
             if (end == -1)
             {
-                string lastToken = oid.Substring(index);
-                index = -1;
+                string lastToken = _oid[_index..];
+                _index = -1;
                 return lastToken;
             }
 
-            string nextToken = oid.Substring(index, end - index);
-			index = end + 1;
+            string nextToken = _oid[_index..end];
+			_index = end + 1;
             return nextToken;
         }
     }
