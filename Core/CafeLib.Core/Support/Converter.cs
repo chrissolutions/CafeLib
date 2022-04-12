@@ -9,10 +9,10 @@ namespace CafeLib.Core.Support
         #region Instrinsic Types Converter Map
 
         /// <summary>
-        /// Map of instrinsic data types.
+        /// Map of intrinsic data types.
         /// </summary>
-        private static readonly Dictionary<Type, Converter<string, object>> _stringConverterMap =
-            new Dictionary<Type, Converter<string, object>>
+        private static readonly Dictionary<Type, Converter<string, object>> StringConverterMap =
+            new()
             {
                 {typeof(bool), s=> ToBool(s)},
                 {typeof(char), s => ToChar(s)},
@@ -32,8 +32,8 @@ namespace CafeLib.Core.Support
                 {typeof(string), s => s}
             };
 
-        private static readonly Dictionary<Type, Converter<object, object>> _objectConverterMap =
-            new Dictionary<Type, Converter<object, object>>
+        private static readonly Dictionary<Type, Converter<object, object>> ObjectConverterMap =
+            new()
             {
                 {typeof(bool), o => System.Convert.ToBoolean(o)},
                 {typeof(char), o => System.Convert.ToChar(o)},
@@ -56,7 +56,7 @@ namespace CafeLib.Core.Support
         #endregion
 
         /// <summary>
-        /// Convert a string to an instrisic type.
+        /// Convert a string value to an intrinsic type.
         /// </summary>
         /// <typeparam name="T">conversion type</typeparam>
         /// <param name="value">string value</param>
@@ -67,15 +67,12 @@ namespace CafeLib.Core.Support
         }
 
         /// <summary>
-        /// Converts an object to an intrinsic type.
+        /// Converts a string value to an intrinsic type.
         /// </summary>
         /// <param name="type">type</param>
         /// <param name="value">object value</param>
         /// <returns></returns>
-        public static object ConvertTo(Type type, string value)
-        {
-            return _stringConverterMap[type](value);
-        }
+        public static object ConvertTo(Type type, string value) => StringConverterMap[type](value);
 
         /// <summary>
         /// Converts an object to an intrinsic type.
@@ -99,7 +96,7 @@ namespace CafeLib.Core.Support
         {
             try
             {
-                return _objectConverterMap[type](value);
+                return ObjectConverterMap[type](value);
             }
             catch
             {
