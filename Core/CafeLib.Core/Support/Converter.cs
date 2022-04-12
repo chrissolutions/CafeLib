@@ -6,7 +6,7 @@ namespace CafeLib.Core.Support
 {
     public static class Converter
     {
-        #region Instrinsic Types Converter Map
+        #region Instrinsic Types Converter Maps
 
         /// <summary>
         /// Map of intrinsic data types.
@@ -55,6 +55,8 @@ namespace CafeLib.Core.Support
 
         #endregion
 
+        #region Methods
+
         /// <summary>
         /// Convert a string value to an intrinsic type.
         /// </summary>
@@ -97,6 +99,8 @@ namespace CafeLib.Core.Support
                 return value;
             }
         }
+
+        #endregion
 
         #region Helpers
 
@@ -180,30 +184,45 @@ namespace CafeLib.Core.Support
         private static ulong ToUlong(string s) => 
             ulong.TryParse(s, out var result) ? result : default;
 
-        private static float ToFloat(string s)
-        {
-            return float.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to float
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>float value</returns>
+        private static float ToFloat(string s) =>
+            float.TryParse(s, out var result) ? result : default;
 
-        private static double ToDouble(string s)
-        {
-            return double.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to double
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>double value</returns>
+        private static double ToDouble(string s) =>
+            double.TryParse(s, out var result) ? result : default;
 
-        private static decimal ToDecimal(string s)
-        {
-            return decimal.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to decimal
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>decimal value</returns>
+        private static decimal ToDecimal(string s) => 
+            decimal.TryParse(s, out var result) ? result : default;
 
-        private static DateTime ToDateTime(string s)
-        {
-            return DateTime.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to DateTime
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>DateTime value</returns>
+        private static DateTime ToDateTime(string s) =>
+            DateTime.TryParse(s, out var result) ? result : default;
 
-        private static Guid ToGuid(string s)
-        {
-            return Guid.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to Guid
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>Guid value</returns>
+        private static Guid ToGuid(string s) =>
+            Guid.TryParse(s, out var result) ? result : default;
 
         #endregion
     }
