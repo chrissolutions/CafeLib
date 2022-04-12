@@ -2,7 +2,6 @@ using CafeLib.Core.Extensions;
 using CafeLib.Core.Logging;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
-using CafeLib.Core.Support;
 using Xunit;
 
 namespace CafeLib.Core.UnitTests
@@ -51,7 +50,7 @@ namespace CafeLib.Core.UnitTests
                 new EventId(3, "TestEvent"),
                 new { tag = 20, state = 40 },
                 null,
-                (o, e) => "Message {tag} for state {state}".Render(o));
+                (o, _) => "Message {tag} for state {state}".Render(o));
         }
 
         [Fact]
@@ -76,7 +75,7 @@ namespace CafeLib.Core.UnitTests
         }
 
         [Fact]
-        public void LoggerInfoExtensionTest()
+        public void LoggerWithCategoryTypeTest()
         {
             var factory = LoggerFactory.Create(builder =>
             {
@@ -89,10 +88,25 @@ namespace CafeLib.Core.UnitTests
                     }));
             });
 
-            factory.CreateLogger<HttpClient>();
-
             var logger = new Logger<HttpClient>(factory);
+            logger.Info("Hello World");
+        }
 
+        [Fact]
+        public void LoggerWithCategoryNameTest()
+        {
+            var factory = LoggerFactory.Create(builder =>
+            {
+                builder
+                    .AddProvider(new LoggerProvider(x =>
+                    {
+                        Assert.Equal("MyCategory", x.Category);
+                        Assert.Equal(LogLevel.Information, x.LogLevel);
+                        Assert.Equal("Hello World", x.Message);
+                    }));
+            });
+
+            var logger = factory.CreateLogger("MyCategory");
             logger.Info("Hello World");
         }
 
@@ -111,8 +125,7 @@ namespace CafeLib.Core.UnitTests
                 new LogEventInfo(id: 3, name: "TestEvent"),
                 new { tag = 20, state = 40 },
                 null,
-                (o, e) => "Message {tag} for state {state}".Render(o));
-
+                (o, _) => "Message {tag} for state {state}".Render(o));
         }
 
         [Fact]
@@ -123,8 +136,7 @@ namespace CafeLib.Core.UnitTests
                 new LogEventInfo(id: 3, name: "TestEvent"),
                 new { tag = 20, state = 40 },
                 null,
-                (o, e) => "Message {tag} for state {state}".Render(o));
-
+                (o, _) => "Message {tag} for state {state}".Render(o));
         }
     }
 }

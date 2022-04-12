@@ -84,10 +84,8 @@ namespace CafeLib.Core.Logging
         /// <param name="disposing">indicate whether the queue is disposing</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposing) return;
         }
 
         #endregion
-
     }
 }
