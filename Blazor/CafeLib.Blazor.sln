@@ -5,7 +5,9 @@ VisualStudioVersion = 17.2.32210.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Blazor", "CafeLib.Blazor\CafeLib.Blazor.csproj", "{23B2F400-DEBC-4BD0-BFE1-0C4EB21A9417}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Blazor.TestApp", "CafeLib.Blazor.TestApp\CafeLib.Blazor.TestApp.csproj", "{58F03FBC-1799-4A64-A64D-981AA1019973}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Blazor.TestApp", "CafeLib.Blazor.TestApp\CafeLib.Blazor.TestApp.csproj", "{58F03FBC-1799-4A64-A64D-981AA1019973}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Blazor.UnitTestApp", "CafeLib.Blazor.UnitTestApp\CafeLib.Blazor.UnitTestApp.csproj", "{A133B21A-CDE4-4AA0-BE92-54F41E6EC041}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{58F03FBC-1799-4A64-A64D-981AA1019973}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58F03FBC-1799-4A64-A64D-981AA1019973}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58F03FBC-1799-4A64-A64D-981AA1019973}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A133B21A-CDE4-4AA0-BE92-54F41E6EC041}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A133B21A-CDE4-4AA0-BE92-54F41E6EC041}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A133B21A-CDE4-4AA0-BE92-54F41E6EC041}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A133B21A-CDE4-4AA0-BE92-54F41E6EC041}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
