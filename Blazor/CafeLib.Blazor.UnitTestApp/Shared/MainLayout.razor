@@ -5,13 +5,15 @@
         <NavMenu />
     </div>
 
-    <main>
+    <div class="main">
         <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <NavLink class="nav-link" href="about">
+                <span class="oi" aria-hidden="true"></span> About
+            </NavLink>
         </div>
 
-        <article class="content px-4">
+        <div class="content px-4">
             @Body
-        </article>
-    </main>
+        </div>
+    </div>
 </div>
