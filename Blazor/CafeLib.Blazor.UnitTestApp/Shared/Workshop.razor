@@ -1,0 +1,102 @@
+﻿@using System.Threading.Tasks;
+@using Microsoft.AspNetCore.Components;
+
+<div class="uk-child-width-expand@s"
+     uk-grid
+     style="margin-top: 50px; overflow: hidden">
+    <div class="uk-grid-item-match" style="text-align: center; height: 50%">
+        <div class="uk-card uk-card-default uk-card-body uk-card-small cardColour">
+
+            <h3>Generate QrCode Text</h3>
+
+            <div>
+                <div class="input-container">
+                    <input type="text"
+                           id="qrText"
+                           style="word-wrap: break-word"
+                           @bind="@_qrText" />
+
+                    <span class="uk-margin-small-right iconRight"
+                          uk-icon="refresh"
+                          style="cursor: pointer"
+                          @onclick="GenerateQrText"
+                          id="newQrText"></span>
+                    <span class="uk-margin-small-right iconRight"
+                          uk-icon="copy"
+                          @onclick="CopyQrText"
+                          style="cursor: pointer"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="uk-card uk-card-default uk-card-body uk-margin-top uk-card-small cardColour">
+
+            <h3>Display Qr Text</h3>
+
+            <div class="input-container">
+                <input type="text"
+                       id="displayQrText"
+                       style="word-wrap: break-word"
+                       @bind="@_displayQrText"/>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="bitcoinArtImg" style="margin-left: 10vw; width: 30%">
+        <img data-src="img/bitcoin-sv-bsv-logo.svg" width="360" alt="" uk-img />		 
+        <div id="qrDiv" style="margin-top: 8vh;max-width: 360px;height: 300px;">
+          <div id="qrcode" style="position: relative; width: 60%; margin-left: 30px">
+          </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject] private QrCodeProxy QrCodeProxy { get; set; }
+    [Inject] private IJSRuntime JsRuntime { get; set; }
+
+    private QrCode _qrCode;
+
+    private string _qrText = "";
+
+    private string _displayQrText = "";
+
+    private async Task GenerateQrText()
+    {
+        _qrText = GetQrText();
+        await _qrCode.Generate(_qrText);
+    }
+
+    private async Task CopyQrText()
+    {
+        if (!string.IsNullOrWhiteSpace(_qrText))
+        {
+            await CopyText("qrText", "Text Copied!");
+        }
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _qrCode = await QrCodeProxy.CreateObject("qrcode");
+        }
+    }
+
+    #region Helpers
+
+    private async ValueTask CopyText(string elementId, string message)
+    {
+        await JsRuntime.InvokeVoidAsync("copyText", elementId);
+        await JsRuntime.InvokeVoidAsync("sweetAlert", message);
+    }
+
+    private static string GetQrText()
+    {
+        return "This is some text use to generate a QR code.";
+    }
+
+    #endregion
+}

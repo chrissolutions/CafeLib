@@ -2,7 +2,7 @@
 using CafeLib.Blazor.Interop;
 using Microsoft.JSInterop;
 
-namespace CafeLib.Blazor.TestApp.Interop
+namespace CafeLib.Blazor.UnitTestApp.Interop
 {
     public class QrCode : JsInteropObject
     {
