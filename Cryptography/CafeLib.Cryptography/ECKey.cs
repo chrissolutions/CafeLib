@@ -101,9 +101,6 @@ namespace CafeLib.Cryptography
 				throw new ArgumentException("r should be positive");
 			if (sig.S.SignValue < 0)
 				throw new ArgumentException("s should be positive");
-			if (message == null)
-				throw new ArgumentNullException(nameof(message));
-
 
 			var curve = ECKey.CreateCurve();
 
