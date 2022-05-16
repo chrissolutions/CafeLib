@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using CafeLib.Core.Data;
 using CafeLib.Data.Sources;
 // ReSharper disable UnusedMember.Global
@@ -49,10 +50,10 @@ namespace CafeLib.Data.Persistence
         }
 
         /// <summary>
-        /// 
+        /// Obtain the responsitory of the IEntity.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <typeparam name="T">entity type</typeparam>
+        /// <returns>the entity's respository</returns>
         public IRepository<T> GetRepository<T>() where T : class, IEntity
         {
             return Repositories.Find<T>();
@@ -67,19 +68,23 @@ namespace CafeLib.Data.Persistence
         }
 
         /// <summary>
-        /// 
+        /// Dispose.
         /// </summary>
         public void Dispose()
         {
-            if (_disposed)
-            {
-                return;
-            }
+            Dispose(!_disposed);
+            _disposed = true;
+            GC.SuppressFinalize(this);
+        }
 
-            // Dispose the repository registry.
+        /// <summary>
+        /// Dispose storage.
+        /// </summary>
+        /// <param name="disposing">disposing flag</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing) return;
             Repositories.Dispose();
-
-            // Flag storage as disposed.
             _disposed = true;
         }
 
