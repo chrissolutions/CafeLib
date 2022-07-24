@@ -28,8 +28,10 @@ obj/
 _ReSharper*/
 [Tt]est[Rr]esult*
 .vs/
+.vscode/
 .idea/
 #Nuget packages folder
 packages/
 Repo/
 buildapi.cmd
+/.config/dotnet-tools.json
