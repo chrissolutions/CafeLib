@@ -24,7 +24,7 @@ public static readonly IDictionary<string, string> Components = new Dictionary<s
 // Get arguments.
 vars.build = Argument<string>("build", "");
 vars.config = Argument<string>("config", "Debug");
-vars.apikey = Argument<string>("apikey", null);
+vars.nugetKey = Argument<string>("nugetKey", null);
 vars.nugetServer = Argument<string>("nugetServer", "C:/Nuget/repo");
 vars.nugetDebug = Argument<bool>("nugetDebug", false);
 vars.nugetSkipDup = Argument<bool>("nugetSkipDup", false);
@@ -55,7 +55,7 @@ Task("ConstructCommands")
             cmd.Options["component"] = component.Key;
             cmd.Options["buildversion"] = component.Value;
             cmd.Options["config"] = vars.config;
-            if (vars.apikey != null) cmd.Options["apikey"] = vars.apikey;
+            if (vars.nugetKey != null) cmd.Options["nugetKey"] = vars.nugetKey;
             if (vars.nugetServer != null) cmd.Options["nugetServer"] = vars.nugetServer;
             if (vars.nugetDebug != null) cmd.Options["nugetDebug"] = vars.nugetDebug.ToString().ToLower();
             if (vars.nugetSkipDup != null) cmd.Options["nugetSkipDup"] = vars.nugetSkipDup.ToString().ToLower();
