@@ -10,9 +10,10 @@ namespace CafeLib.Core.Numerics
         private ulong _n2;
         private ulong _n3;
 
-        private readonly bool _littleEndian;
+        public const int Length = 4 * sizeof(ulong);
 
-        public const int Length = 4*sizeof(ulong);
+        public bool IsLittleEndian { get; init; }
+        public bool IsBigEndian => !IsLittleEndian;
 
         public static UInt256 Zero { get; } = new(0);
         public static UInt256 One { get; } = new(1);
@@ -20,7 +21,7 @@ namespace CafeLib.Core.Numerics
         public UInt256(bool littleEndian = false)
         {
             _n0 = _n1 = _n2 = _n3 = 0;
-            _littleEndian = littleEndian;
+            IsLittleEndian = littleEndian;
         }
 
         public UInt256(UInt256 uint256)
@@ -116,14 +117,20 @@ namespace CafeLib.Core.Numerics
         }
 
         /// <summary>
+        /// The bytes appear in the hexadecimal endian order of the native machine.
+        /// </summary>
+        /// <returns>hexadecimal string</returns>
+		public string ToHex() => Encoders.Hex.Encode(Span);
+
+        /// <summary>
         /// The bytes appear based on the endian order specified during creation.
         /// The default behavior is for bytes to appear in big-endian order, as a large hexadecimal encoded number.
         ///
         /// When littleEndian is specified The bytes appear in little-endian order, first byte in memory first.
         /// But the high nibble, first hex digit, of the each byte still appears before the low nibble (big-endian by nibble order).
         /// </summary>
-        /// <returns>encoded string</returns>
-		public override string ToString() => (_littleEndian ? Encoders.Hex : Encoders.HexReverse)?.Encode(Span);
+        /// <returns>hexadecimal string</returns>
+		public override string ToString() => (IsLittleEndian ? Encoders.Hex : Encoders.HexReverse)?.Encode(Span);
 
         public override int GetHashCode() => _n0.GetHashCode() ^ _n1.GetHashCode() ^ _n2.GetHashCode() ^ _n3.GetHashCode();
 
