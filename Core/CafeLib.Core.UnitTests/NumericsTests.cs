@@ -3,6 +3,7 @@ using System.Linq;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Encodings;
 using Xunit;
+using System;
 
 namespace CafeLib.Core.UnitTests
 {
@@ -50,6 +51,25 @@ namespace CafeLib.Core.UnitTests
             Assert.Equal(bytes, uint160.ToArray());
             Assert.Equal(bytes, new160.ToArray());
             Assert.Equal(bytes, new160[..UInt160.Length]);
+        }
+
+        [Theory]
+        [InlineData("c2eaba3b9c29575322c6e24fdc1b49bdfe405bad")]
+        [InlineData("0xc2eaba3b9c29575322c6e24fdc1b49bdfe405bad")]
+        public void UInt160_ToHex_Test(string hex)
+        {
+            var uint160 = UInt160.FromHex(hex, BitConverter.IsLittleEndian);
+            Assert.Equal(uint160.ToString(), uint160.ToHex());
+
+            uint160 = UInt160.FromHex(hex);
+            if (BitConverter.IsLittleEndian)
+            {
+                Assert.NotEqual(uint160.ToString(), uint160.ToHex());
+            }
+            else
+            {
+                Assert.Equal(uint160.ToString(), uint160.ToHex());
+            }
         }
 
         #endregion
@@ -140,6 +160,27 @@ namespace CafeLib.Core.UnitTests
             Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint256Reverse}" : $"{uint256Reverse}");
         }
 
+        [Theory]
+        [InlineData("988119d6cca702beb1748f4eb497e316467f69580ffa125aa8bcb6fb63dce237")]
+        [InlineData("fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210")]
+        [InlineData("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f")]
+        [InlineData("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b")]
+        public void UInt256_ToHex_Test(string hex)
+        {
+            var uint256 = UInt256.FromHex(hex, BitConverter.IsLittleEndian);
+            Assert.Equal(uint256.ToString(), uint256.ToHex());
+
+            uint256 = UInt256.FromHex(hex);
+            if (BitConverter.IsLittleEndian)
+            {
+                Assert.NotEqual(uint256.ToString(), uint256.ToHex());
+            }
+            else
+            {
+                Assert.Equal(uint256.ToString(), uint256.ToHex());
+            }
+        }
+
         #endregion
 
         #region UInt512 Tests
@@ -171,6 +212,37 @@ namespace CafeLib.Core.UnitTests
 
             Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{ifbl}" : $"{ifbl}");
             Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{ifbf}" : $"{ifbf}");
+        }
+
+        [Theory]
+        [InlineData("fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210")]
+        [InlineData("0x6a22314c74794d45366235416e4d6f70517242504c6b3446474e3855427568784b71726e0101337b2274223a32302e36322c2268223a35392c2270223a313031")]
+        public void UInt512_FromHex_Test(string hex)
+        {
+            var uint512 = UInt512.FromHex(hex);
+            var uint512Reverse = UInt512.FromHex(hex, true);
+
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint512}" : $"{uint512}");
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint512Reverse}" : $"{uint512Reverse}");
+        }
+
+        [Theory]
+        [InlineData("fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210")]
+        [InlineData("0x6a22314c74794d45366235416e4d6f70517242504c6b3446474e3855427568784b71726e0101337b2274223a32302e36322c2268223a35392c2270223a313031")]
+        public void UInt512_ToHex_Test(string hex)
+        {
+            var uint512 = UInt512.FromHex(hex, BitConverter.IsLittleEndian);
+            Assert.Equal(uint512.ToString(), uint512.ToHex());
+
+            uint512 = UInt512.FromHex(hex);
+            if (BitConverter.IsLittleEndian)
+            {
+                Assert.NotEqual(uint512.ToString(), uint512.ToHex());
+            }
+            else
+            {
+                Assert.Equal(uint512.ToString(), uint512.ToHex());
+            }
         }
 
         #endregion
