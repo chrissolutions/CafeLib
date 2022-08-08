@@ -131,6 +131,7 @@ namespace CafeLib.Core.Queueing
             }
 
             await base.Stop().ConfigureAwait(false);
+            await Task.CompletedTask.ConfigureAwait(false);
         }
 
         #endregion
