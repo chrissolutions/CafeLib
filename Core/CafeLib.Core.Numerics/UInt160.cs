@@ -5,33 +5,23 @@ namespace CafeLib.Core.Numerics
 {
     public struct UInt160 : IComparable<UInt160>, IEquatable<UInt160>
     {
-        private ulong _n0;
-        private ulong _n1;
-        private uint _n2;
+        private ulong _n0 = 0;
+        private ulong _n1 = 0;
+        private uint _n2 = 0;
 
         public const int Length = 2 * sizeof(ulong) + sizeof(uint);
-
-        public bool IsLittleEndian { get; init; }
-        public bool IsBigEndian => !IsLittleEndian;
 
         public static UInt160 Zero { get; } = new(0);
         public static UInt160 One { get; } = new(1);
 
-        public UInt160(bool littleEndian = false)
-        {
-            _n0 = _n1 = _n2 = 0;
-            IsLittleEndian = littleEndian;
-        }
-
-        public UInt160(ReadOnlyByteSpan span, bool littleEndian = false)
-            : this(littleEndian)
+        public UInt160(ReadOnlyByteSpan span, bool reverse = false)
         {
             if (span.Length < Length)
                 throw new ArgumentException($"{Length} bytes are required.");
 
             span[..Length].CopyTo(Span);
 
-            if (littleEndian)
+            if (reverse)
             {
                 Span.Reverse();
             }
@@ -62,17 +52,17 @@ namespace CafeLib.Core.Numerics
         public UInt160 this[Range range] => new(Span[range]);
 
         /// <summary>
-        /// Creates a UInt256 object from hex string.
+        /// Creates a UInt160 object from hex string.
         /// </summary>
         /// <param name="hex">hex string</param>
-        /// <param name="littleEndian">assign bytes from lowest to highest numeric position</param>
-        /// <returns>UInt256 object</returns>
-        /// <remarks>Default behavior assigns bytes from highest to lowest numeric position</remarks>
-        public static UInt160 FromHex(string hex, bool littleEndian = false)
+        /// <param name="bigEndian">assign bytes from highest to lowest numeric position</param>
+        /// <returns>UInt160 object</returns>
+        /// <remarks>Default behavior assigns bytes using little endian ordering</remarks>
+        public static UInt160 FromHex(string hex, bool bigEndian = false)
         {
             if (string.IsNullOrWhiteSpace(hex)) return new UInt160();
-            var result = new UInt160(littleEndian);
-            (littleEndian ? Encoders.Hex : Encoders.HexReverse).TryDecodeSpan(hex, result.Span);
+            var result = new UInt160();
+            (bigEndian ? Encoders.Hex : Encoders.HexReverse).TryDecodeSpan(hex, result.Span);
             return result;
         }
 
@@ -118,10 +108,11 @@ namespace CafeLib.Core.Numerics
         }
 
         /// <summary>
-        /// The bytes appear in the hexadecimal endian order of the native machine.
+        /// Convert numeric into hexadecimal string format.
         /// </summary>
+        /// <param name="bigEndian">big endian order flag</param>
         /// <returns>hexadecimal string</returns>
-		public string ToHex() => Encoders.Hex.Encode(Span);
+		public string ToHex(bool bigEndian = false) => (bigEndian ? Encoders.Hex : Encoders.HexReverse)?.Encode(Span);
 
         /// <summary>
         /// The bytes appear based on the endian order specified during creation.
@@ -131,7 +122,7 @@ namespace CafeLib.Core.Numerics
         /// But the high nibble, first hex digit, of the each byte still appears before the low nibble (big-endian by nibble order).
         /// </summary>
         /// <returns>encoded string</returns>
-        public override string ToString() => (IsLittleEndian ? Encoders.Hex : Encoders.HexReverse)?.Encode(Span);
+        public override string ToString() => ToHex(!BitConverter.IsLittleEndian);
 
         public override int GetHashCode() => _n0.GetHashCode() ^ _n1.GetHashCode() ^ _n2.GetHashCode();
 
