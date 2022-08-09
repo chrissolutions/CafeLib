@@ -69,7 +69,7 @@ namespace CafeLib.Core.UnitTests
         {
             var uint160 = UInt160.FromHex(hex);
             var uint160Reverse = UInt160.FromHex(hex, true);
-            var hexReverse = Hex.Encode(Hex.Decode(hex).Reverse().ToArray());
+            var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
 
             Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint160}" : $"{uint160}");
@@ -83,7 +83,7 @@ namespace CafeLib.Core.UnitTests
         {
             var uint160 = UInt160.FromHex(hex, true);
 
-            var hexReverse = Hex.Encode(Hex.Decode(hex).Reverse().ToArray());
+            var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
             Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint160.ToHex(!BitConverter.IsLittleEndian)}" : $"{uint160.ToHex(!BitConverter.IsLittleEndian)}");
         }
@@ -171,7 +171,7 @@ namespace CafeLib.Core.UnitTests
         {
             var uint256 = UInt256.FromHex(hex);
             var uint256Reverse = UInt256.FromHex(hex, true);
-            var hexReverse = Hex.Encode(Hex.Decode(hex).Reverse().ToArray());
+            var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
 
             Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint256}" : $"{uint256}");
@@ -187,7 +187,7 @@ namespace CafeLib.Core.UnitTests
         {
             var uint256 = UInt256.FromHex(hex, true);
 
-            var hexReverse = Hex.Encode(Hex.Decode(hex).Reverse().ToArray());
+            var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
             Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint256.ToHex(!BitConverter.IsLittleEndian)}" : $"{uint256.ToHex(!BitConverter.IsLittleEndian)}");
         }
@@ -232,7 +232,7 @@ namespace CafeLib.Core.UnitTests
         {
             var uint512 = UInt512.FromHex(hex);
             var uint512Reverse = UInt512.FromHex(hex, true);
-            var hexReverse = Hex.Encode(Hex.Decode(hex).Reverse().ToArray());
+            var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
 
             Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint512}" : $"{uint512}");
@@ -246,7 +246,7 @@ namespace CafeLib.Core.UnitTests
         {
             var uint512 = UInt512.FromHex(hex, true);
 
-            var hexReverse = Hex.Encode(Hex.Decode(hex).Reverse().ToArray());
+            var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
             Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint512.ToHex(!BitConverter.IsLittleEndian)}" : $"{uint512.ToHex(!BitConverter.IsLittleEndian)}");
         }
