@@ -81,11 +81,25 @@ namespace CafeLib.Core.UnitTests
         [InlineData("0xc2eaba3b9c29575322c6e24fdc1b49bdfe405bad")]
         public void UInt160_ToHex_Test(string hex)
         {
-            var uint160 = UInt160.FromHex(hex, true);
+            var uint160 = UInt160.FromHex(hex);
 
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint160.ToHex(false)}" : $"{uint160.ToHex(false)}");
             var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
-            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint160.ToHex(!BitConverter.IsLittleEndian)}" : $"{uint160.ToHex(!BitConverter.IsLittleEndian)}");
+            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint160.ToHex(true)}" : $"{uint160.ToHex(true)}");
+        }
+
+        [Theory]
+        [InlineData("c2eaba3b9c29575322c6e24fdc1b49bdfe405bad")]
+        [InlineData("0xc2eaba3b9c29575322c6e24fdc1b49bdfe405bad")]
+        public void UInt160_ToHex_Reverse_Test(string hex)
+        {
+            var uint160 = UInt160.FromHex(hex, true);
+
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint160.ToHex(true)}" : $"{uint160.ToHex(true)}");
+            var hexReverse = HexReverse.Encode(Hex.Decode(hex));
+            var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
+            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint160.ToHex(false)}" : $"{uint160.ToHex(false)}");
         }
 
         #endregion
@@ -185,11 +199,27 @@ namespace CafeLib.Core.UnitTests
         [InlineData("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b")]
         public void UInt256_ToHex_Test(string hex)
         {
-            var uint256 = UInt256.FromHex(hex, true);
+            var uint256 = UInt256.FromHex(hex);
 
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint256.ToHex(false)}" : $"{uint256.ToHex(false)}");
             var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
-            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint256.ToHex(!BitConverter.IsLittleEndian)}" : $"{uint256.ToHex(!BitConverter.IsLittleEndian)}");
+            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint256.ToHex(true)}" : $"{uint256.ToHex(true)}");
+        }
+
+        [Theory]
+        [InlineData("988119d6cca702beb1748f4eb497e316467f69580ffa125aa8bcb6fb63dce237")]
+        [InlineData("fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210")]
+        [InlineData("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f")]
+        [InlineData("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b")]
+        public void UInt256_ToHex_Reverse_Test(string hex)
+        {
+            var uint256 = UInt256.FromHex(hex, true);
+
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint256.ToHex(true)}" : $"{uint256.ToHex(true)}");
+            var hexReverse = HexReverse.Encode(Hex.Decode(hex));
+            var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
+            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint256.ToHex(false)}" : $"{uint256.ToHex(false)}");
         }
 
         #endregion
@@ -246,9 +276,23 @@ namespace CafeLib.Core.UnitTests
         {
             var uint512 = UInt512.FromHex(hex, true);
 
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint512.ToHex(true)}" : $"{uint512.ToHex(true)}");
             var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
-            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint512.ToHex(!BitConverter.IsLittleEndian)}" : $"{uint512.ToHex(!BitConverter.IsLittleEndian)}");
+            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint512.ToHex(false)}" : $"{uint512.ToHex(false)}");
+        }
+
+        [Theory]
+        [InlineData("fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210")]
+        [InlineData("0x6a22314c74794d45366235416e4d6f70517242504c6b3446474e3855427568784b71726e0101337b2274223a32302e36322c2268223a35392c2270223a313031")]
+        public void UInt512_ToHex_Reverse_Test(string hex)
+        {
+            var uint512 = UInt512.FromHex(hex, true);
+
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint512.ToHex(true)}" : $"{uint512.ToHex(true)}");
+            var hexReverse = HexReverse.Encode(Hex.Decode(hex));
+            var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
+            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint512.ToHex(false)}" : $"{uint512.ToHex(false)}");
         }
 
         #endregion
