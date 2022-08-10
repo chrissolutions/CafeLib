@@ -10,6 +10,7 @@ namespace CafeLib.Core.UnitTests
         private int _counter;
         private int _consumersPerProducer;
         private int _id;
+        private static readonly object Mutex = new();
 
         [Fact]
         public async Task ProducerConsumerTest()
@@ -67,11 +68,14 @@ namespace CafeLib.Core.UnitTests
 
         private void Verify(TestQueueItem item)
         {
-            Assert.NotNull(item);
-            _id = _counter / _consumersPerProducer;
-            Assert.Equal(_id, item.Id);
-            Assert.Equal($"Item{_id}", item.Name);
-            ++_counter;
+            lock (Mutex)
+            {
+                Assert.NotNull(item);
+                _id = _counter / _consumersPerProducer;
+                Assert.Equal(_id, item.Id);
+                Assert.Equal($"Item{_id}", item.Name);
+                ++_counter;
+            }
         }
     }
 }
