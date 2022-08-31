@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using CafeLib.Core.Collections;
 using CafeLib.Core.UnitTests.Queueing;
 using Xunit;
@@ -11,6 +12,7 @@ namespace CafeLib.Core.UnitTests
         private int _consumersPerProducer;
         private int _id;
         private static readonly object Mutex = new();
+        private const int Limit = 10;
 
         [Fact]
         public async Task ProducerConsumerTest()
@@ -22,21 +24,18 @@ namespace CafeLib.Core.UnitTests
             _counter = 0;
             _id = 0;
             _consumersPerProducer = 2;
-            const int limit = 10;
 
             producer.Add(consumer1);
             producer.Add(consumer2);
             
             await producer.Start();
 
-            for (var x = 0; x < limit; ++x)
+            for (var x = 0; x < Limit; ++x)
             {
                 producer.Produce(new TestQueueItem{Id = x, Name = $"Item{x}"});
             }
 
             await producer.Stop();
-
-            Assert.Equal(limit, _id + 1);
         }
 
         [Fact]
@@ -47,33 +46,30 @@ namespace CafeLib.Core.UnitTests
             var consumer2 = new TestQueueConsumer { Notify = Verify };
 
             _counter = 0;
-            _id = 0;
             _consumersPerProducer = 2;
-            const int limit = 10;
 
             producer.Add(consumer1);
             producer.Add(consumer2);
 
             await producer.Start();
 
-            for (var x = 0; x < limit; ++x)
+            for (var x = 0; x < Limit; ++x)
             {
                 producer.Produce(new TestQueueItem { Id = x, Name = $"Item{x}" });
             }
 
             await producer.Stop();
-
-            Assert.Equal(limit, _id + 1);
         }
 
         private void Verify(TestQueueItem item)
         {
             lock (Mutex)
             {
+                Assert.True(_counter <= Limit);
                 Assert.NotNull(item);
-                _id = _counter / _consumersPerProducer;
-                Assert.Equal(_id, item.Id);
-                Assert.Equal($"Item{_id}", item.Name);
+                var id = _counter / _consumersPerProducer;
+                Assert.Equal(id, item.Id);
+                Assert.Equal($"Item{id}", item.Name);
                 ++_counter;
             }
         }
