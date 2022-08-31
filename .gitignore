@@ -34,4 +34,5 @@ _ReSharper*/
 packages/
 Repo/
 buildapi.cmd
+buildnuget.cmd
 /.config/dotnet-tools.json
