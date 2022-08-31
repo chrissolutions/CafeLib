@@ -17,8 +17,7 @@ public static readonly IDictionary<string, string> Components = new Dictionary<s
     {"Data", "2.0.0"},
     {"Authorization", "2.0.0"},
     {"Network", "2.0.0"},
-    {"Blazor", "2.0.0"},
-//    {"Maui", "1.0.0"}
+    {"Blazor", "2.0.0"}
 };
 
 // Get arguments.
