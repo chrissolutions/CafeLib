@@ -188,23 +188,22 @@ namespace CafeLib.Core.Buffers
             var b = Data.TryRead(out var b0);
             if (!b) return false;
 
-            if (b0 <= 0xfc)
+            switch (b0)
             {
-                value = b0;
-            }
-            else if (b0 == 0xfd)
-            {
-                b = Data.TryReadLittleEndian(out short v16);
-                value = v16;
-            }
-            else if (b0 == 0xfe)
-            {
-                b = Data.TryReadLittleEndian(out int v32);
-                value = v32;
-            }
-            else
-            {
-                b = Data.TryReadLittleEndian(out value);
+                case <= 0xfc:
+                    value = b0;
+                    break;
+                case 0xfd:
+                    b = Data.TryReadLittleEndian(out short v16);
+                    value = v16;
+                    break;
+                case 0xfe:
+                    b = Data.TryReadLittleEndian(out int v32);
+                    value = v32;
+                    break;
+                default:
+                    b = Data.TryReadLittleEndian(out value);
+                    break;
             }
 
             return b;

@@ -24,7 +24,7 @@ namespace CafeLib.Core.Buffers
         public bool IsEmpty => Data.IsEmpty;
         public int Length => Data.Length;
 
-        public ByteMemory Slice(int start) => Data.Slice(start);
+        public ByteMemory Slice(int start) => Data[start..];
         public ByteMemory Slice(int start, int length) => Data.Slice(start, length);
 
         public void CopyTo(ByteMemory destination) => Data.CopyTo(destination);
@@ -48,7 +48,5 @@ namespace CafeLib.Core.Buffers
 
         public static implicit operator byte[](ByteMemory rhs) => rhs.Data.ToArray();
         public static implicit operator ByteMemory(byte[] rhs) => new ByteSpan(rhs);
-
-        //public static ByteMemory operator +(ByteMemory a, ByteMemory b) => a + new UInt256(b);
     }
 }
