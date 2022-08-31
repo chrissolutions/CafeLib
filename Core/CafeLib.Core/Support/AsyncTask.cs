@@ -10,7 +10,6 @@ namespace CafeLib.Core.Support
         /// <summary>
         /// Task.WhenAll wrapper that returns an aggregate of all of the exceptions that occurs in a task collection.
         /// </summary>
-        /// <typeparam name="T">collection type</typeparam>
         /// <param name="tasks">collection of tasks</param>
         /// <returns>enumerable of type T</returns>
         public static async Task WhenAll(params Task[] tasks)

@@ -1,4 +1,5 @@
-﻿using CafeLib.Core.Support;
+﻿using CafeLib.Core.Extensions;
+using CafeLib.Core.Support;
 using CafeLib.Core.UnitTests.TypeModels;
 using Xunit;
 
@@ -32,6 +33,16 @@ namespace CafeLib.Core.UnitTests
             Assert.IsType<TypeWithParametersConstructor>(result);
             Assert.Equal(100, result.Argument1);
             Assert.Equal(200, result.Argument2);
+        }
+
+        [Fact]
+        public void CreateInstanceFromType()
+        {
+            var instance = Creator.CreateInstance(typeof(TypeWithDefaultConstructor));
+            Assert.NotNull(instance);
+            Assert.IsType<TypeWithDefaultConstructor>(instance);
+            var result = (TypeWithDefaultConstructor)instance;
+            Assert.Equal(100, result.Default);
         }
     }
 }
