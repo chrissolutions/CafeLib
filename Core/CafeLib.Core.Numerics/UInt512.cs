@@ -80,8 +80,8 @@ namespace CafeLib.Core.Numerics
                     fixed (ulong* p = &_n0)
                     {
                         var pb = (byte*)p;
-                        var bytes = new Span<byte>(pb, Length);
-                        return bytes;
+                        var span = new Span<byte>(pb, Length);
+                        return span;
                     }
                 }
             }
