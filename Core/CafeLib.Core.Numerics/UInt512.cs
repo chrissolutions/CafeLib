@@ -126,7 +126,8 @@ namespace CafeLib.Core.Numerics
         /// <returns>encoded string</returns>
         public override string ToString() => ToHex(!BitConverter.IsLittleEndian);
 
-        public override int GetHashCode() => _n0.GetHashCode() ^ _n1.GetHashCode() ^ _n2.GetHashCode() ^ _n3.GetHashCode();
+        public override int GetHashCode() => _n0.GetHashCode() ^ _n1.GetHashCode() ^ _n2.GetHashCode() ^ _n3.GetHashCode() ^
+                                            _n4.GetHashCode() ^ _n5.GetHashCode() ^ _n6.GetHashCode() ^ _n7.GetHashCode();
 
         public override bool Equals(object obj) => obj is UInt512 int512 && this == int512;
 
