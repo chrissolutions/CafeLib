@@ -28,7 +28,7 @@ namespace CafeLib.Core.Buffers
 
         public ByteSpan Reverse()
         {
-             Data.Reverse();
+            Data.Reverse();
             return this;
         }
 
