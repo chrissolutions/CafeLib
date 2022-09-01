@@ -12,8 +12,8 @@ namespace CafeLib.Core.Buffers
             Data = data;
         }
 
-        public ReadOnlyCharSpan(string str)
-            : this(str.AsSpan())
+        public ReadOnlyCharSpan(string str = null)
+            : this((str ?? "").AsSpan())
         {
         }
 
@@ -21,7 +21,7 @@ namespace CafeLib.Core.Buffers
         public int Length => Data.Length;
 
         public ReadOnlyCharSpan Slice(int start) => Data[start..];
-        public ReadOnlyCharSpan Slice(int start, int length) => Data.Slice(start, length);
+        public ReadOnlyCharSpan Slice(int start, int length) => Data[start..(start+length)];
 
         public char[] ToArray() => Data.ToArray();
 

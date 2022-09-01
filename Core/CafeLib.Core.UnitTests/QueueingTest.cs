@@ -10,7 +10,6 @@ namespace CafeLib.Core.UnitTests
     {
         private int _counter;
         private int _consumersPerProducer;
-        private int _id;
         private static readonly object Mutex = new();
         private const int Limit = 10;
 
@@ -22,7 +21,6 @@ namespace CafeLib.Core.UnitTests
             var consumer2 = new TestQueueConsumer {Notify = Verify};
 
             _counter = 0;
-            _id = 0;
             _consumersPerProducer = 2;
 
             producer.Add(consumer1);

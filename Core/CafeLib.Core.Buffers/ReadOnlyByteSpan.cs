@@ -7,15 +7,16 @@ namespace CafeLib.Core.Buffers
     {
         public ReadOnlySpan<byte> Data { get; }
 
-        public ReadOnlyByteSpan(byte[] data)
-        {
-            Data = data ?? Array.Empty<byte>();
-        }
-
         public ReadOnlyByteSpan(ReadOnlySpan<byte> data)
         {
             Data = data;
         }
+        
+        public ReadOnlyByteSpan(byte[] data = null)
+            : this(new ReadOnlySpan<byte>(data ?? Array.Empty<byte>()))
+        {
+        }
+
 
         public ReadOnlyByteSpan(ReadOnlyByteSequence data)
         {
@@ -26,7 +27,7 @@ namespace CafeLib.Core.Buffers
         public int Length => Data.Length;
 
         public ReadOnlyByteSpan Slice(int start) => Data[start..];
-        public ReadOnlyByteSpan Slice(int start, int length) => Data.Slice(start, length);
+        public ReadOnlyByteSpan Slice(int start, int length) => Data[start..(start+length)];
 
         public byte[] ToArray() => Data.ToArray();
 

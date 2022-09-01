@@ -25,7 +25,7 @@ namespace CafeLib.Core.Buffers
         public int Length => Data.Length;
 
         public ByteMemory Slice(int start) => Data[start..];
-        public ByteMemory Slice(int start, int length) => Data.Slice(start, length);
+        public ByteMemory Slice(int start, int length) => Data[start..(start+length)];
 
         public void CopyTo(ByteMemory destination) => Data.CopyTo(destination);
         public ByteSpan.Enumerator GetEnumerator() => ((ByteSpan)Data.Span).GetEnumerator();
