@@ -67,11 +67,18 @@ namespace CafeLib.Data.Persistence
         /// </summary>
         public void Dispose()
         {
-            if (_disposed)
-            {
-                return;
-            }
+            Dispose(!_disposed);
+            _disposed = true;
+            GC.SuppressFinalize(this);
+        }
 
+        /// <summary>
+        /// Dispose entity registry.
+        /// </summary>
+        /// <param name="disposing">disposing flag</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing) return;
             _container?.Dispose();
             _disposed = true;
         }

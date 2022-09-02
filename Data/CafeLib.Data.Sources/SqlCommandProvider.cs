@@ -40,10 +40,9 @@ namespace CafeLib.Data.Sources
                 {
                     transaction.Rollback();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    // ReSharper disable once PossibleIntendedRethrow
-                    throw ex;
+                    throw; 
                 }
             }
 
@@ -77,10 +76,9 @@ namespace CafeLib.Data.Sources
                     transaction.Rollback();
                     throw;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    // ReSharper disable once PossibleIntendedRethrow
-                    throw ex;
+                    throw;
                 }
             }
         }
@@ -410,10 +408,9 @@ namespace CafeLib.Data.Sources
                 {
                     transaction.Rollback();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    // ReSharper disable once PossibleIntendedRethrow
-                    throw ex;
+                    throw;
                 }
             }
 

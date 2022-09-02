@@ -13,9 +13,9 @@ namespace CafeLib.Core.Buffers
             Data = data;
         }
 
-        public ByteSpan(byte[] data)
+        public ByteSpan(byte[] data = null)
+            : this(new Span<byte>(data ?? Array.Empty<byte>()))
         {
-            Data = data ?? Array.Empty<byte>();
         }
 
         public byte this[Index index]
@@ -28,7 +28,7 @@ namespace CafeLib.Core.Buffers
 
         public ByteSpan Reverse()
         {
-             Data.Reverse();
+            Data.Reverse();
             return this;
         }
 

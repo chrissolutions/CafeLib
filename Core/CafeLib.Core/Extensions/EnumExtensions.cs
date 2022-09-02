@@ -39,7 +39,7 @@ namespace CafeLib.Core.Extensions
         public static string GetEnumMemberValue(this Enum value)
         {
             var fieldInfo = value.GetType().GetField(value.GetName());
-            return fieldInfo.GetCustomAttribute<EnumMemberAttribute>()?.Value;
+            return fieldInfo?.GetCustomAttribute<EnumMemberAttribute>()?.Value;
         }
 
         /// <summary>
@@ -72,13 +72,6 @@ namespace CafeLib.Core.Extensions
         {
             return typeof(T).GetEnumNames().Select(x => GetFieldDescriptor(typeof(T).GetField(x))).ToArray();
         }
-
-        /// <summary>
-        /// Humanize the enum field.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns>enum descriptor </returns>
-        public static string Humanize(this Enum value) => GetDescriptor(value);
 
         /// <summary>
         /// Get the descriptor value associated to the enum field.

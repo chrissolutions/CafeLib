@@ -282,7 +282,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
         /// Obtain a public key string.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => ToAddress().ToString();
+        public override string ToString() => ToHex();
 
         /// <summary>
         /// Derive a child public key.

@@ -1,5 +1,5 @@
 ﻿using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using CafeLib.Data.SqlGenerator.DbObjects;
 using CafeLib.Data.SqlGenerator.DbObjects.SqlObjects;
 // ReSharper disable UnusedMember.Global

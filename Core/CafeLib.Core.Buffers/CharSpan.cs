@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace CafeLib.Core.Buffers
@@ -18,8 +19,8 @@ namespace CafeLib.Core.Buffers
         }
 
         public CharSpan(string data)
+            : this((data ?? "").ToCharArray())
         {
-            Data = data?.AsSpan().ToArray() ?? Array.Empty<char>();
         }
 
         public char this[Index index]
@@ -71,6 +72,8 @@ namespace CafeLib.Core.Buffers
             Data.CopyTo(destination);
             return destination;
         }
+
+        public override string ToString() => Data.ToString();
 
         public static CharSpan Empty => new();
 

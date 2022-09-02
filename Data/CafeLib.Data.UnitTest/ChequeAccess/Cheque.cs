@@ -10,7 +10,7 @@ namespace CafeLib.Data.UnitTest.ChequeAccess
     {
         public Cheque()
         {
-            Map(p => p.Status).Convert<ChequeStatus>(o => o.Humanize());
+            Map(p => p.Status).Convert<ChequeStatus>(o => o.GetDescriptor());
             Map(p => p.Status).Convert<string, ChequeStatus>(Enum.Parse<ChequeStatus>);
 
             Map(p => p.CreationDate).Convert<DateTime>(o => o.ToString(CultureInfo.InvariantCulture));

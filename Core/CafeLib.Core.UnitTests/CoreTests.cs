@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CafeLib.Core.Collections;
 using CafeLib.Core.Extensions;
+using CafeLib.Core.Support;
 using Xunit;
 
 namespace CafeLib.Core.UnitTests
@@ -12,15 +13,14 @@ namespace CafeLib.Core.UnitTests
         //    @"UPDATE dbo.Vehicles
         //        SET Vehicles.VehicleTypeID = {disable}
         //        WHERE Vehicles.ID = {vehicleId}";
-
         private const string RenderFormat =
-            @"UPDATE dbo.Vehicles SET Vehicles.VehicleTypeID = {disable} WHERE Vehicles.ID = {vehicleId}";
+            @"The Line: UPDATE dbo.Vehicles SET Vehicles.VehicleTypeID = {disable} WHERE Vehicles.ID = {vehicleId}";
 
         [Fact]
         public void StringRenderTest()
         {
             var rendered = RenderFormat.Render(new { disable = true, vehicleId = 3333 });
-            Assert.Equal(@"UPDATE dbo.Vehicles SET Vehicles.VehicleTypeID = True WHERE Vehicles.ID = 3333", rendered);
+            Assert.Equal(@"The Line: UPDATE dbo.Vehicles SET Vehicles.VehicleTypeID = True WHERE Vehicles.ID = 3333", rendered);
         }
 
         [Fact]
@@ -72,6 +72,25 @@ namespace CafeLib.Core.UnitTests
 
             var merged = array1.Concat(array2, array3);
             Assert.True(merged.SequenceEqual(new byte[] {2,3,4,5,6,7,8,9,10,11,12,13}));
+        }
+
+        [Fact]
+        public void ConverterTest()
+        {
+            var intVal = (int) Converter.ConvertTo(typeof(int), "5");
+            Assert.Equal(5, intVal);
+
+            intVal = Converter.Convert<int>("5");
+            Assert.Equal(5, intVal);
+            
+            intVal = (int)Converter.ConvertTo<string>(typeof(int), "5");
+            Assert.Equal(5, intVal);
+
+            intVal = Converter.Convert<int, string>("5");
+            Assert.Equal(5, intVal);
+
+            var boolVal = Converter.Convert<bool>("0");
+            Assert.False(boolVal);
         }
     }
 }

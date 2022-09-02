@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CafeLib.Core.Support;
+
 // ReSharper disable UnusedMember.Global
 
 namespace CafeLib.Core.Extensions
@@ -83,7 +85,7 @@ namespace CafeLib.Core.Extensions
         public static Task ForEachAsync<T>(this IEnumerable<T> collection, Func<T, Task> task)
         {
             var tasks = collection.Select(task).ToArray();
-            return Task.WhenAll(tasks);
+            return AsyncTask.WhenAll(tasks);
         }
 
         /// <summary>

@@ -33,11 +33,11 @@ namespace CafeLib.Cryptography
 		public ECKey(byte[] vch, bool isPrivate)
 		{
 			if (isPrivate)
-				_key = new ECPrivateKeyParameters(new BigInteger(1, vch), DomainParameter);
+				_key = new ECPrivateKeyParameters(new BigInteger(1, vch), DomainParameters);
 			else
 			{
 				var q = Secp256k1.Curve.DecodePoint(vch);
-				_key = new ECPublicKeyParameters("EC", q, DomainParameter);
+				_key = new ECPublicKeyParameters("EC", q, DomainParameters);
 			}
 		}
 
@@ -49,8 +49,8 @@ namespace CafeLib.Cryptography
 			return SecNamedCurves.GetByName("secp256k1");
 		}
 
-        private ECDomainParameters _domainParameter;
-		public ECDomainParameters DomainParameter => _domainParameter ??= new ECDomainParameters(Secp256k1.Curve, Secp256k1.G, Secp256k1.N, Secp256k1.H);
+        private ECDomainParameters _domainParameters;
+		public ECDomainParameters DomainParameters => _domainParameters ??= new ECDomainParameters(Secp256k1.Curve, Secp256k1.G, Secp256k1.N, Secp256k1.H);
 
 
         public ECDSASignature Sign(UInt256 hash)
@@ -89,7 +89,7 @@ namespace CafeLib.Cryptography
 				return key;
 
             ECPoint q = Secp256k1.G.Multiply(PrivateKey.D);
-            return new ECPublicKeyParameters("EC", q, DomainParameter);
+            return new ECPublicKeyParameters("EC", q, DomainParameters);
         }
 
 
@@ -101,9 +101,6 @@ namespace CafeLib.Cryptography
 				throw new ArgumentException("r should be positive");
 			if (sig.S.SignValue < 0)
 				throw new ArgumentException("s should be positive");
-			if (message == null)
-				throw new ArgumentNullException(nameof(message));
-
 
 			var curve = ECKey.CreateCurve();
 

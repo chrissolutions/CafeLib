@@ -47,10 +47,8 @@ namespace CafeLib.Blazor.Interop
         /// </summary>
         /// <param name="args">argument list</param>
         /// <returns>javascript reference</returns>
-        public async Task<IJSObjectReference> CreateJsReference(params object[] args)
-        {
-            return await (await _proxy).InvokeAsync<IJSObjectReference>(_createMethod, args);
-        }
+        public async Task<IJSObjectReference> CreateJsReference(params object[] args) => 
+            await (await _proxy).InvokeAsync<IJSObjectReference>(_createMethod, args);
 
         /// <summary>
         /// Create a javascript interop object from proxy.
@@ -58,9 +56,7 @@ namespace CafeLib.Blazor.Interop
         /// <param name="elementId">element identifier</param>
         /// <param name="args">creation arguments</param>
         /// <returns>javascript interop object</returns>
-        public async Task<T> CreateObject(string elementId, params object[] args)
-        {
-            return (await CreateElementReference(elementId)).CreateObject<T>(args);
-        }
+        public async Task<T> CreateObject(string elementId, params object[] args) =>
+            (await CreateElementReference(elementId)).CreateObject<T>(args);
     }
 }

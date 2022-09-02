@@ -6,13 +6,13 @@ namespace CafeLib.Core.Support
 {
     public static class Converter
     {
-        #region Instrinsic Types Converter Map
+        #region Instrinsic Types Converter Maps
 
         /// <summary>
-        /// Map of instrinsic data types.
+        /// Map of intrinsic data types.
         /// </summary>
-        private static readonly Dictionary<Type, Converter<string, object>> _stringConverterMap =
-            new Dictionary<Type, Converter<string, object>>
+        private static readonly Dictionary<Type, Converter<string, object>> StringConverterMap =
+            new()
             {
                 {typeof(bool), s=> ToBool(s)},
                 {typeof(char), s => ToChar(s)},
@@ -32,8 +32,8 @@ namespace CafeLib.Core.Support
                 {typeof(string), s => s}
             };
 
-        private static readonly Dictionary<Type, Converter<object, object>> _objectConverterMap =
-            new Dictionary<Type, Converter<object, object>>
+        private static readonly Dictionary<Type, Converter<object, object>> ObjectConverterMap =
+            new()
             {
                 {typeof(bool), o => System.Convert.ToBoolean(o)},
                 {typeof(char), o => System.Convert.ToChar(o)},
@@ -55,27 +55,23 @@ namespace CafeLib.Core.Support
 
         #endregion
 
+        #region Methods
+
         /// <summary>
-        /// Convert a string to an instrisic type.
+        /// Convert a string value to an intrinsic type.
         /// </summary>
         /// <typeparam name="T">conversion type</typeparam>
         /// <param name="value">string value</param>
         /// <returns>converted value</returns>
-        public static T Convert<T>(string value)
-        {
-            return (T) ConvertTo(typeof(T), value);
-        }
+        public static T Convert<T>(string value) => (T) ConvertTo(typeof(T), value);
 
         /// <summary>
-        /// Converts an object to an intrinsic type.
+        /// Converts a string value to an intrinsic type.
         /// </summary>
         /// <param name="type">type</param>
         /// <param name="value">object value</param>
         /// <returns></returns>
-        public static object ConvertTo(Type type, string value)
-        {
-            return _stringConverterMap[type](value);
-        }
+        public static object ConvertTo(Type type, string value) => StringConverterMap[type](value);
 
         /// <summary>
         /// Converts an object to an intrinsic type.
@@ -84,10 +80,7 @@ namespace CafeLib.Core.Support
         /// <typeparam name="TU"></typeparam>
         /// <param name="value">object value</param>
         /// <returns></returns>
-        public static T Convert<T, TU>(TU value) where TU : class
-        {
-            return (T)ConvertTo(typeof(T), value);
-        }
+        public static T Convert<T, TU>(TU value) where TU : class => (T)ConvertTo(typeof(T), value);
 
         /// <summary>
         /// Converts an object to an intrinsic type.
@@ -99,7 +92,7 @@ namespace CafeLib.Core.Support
         {
             try
             {
-                return _objectConverterMap[type](value);
+                return ObjectConverterMap[type](value);
             }
             catch
             {
@@ -107,81 +100,129 @@ namespace CafeLib.Core.Support
             }
         }
 
+        #endregion
+
         #region Helpers
 
-        private static bool ToBool(string s)
-        {
-            return bool.TryParse(s, out var result) && result;
-        }
+        /// <summary>
+        /// Convert string value to boolean
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>boolean value</returns>
+        private static bool ToBool(string s) => 
+            bool.TryParse(s, out var result) && result;
 
-        private static char ToChar(string s)
-        {
-            return char.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to char
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>char value</returns>
+        private static char ToChar(string s) => 
+            char.TryParse(s, out var result) ? result : default;
 
-        private static sbyte ToSbyte(string s)
-        {
-            return sbyte.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to signed byte
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>sbyte value</returns>
+        private static sbyte ToSbyte(string s) => 
+            sbyte.TryParse(s, out var result) ? result : default;
 
-        private static byte ToByte(string s)
-        {
-            return byte.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to byte
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>byte value</returns>
+        private static byte ToByte(string s) => 
+            byte.TryParse(s, out var result) ? result : default;
 
-        private static short ToShort(string s)
-        {
-            return short.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to short
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>short value</returns>
+        private static short ToShort(string s) => 
+            short.TryParse(s, out var result) ? result : default;
+        
+        /// <summary>
+        /// Convert string value to unsigned short
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>unsigned short value</returns>
+        private static ushort ToUshort(string s) => 
+            ushort.TryParse(s, out var result) ? result : default;
 
-        private static ushort ToUshort(string s)
-        {
-            return ushort.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to int
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>int value</returns>
+        private static int ToInt(string s) => 
+            int.TryParse(s, out var result) ? result : default;
 
-        private static int ToInt(string s)
-        {
-            return int.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to unsigned int
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>unsigned int value</returns>
+        private static uint ToUint(string s) => 
+            uint.TryParse(s, out var result) ? result : default;
+    
+        /// <summary>
+        /// Convert string value to long
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>long value</returns>
+        private static long ToLong(string s) => 
+            long.TryParse(s, out var result) ? result : default;
 
-        private static uint ToUint(string s)
-        {
-            return uint.TryParse(s, out var result) ? result : default;
-        }
-        private static long ToLong(string s)
-        {
-            return long.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to unsigned long
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>unsigned long value</returns>
+        private static ulong ToUlong(string s) => 
+            ulong.TryParse(s, out var result) ? result : default;
 
-        private static ulong ToUlong(string s)
-        {
-            return ulong.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to float
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>float value</returns>
+        private static float ToFloat(string s) =>
+            float.TryParse(s, out var result) ? result : default;
 
-        private static float ToFloat(string s)
-        {
-            return float.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to double
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>double value</returns>
+        private static double ToDouble(string s) =>
+            double.TryParse(s, out var result) ? result : default;
 
-        private static double ToDouble(string s)
-        {
-            return double.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to decimal
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>decimal value</returns>
+        private static decimal ToDecimal(string s) => 
+            decimal.TryParse(s, out var result) ? result : default;
 
-        private static decimal ToDecimal(string s)
-        {
-            return decimal.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to DateTime
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>DateTime value</returns>
+        private static DateTime ToDateTime(string s) =>
+            DateTime.TryParse(s, out var result) ? result : default;
 
-        private static DateTime ToDateTime(string s)
-        {
-            return DateTime.TryParse(s, out var result) ? result : default;
-        }
-
-        private static Guid ToGuid(string s)
-        {
-            return Guid.TryParse(s, out var result) ? result : default;
-        }
+        /// <summary>
+        /// Convert string value to Guid
+        /// </summary>
+        /// <param name="s">string value</param>
+        /// <returns>Guid value</returns>
+        private static Guid ToGuid(string s) =>
+            Guid.TryParse(s, out var result) ? result : default;
 
         #endregion
     }

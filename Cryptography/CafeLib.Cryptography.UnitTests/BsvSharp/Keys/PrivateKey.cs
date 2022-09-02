@@ -189,7 +189,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             return sig != null && publicKey.Verify(hash, sig);
         }
 
-        public string ToHex() => _keyData.ToString();
+        public string ToHex() => _keyData.ToHex(true);
         public Base58PrivateKey ToBase58() => new Base58PrivateKey(this);
         public override string ToString() => ToBase58().ToString();
 
@@ -244,7 +244,7 @@ namespace CafeLib.Cryptography.UnitTests.BsvSharp.Keys
             }
             else
             {
-                _keyData = new UInt256(true);
+                _keyData = new UInt256();
                 data.CopyTo(_keyData.Span);
                 IsCompressed = compressed;
                 IsValid = true;
