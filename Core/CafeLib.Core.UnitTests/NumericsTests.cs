@@ -64,6 +64,20 @@ namespace CafeLib.Core.UnitTests
 
         [Theory]
         [InlineData("c2eaba3b9c29575322c6e24fdc1b49bdfe405bad")]
+        public void UInt160_ByteSpan_Test(string hex)
+        {
+            var bytes = Hex.Decode(hex);
+            var readonlyByteSpan = new ReadOnlyByteSpan(bytes);
+
+            var uint160 = new UInt160(readonlyByteSpan);
+            var byteSpan = uint160.Span;
+
+            Assert.Equal(bytes, uint160.ToArray());
+            Assert.Equal(bytes, byteSpan.ToArray());
+        }
+
+        [Theory]
+        [InlineData("c2eaba3b9c29575322c6e24fdc1b49bdfe405bad")]
         [InlineData("0xc2eaba3b9c29575322c6e24fdc1b49bdfe405bad")]
         public void UInt160_FromHex_Test(string hex)
         {
@@ -145,6 +159,19 @@ namespace CafeLib.Core.UnitTests
 
             Assert.Equal(fbf, uint256.ToArray());
             Assert.Equal(fbf, new256.ToArray());
+        }
+
+        [Fact]
+        public void UInt256_ByteSpan_Test()
+        {
+            var fbf = new byte[] { 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10 };
+            var readonlyByteSpan = new ReadOnlyByteSpan(fbf);
+
+            var uint256 = new UInt256(readonlyByteSpan);
+            var byteSpan = uint256.Span;
+
+            Assert.Equal(fbf, uint256.ToArray());
+            Assert.Equal(fbf, byteSpan.ToArray());
         }
 
         [Theory]
@@ -236,6 +263,20 @@ namespace CafeLib.Core.UnitTests
             };
             var str = i.ToString();
             Assert.Equal("fe000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000021", str);
+        }
+
+        [Theory]
+        [InlineData("fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210")]
+        public void UInt512_ByteSpan_Test(string hex)
+        {
+            var bytes = Hex.Decode(hex);
+            var readonlyByteSpan = new ReadOnlyByteSpan(bytes);
+
+            var uint512 = new UInt512(readonlyByteSpan);
+            var byteSpan = uint512.Span;
+
+            Assert.Equal(bytes, uint512.ToArray());
+            Assert.Equal(bytes, byteSpan.ToArray());
         }
 
         [Theory]
