@@ -9,10 +9,10 @@ namespace CafeLib.Cryptography.UnitTests
         [Fact]
         public void AesEncryptDecryptTests()
         {
-            var msg = "all good men must act";
-            var data1 = Encoding.UTF8.GetBytes(msg);
-            var password = "really strong password...;-)";
+            const string msg = "all good men must act";
+            const string password = "really strong password...;-)";
 
+            var data1 = Encoding.UTF8.GetBytes(msg);
             var key = AesEncryption.KeyFromPassword(password);
 
             var edata1 = AesEncryption.Encrypt(data1, key);
@@ -24,10 +24,10 @@ namespace CafeLib.Cryptography.UnitTests
         [Fact]
         public void AesEncryptDecryptTest_With_InitializationVector()
         {
-            var msg = "all good men must act";
-            var data1 = Encoding.UTF8.GetBytes(msg);
-            var password = "really strong password...;-)";
+            const string msg = "all good men must act";
+            const string password = "really strong password...;-)";
 
+            var data1 = Encoding.UTF8.GetBytes(msg);
             var key = AesEncryption.KeyFromPassword(password);
 
             var iv = AesEncryption.InitializationVector(key, data1);
