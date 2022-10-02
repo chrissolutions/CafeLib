@@ -32,7 +32,7 @@ namespace CafeLib.Core.Encodings
                 throw new ArgumentException("Invalid hex bytes string.", nameof(hex));
 
             if (chars.Length / 2 < bytes.Length)
-                bytes[(chars.Length / 2)..].Data.Fill(0);
+                bytes[..^(chars.Length / 2)].Data.Fill(0);
 
             for (int i = 0, j = bytes.Length; i < chars.Length;)
             {
