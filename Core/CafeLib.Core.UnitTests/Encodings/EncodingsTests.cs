@@ -64,6 +64,41 @@ namespace CafeLib.Core.UnitTests
         }
 
         [Fact]
+        public void Hex_Zero_HexEncoder_Test()
+        {
+            var encoder = new HexEncoder();
+            Assert.True(encoder.TryDecode("00", out var bytes));
+            Assert.Equal(0, bytes[0]);
+        }
+
+        [Fact]
+        public void Hex_Zero_HexReverseEncoder_Test()
+        {
+            var encoder = new HexReverseEncoder();
+            Assert.True(encoder.TryDecode("00", out var bytes));
+            Assert.Equal(0, bytes[0]);
+        }
+
+        [Fact]
+        public void Hex_Zero_HexEncoder_Span_Test()
+        {
+            var bytes = new byte[32];
+            var encoder = new HexEncoder();
+            Assert.True(encoder.TryDecodeSpan("00", bytes));
+            Assert.Equal(0, bytes[0]);
+        }
+
+        [Fact]
+        public void Hex_Zero_HexReverseEncoder_Span_Test()
+        {
+            var bytes = new byte[32];
+            var encoder = new HexReverseEncoder();
+            Assert.True(encoder.TryDecodeSpan("00", bytes));
+            Assert.Equal(0, bytes[0]);
+        }
+
+
+        [Fact]
         public void Ascii_Encode_Decode_Test()
         {
             const string message = "Kilroy was here!";
