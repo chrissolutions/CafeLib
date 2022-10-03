@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="CafeLib.Core" Version="$(Version)" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
   </ItemGroup>
 
   <ItemGroup>

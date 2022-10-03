@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="CafeLib.Core.Data" Version="$(Version)" />
-    <PackageReference Include="RepoDb" Version="1.12.9" />
+    <PackageReference Include="RepoDb" Version="1.12.10" />
   </ItemGroup>
 
   <ItemGroup>
