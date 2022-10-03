@@ -18,7 +18,7 @@ namespace CafeLib.Authorization.UnitTests
         public async Task IdentityUser_Test()
         {
             var login = new LoginModel
-                {
+            {
                 UserName = "alice",
                 Password = "My long 123$ password",
                 EmailAddress = "AliceSmith@email.com",

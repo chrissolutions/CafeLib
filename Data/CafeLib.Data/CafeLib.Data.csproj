@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   	<Description>Cafelib sql repository persistence package.</Description>
     <Description>Provides core functionality across applications and services.</Description>
-    <Version Condition=" '$(Version)' == '' ">2.0.0</Version>
+    <Version Condition=" '$(Version)' == '' ">2.0.1</Version>
     <Copyright>© 2021 Chris Solutions</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReleaseNotes></PackageReleaseNotes>
