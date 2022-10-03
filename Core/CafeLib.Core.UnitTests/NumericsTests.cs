@@ -2,8 +2,8 @@
 using System.Linq;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Encodings;
+using CafeLib.Core.Extensions;
 using Xunit;
-using System;
 
 namespace CafeLib.Core.UnitTests
 {
@@ -217,6 +217,26 @@ namespace CafeLib.Core.UnitTests
 
             Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint256}" : $"{uint256}");
             Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint256Reverse}" : $"{uint256Reverse}");
+        }
+
+        [Theory]
+        [InlineData("00")]
+        [InlineData("0x00")]
+        [InlineData("988119d6cca702beb1748f4eb497e316")]
+        [InlineData("fedc")]
+        [InlineData("0xc172b3f1b60a8ce26f")]
+        [InlineData("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b")]
+        public void UInt256_FromHex_Unmatched_Length(string hex)
+        {
+            var uint256 = UInt256.FromHex(hex).ToString();
+            hex = hex.Replace("0x", "");
+            Assert.True(uint256.Every((x, i) => i < hex.Length ? hex[i] == x && uint256[i] == x : uint256[i] == '0'));
+
+            var uint256Reverse = UInt256.FromHex(hex, true).ToString();
+            var hexReverseBytes = HexReverse.Decode(hex);
+            var hexReverse = Hex.Encode(hexReverseBytes);
+            var pos = uint256Reverse.Length - hex.Length;
+            Assert.True(uint256Reverse.Every((x, i) => i >= pos ? hexReverse[i - pos] == x && uint256Reverse[i] == x : uint256Reverse[i] == '0'));
         }
 
         [Theory]

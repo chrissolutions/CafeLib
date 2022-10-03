@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.452
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Data", "CafeLib.Data\CafeLib.Data.csproj", "{44803D03-77B4-4288-A9F4-4BDFBAFF0FE5}"
 EndProject
@@ -16,8 +16,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Data.Sources.SqlServer", "CafeLib.Data.Sources.SqlServer\CafeLib.Data.Sources.SqlServer.csproj", "{C5F57C36-C174-4CDF-B34C-390D61F51ADF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CafeLib.Data.Sources.Sqlite", "CafeLib.Data.Sources.Sqlite\CafeLib.Data.Sources.Sqlite.csproj", "{B2655D32-2C08-42BD-9320-F2DD1950EFC3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeLib.Data.UnitTest.Identity", "CafeLib.Data.UnitTest.Identity\CafeLib.Data.UnitTest.Identity.csproj", "{A1950916-101B-483F-92FA-043130905D64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +51,6 @@ Global
 		{B2655D32-2C08-42BD-9320-F2DD1950EFC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2655D32-2C08-42BD-9320-F2DD1950EFC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2655D32-2C08-42BD-9320-F2DD1950EFC3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A1950916-101B-483F-92FA-043130905D64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1950916-101B-483F-92FA-043130905D64}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1950916-101B-483F-92FA-043130905D64}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1950916-101B-483F-92FA-043130905D64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

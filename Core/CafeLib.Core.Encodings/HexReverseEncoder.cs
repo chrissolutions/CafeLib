@@ -31,8 +31,8 @@ namespace CafeLib.Core.Encodings
             if (chars.Length % 2 == 1)
                 throw new ArgumentException("Invalid hex bytes string.", nameof(hex));
 
-            if (chars.Length != bytes.Length * 2)
-                throw new ArgumentException("Length mismatch.", nameof(bytes));
+            if (chars.Length / 2 < bytes.Length)
+                bytes[..^(chars.Length / 2)].Data.Fill(0);
 
             for (int i = 0, j = bytes.Length; i < chars.Length;)
             {

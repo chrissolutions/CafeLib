@@ -5,17 +5,16 @@ namespace SignalRCoreApp.Hubs
 {
     public class ChatHub : Hub
     {
-        //public async Task Send(string name, string message)
-        //{
-        //    // Call the broadcastMessage method to update clients.
-        //    await Clients.All.SendAsync("broadcastMessage", name, message);
-        //}
-
-        public async Task Send(params object[] data)
+        public async Task Send(string name, string message)
         {
             // Call the broadcastMessage method to update clients.
-            await Clients.All.SendAsync("broadcastMessage", data);
+            await Clients.All.SendAsync("broadcastMessage", name, message);
         }
 
+        //public async Task Send(params object[] data)
+        //{
+        //    // Call the broadcastMessage method to update clients.
+        //    await Clients.All.SendAsync("broadcastMessage", data);
+        //}
     }
 }
