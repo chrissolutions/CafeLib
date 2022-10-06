@@ -92,7 +92,7 @@ namespace CafeLib.Core.Buffers
 
         public static ByteSpan operator +(ByteSpan span1, ReadOnlyByteSpan span2)
         {
-            return Concat(span1, new ByteSpan(span2));
+            return Concat(span1, span2.Data);
         }
 
         public static ByteSpan Concat(ByteSpan span1, ByteSpan span2)

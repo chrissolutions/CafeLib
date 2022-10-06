@@ -13,9 +13,14 @@ public class BufferTests
     {
         var encoder = new AsciiEncoder();
         var span1 = new ByteSpan(encoder.Decode("cat"));
-        var span2 = new ReadOnlyByteSpan(encoder.Decode("doggy"));
+        var span2 = new ByteSpan(encoder.Decode("doggy"));
         var concat = span1 + span2;
         var result = encoder.Encode(concat);
+        Assert.Equal("catdoggy", result);
+
+        var span3 = new ReadOnlyByteSpan(encoder.Decode("doggy"));
+        concat = span1 + span3;
+        result = encoder.Encode(concat);
         Assert.Equal("catdoggy", result);
     }
 
@@ -27,6 +32,11 @@ public class BufferTests
         var span2 = new ReadOnlyByteSpan(encoder.Decode("doggy"));
         var concat = span1 + span2;
         var result = encoder.Encode(concat);
+        Assert.Equal("catdoggy", result);
+
+        var span3 = new ByteSpan(encoder.Decode("doggy"));
+        concat = span1 + span3;
+        result = encoder.Encode(concat);
         Assert.Equal("catdoggy", result);
     }
 
@@ -82,6 +92,19 @@ public class BufferTests
     }
 
     [Fact]
+    public void CharSpan_Concat_Test()
+    {
+        var span1 = new CharSpan("cat");
+        var span2 = new CharSpan("doggy");
+        var result = span1 + span2;
+        Assert.Equal("catdoggy", result.ToString());
+
+        var span3 = new ReadOnlyCharSpan("doggy");
+        result = span1 + span3;
+        Assert.Equal("catdoggy", result.ToString());
+   }
+
+    [Fact]
     public void CharSpan_Slice_Test()
     {
         const string text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -90,6 +113,19 @@ public class BufferTests
         var etojSlice = charSpan.Slice(4, 6);
         var charsSlice = charSpan[4..10];
         Assert.Equal(charsSlice.ToString(), etojSlice.ToString());
+    }
+
+    [Fact]
+    public void ReadOnlyCharSpan_Concat_Test()
+    {
+        var span1 = new ReadOnlyCharSpan("cat");
+        var span2 = new ReadOnlyCharSpan("doggy");
+        var result = span1 + span2;
+        Assert.Equal("catdoggy", result.ToString());
+
+        var span3 = new CharSpan("doggy");
+        result = span1 + span3;
+        Assert.Equal("catdoggy", result);
     }
 
     [Fact]

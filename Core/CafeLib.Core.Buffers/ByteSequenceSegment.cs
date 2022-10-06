@@ -44,8 +44,9 @@ namespace CafeLib.Core.Buffers
             while (Next != null) 
                 last = last?.Next as ByteSequenceSegment;
 
-            // ReSharper disable once PossibleNullReferenceException
-            return new ReadOnlySequence<byte>(this, 0, last, last.Memory.Length - 1);
+            return last != null 
+                ? new ReadOnlySequence<byte>(this, 0, last, last.Memory.Length - 1) 
+                : ReadOnlySequence<byte>.Empty;
         }
     }
 }
