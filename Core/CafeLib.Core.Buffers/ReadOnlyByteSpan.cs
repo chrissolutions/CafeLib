@@ -17,7 +17,6 @@ namespace CafeLib.Core.Buffers
         {
         }
 
-
         public ReadOnlyByteSpan(ReadOnlyByteSequence data)
         {
             Data = data.ToSpan();
@@ -76,5 +75,18 @@ namespace CafeLib.Core.Buffers
 
         public static implicit operator byte[](ReadOnlyByteSpan rhs) => rhs.Data.ToArray();
         public static implicit operator ReadOnlyByteSpan(byte[] rhs) => new(rhs);
+
+        public static ReadOnlyByteSpan operator +(ReadOnlyByteSpan span1, ReadOnlyByteSpan span2)
+        {
+            return Concat(span1, span2);
+        }
+
+        public static ReadOnlyByteSpan Concat(ReadOnlyByteSpan span1, ReadOnlyByteSpan span2)
+        {
+            var span = new ByteSpan(new byte[span1.Length + span2.Length]);
+            span1.CopyTo(span);
+            span2.CopyTo(span[span1.Length..]);
+            return span;
+        }
     }
 }

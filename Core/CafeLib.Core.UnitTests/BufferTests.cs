@@ -9,6 +9,28 @@ namespace CafeLib.Core.UnitTests;
 public class BufferTests
 {
     [Fact]
+    public void ByteSpan_Concat_Test()
+    {
+        var encoder = new AsciiEncoder();
+        var span1 = new ByteSpan(encoder.Decode("cat"));
+        var span2 = new ReadOnlyByteSpan(encoder.Decode("doggy"));
+        var concat = span1 + span2;
+        var result = encoder.Encode(concat);
+        Assert.Equal("catdoggy", result);
+    }
+
+    [Fact]
+    public void ReadOnlyByteSpan_Concat_Test()
+    {
+        var encoder = new AsciiEncoder();
+        var span1 = new ReadOnlyByteSpan(encoder.Decode("cat"));
+        var span2 = new ReadOnlyByteSpan(encoder.Decode("doggy"));
+        var concat = span1 + span2;
+        var result = encoder.Encode(concat);
+        Assert.Equal("catdoggy", result);
+    }
+
+    [Fact]
     public void ReadOnlyByteSpan_Slice_Test()
     {
         const string text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
