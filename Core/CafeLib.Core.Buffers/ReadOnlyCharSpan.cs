@@ -64,32 +64,23 @@ namespace CafeLib.Core.Buffers
         public static implicit operator ReadOnlySpan<char>(ReadOnlyCharSpan rhs) => rhs.Data;
         public static implicit operator ReadOnlyCharSpan(ReadOnlySpan<char> rhs) => new(rhs);
 
-        public static implicit operator CharSpan(ReadOnlyCharSpan rhs) => rhs.Data;
-        public static implicit operator ReadOnlyCharSpan(Span<char> rhs) => new(rhs);
-
         public static implicit operator char[](ReadOnlyCharSpan rhs) => rhs.Data.ToArray();
         public static implicit operator ReadOnlyCharSpan(char[] rhs) => new(rhs);
         
         public static implicit operator string(ReadOnlyCharSpan rhs) => rhs.Data.ToString();
         public static implicit operator ReadOnlyCharSpan(string rhs) => new(rhs);
 
-
         public static ReadOnlyCharSpan operator +(ReadOnlyCharSpan span1, ReadOnlyCharSpan span2)
-        {
-            return Concat(span1, span2);
-        }
-
-        public static ReadOnlyCharSpan operator +(ReadOnlyCharSpan span1, CharSpan span2)
-        {
-            return Concat(span1, span2.Data);
-        }
-
-        public static ReadOnlyCharSpan Concat(ReadOnlyCharSpan span1, ReadOnlyCharSpan span2)
         {
             var span = new CharSpan(new char[span1.Length + span2.Length]);
             span1.CopyTo(span);
             span2.CopyTo(span[span1.Length..]);
             return span;
+        }
+
+        public static ReadOnlyCharSpan operator +(ReadOnlyCharSpan span1, CharSpan span2)
+        {
+            return CharSpan.Concat(span1, span2.Data);
         }
     }
 }

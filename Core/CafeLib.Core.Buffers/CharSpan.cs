@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Reflection;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 
 namespace CafeLib.Core.Buffers
@@ -86,7 +86,7 @@ namespace CafeLib.Core.Buffers
         public static implicit operator ReadOnlySpan<char>(CharSpan rhs) => rhs.Data;
 
         public static implicit operator CharSpan(ReadOnlyCharSpan rhs) => new(rhs.ToArray());
-        public static implicit operator ReadOnlyCharSpan(CharSpan rhs) => rhs.Data;
+        public static implicit operator ReadOnlyCharSpan(CharSpan rhs) => new(rhs.Data);
 
         public static implicit operator string(CharSpan rhs) => rhs.Data.ToString();
         public static implicit operator CharSpan(string rhs) => new(rhs);

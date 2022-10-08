@@ -65,8 +65,6 @@ namespace CafeLib.Core.Buffers
 
         public static ReadOnlyByteSpan Empty => default;
 
-        //public static implicit operator ByteSpan(ReadOnlyByteSpan rhs) => rhs.Data;
-
         public static implicit operator ReadOnlySpan<byte>(ReadOnlyByteSpan rhs) => rhs.Data;
         public static implicit operator ReadOnlyByteSpan(ReadOnlySpan<byte> rhs) => new(rhs);
 
