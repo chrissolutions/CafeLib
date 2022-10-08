@@ -269,6 +269,24 @@ namespace CafeLib.Core.UnitTests
             Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint256.ToHex(false)}" : $"{uint256.ToHex(false)}");
         }
 
+        [Fact]
+        public void UInt256_Operator_BinaryAnd_Test()
+        {
+            var source = UInt256.FromHex("0000001c3fffc000000000000000000000000000000000000000000000000000");
+            var mask = UInt256.FromHex("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+            var result = UInt256.FromHex("000000003fffc000000000000000000000000000000000000000000000000000");
+            var target = source & mask;
+            Assert.Equal(result, target);
+        }
+
+        [Fact]
+        public void UInt256_Operator_BinaryOr_Test()
+        {
+            var source = UInt256.FromHex("0000001c3fffc000000000000000000000000000000000000000000000000000");
+            var target = source | UInt256.Zero;
+            Assert.Equal(source, target);
+        }
+
         #endregion
 
         #region UInt512 Tests

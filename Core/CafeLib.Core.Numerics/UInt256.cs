@@ -10,7 +10,8 @@ namespace CafeLib.Core.Numerics
         private ulong _n2 = 0;
         private ulong _n3 = 0;
 
-        public const int Length = 4 * sizeof(ulong);
+        public const int Width = 4;
+        public const int Length = Width * sizeof(ulong);
 
         public static UInt256 Zero { get; } = new(0);
         public static UInt256 One { get; } = new(1);
@@ -140,13 +141,13 @@ namespace CafeLib.Core.Numerics
         public static explicit operator UInt256(byte[] rhs) => new(rhs);
         public static implicit operator byte[](UInt256 rhs) => rhs.Span.ToArray();
 
-        public static implicit operator int(UInt256 rhs) => (int)rhs._n0;
+        public static explicit operator int(UInt256 rhs) => (int)rhs._n0;
         public static implicit operator UInt256(int rhs) => new((ulong)rhs, 0, 0, 0);
-        public static implicit operator uint(UInt256 rhs) => (uint)rhs._n0;
+        public static explicit operator uint(UInt256 rhs) => (uint)rhs._n0;
         public static implicit operator UInt256(uint rhs) => new(rhs, 0, 0, 0);
-        public static implicit operator long(UInt256 rhs) => (long)rhs._n0;
+        public static explicit operator long(UInt256 rhs) => (long)rhs._n0;
         public static implicit operator UInt256(long rhs) => new((ulong)rhs, 0, 0, 0);
-        public static implicit operator ulong(UInt256 rhs) => rhs._n0;
+        public static explicit operator ulong(UInt256 rhs) => rhs._n0;
         public static implicit operator UInt256(ulong rhs) => new(rhs, 0, 0, 0);
 
         public static explicit operator UInt256(ByteSpan rhs) => new(rhs);
@@ -166,18 +167,17 @@ namespace CafeLib.Core.Numerics
 
         public static UInt256 operator <<(UInt256 a, int shift)
         {
-            const int width = 4;
             var r = Zero;
             var rpn = r.Span64.Data;
             var apn = a.Span64.Data;
             var k = shift / 64;
             shift %= 64;
-            for (var i = 0; i < width; i++)
+            for (var i = 0; i < Width; i++)
             {
-                if (i + k + 1 < width && shift != 0)
+                if (i + k + 1 < Width && shift != 0)
                     rpn[i + k + 1] |= (apn[i] >> (64 - shift));
 
-                if (i + k < width)
+                if (i + k < Width)
                     rpn[i + k] |= (apn[i] << shift);
             }
             return r;
@@ -185,13 +185,12 @@ namespace CafeLib.Core.Numerics
 
         public static UInt256 operator >>(UInt256 a, int shift)
         {
-            const int width = 4;
             var r = Zero;
             var rpn = r.Span64.Data;
             var apn = a.Span64.Data;
             var k = shift / 64;
             shift %= 64;
-            for (var i = 0; i < width; i++)
+            for (var i = 0; i < Width; i++)
             {
                 if (i - k - 1 >= 0 && shift != 0)
                     rpn[i - k - 1] |= (apn[i] << (64 - shift));
@@ -234,10 +233,9 @@ namespace CafeLib.Core.Numerics
 
         public static UInt256 operator ++(UInt256 a)
         {
-            const int width = 4;
             var apn = a.Span64;
-            int i = 0;
-            while (++apn[i] == 0 && i < width - 1)
+            var i = 0;
+            while (++apn[i] == 0 && i < Width - 1)
                 i++;
             return a;
         }
@@ -246,13 +244,13 @@ namespace CafeLib.Core.Numerics
         public static UInt256 operator +(UInt256 a, ulong b) => a + new UInt256(b);
         public static UInt256 operator +(UInt256 a, UInt256 b)
         {
-            const int width = 8;
+            const int size = 2*Width;
             ulong carry = 0;
             var r = Zero;
             var rpn = r.Span32;
             var apn = a.Span32;
             var bpn = b.Span32;
-            for (int i = 0; i < width; i++)
+            for (int i = 0; i < size; i++)
             {
                 ulong n = carry + apn[i] + bpn[i];
                 rpn[i] = (uint)(n & 0xffffffff);
@@ -263,24 +261,33 @@ namespace CafeLib.Core.Numerics
 
         public static UInt256 operator -(UInt256 a)
         {
-            const int width = 4;
             var r = Zero;
             var rpn = r.Span64;
             var apn = a.Span64;
-            for (int i = 0; i < width; i++)
+            for (int i = 0; i < Width; i++)
                 rpn[i] = ~apn[i];
             r++;
             return r;
         }
 
-        public static UInt256 operator |(UInt256 a, UInt256 b)
+        public static UInt256 operator &(UInt256 a, UInt256 b)
         {
-            const int width = 4;
             var r = Zero;
             var rpn = r.Span64;
             var apn = a.Span64;
             var bpn = b.Span64;
-            for (int i = 0; i < width; i++)
+            for (int i = 0; i < Width; i++)
+                rpn[i] = apn[i] & bpn[i];
+            return r;
+        }
+
+        public static UInt256 operator |(UInt256 a, UInt256 b)
+        {
+            var r = Zero;
+            var rpn = r.Span64;
+            var apn = a.Span64;
+            var bpn = b.Span64;
+            for (int i = 0; i < Width; i++)
                 rpn[i] = apn[i] | bpn[i];
             return r;
         }
