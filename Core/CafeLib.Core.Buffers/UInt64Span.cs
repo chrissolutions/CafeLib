@@ -2,7 +2,7 @@
 
 namespace CafeLib.Core.Buffers
 {
-    public ref struct UInt64Span
+    public readonly ref struct UInt64Span
     {
         public Span<ulong> Data { get; }
 

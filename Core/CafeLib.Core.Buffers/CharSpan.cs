@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Reflection;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 
 namespace CafeLib.Core.Buffers
@@ -44,6 +44,7 @@ namespace CafeLib.Core.Buffers
         public CharSpan Slice(int start, int length) => Data.Slice(start, length);
 
         public char[] ToArray() => Data.ToArray();
+        public override string ToString() => Data.ToString();
 
         public Enumerator GetEnumerator() => new(this);
 
@@ -73,8 +74,6 @@ namespace CafeLib.Core.Buffers
             return destination;
         }
 
-        public override string ToString() => Data.ToString();
-
         public static CharSpan Empty => new();
 
         public static implicit operator CharSpan(char[] rhs) => new(rhs);
@@ -87,6 +86,27 @@ namespace CafeLib.Core.Buffers
         public static implicit operator ReadOnlySpan<char>(CharSpan rhs) => rhs.Data;
 
         public static implicit operator CharSpan(ReadOnlyCharSpan rhs) => new(rhs.ToArray());
-        public static implicit operator ReadOnlyCharSpan(CharSpan rhs) => rhs.Data;
+        public static implicit operator ReadOnlyCharSpan(CharSpan rhs) => new(rhs.Data);
+
+        public static implicit operator string(CharSpan rhs) => rhs.Data.ToString();
+        public static implicit operator CharSpan(string rhs) => new(rhs);
+
+        public static CharSpan operator +(CharSpan span1, CharSpan span2)
+        {
+            return Concat(span1, span2);
+        }
+
+        public static CharSpan operator +(CharSpan span1, ReadOnlyCharSpan span2)
+        {
+            return Concat(span1, span2.Data);
+        }
+
+        public static CharSpan Concat(CharSpan span1, CharSpan span2)
+        {
+            var span = new CharSpan(new char[span1.Length + span2.Length]);
+            span1.CopyTo(span);
+            span2.CopyTo(span[span1.Length..]);
+            return span;
+        }
     }
 }
