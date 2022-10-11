@@ -191,7 +191,7 @@ namespace CafeLib.Cryptography
                         break;
 
                     case 1:
-                        k1 = (uint)(chunk[0]);
+                        k1 = chunk[0];
                         k1 *= c1;
                         k1 = Rotl32(k1, 15);
                         k1 *= c2;
