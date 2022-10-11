@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
+using System.Reflection.PortableExecutable;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.Numerics;
@@ -133,73 +135,80 @@ namespace CafeLib.Cryptography
                 .Concat(num));
         }
 
-        public static uint MurmurHash3(uint nHashSeed, byte[] vDataToHash)
+        public static uint MurmurHash3(uint nHashSeed, ReadOnlyByteSpan vDataToHash)
         {
             // The following is MurmurHash3 (x86_32), see https://gist.github.com/automatonic/3725443
             const uint c1 = 0xcc9e2d51;
             const uint c2 = 0x1b873593;
 
             uint h1 = nHashSeed;
-            uint k1 = 0;
-            uint streamLength = 0;
+            int i = 0;
 
-            using (BinaryReader reader = new BinaryReader(new MemoryStream(vDataToHash)))
+            while (i < vDataToHash.Length)
             {
-                byte[] chunk = reader.ReadBytes(4);
-                while (chunk.Length > 0)
+                var start = i;
+                var end = start + sizeof(uint) < vDataToHash.Length
+                    ? start + sizeof(uint) 
+                    : vDataToHash.Length;
+
+                var chunk = vDataToHash[start..end];
+
+                uint k1;
+                switch (chunk.Length)
                 {
-                    streamLength += (uint)chunk.Length;
-                    switch (chunk.Length)
-                    {
-                        case 4:
-                            /* Get four bytes from the input into an uint */
-                            k1 = (uint)
-                                (chunk[0]
-                                 | chunk[1] << 8
-                                 | chunk[2] << 16
-                                 | chunk[3] << 24);
+                    case 4:
+                        /* Get four bytes from the input into an uint */
+                        k1 = (uint)
+                            (chunk[0]
+                             | chunk[1] << 8
+                             | chunk[2] << 16
+                             | chunk[3] << 24);
 
-                            /* bitmagic hash */
-                            k1 *= c1;
-                            k1 = Rotl32(k1, 15);
-                            k1 *= c2;
+                        /* bitmagic hash */
+                        k1 *= c1;
+                        k1 = Rotl32(k1, 15);
+                        k1 *= c2;
 
-                            h1 ^= k1;
-                            h1 = Rotl32(h1, 13);
-                            h1 = h1 * 5 + 0xe6546b64;
-                            break;
-                        case 3:
-                            k1 = (uint)
-                                (chunk[0]
-                                 | chunk[1] << 8
-                                 | chunk[2] << 16);
-                            k1 *= c1;
-                            k1 = Rotl32(k1, 15);
-                            k1 *= c2;
-                            h1 ^= k1;
-                            break;
-                        case 2:
-                            k1 = (uint)
-                                (chunk[0]
-                                 | chunk[1] << 8);
-                            k1 *= c1;
-                            k1 = Rotl32(k1, 15);
-                            k1 *= c2;
-                            h1 ^= k1;
-                            break;
-                        case 1:
-                            k1 = (uint)(chunk[0]);
-                            k1 *= c1;
-                            k1 = Rotl32(k1, 15);
-                            k1 *= c2;
-                            h1 ^= k1;
-                            break;
-                    }
-                    chunk = reader.ReadBytes(4);
+                        h1 ^= k1;
+                        h1 = Rotl32(h1, 13);
+                        h1 = h1 * 5 + 0xe6546b64;
+                        break;
+
+                    case 3:
+                        k1 = (uint)
+                            (chunk[0]
+                             | chunk[1] << 8
+                             | chunk[2] << 16);
+                        k1 *= c1;
+                        k1 = Rotl32(k1, 15);
+                        k1 *= c2;
+                        h1 ^= k1;
+                        break;
+
+                    case 2:
+                        k1 = (uint)
+                            (chunk[0]
+                             | chunk[1] << 8);
+                        k1 *= c1;
+                        k1 = Rotl32(k1, 15);
+                        k1 *= c2;
+                        h1 ^= k1;
+                        break;
+
+                    case 1:
+                        k1 = (uint)(chunk[0]);
+                        k1 *= c1;
+                        k1 = Rotl32(k1, 15);
+                        k1 *= c2;
+                        h1 ^= k1;
+                        break;
                 }
+
+                i += chunk.Length;  
             }
+
             // finalization, magic chants to wrap it all up
-            h1 ^= streamLength;
+            h1 ^= (uint)vDataToHash.Length;
             h1 = Fmix(h1);
 
             unchecked //ignore overflow
