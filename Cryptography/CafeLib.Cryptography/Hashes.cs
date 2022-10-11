@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Drawing;
-using System.IO;
-using System.Reflection.PortableExecutable;
 using CafeLib.Core.Buffers;
 using CafeLib.Core.Extensions;
 using CafeLib.Core.Numerics;
