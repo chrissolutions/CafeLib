@@ -206,10 +206,7 @@ namespace CafeLib.Cryptography
             h1 ^= (uint)vDataToHash.Length;
             h1 = Fmix(h1);
 
-            unchecked //ignore overflow
-            {
-                return h1;
-            }
+            return h1;
 
             static uint Rotl32(uint x, byte r)
             {
