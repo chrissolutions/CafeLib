@@ -144,10 +144,8 @@ namespace CafeLib.Cryptography
             while (i < vDataToHash.Length)
             {
                 var start = i;
-                var end = start + sizeof(uint) < vDataToHash.Length
-                    ? start + sizeof(uint) 
-                    : vDataToHash.Length;
-
+                var end = start + sizeof(uint);
+                end = end < vDataToHash.Length ? end : vDataToHash.Length;
                 var chunk = vDataToHash[start..end];
 
                 uint k1;
