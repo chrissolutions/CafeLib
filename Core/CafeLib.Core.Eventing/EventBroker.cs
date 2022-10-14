@@ -58,9 +58,23 @@ namespace CafeLib.Core.Eventing
         /// <typeparam name='T'>
         /// Type of IEventMessage.
         /// </typeparam>
-        public Task Publish<T>(T message) where T : IEventMessage
+        public void Publish<T>(T message) where T : IEventMessage
         {
-            return _eventService.Publish(message);
+            _eventService.Publish(message);
+        }
+
+        /// <summary>
+        /// Publish the specified message.
+        /// </summary>
+        /// <param name='message'>
+        /// Message.
+        /// </param>
+        /// <typeparam name='T'>
+        /// Type of IEventMessage.
+        /// </typeparam>
+        public Task PublishAsync<T>(T message) where T : IEventMessage
+        {
+            return _eventService.PublishAsync(message);
         }
 
         /// <summary>

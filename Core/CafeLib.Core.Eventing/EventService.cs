@@ -85,7 +85,26 @@ namespace CafeLib.Core.Eventing
         /// <typeparam name='T'>
         /// Type of IEventMessage.
         /// </typeparam>
-        public Task Publish<T>(T message) where T : IEventMessage
+        public void Publish<T>(T message) where T : IEventMessage
+        {
+            ConcurrentDictionary<Guid, EventSubscriber> subscribers;
+            lock (Mutex)
+            {
+                if (!_subscriptions.ContainsKey(typeof(T))) return;
+                subscribers = _subscriptions[typeof(T)];
+            }
+
+            subscribers.ForEachAsync(x => x.Value.Invoke(message).GetAwaiter().GetResult());
+        }
+
+        /// <summary>
+        /// Publish the specified message.
+        /// </summary>
+        /// <param name='message'>Message.</param>
+        /// <typeparam name='T'>
+        /// Type of IEventMessage.
+        /// </typeparam>
+        public Task PublishAsync<T>(T message) where T : IEventMessage
         {
             ConcurrentDictionary<Guid, EventSubscriber> subscribers;
             lock (Mutex)

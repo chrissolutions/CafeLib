@@ -48,7 +48,7 @@ namespace CafeLib.Core.UnitTests
         {
             ClearCommonVisits();
             var eventService = Resolver.Resolve<IEventService>();
-            await eventService.Publish(new CommonEventMessage(this));
+            await eventService.PublishAsync(new CommonEventMessage(this));
             Assert.Equal(2, _commonEventMessageVisits);
         }
 
