@@ -8,7 +8,7 @@ namespace CafeLib.Core.UnitTests.EventHosts
         public FooEventHostAsync(IServiceResolver resolver)
         {
             var eventService = resolver.Resolve<IEventService>();
-            eventService.SubscribeAsync<EventServiceTest.CommonEventMessageAsync>(async x => await x.VisitedAsync());
+            eventService.Subscribe<EventServiceTest.CommonEventMessageAsync>(async x => await x.VisitedAsync());
         }
     }
 }

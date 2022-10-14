@@ -27,7 +27,7 @@ namespace CafeLib.Core.Eventing
         /// <typeparam name='T'>
         /// Event message type parameter.
         /// </typeparam>
-        public Guid SubscribeAsync<T>(Func<T, Task> operation) where T : IEventMessage;
+        public Guid Subscribe<T>(Func<T, Task> operation) where T : IEventMessage;
 
         /// <summary>
         /// Publish the specified message.

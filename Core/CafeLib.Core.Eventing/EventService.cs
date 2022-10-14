@@ -59,6 +59,11 @@ namespace CafeLib.Core.Eventing
             }
         }
 
+        public Guid Subscribe<T>(Func<T, Task> operation) where T : IEventMessage
+        {
+            return SubscribeAsync(operation);
+        }
+
         /// <summary>
         /// Subscribe the specified handler.
         /// </summary>
