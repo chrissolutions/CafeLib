@@ -18,7 +18,7 @@ namespace CafeLib.Core.UnitTests
         public EventServiceTest()
         {
             Resolver = IocFactory.CreateRegistry()
-                .AddSingleton<IEventService>(x => new EventService())
+                .AddSingleton<IEventService>(_ => new EventService())
                 .GetResolver();
 
             _fooHost = new FooEventHost(Resolver);

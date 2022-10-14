@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using CafeLib.Core.Eventing.Subscribers;
 using CafeLib.Core.Extensions;
 
 namespace CafeLib.Core.Eventing
@@ -52,7 +54,26 @@ namespace CafeLib.Core.Eventing
             lock (Mutex)
             {
                 var subscribers = _subscriptions.GetOrAdd(typeof(T), new ConcurrentDictionary<Guid, EventSubscriber>());
-                var subscriber = new EventSubscriber<T>(action);
+                var subscriber = new ActionEventSubscriber<T>(action);
+                subscribers.TryAdd(subscriber.Id, subscriber);
+                _lookup.TryAdd(subscriber.Id, typeof(T));
+                return subscriber.Id;
+            }
+        }
+
+        /// <summary>
+        /// Subscribe the specified handler.
+        /// </summary>
+        /// <param name='operation'>Event operation.</param>
+        /// <typeparam name='T'>
+        /// Type of IEventMessage.
+        /// </typeparam>
+        public Guid Subscribe<T>(Func<T, Task> operation) where T : IEventMessage
+        {
+            lock (Mutex)
+            {
+                var subscribers = _subscriptions.GetOrAdd(typeof(T), new ConcurrentDictionary<Guid, EventSubscriber>());
+                var subscriber = new TaskEventSubscriber<T>(operation);
                 subscribers.TryAdd(subscriber.Id, subscriber);
                 _lookup.TryAdd(subscriber.Id, typeof(T));
                 return subscriber.Id;
@@ -68,15 +89,28 @@ namespace CafeLib.Core.Eventing
         /// <typeparam name='T'>
         /// Type of IEventMessage.
         /// </typeparam>
-        public void Publish<T>(T message) where T : IEventMessage
+        //public void Publish<T>(T message) where T : IEventMessage
+        //{
+        //    ConcurrentDictionary<Guid, EventSubscriber> subscribers;
+        //    lock (Mutex)
+        //    {
+        //        if (!_subscriptions.ContainsKey(typeof(T))) return;
+        //        subscribers = _subscriptions[typeof(T)];
+        //    }
+        //    subscribers.ForEach(x => x.Value.Invoke(message));
+        //}
+
+
+        public Task Publish<T>(T message) where T : IEventMessage
         {
             ConcurrentDictionary<Guid, EventSubscriber> subscribers;
             lock (Mutex)
             {
-                if (!_subscriptions.ContainsKey(typeof(T))) return;
+                if (!_subscriptions.ContainsKey(typeof(T))) return Task.CompletedTask;
                 subscribers = _subscriptions[typeof(T)];
             }
-            subscribers.ForEach(x => x.Value.Invoke(message));
+
+            return subscribers.ForEachAsync(x => x.Value.Invoke(message));
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMemberInSuper.Global
 
@@ -26,7 +28,7 @@ namespace CafeLib.Core.Eventing
         /// <typeparam name='T'>
         /// Event message type parameter.
         /// </typeparam>
-        void Publish<T>(T message) where T : IEventMessage;
+        Task Publish<T>(T message) where T : IEventMessage;
 
         /// <summary>
         /// Unsubscribe all specified handlers of type T.

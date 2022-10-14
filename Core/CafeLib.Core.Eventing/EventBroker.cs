@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace CafeLib.Core.Eventing
 {
@@ -49,9 +50,9 @@ namespace CafeLib.Core.Eventing
         /// <typeparam name='T'>
         /// Type of IEventMessage.
         /// </typeparam>
-        public void Publish<T>(T message) where T : IEventMessage
+        public Task Publish<T>(T message) where T : IEventMessage
         {
-            _eventService.Publish(message);
+            return _eventService.Publish(message);
         }
 
         /// <summary>
