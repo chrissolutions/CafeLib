@@ -59,11 +59,6 @@ namespace CafeLib.Core.Eventing
             }
         }
 
-        public Guid Subscribe<T>(Func<T, Task> operation) where T : IEventMessage
-        {
-            return SubscribeAsync(operation);
-        }
-
         /// <summary>
         /// Subscribe the specified handler.
         /// </summary>
@@ -71,7 +66,7 @@ namespace CafeLib.Core.Eventing
         /// <typeparam name='T'>
         /// Type of IEventMessage.
         /// </typeparam>
-        public Guid SubscribeAsync<T>(Func<T, Task> operation) where T : IEventMessage
+        public Guid Subscribe<T>(Func<T, Task> operation) where T : IEventMessage
         {
             lock (Mutex)
             {
