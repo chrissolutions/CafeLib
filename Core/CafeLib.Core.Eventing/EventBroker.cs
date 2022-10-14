@@ -30,15 +30,23 @@ namespace CafeLib.Core.Eventing
         /// <summary>
         /// Subscribe the specified handler.
         /// </summary>
-        /// <param name='action'>
-        /// Event action.
-        /// </param>
-        /// <typeparam name='T'>
-        /// Type of IEventMessage.
-        /// </typeparam>
+        /// <typeparam name='T'>Type of IEventMessage.</typeparam>
+        /// <param name='action'>Event action.</param>
+        /// <returns>subscriber id</returns>
         public Guid Subscribe<T>(Action<T> action) where T : IEventMessage
         {
             return _eventService.Subscribe(action);
+        }
+
+        /// <summary>
+        /// Subscribe the specified async handler.
+        /// </summary>
+        /// <typeparam name='T'>Type of IEventMessage.</typeparam>
+        /// <param name="operation">Event operation.</param>
+        /// <returns>subscriber id</returns>
+        public Guid SubscribeAsync<T>(Func<T, Task> operation) where T : IEventMessage
+        {
+            return _eventService.SubscribeAsync(operation);
         }
 
         /// <summary>

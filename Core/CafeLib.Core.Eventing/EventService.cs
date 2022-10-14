@@ -43,9 +43,7 @@ namespace CafeLib.Core.Eventing
         /// <summary>
         /// Subscribe the specified handler.
         /// </summary>
-        /// <param name='action'>
-        /// Event action.
-        /// </param>
+        /// <param name='action'>Event action.</param>
         /// <typeparam name='T'>
         /// Type of IEventMessage.
         /// </typeparam>
@@ -68,7 +66,7 @@ namespace CafeLib.Core.Eventing
         /// <typeparam name='T'>
         /// Type of IEventMessage.
         /// </typeparam>
-        public Guid Subscribe<T>(Func<T, Task> operation) where T : IEventMessage
+        public Guid SubscribeAsync<T>(Func<T, Task> operation) where T : IEventMessage
         {
             lock (Mutex)
             {
@@ -83,24 +81,10 @@ namespace CafeLib.Core.Eventing
         /// <summary>
         /// Publish the specified message.
         /// </summary>
-        /// <param name='message'>
-        /// Message.
-        /// </param>
+        /// <param name='message'>Message.</param>
         /// <typeparam name='T'>
         /// Type of IEventMessage.
         /// </typeparam>
-        //public void Publish<T>(T message) where T : IEventMessage
-        //{
-        //    ConcurrentDictionary<Guid, EventSubscriber> subscribers;
-        //    lock (Mutex)
-        //    {
-        //        if (!_subscriptions.ContainsKey(typeof(T))) return;
-        //        subscribers = _subscriptions[typeof(T)];
-        //    }
-        //    subscribers.ForEach(x => x.Value.Invoke(message));
-        //}
-
-
         public Task Publish<T>(T message) where T : IEventMessage
         {
             ConcurrentDictionary<Guid, EventSubscriber> subscribers;
