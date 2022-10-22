@@ -72,8 +72,66 @@ namespace CafeLib.Core.Buffers
         /// <summary>
         /// Reads an <see cref="byte"/>.
         /// </summary>
-        /// <returns>False if there wasn't enough data for an <see cref="byte"/>.</returns>
+        /// <param name="value">out value</param>
+        /// <returns></returns>
         public bool TryRead(out byte value) => Data.TryRead(out value);
+
+        /// <summary>
+        /// Reads an <see cref="short"/>.
+        /// </summary>
+        /// <param name="value">out value</param>
+        /// <returns>False if there wasn't enough data for an <see cref="short"/>.</returns>
+        public bool TryRead(out short value) => BitConverter.IsLittleEndian ? Data.TryReadLittleEndian(out value) : Data.TryReadBigEndian(out value);
+
+        /// <summary>
+        /// Reads an <see cref="ushort"/>.
+        /// </summary>
+        /// <param name="value">out value</param>
+        /// <returns>False if there wasn't enough data for an <see cref="ushort"/>.</returns>
+        public bool TryRead(out ushort value)
+        {
+            var result = TryRead(out short v);
+            value = (ushort)v;
+            return result;
+        }
+
+        /// <summary>
+        /// Reads an <see cref="int"/>.
+        /// </summary>
+        /// <param name="value">out value</param>
+        /// <returns>False if there wasn't enough data for an <see cref="ushort"/>.</returns>
+        public bool TryRead(out int value) => BitConverter.IsLittleEndian ? Data.TryReadLittleEndian(out value) : Data.TryReadBigEndian(out value);
+
+        /// <summary>
+        /// Reads an <see cref="uint"/>.
+        /// </summary>
+        /// <param name="value">out value</param>
+        /// <returns>False if there wasn't enough data for an <see cref="uint"/>.</returns>
+        public bool TryRead(out uint value)
+        {
+            var result = TryRead(out int v);
+            value = (uint)v;
+            return result;
+        }
+
+        /// <summary>
+        /// Reads an <see cref="long"/>.
+        /// </summary>
+        /// <param name="value">out value</param>
+        /// <returns>False if there wasn't enough data for an <see cref="long"/>.</returns>
+        public bool TryRead(out long value) => BitConverter.IsLittleEndian ? Data.TryReadLittleEndian(out value) : Data.TryReadBigEndian(out value);
+
+        /// <summary>
+        /// Reads an <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="value">out value</param>
+        /// <returns>False if there wasn't enough data for an <see cref="ulong"/>.</returns>
+        public bool TryRead(out ulong value)
+        {
+            var result = TryRead(out long v);
+            value = (ulong)v;
+            return result;
+        }
 
         /// <summary>
         /// Reads an <see cref="short"/> as big endian.
