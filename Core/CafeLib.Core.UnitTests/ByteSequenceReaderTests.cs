@@ -73,13 +73,13 @@ public class ByteSequenceReaderTests
     /// </summary>
     /// <param name="reader">byte sequence reader</param>
     /// <param name="destination"></param>
-    /// <param name="bigEndian"></param>
+    /// <param name="reverse"></param>
     /// <returns></returns>
-    private static bool TryReadUInt256(ref ByteSequenceReader reader, ref UInt256 destination, bool bigEndian = false)
+    private static bool TryReadUInt256(ref ByteSequenceReader reader, ref UInt256 destination, bool reverse = false)
     {
         var span = destination.Span;
         if (!reader.TryCopyTo(span)) return false;
-        if (bigEndian) span.Reverse();
+        if (reverse) span.Reverse();
         reader.Advance(span.Length);
         return true;
     }
