@@ -12,12 +12,12 @@ vars.root = GetCurrentDirectory();
 // Setup CafeLib components (name, version).
 public static readonly IDictionary<string, string> Components = new Dictionary<string, string>
 {
-    {"Core", "2.0.2"},
-    {"Cryptography", "2.0.2"},
-    {"Data", "2.0.2"},
-    {"Authorization", "2.0.2"},
-    {"Network", "2.0.2"},
-    {"Blazor", "2.0.2"}
+    {"Core", "2.0.3"},
+    {"Cryptography", "2.0.3"},
+    {"Data", "2.0.3"},
+    {"Authorization", "2.0.3"},
+    {"Network", "2.0.3"},
+    {"Blazor", "2.0.3"}
 };
 
 // Get arguments.
