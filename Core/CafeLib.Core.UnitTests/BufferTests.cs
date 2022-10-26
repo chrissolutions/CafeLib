@@ -18,10 +18,10 @@ public class BufferTests
         var result = encoder.Encode(concat);
         Assert.Equal("catdoggy", result);
 
-        var span3 = new ReadOnlyByteSpan(encoder.Decode("doggy"));
+        var span3 = new ReadOnlyByteSpan(encoder.Decode("mouse"));
         concat = span1 + span3;
         result = encoder.Encode(concat);
-        Assert.Equal("catdoggy", result);
+        Assert.Equal("catmouse", result);
     }
 
     [Fact]
@@ -34,10 +34,10 @@ public class BufferTests
         var result = encoder.Encode(concat);
         Assert.Equal("catdoggy", result);
 
-        var span3 = new ByteSpan(encoder.Decode("doggy"));
+        var span3 = new ByteSpan(encoder.Decode("mouse"));
         concat = span1 + span3;
         result = encoder.Encode(concat);
-        Assert.Equal("catdoggy", result);
+        Assert.Equal("catmouse", result);
     }
 
     [Fact]

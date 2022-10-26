@@ -97,7 +97,7 @@ namespace CafeLib.Core.UnitTests
         {
             var uint160 = UInt160.FromHex(hex);
 
-            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint160.ToHex(false)}" : $"{uint160.ToHex(false)}");
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint160.ToHex()}" : $"{uint160.ToHex()}");
             var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
             Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint160.ToHex(true)}" : $"{uint160.ToHex(true)}");
@@ -113,7 +113,7 @@ namespace CafeLib.Core.UnitTests
             Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint160.ToHex(true)}" : $"{uint160.ToHex(true)}");
             var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
-            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint160.ToHex(false)}" : $"{uint160.ToHex(false)}");
+            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint160.ToHex()}" : $"{uint160.ToHex()}");
         }
 
         #endregion
@@ -248,7 +248,7 @@ namespace CafeLib.Core.UnitTests
         {
             var uint256 = UInt256.FromHex(hex);
 
-            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint256.ToHex(false)}" : $"{uint256.ToHex(false)}");
+            Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint256.ToHex()}" : $"{uint256.ToHex()}");
             var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
             Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint256.ToHex(true)}" : $"{uint256.ToHex(true)}");
@@ -266,7 +266,7 @@ namespace CafeLib.Core.UnitTests
             Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint256.ToHex(true)}" : $"{uint256.ToHex(true)}");
             var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
-            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint256.ToHex(false)}" : $"{uint256.ToHex(false)}");
+            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint256.ToHex()}" : $"{uint256.ToHex()}");
         }
 
         [Fact]
@@ -358,7 +358,7 @@ namespace CafeLib.Core.UnitTests
             Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint512.ToHex(true)}" : $"{uint512.ToHex(true)}");
             var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
-            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint512.ToHex(false)}" : $"{uint512.ToHex(false)}");
+            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint512.ToHex()}" : $"{uint512.ToHex()}");
         }
 
         [Theory]
@@ -371,7 +371,7 @@ namespace CafeLib.Core.UnitTests
             Assert.Equal(hex, hex.StartsWith("0x") ? $"0x{uint512.ToHex(true)}" : $"{uint512.ToHex(true)}");
             var hexReverse = HexReverse.Encode(Hex.Decode(hex));
             var hexReverseExpected = hex.StartsWith("0x") ? $"0x{hexReverse}" : $"{hexReverse}";
-            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint512.ToHex(false)}" : $"{uint512.ToHex(false)}");
+            Assert.Equal(hexReverseExpected, hex.StartsWith("0x") ? $"0x{uint512.ToHex()}" : $"{uint512.ToHex()}");
         }
 
         #endregion

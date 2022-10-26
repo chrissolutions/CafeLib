@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace CafeLib.Core.Eventing
 {
@@ -29,15 +30,23 @@ namespace CafeLib.Core.Eventing
         /// <summary>
         /// Subscribe the specified handler.
         /// </summary>
-        /// <param name='action'>
-        /// Event action.
-        /// </param>
-        /// <typeparam name='T'>
-        /// Type of IEventMessage.
-        /// </typeparam>
+        /// <typeparam name='T'>Type of IEventMessage.</typeparam>
+        /// <param name='action'>Event action.</param>
+        /// <returns>subscriber id</returns>
         public Guid Subscribe<T>(Action<T> action) where T : IEventMessage
         {
             return _eventService.Subscribe(action);
+        }
+
+        /// <summary>
+        /// Subscribe the specified async handler.
+        /// </summary>
+        /// <typeparam name='T'>Type of IEventMessage.</typeparam>
+        /// <param name="operation">Event operation.</param>
+        /// <returns>subscriber id</returns>
+        public Guid Subscribe<T>(Func<T, Task> operation) where T : IEventMessage
+        {
+            return _eventService.Subscribe(operation);
         }
 
         /// <summary>
@@ -52,6 +61,20 @@ namespace CafeLib.Core.Eventing
         public void Publish<T>(T message) where T : IEventMessage
         {
             _eventService.Publish(message);
+        }
+
+        /// <summary>
+        /// Publish the specified message.
+        /// </summary>
+        /// <param name='message'>
+        /// Message.
+        /// </param>
+        /// <typeparam name='T'>
+        /// Type of IEventMessage.
+        /// </typeparam>
+        public Task PublishAsync<T>(T message) where T : IEventMessage
+        {
+            return _eventService.PublishAsync(message);
         }
 
         /// <summary>

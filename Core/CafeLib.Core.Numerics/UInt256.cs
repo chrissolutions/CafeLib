@@ -67,6 +67,15 @@ namespace CafeLib.Core.Numerics
         }
 
         /// <summary>
+        /// Return a reversed version of a UInt256 object.
+        /// </summary>
+        /// <returns></returns>
+        public UInt256 Reverse()
+        {
+            return new UInt256(Span, true);
+        }
+
+        /// <summary>
         /// ByteSpan property.
         /// </summary>
         public readonly ByteSpan Span

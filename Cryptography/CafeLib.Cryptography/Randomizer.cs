@@ -14,9 +14,15 @@ namespace CafeLib.Cryptography
 {
     public static class Randomizer
     {
-        private static readonly object Mutex = new object();
-        private static readonly Random Random = new Random();
+        private static readonly object Mutex = new();
+        private static readonly Random Random = new();
         private static long _counter = Times.NanoTime();
+
+        public static byte[] GetBytes(int length) => GetStrongRandBytes(length);
+        public static uint GetUInt32() => BitConverter.ToUInt32(GetBytes(sizeof(uint)), 0);
+        public static int GetInt32() => BitConverter.ToInt32(GetBytes(sizeof(int)), 0);
+        public static ulong GetUInt64() => BitConverter.ToUInt64(GetBytes(sizeof(ulong)), 0);
+        public static long GetInt64() => BitConverter.ToInt64(GetBytes(sizeof(long)), 0);
 
         /// <summary>
         /// Centralized source of a cryptographic strong random entropy.
